@@ -49,3 +49,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 03:55 submit 26444 fallible-verifier 第二輪等暖機預算，Astra 通過，0.6B／官方 32B AWQ 新題判決，接平行解碼 26443 5d3ec1d
 [codex] 2026-11-15 03:55 submit 26445 fallible-verifier 第二輪 CPU 等預算、風險與完整資訊空間判讀，依賴 26444 5d3ec1d
 [codex] 2026-11-15 03:55 submit 26446 gate-optimizer 第二輪 Astra 通過，3／4／6 倍小規模校準，接驗證器 26445 9e4f302
+[codex] 2026-11-15 04:04 submit 26448 multifidelity-attribution 固定12新查詢精確歸因，兩個六查詢區塊依序使用一張 H200 599469e
+[codex] 2026-11-15 04:04 submit 26449 multifidelity-attribution CPU 比對十方向覆蓋、Gram 外推與尺度，依賴精確歸因 26448 599469e
+[codex] 2026-11-15 04:06 submit 26450 compositional-retrieval 凍結236個新TEST查詢及3306張共同候選圖，DEV調權重並測mAP相對原版和打亂對照 5062061
