@@ -63,3 +63,20 @@
 - (a) 的 PASS 在 aggregate 中標為「閘門通過」，不是題目 PASS。
 - 正控制容許範圍、(c)/(d) 的「其他組合」處置為未決。
 - 階層資料的「訓練輸入」距離只用 S_i、S_j 兩份（同一對模型各自的訓練集），不含測試輸入；測試輸入距離只用於次要指標。
+
+## 8. 修改紀錄
+
+- 2026-11-14（Opus 審查，未動任何門檻／判準數字；詳見 `REVIEW.md`）：
+  - `aggregate_week1.py`：`tstar` 遇 NaN/inf 回傳 nan（原本 `np.argmin` 會把 NaN 當最低點，靜默給出錯誤 epoch）；
+    (a) 加 `curves_finite`、缺 t 檢查，NaN 時閘門記「未能測試」；(a)(b) 都輸出 t\* 是否落在網格第一／最後一格（`*_edge`、`main_metric_censored`），
+    落實本文閘門 3「要標記」。邊界 t\* 如何計入判讀**尚未定案**（REVIEW 必修項）。
+  - `train_celeba.py`：checkpoint 與 `opt.pt` 改原子寫入，`opt.pt` 記錄 epoch，續跑以它為準（原本中斷時模型與優化器狀態可能不同步）。
+  - `eval_celeba.py`、`eval_hier_oracle.py`：找不到共同 checkpoint 時直接報錯（原本會存出空的 npz）。
+  - `prep_celeba.py`：HF `nielsr/CelebA-faces` 的 image.path 全為 None，移除檔名斷言，改檢查總列數 = 202,599，並寫 `CelebA32.meta.json`（sha256）。
+    **限制**：列順序是否等於原作 natsorted(img_align_celeba) 未驗證。原作只用連續區塊當訓練集、最後 2048 張當測試，不依賴特定編號，
+    順序不同只換成另一組不相交樣本，(a) 判讀為統計性，不要求位元一致。已產出的 `CelebA32.pt` 是用移除斷言的副本
+    （`icml/tmp/prep_celeba_nonames.py`）產生，sha256 = `a3a333861dc598ecd3ad2ebb3ab70e72a58a6432590b58b5ddb9c63324d4b52a`；
+    檢查：前 6144 張與最後 2048 張無近似重複（max cos 0.958），訓練區塊內有 2 對 cos > 0.999，6 個區塊平均亮度 0.432–0.446。
+  - 階層資料 `hier_q6_l4_s1.0_qeff4_seed0_n40000.npy` sha256 = `38cf10f797a0dfead18d8036f97f39efc58aa178663de68bd6d2525fb8615cee`；
+    文法 M 與 `test_bp.py` T3 所用者相同；各 5000 筆區塊與測試區塊 7 有 22–27 筆重複序列（原作同樣存在，未處理）。
+  - `configs/week1.env`：加 TORCHINDUCTOR/TRITON/NUMBA/MPL 快取目錄到 `icml/tmp`。

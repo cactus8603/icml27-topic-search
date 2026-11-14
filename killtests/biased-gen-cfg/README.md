@@ -58,7 +58,9 @@ $E install numpy scipy numba matplotlib natsort tqdm pillow pyarrow huggingface_
    source configs/week1.env
    $BIASGEN_ENV/bin/python scripts/prep_celeba.py --out-dir $CELEBA_DATA_ROOT
    ```
-   腳本會檢查第一張為 000001.jpg、最後一張為 202599.jpg、檔名連續。來源是 HF `nielsr/CelebA-faces`（202,599 張、`image_folder` 以檔名排序），不是原作的 `img_align_celeba` 目錄，所以像素是否位元一致**未確認**（兩者應都是 img_align_celeba 的 JPEG；transform 與原作 `preprocess_celeba.py` 相同）。
+   **已完成（2026-11-14）**，輸出 `icml/data/celeba32/CelebA32.pt`，(18432,1,32,32) float32、0–1。HF `nielsr/CelebA-faces` 的 image.path 全為 None，
+   因此腳本已改為不依賴檔名（只檢查總列數 202,599，並寫 `CelebA32.meta.json`）。**限制：列順序是否等於原作 natsorted(img_align_celeba) 未驗證**，
+   像素是否位元一致也未確認。原作只用連續區塊與最後 2048 張，不依賴特定編號，所以 (a) 是「另一組不相交樣本」的統計重現，不是位元重現。見 PREREG §8。
 2. 階層資料（CPU，約數分鐘，40000 筆）：`bash scripts/gen_hier_data.sh`（`WORKERS` 可調）。文法 M 與原作 1M 樣本檔相同（seed 0）。
 3. 先跑 `python scripts/test_bp.py`（CPU，數秒；已跑過，全過）。
 
