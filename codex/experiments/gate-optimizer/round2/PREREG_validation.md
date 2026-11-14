@@ -12,3 +12,5 @@
 bash codex/experiments/gate-optimizer/round2/validate.sbatch FULL_COMMIT_SHA --check-only
 sbatch --parsable codex/experiments/gate-optimizer/round2/validate.sbatch FULL_COMMIT_SHA
 ```
+
+- [codex] 已讀 `results/validation-26502/validation.json`，2026-11-15 07:13。凍結版 `4d87430`，獨立複核與整合核對。判準沿用原登記。
