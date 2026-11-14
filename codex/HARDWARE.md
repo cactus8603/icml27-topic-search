@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 07:23（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 07:29（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -9,7 +9,7 @@
 | 題目 | 下一步 | H200 已實測峰值 VRAM | 24 GB 估算與設備安排 |
 |---|---|---|---|
 | 多條件檢索 | 固定候選庫與獨立正反關係配對均完成 | 新排名 `26450` **5.38 GiB、1 分 53 秒**；正反關係 `26514` **6.89 GiB、1 分 24 秒**。 | **優先試 24 GB。** CS-CLIP 與 CORE 2B 逐一載入，圖像 batch 8、文字 batch 32。配對資料檢查與彙整可用 CPU，輸入約 63 MiB。[正反關係協定](../killtests/compositional-retrieval/PREREG_controlled_spatial.md) |
-| 兩個時鐘 | 早期網格回播完成，準備三組同網格對照 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。早期回播 `26513` **1.83 GiB、11 分 45 秒**，系統 RAM 約 **16.55 GiB**。 | **一般階層評估優先試 24 GB 顯存，主機 RAM 另計。** 早期權重回播留 H200，以相同硬體逐份核對。CIFAR 依預登記暫緩。[早期診斷](experiments/two-clocks-prefix/PROTOCOL.md) |
+| 兩個時鐘 | `26523` 三組共用早期網格 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。早期回播 `26513` **1.83 GiB、11 分 45 秒**，系統 RAM 約 **16.55 GiB**。 | **一般階層評估優先試 24 GB 顯存，主機 RAM 另計。** 三組回播留 H200，先對齊 54 份權重，暫存估 **5.66 GiB**。CIFAR 依預登記暫緩。[三組診斷](experiments/two-clocks-cohort/PREREG.md) |
 | Inoculation 防禦漏出預測 Λ | Phase B 無防禦／IP 重現與 LoRA 信度試驗 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。Phase B 待量。 | **Phase B 先留 H200。** 7B BF16 權重約 14 GB，訓練須再加活化、梯度與 optimizer 狀態。Phase B 的訓練配置尚未凍結，24 GB 容量待量。協定檢查與合成測試可用 CPU。[Phase B 預登記](../killtests/inoculation-lambda/PREREG.md#3-phase-b-現象訊號與空間閘門-13-皆過才判) · [Phase A v2](../killtests/inoculation-lambda/phasea_v2/README.md) |
 | 多保真度資料歸因 | `26517` 比較新遮罩方向挑選 | `26448` 每六查詢 **126.44 GiB、約 7 分 20 秒**，含 JAX 預留；CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** 24 GB 需另量未預留的實際工作峰值。原 TRAK 投影矩陣本身約 42 GB。[方向覆蓋協定](experiments/multifidelity-direction-coverage/PROTOCOL.md) |
 | Neural Chameleons 防禦 | 核對作者基準，分析既有快取，必要時完整重抽 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
