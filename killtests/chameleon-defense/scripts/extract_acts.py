@@ -74,7 +74,8 @@ def main():
         if D == 3584:
             d = torch.load(os.path.join(pdir, f"{n}_weights.pt"), map_location="cpu", weights_only=False)
             p = next(iter(d.values()))
-            W[i] = np.asarray(p["weight"], np.float32).reshape(-1); Bv[i] = float(np.asarray(p["bias"]).reshape(-1)[0])
+            _np = lambda x: (x.detach().float().cpu().numpy() if torch.is_tensor(x) else np.asarray(x, np.float32))
+            W[i] = _np(p["weight"]).reshape(-1); Bv[i] = float(_np(p["bias"]).reshape(-1)[0])
         else:
             W[i] = np.random.default_rng(i).normal(size=D)
     Wt = torch.tensor(W, device=dev); Bt = torch.tensor(Bv, device=dev)
