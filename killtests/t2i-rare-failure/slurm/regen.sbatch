@@ -11,4 +11,5 @@
 # 判準 B 盲審影像：重生成未保存的項目（通常 <= 200 張，數分鐘）。
 set -euo pipefail
 source slurm/env.sh
+quota -g -s || true  # 磁碟用量（本題上限 35 GB，含已用 25.5 GB；剩餘群組額度不足 20 GB 時暫停）
 $PY scripts/regen_images.py

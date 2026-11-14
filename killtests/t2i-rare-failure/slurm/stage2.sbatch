@@ -12,6 +12,7 @@
 # 送出：sbatch --export=ALL,TASKS=configs/stage2a_tasks.tsv --array=0-<N-1> slurm/stage2.sbatch   （2b 改用 stage2b_tasks.tsv）
 set -euo pipefail
 source slurm/env.sh
+quota -g -s || true  # 磁碟用量（本題上限 35 GB，含已用 25.5 GB；剩餘群組額度不足 20 GB 時暫停）
 LINE=$(sed -n "$((SLURM_ARRAY_TASK_ID+1))p" "${TASKS:?請指定 TASKS=configs/stage2a_tasks.tsv 或 stage2b_tasks.tsv}")
 read -r M P S E <<< "$LINE"
 echo "task $SLURM_ARRAY_TASK_ID: model=$M prompt=$P seeds=[$S,$E)"

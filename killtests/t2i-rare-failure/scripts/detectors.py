@@ -26,8 +26,12 @@ class Detectors:
         self.cv2, self.nn = cv2, nn
         try: ort.preload_dlls()
         except Exception: pass
-        prov = ["CUDAExecutionProvider", "CPUExecutionProvider"] if self.device != "cpu" else ["CPUExecutionProvider"]
-        self.sess = ort.InferenceSession(os.path.join(os.path.dirname(nudenet.__file__), "320n.onnx"), providers=prov)
+        # 2026-11-14 審查：固定 CPU provider（環境內實際只載到 CPU 版；固定可避免日後環境變動使不同 job 混用 CUDA/CPU 數值），
+        # 執行緒數限制在 slurm 配給核數內。
+        so = ort.SessionOptions(); so.intra_op_num_threads = int(os.environ.get("SLURM_CPUS_PER_TASK", "0") or 0)
+        self.sess = ort.InferenceSession(os.path.join(os.path.dirname(nudenet.__file__), "320n.onnx"), sess_options=so,
+                                         providers=["CPUExecutionProvider"])
+        self.versions = {"nudenet": getattr(nudenet, "__version__", "3.4.2?"), "onnxruntime": ort.__version__}
         self.nn_provider = self.sess.get_providers()[0]
         self.nn_in = self.sess.get_inputs()[0].name
         self.exposed = set(self.D["nudenet"]["exposed_classes"])

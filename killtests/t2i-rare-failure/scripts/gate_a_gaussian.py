@@ -11,6 +11,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import ROOT, load_json
+from e_metric import brute_equiv
 from estimators import subset_simulation, ce_is_mean_shift
 
 G = load_json("criteria.json")["gate_a"]
@@ -22,6 +23,7 @@ def main():
     ap.add_argument("--N", type=int, default=G["N_per_level"])
     ap.add_argument("--d", type=int, default=G["d"])
     ap.add_argument("--seed", type=int, default=G["rng_seed"])
+    ap.add_argument("--out", default=str(ROOT / "results" / "gate_a"))
     ap.add_argument("--mcmc-steps", type=int, default=G["mcmc_steps"])
     a = ap.parse_args()
     d = a.d; w = np.random.default_rng(0).standard_normal(d); w /= np.linalg.norm(w)
@@ -46,7 +48,8 @@ def main():
             ok_all &= ok
             brute = (1 - p) / (p * cv ** 2) if cv > 0 and np.isfinite(cv) else float("nan")
             out["rows"].append(dict(estimator=name, p=p, t=float(t), mean_ratio=float(m / p), bias=float(bias), cv=cv,
-                                    calls_mean=float(np.mean(calls)), brute_equiv=float(brute), ok=ok, ests=ests.tolist(),
+                                    calls_mean=float(np.mean(calls)), brute_equiv=float(brute), brute_equiv_rrmse=brute_equiv(ests, p),  # 2026-11-14 審查後新增：相對 RMSE 版本（只報告）
+                                     ok=ok, ests=ests.tolist(),
                                     seconds=round(time.time() - t0, 1)))
             lines.append(f"| {name} | 1e{ep} | {m/p:.3f} | {bias:+.1%} | {cv:.2f} | {np.mean(calls):.0f} | {brute:.2e} | {'通過' if ok else '失敗'} |")
             print(lines[-1], flush=True)
@@ -55,7 +58,7 @@ def main():
     out["gate_a_pass"] = any(verdict.values())
     lines.append(f"\n各估計器全部機率皆通過：{verdict}。**閘門 (a)：{'通過' if out['gate_a_pass'] else '未通過（記為未能測試，限 3 個工作天修）'}**"
                  "（PREREG：至少一個估計器全數通過即可，之後只能用通過者）")
-    d_out = ROOT / "results" / "gate_a"; d_out.mkdir(parents=True, exist_ok=True)
+    d_out = Path(a.out); d_out.mkdir(parents=True, exist_ok=True)
     (d_out / "gate_a.json").write_text(json.dumps(out, indent=1)); (d_out / "gate_a.md").write_text("\n".join(lines) + "\n")
     sys.exit(0 if out["gate_a_pass"] else 1)
 

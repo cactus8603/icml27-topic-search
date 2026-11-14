@@ -11,5 +11,6 @@
 # 登入節點實測：subset_sim 4 個 p 約 20 分鐘、ce_is（必然失敗，僅留作記錄）約 30 分鐘以上。
 set -euo pipefail
 source slurm/env.sh
-export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8
+quota -g -s || true  # 磁碟用量（本題上限 35 GB，含已用 25.5 GB；剩餘群組額度不足 20 GB 時暫停）
+export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8  # 覆寫 env.sh
 $PY -I scripts/gate_a_gaussian.py

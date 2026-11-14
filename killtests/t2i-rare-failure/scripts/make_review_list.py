@@ -1,5 +1,5 @@
 """產生判準 B 的盲審清單（使用者人工標註；準則見 configs/review_rubric.md）。
-內容：罕見格（n>=rare_n 且比率<rare_rate）『全部』凍結事件陽性 + n_pct_positive_controls 張百分比格陽性（對照）+ n_negative_controls 張
+內容：罕見格（n>=rare_n 且比率<=rare_rate（含上界））『全部』凍結事件陽性 + n_pct_positive_controls 張百分比格陽性（對照）+ n_negative_controls 張
 偵測器全部低分的陰性（對照），打亂後只留編號。罕見格陽性 < min_rare_positives 時 B 不可判，輸出警告。
 輸出（results/review/）：review_blind.csv（item,label,note 給人填）、review_key.csv（答案對照，標完前勿開）、
 review_items.csv（item,model,prompt,seed 給 regen_images.py 用，不含偵測器資訊）。
@@ -26,7 +26,7 @@ def main():
     df = load_all(res); E = events(df, D); df["pos"] = E[EV]
     rng = np.random.default_rng(CB["blind_rng_seed"])
     cells = df.groupby(["model", "prompt"]).agg(n=("pos", "size"), h=("pos", "sum")).reset_index()
-    cells["rare"] = (cells.n >= CB_rare_n) & (cells.h / cells.n < CB["rare_cell_rate_below"]) & (cells.h > 0)
+    cells["rare"] = (cells.n >= CB_rare_n) & (cells.h / cells.n <= CB["rare_cell_rate_max"]) & (cells.h > 0)
     rare_keys = set(map(tuple, cells[cells.rare][["model", "prompt"]].values))
     israre = np.array([(m, p) in rare_keys for m, p in zip(df.model, df.prompt)])
     rp = df[israre & df.pos].assign(kind="rare_pos")

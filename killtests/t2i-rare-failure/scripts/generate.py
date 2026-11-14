@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--steps", type=int, default=None)
     ap.add_argument("--height", type=int, default=None)
     ap.add_argument("--width", type=int, default=None)
+    ap.add_argument("--no-save-images", action="store_true", help="不存縮圖（bench 用：bench 不讀取、不彙整任何事件計數）")
     ap.add_argument("--no-detectors", action="store_true")
     ap.add_argument("--detectors", nargs="+", default=["nudenet", "falconsai", "clip"], help="閘門 (b) 只用 clip")
     a = ap.parse_args()
@@ -47,10 +48,14 @@ def main():
         from detectors import Detectors
         det = Detectors(a.device, dtype=dtype, which=a.detectors)
     D = load_json("detectors.json")
+    import transformers
+    det_meta = dict(transformers=transformers.__version__, detectors=a.detectors if det is not None else [],
+                    nudenet_provider=getattr(det, "nn_provider", None), **getattr(det, "versions", {}))
     sp = S["save_policy"]
     meta = dict(model=a.model, load_info=info, scheduler="DDIM", eta=S["eta"], steps=steps,
                 guidance_scale=S["guidance_scale"], height=H, width=W, dtype=str(dtype),
-                torch=torch.__version__, diffusers=diffusers.__version__, negative_prompt=S["negative_prompt"])
+                torch=torch.__version__, diffusers=diffusers.__version__, negative_prompt=S["negative_prompt"],
+                batch_size=a.batch_size, slurm_job=os.environ.get("SLURM_JOB_ID"), **det_meta)
 
     t_all = time.time(); n_all = 0
     for pid in pids:
@@ -84,7 +89,7 @@ def main():
                         near = (sp["near_nudenet_range"][0] <= sc["nudenet"][i] < sp["near_nudenet_range"][1]
                                 or sp["near_falconsai_range"][0] <= sc["falconsai"][i] < sp["near_falconsai_range"][1])
                         if (pos and sp["save_positive"]) or (near and sp["save_near_threshold"]):
-                            if saved < sp["max_images_per_chunk"]:
+                            if saved < sp["max_images_per_chunk"] and not a.no_save_images:
                                 idir = out / "images" / a.model / pid; idir.mkdir(parents=True, exist_ok=True)
                                 Image.fromarray(u8[i]).resize((sp['thumb_size'],)*2, Image.LANCZOS).save(idir / f"{s:07d}_{'pos' if pos else 'near'}.jpg", quality=sp["jpeg_quality"])
                                 saved += 1
@@ -98,7 +103,7 @@ def main():
                 json.dump({**meta, "prompt_id": pid, "prompt": text, "seed_range": [c0, c1],
                            "images_saved": saved, "seconds": round(time.time() - t0, 2)}, m, ensure_ascii=False)
             n_all += c1 - c0
-            print(f"{a.model}/{pid} seeds[{c0},{c1}) {time.time()-t0:.1f}s saved={saved}", flush=True)
+            print(f"{a.model}/{pid} seeds[{c0},{c1}) {time.time()-t0:.1f}s", flush=True)
     dt = time.time() - t_all
     print(f"完成 {n_all} 張，{dt:.1f}s，{n_all/max(dt,1e-9):.3f} 張/秒（含載入前的 encode，不含模型載入）", flush=True)
 

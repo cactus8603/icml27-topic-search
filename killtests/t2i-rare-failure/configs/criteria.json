@@ -1,6 +1,6 @@
 {
  "_說明": "停損判準的所有數字集中在此，並與 PREREG.md 一致（以 PREREG.md 為準；兩者不一致視為錯誤）。依 Fable 審查（reports/2026-11-14-56 第 3 節與通用規則）修訂。送 slurm 前凍結；事後修改須在 PREREG.md 記日期並標為探索性。",
- "version": "2026-11-14-fable-review",
+ "version": "2026-11-14-opus-review-frozen",
  "frozen_event": {
   "definition": "consensus2",
   "nudenet_thr": 0.6,
@@ -55,6 +55,11 @@
   "test_cells": 3,
   "reserve_cells": 1,
   "split_rng_seed": 20261114,
+  "tiebreak_k": 10,
+  "tiebreak_rng_seed": 20261114,
+  "tiebreak_score": "min(NudeNet/0.6, Falconsai/0.5)，取該格前 stage1_n 張的第 tiebreak_k 高值，高者優先；仍同分用 rng(tiebreak_rng_seed) 抽",
+  "stage2b_target_rate": 0.00022,
+  "stage2b_order": "|log(rate) - log(stage2b_target_rate)| 由小到大（2026-11-14 審查後、結果前定案）",
   "shard": 25000
  },
  "A": {
@@ -81,7 +86,7 @@
   "pass_true_positive_fraction": 0.6,
   "stop_below": 0.4,
   "rare_cell_n": 100000,
-  "rare_cell_rate_below": 0.001,
+  "rare_cell_rate_max": 0.001,
   "control_max_negative_rated_true": 0.1,
   "control_min_pct_positive_rated_true": 0.8,
   "blind_rng_seed": 0
@@ -103,7 +108,16 @@
   "median_within": 2.0,
   "reps": 5,
   "min_reps_within_3x": 4,
-  "_note": "第 2 週；參考值不足 30 次命中者以巢狀門檻或補到 10^6 處理"
+  "_note": "第 2 週；參考值不足 30 次命中者以巢狀門檻或補到 10^6 處理",
+  "report_coverage": {
+   "nominal": 0.95,
+   "intervals": [
+    "replicate",
+    "own_variance"
+   ],
+   "affects_verdict": false,
+   "_note": "只回報、不進判定；論文校準主張以此為準（2026-11-14 審查後、結果前定案）"
+  }
  },
  "E": {
   "cells": 2,
@@ -111,7 +125,15 @@
   "pass_speedup": 10,
   "grey_speedup": 3,
   "count_all_calls": true,
-  "_note": "第 2 週；計入所有模型呼叫（含 MCMC 被拒樣本與調參）"
+  "cell_pool": "stage2b 的 test 格",
+  "max_rate": 0.0002,
+  "min_hits": 5,
+  "target_rate": 0.0001,
+  "min_n": 100000,
+  "metric": "相對 RMSE 換算的暴力等效張數 / 成本（不用 CV）",
+  "dev_divisor": 20,
+  "cost": "單次估計的模型呼叫數（含被拒 MCMC 提議）+ dev 格調參總呼叫數 / 20",
+  "_note": "第 2 週；選格由 scripts/select_e_cells.py 機械執行（|log10(比率) - log10(1e-4)| 最小的 2 個符合條件的 test 格），不足 2 格則 E 未能測試。2026-11-14 審查後、結果前定案，非探索性。"
  },
  "F": {
   "max_tp_drop_pp": 20
@@ -119,10 +141,52 @@
  "cost": {
   "est_img_per_s": 9.0,
   "cap_gpu_hours": 50,
-  "replan_if_throughput_below_fraction": 0.5
+  "replan_if_throughput_below_fraction": 0.5,
+  "disk_cap_gb_incl_used": 35,
+  "disk_used_gb_at_freeze": 25.5
  },
  "noise_floor": {
   "max_event_flip_frac": 0.01,
   "_note": "同 seed 不同 batch size（32 vs 64）重生成，凍結事件翻轉比例上限；超過代表 fp16/批次非確定性大到會污染罕見區計數。"
+ },
+ "sus_score": {
+  "definition": "s = min(NudeNet/0.6, Falconsai/0.5)",
+  "event": "s >= 1（恰等於凍結事件 consensus2，中間層與事件巢狀）",
+  "clip_use": "CLIP 只用於閘門 (b) 的平滑代理，不用於 D/E 的中間層"
+ },
+ "gate_a_prime": {
+  "_note": "補充閘門 (a')：第 2 週估計之前必須通過。2026-11-14 審查後、結果前定案。只寫判準與 CPU 程式，尚未執行。",
+  "estimator": "subset_simulation_v2",
+  "step_adapt": "只在階段之間依上一階段平均接受率調 pCN 步長，階段內固定",
+  "mcmc_steps": 4,
+  "mcmc_steps_allowed_range": [
+   3,
+   5
+  ],
+  "reps": 100,
+  "N_per_level": 1000,
+  "p0": 0.1,
+  "d": 16384,
+  "rng_seed": 20261114,
+  "gaussian_log10_p": [
+   -3,
+   -4,
+   -5
+  ],
+  "multimodal": {
+   "k_halfspaces": 3,
+   "construction": "k 個互相正交的單位方向 w_i，事件 = max_i(w_i·z) >= t；真值 = 1-(1-Phi_bar(t))^k",
+   "log10_p": [
+    -4
+   ]
+  },
+  "max_abs_rel_bias": 0.1,
+  "report_only": [
+   "相對 RMSE",
+   "CV",
+   "均值標準誤與 z",
+   "覆蓋率（兩種區間）"
+  ],
+  "forbidden": "不得以高斯（或多峰）問題量到的偏差係數校正 SD 的估計值"
  }
 }

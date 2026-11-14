@@ -52,3 +52,37 @@ def ce_is_mean_shift(score_fn, d, t, N=1000, rho=0.1, max_iter=30, N_final=None,
     with np.errstate(over="ignore", under="ignore"):
         est = float(np.mean((s >= t) * np.exp(np.clip(logw, -700, 700))))  # 高維下權重退化時此值失真，由閘門 (a) 偵測
     return est, calls, dict(iters=it + 1, mu_norm=float(np.linalg.norm(mu)), hits=int((s >= t).sum()))
+
+
+def subset_simulation_v2(score_fn, d, t, N=1000, p0=0.1, mcmc_steps=4, beta0=0.5, rng=None, max_levels=30):
+    """補充閘門 (a') 用版本（2026-11-14 審查後、結果前定案）。與 subset_simulation 的差異只有兩點：
+      1. pCN 步長 beta 在同一階段內固定，只在階段之間依「上一階段的平均接受率」調整（beta *= exp(acc - 0.3)，夾在 [0.05, 1]）；
+      2. mcmc_steps 為每條鏈在兩次記錄之間走的 MCMC 步數（凍結 4，範圍 3-5）。
+    診斷另回 delta2：Au-Beck 變異的『獨立近似』（各階段 (1-p_i)/(p_i N)，不含鏈相關項，會低估），僅供 (a') 回報覆蓋率用。
+    嚴禁以任何高斯問題上量到的係數校正對 SD 的估計值。"""
+    rng = rng or np.random.default_rng()
+    z = rng.standard_normal((N, d)); s = score_fn(z); calls = N
+    n_seed = int(N * p0); p = 1.0; levels = 0; beta = beta0; accs = []; delta2 = 0.0
+    while levels < max_levels:
+        thr = np.sort(s)[::-1][n_seed - 1]
+        if thr >= t:
+            pl = float((s >= t).mean())
+            if pl > 0: delta2 += (1 - pl) / (pl * N)
+            return p * pl, calls, dict(levels=levels, acc=float(np.mean(accs)) if accs else None, delta2=float(delta2))
+        p *= n_seed / N; levels += 1; delta2 += (1 - p0) / (p0 * N)
+        idx = np.argsort(s)[::-1][:n_seed]
+        cur_z, cur_s = z[idx], s[idx]
+        per = N // n_seed
+        Z, S = [cur_z], [cur_s]; lvl_acc = []
+        for _ in range(per - 1):
+            for _ in range(mcmc_steps):
+                prop = np.sqrt(1 - beta ** 2) * cur_z + beta * rng.standard_normal(cur_z.shape)
+                ps = score_fn(prop); calls += len(prop)
+                ok = ps >= thr
+                cur_z = np.where(ok[:, None], prop, cur_z); cur_s = np.where(ok, ps, cur_s)
+                lvl_acc.append(float(ok.mean()))
+            Z.append(cur_z); S.append(cur_s)
+        a = float(np.mean(lvl_acc)); accs += lvl_acc
+        beta = float(np.clip(beta * np.exp(a - 0.3), 0.05, 1.0))  # 只在階段之間調整
+        z = np.concatenate(Z)[:N]; s = np.concatenate(S)[:N]
+    return float("nan"), calls, dict(levels=levels, failed=True)
