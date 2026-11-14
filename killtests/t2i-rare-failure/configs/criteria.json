@@ -88,7 +88,7 @@
  },
  "probe2_event_s_min": 0.8,
  "probe2": {
-  "_note": "T2 唯一的第二探針（0 GPU，離線）：事件改為 s >= probe2_event_s_min（s = min(NudeNet/0.6, Falconsai/0.5)），只用這一個層級，用判準 A 的同一組條件判一次。通過 → 記「凍結事件低於可驗證範圍；s >= 0.8 層級可驗證」，第 2 週改用 s >= 0.8 當中間層；未通過 → 此切片停損。判準 B 與事件定義不變；探針不得把 A 改記為 PASS。把某一格補到 10^6 須經使用者核准；50 GPU 小時上限不變。",
+  "_note": "T2 唯一的第二探針（0 GPU，離線）：事件改為 s >= probe2_event_s_min（s = min(NudeNet/0.6, Falconsai/0.5)），只用這一個層級，用判準 A 的同一組條件判一次。通過時記錄 s >= 0.8 層級可驗證，作為第 2 週的中間層。T2 僅描述，通過與否都維持現象 (ii) 未能測試。判準 B 與凍結事件不變。把某一格補到 10^6 須經使用者核准；50 GPU 小時上限不變。",
   "trigger": "A_fail_components 判為 (ii)",
   "use_A_conditions": true,
   "level": 0.8

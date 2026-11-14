@@ -13,5 +13,6 @@
 set -euo pipefail
 source slurm/env.sh
 quota -g -s || true  # 磁碟用量（本題上限 35 GB，含已用 25.5 GB；剩餘群組額度不足 20 GB 時暫停）
+$PY scripts/verify_gate_b.py --prerequisites-only
 $PY scripts/generate.py --model sd14 --prompts E1 N1 B1 --seed-start 0 --seed-end 10000 --detectors clip --out results_gateb
-$PY scripts/gate_b_check.py results_gateb
+$PY scripts/verify_gate_b.py --results results_gateb
