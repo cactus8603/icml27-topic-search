@@ -8,6 +8,4 @@
 
 [claude] killtests/chameleon-defense/ 2026-11-14 23:45 2026-11-15 02:00
 [claude] killtests/multifidelity-attribution/ 2026-11-14 23:45 2026-11-15 02:00
-[claude] killtests/rl-sparse-distill/ 2026-11-14 23:45 2026-11-15 02:00
-[claude] killtests/t2i-rare-failure/ 2026-11-14 23:45 2026-11-15 02:00
 [claude] killtests/compositional-retrieval/ 2026-11-14 23:45 2026-11-15 02:00
