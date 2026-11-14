@@ -11,7 +11,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import torch
 import torch.nn.functional as F
@@ -20,6 +20,7 @@ import yaml
 TOPIC = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOPIC))
 from phasea_v2.estimator import Coverage, VERSION, combine_fold_dots, coverage_record, file_hash, item_token_counts, prompt_fold_weights, validate_gate1_coverage
+from phasea_v2.inputs import OPTIONAL_MODELS, REQUIRED_MODEL, inputs_for_config, prepare, read_manifest, snapshot_evidence
 
 
 def load_script(source, name):
@@ -36,6 +37,26 @@ class TinyLM(torch.nn.Module):
 
     def forward(self, input_ids, attention_mask):
         return SimpleNamespace(logits=self.weight[input_ids])
+
+
+def fake_snapshot(root, model="synthetic"):
+    cache = root / ("models--" + model.replace("/", "--"))
+    snapshot = cache / "snapshots" / ("2" * 40)
+    snapshot.mkdir(parents=True)
+    (cache / "blobs").mkdir()
+    weight = cache / "blobs" / ("1" * 64)
+    weight.write_text("synthetic weights")
+    (snapshot / "model.safetensors").symlink_to(weight)
+    for name in ("config.json", "tokenizer.json", "tokenizer_config.json"):
+        (snapshot / name).write_text("{}")
+    return snapshot
+
+
+def manifest_for_config(root, config, model, snapshot):
+    manifest = root / "inputs_v2.json"
+    manifest.write_text(json.dumps({"version": 1, "models": {model: snapshot_evidence(snapshot)},
+                                   "configs": {config.name: {"config_sha256": file_hash(config), "model": model, "vectors": {}}}}))
+    return manifest
 
 
 class PhaseATests(unittest.TestCase):
@@ -149,17 +170,24 @@ class PhaseATests(unittest.TestCase):
             alt.update(ctx="alt", n_tau_tokens=6)
             config_dir = root / "configs"
             config_dir.mkdir()
-            (config_dir / "grant_synthetic_qwen7b.yaml").write_text(yaml.safe_dump(cfg))
+            config_path = config_dir / "grant_synthetic_qwen7b.yaml"
+            config_path.write_text(yaml.safe_dump(cfg))
+            manifest = manifest_for_config(root, config_path, cfg["model"], fake_snapshot(root))
+            _, _, evidence = inputs_for_config(read_manifest(manifest), manifest, config_path, cfg["model"])
             raw_dir = root / "grant_synthetic_qwen7b_fd"
             raw_dir.mkdir()
             raw = raw_dir / "lambda_raw.json"
             synthetic_gate = dict(fd_ctx="none", fd_dtype="float32", fd_n_lora_seeds=1)
             values = dict(config=cfg, model=cfg["model"], job_id="100", estimator=VERSION,
-                          coverage=receipt.to_dict(), rows=[row, alt])
+                          coverage=receipt.to_dict(), rows=[row, alt], inputs={**evidence, "manifest_sha256": file_hash(manifest)})
             validate_gate1_coverage(values["coverage"], cfg, values["rows"])
             with patch.multiple(self.aggregate, ROOT=str(root), FD_TRAITS=("synthetic",)):
                 raw.write_text(json.dumps(values))
                 self.assertEqual(len(self.aggregate.gate1_inputs(root, synthetic_gate, "100", v2=True)), 1)
+                raw.write_text(json.dumps({**values, "inputs": {**evidence, "manifest_sha256": "different"}}))
+                with self.assertRaisesRegex(ValueError, "different input manifest"):
+                    self.aggregate.gate1_inputs(root, synthetic_gate, "100", v2=True)
+                raw.write_text(json.dumps(values))
                 with self.assertRaises(ValueError):
                     self.aggregate.gate1_inputs(root, synthetic_gate, "101", v2=True)
                 raw.write_text(json.dumps({**values, "rows": [row]}))
@@ -180,6 +208,7 @@ class PhaseATests(unittest.TestCase):
             shutil.copytree(TOPIC / "configs", snapshot / "configs")
             (snapshot / "phasea_v2").mkdir()
             shutil.copy(TOPIC / "phasea_v2" / "estimator.py", snapshot / "phasea_v2" / "estimator.py")
+            shutil.copy(TOPIC / "phasea_v2" / "inputs.py", snapshot / "phasea_v2" / "inputs.py")
             output = root / "isolated-run"
             output.mkdir()
             (output / "run_v2.json").write_text(json.dumps({"gate_job": "123"}))
@@ -233,10 +262,15 @@ class PhaseATests(unittest.TestCase):
                 def forward(self, input_ids, attention_mask):
                     return SimpleNamespace(logits=self.model.layers[0](input_ids))
 
-            transformers = SimpleNamespace(AutoTokenizer=SimpleNamespace(from_pretrained=lambda *_: Tokenizer()),
-                                           AutoModelForCausalLM=SimpleNamespace(from_pretrained=lambda *_, **__: Model()))
+            snapshot = fake_snapshot(root)
+            manifest = manifest_for_config(root, config, cfg["model"], snapshot)
+            load_tokenizer = Mock(return_value=Tokenizer())
+            load_model = Mock(side_effect=lambda *_, **__: Model())
+            transformers = SimpleNamespace(AutoTokenizer=SimpleNamespace(from_pretrained=load_tokenizer),
+                                           AutoModelForCausalLM=SimpleNamespace(from_pretrained=load_model))
             output = root / "run"
-            argv = [self.compute.__file__, "--phase-a-v2", "--config", str(config), "--out", str(output), "--device", "cpu"]
+            argv = [self.compute.__file__, "--phase-a-v2", "--config", str(config), "--out", str(output), "--device", "cpu",
+                    "--input-manifest", str(manifest)]
             with patch.dict(sys.modules, {"transformers": transformers}), patch.object(sys, "argv", argv), \
                     patch.object(self.compute, "__file__", str(TOPIC / "scripts" / "compute_lambda.py")), \
                     patch.dict(os.environ, {"SLURM_JOB_ID": "synthetic"}):
@@ -247,6 +281,64 @@ class PhaseATests(unittest.TestCase):
             self.assertEqual(data["config"]["tau_sets"]["OOD_social"]["n"], 85)
             self.assertEqual(len(data["coverage"]["tau"]["OOD_social"]["contexts"]["plain"]), 85)
             self.assertEqual(data["estimator"], VERSION)
+            self.assertEqual(data["inputs"]["manifest_sha256"], file_hash(manifest))
+            load_tokenizer.assert_called_once_with(str(snapshot), local_files_only=True)
+            load_model.assert_called_once_with(str(snapshot), local_files_only=True, use_safetensors=True, torch_dtype=torch.float32)
+
+    def test_shared_inputs_pin_cache_paths_copy_unique_pps_and_reject_changes(self):
+        with tempfile.TemporaryDirectory(dir=TOPIC / "phasea_v2") as tmp:
+            root = Path(tmp)
+            config_dir = root / "configs"
+            config_dir.mkdir()
+            vector = root / "original.pt"
+            vector.write_bytes(b"frozen vector")
+            grant = config_dir / "grant_synthetic.yaml"
+            grant.write_text(yaml.safe_dump(dict(model=REQUIRED_MODEL, data_root=str(root), defenses=[
+                dict(name="pps1", kind="pps", vector=vector.name), dict(name="pps2", kind="pps", vector=vector.name)])))
+            snapshots = {model: fake_snapshot(root, model) for model in {REQUIRED_MODEL, *OPTIONAL_MODELS}}
+            for i, model in enumerate(sorted(OPTIONAL_MODELS)):
+                (config_dir / f"pg_synthetic_{i}.yaml").write_text(yaml.safe_dump(dict(model=model, defenses=[])))
+            absent, = [model for model in OPTIONAL_MODELS if model.startswith("allenai/")]
+
+            def resolve(model):
+                if model == absent:
+                    raise FileNotFoundError(model)
+                return snapshot_evidence(snapshots[model])
+
+            manifest = root / "inputs_v2.json"
+            with patch("phasea_v2.inputs.resolve_snapshot", side_effect=resolve) as resolve_call:
+                prepare(config_dir, manifest)
+                with self.assertRaises(FileExistsError):
+                    prepare(config_dir, manifest)
+                self.assertEqual(resolve_call.call_count, 3)
+            (root / "pps_v2").chmod(0o755)
+            document = read_manifest(manifest)
+            self.assertIn("unavailable", document["models"][absent])
+            vector.write_bytes(b"external source changed")
+            snapshot, vectors, evidence = inputs_for_config(document, manifest, grant, REQUIRED_MODEL, verify=True)
+            copied = vectors["pps1"]
+            self.assertEqual(copied, vectors["pps2"])
+            self.assertEqual(copied.read_bytes(), b"frozen vector")
+            self.assertEqual(evidence["tokenizer_snapshot"], str(snapshot))
+            weight = snapshot / "model.safetensors"
+            other = weight.resolve().with_name("f" * 64)
+            other.write_bytes(weight.read_bytes())
+            original = weight.readlink()
+            weight.unlink()
+            weight.symlink_to(other)
+            with self.assertRaisesRegex(ValueError, "model or tokenizer snapshot differs"):
+                inputs_for_config(document, manifest, grant, REQUIRED_MODEL, verify=True)
+            weight.unlink()
+            weight.symlink_to(original)
+            tokenizer = snapshot / "tokenizer.json"
+            tokenizer.write_text('{"changed": true}')
+            with self.assertRaisesRegex(ValueError, "model or tokenizer snapshot differs"):
+                inputs_for_config(document, manifest, grant, REQUIRED_MODEL, verify=True)
+            tokenizer.write_text("{}")
+            copied.chmod(0o644)
+            copied.write_bytes(b"copied vector changed")
+            with self.assertRaisesRegex(ValueError, "PPS vector differs"):
+                inputs_for_config(document, manifest, grant, REQUIRED_MODEL, verify=True)
 
 
 if __name__ == "__main__":

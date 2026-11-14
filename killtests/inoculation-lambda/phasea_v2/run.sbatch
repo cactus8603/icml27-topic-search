@@ -16,12 +16,13 @@ stage=$1
 run_id=$2
 commit=$3
 reason=$4
-source_root=${SLURM_SUBMIT_DIR:-$PWD}
+source_root=$(cd -- "${SLURM_SUBMIT_DIR:-$PWD}" && pwd -P)
 topic=killtests/inoculation-lambda
 work=/work/ChihChungHsu/cactus8603/icml
 export TMPDIR="$work/tmp" HF_HOME="$work/hf_home" HF_HUB_OFFLINE=1
 py="$work/envs/inoc/bin/python"
 results="$source_root/results/phasea_v2/$run_id"
+inputs="$results/inputs_v2.json"
 job=${SLURM_JOB_ID:?Run this launcher through Slurm}
 
 if [[ $stage == gate ]]; then
@@ -33,7 +34,8 @@ if [[ $stage == gate ]]; then
     mkdir -p "$(dirname "$results")"
     mkdir "$results"
     git -C "$repo" archive "$commit" "$topic/PREREG.md" "$topic/scripts" "$topic/configs" \
-        "$topic/phasea_v2/estimator.py" "$topic/phasea_v2/integration.patch" "$topic/phasea_v2/run.sbatch" | tar -xf - -C "$results"
+        "$topic/phasea_v2/estimator.py" "$topic/phasea_v2/inputs.py" "$topic/phasea_v2/integration.patch" \
+        "$topic/phasea_v2/run.sbatch" | tar -xf - -C "$results"
     snapshot="$results/$topic"
     "$py" -BI - "$results/run_v2.json" "$run_id" "$commit" "$job" "$reason" "$snapshot/phasea_v2/run.sbatch" <<'PY'
 import hashlib
@@ -50,6 +52,7 @@ else
     snapshot="$results/$topic"
     cd "$snapshot"
     "$py" -BI - "$results" "$commit" <<'PY'
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -57,8 +60,10 @@ from pathlib import Path
 root = Path(sys.argv[1])
 report = json.loads((root / "aggregate_phaseA_v2_gate.json").read_text())
 receipt = json.loads((root / "run_v2.json").read_text())
+manifest_sha256 = hashlib.sha256((root / "inputs_v2.json").read_bytes()).hexdigest()
 if (receipt["commit"] != sys.argv[2] or report.get("estimator") != "equal_prompt_token_fold_v2" or report.get("reference_group") != "gate"
-        or report["gate1"]["status"] != "PASS" or report.get("origin_gate_job") != receipt["gate_job"]):
+        or report["gate1"]["status"] != "PASS" or report.get("origin_gate_job") != receipt["gate_job"]
+        or report.get("input_manifest_sha256") != manifest_sha256):
     sys.exit("Reference execution requires this run's Phase A v2 Gate 1 PASS.")
 PY
     mkdir "$results/$stage"
@@ -82,13 +87,17 @@ if [[ $stage == gate ]]; then
         fi
     done
     chmod -R a-w "$snapshot"
+    if ! "$py" -B -m phasea_v2.inputs prepare configs "$inputs"; then
+        "$py" -BI scripts/aggregate.py --phase a --phase-a-v2 --results-dir "$results"
+        exit 1
+    fi
 fi
 
 compute() {
     local config=$1
     local output=$2
     shift 2
-    "$py" -B scripts/compute_lambda.py --phase-a-v2 --config "configs/$config.yaml" --out "$output" "$@"
+    "$py" -B scripts/compute_lambda.py --phase-a-v2 --config "configs/$config.yaml" --out "$output" --input-manifest "$inputs" "$@"
 }
 
 traits=(evil sycophantic hallucinating pirate spanish allcaps optimistic)
@@ -111,17 +120,13 @@ case "$stage" in
         for config in pg_qwen7b_idmedical pg_qwen7b_idsports; do
             compute "$config" "$results/pg/$config"
         done
-        if "$py" -BI scripts/check_cached_model.py Qwen/Qwen2.5-14B-Instruct; then
+        if "$py" -B -m phasea_v2.inputs available "$inputs" Qwen/Qwen2.5-14B-Instruct; then
             for config in pg_qwen14b_idmedical pg_qwen14b_idsports; do
                 compute "$config" "$results/pg/$config"
             done
-        else
-            printf 'SKIP 14B: incomplete offline snapshot\n'
         fi
-        if "$py" -BI scripts/check_cached_model.py allenai/Olmo-3-7B-Instruct; then
+        if "$py" -B -m phasea_v2.inputs available "$inputs" allenai/Olmo-3-7B-Instruct; then
             compute pg_olmo7b_idmedical "$results/pg/pg_olmo7b_idmedical"
-        else
-            printf 'SKIP OLMo: incomplete offline snapshot\n'
         fi
         ;;
 esac

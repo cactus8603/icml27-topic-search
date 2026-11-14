@@ -10,8 +10,8 @@
  import time
 @@ -49,16 +50,22 @@
      raise ValueError(f"unsupported record keys: {list(rec)}")
- 
- 
+
+
 -def select_records(spec, base_dir, exact=False):
 +def select_records(spec, base_dir, exact=False, coverage=None):
      """spec: {file, n, offset, shuffle_seed, transform}. 先（可選）以固定種子洗牌，再切 [offset, offset+n)。"""
@@ -37,8 +37,8 @@
      msgs = [to_messages(r) for r in recs]
 @@ -95,7 +102,7 @@
      return messages
- 
- 
+
+
 -def tokenize_items(tok, msgs_list, max_len, loss_mask):
 +def tokenize_items(tok, msgs_list, max_len, loss_mask, *, exact=False):
      """回傳 list[(ids, labels)]；loss_mask = all（全 token，兩篇論文預設）| response。"""
@@ -99,25 +99,29 @@
 +            del logits, nll
 +        tot += weight * (loss_total / n_tok)
 +    return acc, tot
- 
- 
+
+
  def token_count(items):
-@@ -279,14 +293,26 @@
+@@ -279,14 +293,30 @@
      ap.add_argument("--finite_diff", action="store_true",
                      help="閘門 1：實際做 1 步 SGD（B -= eta*gL），量 Δτ，與預測 eta*Λ 比；需 param_mode=lora_B，建議 dtype=float32")
      ap.add_argument("--fd_target", type=float, default=None, help="覆寫 criteria 的 fd_target_dtau")
 +    ap.add_argument("--phase-a-v2", action="store_true", help="等權 IP bank 與可追溯資料覆蓋；須明示新 --out")
++    ap.add_argument("--input-manifest", type=Path, help="Phase A v2 共用的離線模型與 PPS 憑證")
      args = ap.parse_args()
- 
+
      here = os.path.dirname(os.path.abspath(__file__))
      root = os.path.dirname(here)
 -    cfg = yaml.safe_load(open(args.config))
 +    v2 = args.phase_a_v2
 +    if v2:
-+        if not args.out or args.smoke or args.fd_target is not None or args.model is not None:
-+            ap.error("--phase-a-v2 requires a new --out and the frozen model, data and FD settings")
++        if not args.out or not args.input_manifest or args.smoke or args.fd_target is not None or args.model is not None:
++            ap.error("--phase-a-v2 requires a new --out, --input-manifest and the frozen model, data and FD settings")
 +        sys.path.insert(0, root)
 +        from phasea_v2.estimator import Coverage, file_hash, item_token_counts, prompt_fold_weights, VERSION
++        from phasea_v2.inputs import inputs_for_config, read_manifest
++    elif args.input_manifest:
++        ap.error("--input-manifest requires --phase-a-v2")
 +    with open(args.config, encoding="utf-8") as handle:
 +        cfg = yaml.safe_load(handle)
 +    if v2 and cfg["name"].startswith("pg_"):
@@ -129,9 +133,9 @@
      out_dir = args.out or os.path.join(root, "results", name)
 -    os.makedirs(out_dir, exist_ok=True)
      data_root = cfg.get("data_root", "")
- 
+
      device = args.device or ("cuda" if torch.cuda.is_available() and not args.smoke else "cpu")
-@@ -294,7 +320,8 @@
+@@ -294,7 +324,8 @@
      dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[cfg.get("dtype", "bfloat16")]
      if args.smoke:
          dtype = torch.float32
@@ -141,7 +145,7 @@
      if args.finite_diff:
          assert cfg["param_mode"] == "lora_B"
          cfg["dtype"] = crit["gate1"]["fd_dtype"]
-@@ -303,6 +330,9 @@
+@@ -303,6 +334,9 @@
          cfg["microbatch"] = min(cfg.get("microbatch", 4), 2)
          name = cfg["name"] + "_fd" + ("_smoke" if args.smoke else "")
          out_dir = args.out or os.path.join(root, "results", name)
@@ -151,7 +155,32 @@
          os.makedirs(out_dir, exist_ok=True)
      dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[cfg.get("dtype", "bfloat16")]
      if args.smoke:
-@@ -359,12 +389,17 @@
+@@ -321,8 +355,22 @@
+
+     from transformers import AutoModelForCausalLM, AutoTokenizer
+     print(f"[load] {model_id} device={device} dtype={dtype}", flush=True)
+-    tok = AutoTokenizer.from_pretrained(model_id)
+-    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype).to(device)
++    if v2:
++        manifest = args.input_manifest.resolve(strict=True)
++        manifest_bytes = manifest.read_bytes()
++        document = read_manifest(manifest, content=manifest_bytes)
++        snapshot, pps_paths, input_evidence = inputs_for_config(document, manifest, Path(args.config), model_id, verify=True)
++        expected_pps = {d["name"] for d in cfg["defenses"] if d["kind"] == "pps"}
++        if set(pps_paths) != expected_pps:
++            raise ValueError("PPS vector manifest does not cover the frozen defenses")
++        import hashlib
++
++        input_evidence["manifest_sha256"] = hashlib.sha256(manifest_bytes).hexdigest()
++        tok = AutoTokenizer.from_pretrained(str(snapshot), local_files_only=True)
++        model = AutoModelForCausalLM.from_pretrained(str(snapshot), local_files_only=True, use_safetensors=True, torch_dtype=dtype).to(device)
++    else:
++        tok = AutoTokenizer.from_pretrained(model_id)
++        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype).to(device)
+     model.eval()                       # 關閉 dropout，求確定性梯度
+     for p in model.parameters():
+         p.requires_grad_(False)
+@@ -359,12 +407,17 @@
      # --- 資料 ---
      max_len = cfg.get("max_len", 512)
      loss_mask = cfg.get("loss_mask", "all")
@@ -169,10 +198,17 @@
 +            if v2:
 +                coverage.context_prompt_hashes[c["name"]] = file_hash(Path(data_root) / c["prefix_file"])
      base_sys = cfg.get("baseline_system_prompt", None)
- 
+
      # --- 防禦：每個防禦 = 一組 (prefix 列表 | None) + 可選 PPS ---
-@@ -382,9 +417,11 @@
- 
+@@ -377,14 +430,17 @@
+         else:
+             e["prefixes"] = [None]
+         if e["kind"] == "pps":
+-            e["pps"] = (os.path.join(data_root, d["vector"]), d.get("layer", 20), d["eps"])
++            vector = pps_paths[d["name"]] if v2 else os.path.join(data_root, d["vector"])
++            e["pps"] = (vector, d.get("layer", 20), d["eps"])
+         defenses.append(e)
+
      def tau_items(tset, ctx):
          msgs = [apply_context(m, system=ctx.get("system", base_sys), prefix=ctx.get("prefix")) for m in tau_data[tset]]
 -        items = tokenize_items(tok, msgs, max_len, "response")
@@ -182,9 +218,9 @@
 +        if v2:
 +            coverage.tau[tset].setdefault("contexts", {})[ctx["name"]] = item_token_counts(items)
          return items
- 
+
      def def_items(d, sl):
-@@ -399,6 +436,22 @@
+@@ -399,6 +455,22 @@
      tau_cache = {"_ctxs": contexts}
      t0 = time.time()
      fold_slices = [slice(i * n_train // n_folds, (i + 1) * n_train // n_folds) for i in range(n_folds)]
@@ -207,7 +243,7 @@
      for seed in seeds:
          if mode == "lora_B":
              for _, lb in lora_mods:
-@@ -431,29 +484,44 @@
+@@ -431,29 +503,44 @@
          # 2) 防禦訓練梯度
          for d in defenses:
              for fi, sl in enumerate(fold_slices):
@@ -252,16 +288,16 @@
      raw_path = os.path.join(out_dir, "lambda_raw.json")
 +    receipt = dict(config=cfg, model=model_id, rows=rows, job_id=os.environ.get("SLURM_JOB_ID"))
 +    if v2:
-+        receipt.update(estimator=VERSION, coverage=coverage.to_dict())
++        receipt.update(estimator=VERSION, coverage=coverage.to_dict(), inputs=input_evidence)
      with open(raw_path + ".pending", "w") as stream:
 -        json.dump(dict(config=cfg, model=model_id, rows=rows, job_id=os.environ.get("SLURM_JOB_ID")), stream, indent=1)
 +        json.dump(receipt, stream, indent=1)
      os.replace(raw_path + ".pending", raw_path)
      write_summary(rows, os.path.join(out_dir, "lambda_summary.csv"))
      print(f"[done] {len(rows)} rows -> {out_dir}", flush=True)
-@@ -471,13 +539,15 @@
- 
- 
+@@ -471,13 +558,15 @@
+
+
  def fd_apply(rows, gl, gtau, tau_nll, tau_cache, model, params, micro, pad_id, device, tau_items, st, g1, fd_target,
 -             dname, seed, fold):
 +             dname, seed, fold, *, exact_origin=False):
@@ -276,7 +312,7 @@
          assert ref["dot"] > 0, "none 防禦的 Λ <= 0，無法校準 eta；請檢查資料／實作"
          st[("eta", seed)] = target / ref["dot"]
      eta = st[("eta", seed)]
-@@ -486,7 +556,10 @@
+@@ -486,7 +575,10 @@
      max_step = g1.get("fd_max_step")
      if max_step:
          gn = mine[0]["gL_norm"]
@@ -288,7 +324,7 @@
      for key in gtau:
          if key[1] != g1["fd_ctx"]:
              continue
-@@ -496,14 +569,27 @@
+@@ -496,14 +588,27 @@
              tau_cache[key] = tau_items(ts, ctx)
          items = tau_cache[key]
          nll0 = tau_nll[key]
@@ -324,7 +360,7 @@
          for r in mine:
              if (r["tau_set"], r["ctx"]) == key:
                  r["eta"] = eta
-@@ -532,9 +618,16 @@
+@@ -532,9 +637,16 @@
          by_seed = {}
          for row in rs:
              by_seed.setdefault(row["seed"], []).append(row)
@@ -346,16 +382,43 @@
                          lam_sd=st.pstdev([x["dot"] for x in rs]) if len(rs) > 1 else 0.0,
 --- a/killtests/inoculation-lambda/scripts/aggregate.py
 +++ b/killtests/inoculation-lambda/scripts/aggregate.py
-@@ -46,7 +46,7 @@
+@@ -15,9 +15,11 @@
+ import argparse
+ import csv
+ import glob
++import hashlib
+ import json
+ import math
+ import os
++from pathlib import Path
+ import sys
+
+ import numpy as np
+@@ -46,13 +48,21 @@
  FD_TRAITS = ("evil", "sycophantic", "hallucinating", "pirate", "spanish", "allcaps", "optimistic")
- 
- 
+
+
 -def gate1_inputs(rdir, config, origin_job=None):
 +def gate1_inputs(rdir, config, origin_job=None, *, v2=False):
      """Resolve and validate the seven complete, same-job FD inputs."""
      values = []
      jobs = set()
-@@ -61,6 +61,12 @@
++    if v2:
++        from phasea_v2.inputs import inputs_for_config, read_manifest
++
++        manifest_path = Path(rdir) / "inputs_v2.json"
++        manifest_bytes = manifest_path.read_bytes()
++        document = read_manifest(manifest_path, content=manifest_bytes)
++        manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
+     for trait in FD_TRAITS:
+         name = f"grant_{trait}_qwen7b"
+-        with open(os.path.join(ROOT, "configs", name + ".yaml")) as stream:
++        config_path = Path(ROOT) / "configs" / (name + ".yaml")
++        with config_path.open() as stream:
+             expected = yaml.safe_load(stream)
+         expected["dtype"] = config["fd_dtype"]
+         expected["n_folds"] = 1
+@@ -61,6 +71,15 @@
          folder = name + "_fd"
          with open(os.path.join(rdir, folder, "lambda_raw.json")) as stream:
              data = json.load(stream)
@@ -364,11 +427,14 @@
 +
 +            if data.get("estimator") != VERSION:
 +                raise ValueError(f"{folder} lacks the registered equal-prompt estimator receipt")
++            _, _, pinned_inputs = inputs_for_config(document, manifest_path, config_path, expected["model"])
++            if data["inputs"] != {**pinned_inputs, "manifest_sha256": manifest_sha256}:
++                raise ValueError(f"{folder} was generated with a different input manifest or snapshot")
 +            validate_gate1_coverage(data["coverage"], expected, data["rows"])
          job = data["job_id"]
          jobs.add(job)
          recorded = data["config"]
-@@ -89,6 +95,12 @@
+@@ -89,6 +108,12 @@
              actual.add(key)
          if actual != keys:
              raise ValueError(f"{folder} does not have the registered defense/seed/trait coverage")
@@ -381,7 +447,7 @@
          values.append((folder, data["rows"]))
      if len(jobs) != 1:
          raise ValueError("formal FD inputs combine more than one job")
-@@ -98,15 +110,16 @@
+@@ -98,15 +123,16 @@
  # ----------------------------------------------------------------------------
  # phase a
  # ----------------------------------------------------------------------------
@@ -401,7 +467,7 @@
          except (OSError, ValueError, KeyError, TypeError) as exc:
              return dict(status="UNTESTABLE", reason=str(exc), n=0)
      pred, true, tags = [], [], []
-@@ -228,8 +241,23 @@
+@@ -228,8 +254,23 @@
  def phase_a(args, crit):
      rdir = os.path.join(ROOT, args.results_dir)
      ref = json.load(open(os.path.join(ROOT, "configs", "reference.json")))
@@ -427,7 +493,7 @@
      cut = crit["reference"]
      def lab(r):
          if r is None or (isinstance(r, float) and math.isnan(r)):
-@@ -238,10 +266,19 @@
+@@ -238,10 +279,21 @@
      flat = []
      for k, v in refs["grant"].items():
          flat.append((f"grant/{k}", v.get("rho")))
@@ -438,18 +504,20 @@
      output_name = "aggregate_phaseA_smoke.json" if args.include_smoke else "aggregate_phaseA.json"
 -    json.dump(res, open(os.path.join(rdir, output_name), "w"), indent=1, default=str)
 +    if args.phase_a_v2:
-+        from phasea_v2.estimator import VERSION
++        from phasea_v2.estimator import VERSION, file_hash
 +
 +        res["estimator"] = VERSION
 +        res["reference_group"] = args.reference_group
 +        res["origin_gate_job"] = origin_job
++        input_manifest = Path(rdir) / "inputs_v2.json"
++        res["input_manifest_sha256"] = file_hash(input_manifest) if input_manifest.is_file() else None
 +        output_name = f"aggregate_phaseA_v2_{args.reference_group}.json"
 +    with open(os.path.join(rdir, output_name), "x" if args.phase_a_v2 else "w", encoding="utf-8") as report:
 +        json.dump(res, report, indent=1, default=str)
      print("=" * 70)
      print(f"[criteria {crit['version']}] 閘門 1（有限差分 Pearson ≥ {crit['gate1']['pearson_min']}）：{g1['status']}"
            + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if "pearson_pooled" in g1 else ""))
-@@ -256,7 +293,8 @@
+@@ -256,7 +308,8 @@
      print("參考（對照論文已報數字；不停損、不入判準）：")
      for k, r in flat:
          print(f"  {k:48s} Spearman = {('%.3f' % r) if r is not None and not math.isnan(r) else 'n/a':>7s}  [{lab(r)}]")
@@ -459,7 +527,7 @@
      print("=" * 70)
      print(f"RESULT_GATE1={g1['status']}")
      sys.exit(0 if g1["status"] == "PASS" or (args.include_smoke and g1["status"] == "NOT_RUN") else 1)
-@@ -343,15 +381,14 @@
+@@ -343,15 +396,14 @@
          base = dict(delta_ci=(lo, hi), beats_baseline=bool(lo > 0), n_boot=len(d), baseline=c["baseline"])
      flagged = sorted((t, k) for t, arms in tasks.items() for k, a in arms.items() if not a["id_ok"])
      rho_no_flag, _ = pooled_rho({t: {k: a for k, a in arms.items() if a["id_ok"]} for t, arms in tasks.items()})
@@ -476,10 +544,10 @@
 -        print("灰區：僅准一次事先定好的加碼 = 加 1 個 seed 與 6 個 arm（見 PREREG.md），之後以同一腳本重判，不得再加碼。")
 +    print(f"HISTORICAL_DESCRIPTIVE_PHASEB={status}")
 +    print("現行 Phase B 請使用 scripts/phaseb_extras.py。")
- 
- 
+
+
  def main():
-@@ -360,7 +397,17 @@
+@@ -360,7 +412,17 @@
      ap.add_argument("--results-dir", default="results")
      ap.add_argument("--include-smoke", action="store_true")
      ap.add_argument("--table", default=None)
@@ -496,4 +564,4 @@
 +        ap.error("--reference-group requires --phase-a-v2")
      crit = load_criteria()
      (phase_a if args.phase == "a" else phase_b)(args, crit)
- 
+
