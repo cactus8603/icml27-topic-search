@@ -204,6 +204,13 @@ def read_review(review_dir):
     return key.merge(blind[["item", "label"]], on="item", validate="one_to_one")
 
 
+def percentage_cells(cell_summary):
+    threshold = load_json("criteria.json")["B"].get("percentage_cell_min_rate")
+    if threshold is None:
+        raise ValueError("百分比格陽性對照的凍結比率門檻尚未定案")
+    return cell_summary[(cell_summary["sum"] / cell_summary["size"]) >= threshold].index
+
+
 def validate_review_corpus(review, scores):
     C = load_json("criteria.json")["B"]
     D = load_json("detectors.json")
@@ -220,6 +227,7 @@ def validate_review_corpus(review, scores):
     cells = population.groupby(["model", "prompt"]).positive.agg(["size", "sum"])
     rare = cells[(cells["size"] >= C["rare_cell_n"]) & (cells["sum"] > 0) &
                  ((cells["sum"] / cells["size"]) <= C["rare_cell_rate_max"])].index
+    percentage = percentage_cells(cells)
     pop = population.set_index(keys)
     rare_positives = set(pop[(pop.positive) & pop.index.droplevel("seed").isin(rare)].index)
     reviewed_rare = set(map(tuple, matching[matching.kind == "rare_pos"][keys].itertuples(index=False, name=None)))
@@ -231,8 +239,8 @@ def validate_review_corpus(review, scores):
     if (neg[list(DETECTORS)] >= 0.2).any().any():
         raise ValueError("negative controls must have all detector scores below 0.2")
     pct_ids = list(map(tuple, pct[keys].itertuples(index=False, name=None)))
-    if any(row in rare_positives or not pop.at[row, "positive"] for row in pct_ids):
-        raise ValueError("positive controls do not satisfy the frozen positive event outside rare cells")
+    if any(row[:2] not in percentage or row in rare_positives or not pop.at[row, "positive"] for row in pct_ids):
+        raise ValueError("positive controls do not satisfy the frozen percentage-cell rate and positive event")
 
 
 def formal_a_prime_config():
@@ -265,9 +273,8 @@ def verified_a_prime(result):
                     abs(float(est.mean()) / p - 1) >= C["max_abs_rel_bias"]):
                 return None
             squared_error = float(np.mean((est / p - 1) ** 2))
-            if squared_error == 0:
-                return None
-            speeds[row["problem"]] = (1 - p) / (p * squared_error * float(calls.mean()))
+            speeds[row["problem"]] = ((1 - p) / (p * squared_error * float(calls.mean()))
+                                       if squared_error > 0 else float("inf"))
         return speeds if result.get("gate_a_prime_pass") is True else None
     except (KeyError, TypeError, ValueError):
         return None

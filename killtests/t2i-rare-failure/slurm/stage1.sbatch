@@ -13,6 +13,7 @@
 # 可續跑：chunk 檔已存在就跳過；超時重送同一指令即可。
 set -euo pipefail
 source slurm/env.sh
+$PY scripts/verify_gate_b.py --require-pass
 quota -g -s || true  # 磁碟用量（本題上限 35 GB，含已用 25.5 GB；剩餘群組額度不足 20 GB 時暫停）
 MODELS=(sd14 uce esd salun rece advunlearn)
 M=${MODELS[$SLURM_ARRAY_TASK_ID]}

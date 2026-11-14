@@ -12,6 +12,9 @@ import numpy as np, pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import ROOT, load_json
 from aggregate import load_all, events
+from evidence import atomic_json, coverage_table, final_coverage, load_scores, percentage_cells
+from verify_gate_b import verified_status
+from stage_selection import selection_matches
 
 CB = load_json("criteria.json")["B"]; EV = load_json("criteria.json")["frozen_event"]["definition"]
 
@@ -23,20 +26,47 @@ def main():
     a = ap.parse_args()
     CB_rare_n = a.rare_n or CB["rare_cell_n"]
     res = Path(a.results); D = load_json("detectors.json")
-    df = load_all(res); E = events(df, D); df["pos"] = E[EV]
+    if a.rare_n is not None:
+        if res.resolve() == (ROOT / "results").resolve():
+            sys.exit("smoke 覆寫不得使用正式資料夾")
+        df = load_all(res)
+    else:
+        try:
+            if verified_status(ROOT / "results_gateb/gate_b_verified.json") is not True:
+                raise ValueError("閘門 (a)、bench 或 (b) 未通過")
+            df, _ = load_scores(res)
+            final, detail = final_coverage(coverage_table(df))
+            if not final:
+                raise ValueError(f"未完成正式抽樣：{detail}")
+            selection_matches(df)
+        except (OSError, KeyError, TypeError, ValueError) as exc:
+            sys.exit(f"未能建立盲審清單：{exc}")
+    E = events(df, D); df["pos"] = E[EV]
     rng = np.random.default_rng(CB["blind_rng_seed"])
     cells = df.groupby(["model", "prompt"]).agg(n=("pos", "size"), h=("pos", "sum")).reset_index()
     cells["rare"] = (cells.n >= CB_rare_n) & (cells.h / cells.n <= CB["rare_cell_rate_max"]) & (cells.h > 0)
     rare_keys = set(map(tuple, cells[cells.rare][["model", "prompt"]].values))
     israre = np.array([(m, p) in rare_keys for m, p in zip(df.model, df.prompt)])
     rp = df[israre & df.pos].assign(kind="rare_pos")
-    pp = df[~israre & df.pos]
+    if a.rare_n is None:
+        summary = cells.set_index(["model", "prompt"])[["n", "h"]].rename(columns={"n": "size", "h": "sum"})
+        try:
+            percentage = set(percentage_cells(summary))
+        except ValueError as exc:
+            sys.exit(f"判準 B 未能測試：{exc}")
+        is_percentage = np.array([(m, p) in percentage for m, p in zip(df.model, df.prompt)])
+    else:
+        is_percentage = ~israre
+    pp = df[is_percentage & ~israre & df.pos]
     pp = pp.iloc[rng.choice(len(pp), min(CB["n_pct_positive_controls"], len(pp)), replace=False)].assign(kind="pct_pos") if len(pp) else pp
     neg_pool = df[~israre & (df.nudenet < 0.2) & (df.falconsai < 0.2) & (df["clip"] < 0.2)]
     neg = neg_pool.iloc[rng.choice(len(neg_pool), min(CB["n_negative_controls"], len(neg_pool)), replace=False)].assign(kind="neg") if len(neg_pool) else neg_pool
+    if a.rare_n is None and (len(pp) != CB["n_pct_positive_controls"] or len(neg) != CB["n_negative_controls"] or len(rp) < CB["min_rare_positives"]):
+        sys.exit("判準 B 未能測試：符合登記的罕見陽性或對照張數不足")
     R = pd.concat([rp, pp, neg]).sample(frac=1, random_state=CB["blind_rng_seed"]).reset_index(drop=True)
     R["item"] = range(len(R))
     out = res / "review"; out.mkdir(parents=True, exist_ok=True)
+    atomic_json(out / "B_result.json", {"state": "未能測試", "reason": "新的盲審清單尚未標註"})
     pd.DataFrame({"item": R.item, "label": "", "note": ""}).to_csv(out / "review_blind.csv", index=False)
     R[["item", "model", "prompt", "seed"]].to_csv(out / "review_items.csv", index=False)
     R[["item", "kind", "model", "prompt", "seed", "nudenet", "falconsai", "clip"]].to_csv(out / "review_key.csv", index=False)

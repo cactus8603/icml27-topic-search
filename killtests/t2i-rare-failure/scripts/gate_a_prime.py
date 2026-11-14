@@ -17,6 +17,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import ROOT, load_json
+from evidence import atomic_json, atomic_text, formal_a_prime_config
 from estimators import subset_simulation_v2
 from e_metric import rrmse, coverage, brute_equiv
 
@@ -44,11 +45,20 @@ def main():
     ap.add_argument("--reps", type=int, default=G["reps"]); ap.add_argument("--N", type=int, default=G["N_per_level"])
     ap.add_argument("--d", type=int, default=G["d"]); ap.add_argument("--seed", type=int, default=G["rng_seed"])
     ap.add_argument("--mcmc-steps", type=int, default=G["mcmc_steps"]); ap.add_argument("--procs", type=int, default=1)
-    ap.add_argument("--out", default=str(ROOT / "results" / "gate_a_prime"))
+    ap.add_argument("--out")
     ap.add_argument("--smoke", action="store_true", help="僅供程式測試；結果不得當閘門 (a') 結果")
     a = ap.parse_args()
+    formal_out = (ROOT / "results/gate_a_prime").resolve()
+    a.out = str(Path(a.out).resolve() if a.out else (
+        ROOT / "results_smoke/gate_a_prime" if a.smoke else formal_out))
+    if a.smoke and Path(a.out) == formal_out:
+        sys.exit("smoke 不得覆寫正式 (a') 閘門")
+    if not a.smoke and any(getattr(a, key) != val for key, val in formal_a_prime_config().items()):
+        sys.exit("正式 (a') 閘門必須使用預先登記的參數")
     if not (G["mcmc_steps_allowed_range"][0] <= a.mcmc_steps <= G["mcmc_steps_allowed_range"][1]):
         sys.exit("mcmc_steps 必須在登記範圍內")
+    d_out = Path(a.out)
+    atomic_json(d_out / "gate_a_prime.json", {"status": "UNTESTABLE", "smoke": a.smoke, "reason": "validation started"})
     probs = []
     for ep in G["gaussian_log10_p"]:
         p = 10.0 ** ep; probs.append((f"gauss_1e{ep}", p, float(stats.norm.isf(p)), "gauss", 1))
@@ -72,18 +82,30 @@ def main():
         e = np.array([r[2] for r in rr]); c = np.array([r[3] for r in rr]); d2 = np.array([r[4] for r in rr])
         m = float(np.mean(e)); bias = m / p - 1; se = float(np.std(e, ddof=1) / np.sqrt(len(e)) / p)
         cv = float(np.std(e, ddof=1) / m) if m > 0 else float("inf")
-        ok = bool(abs(bias) < G["max_abs_rel_bias"]) and not np.isnan(e).any(); ok_all &= ok
+        valid = np.isfinite(e).all() and ((0 <= e) & (e <= 1)).all() and np.isfinite(c).all() and (c > 0).all()
+        ok = bool(valid and abs(bias) < G["max_abs_rel_bias"]); ok_all &= ok
         cov = coverage(e, p, d2)
         n_eq = brute_equiv(e, p); speed = n_eq / float(c.mean()) if np.isfinite(n_eq) else float("nan")   # 加速(p) = n_eq / 呼叫數
-        out["rows"].append(dict(problem=n, p=p, t=t, mean_ratio=m / p, bias=bias, se=se, z=bias / se if se > 0 else float("nan"),
-                                rrmse=rrmse(e, p), cv=cv, coverage=cov, calls_mean=float(c.mean()), n_eq=n_eq, speedup=speed, ok=ok, ests=e.tolist()))
-        lines.append(f"| {n} | {p:.0e} | {m/p:.3f} | {bias:+.1%} | {se:.1%} | {bias/se:+.1f} | {rrmse(e,p):.2f} | {cv:.2f} | "
+        z = bias / se if se > 0 else float("nan")
+        out["rows"].append(dict(problem=n, p=p, t=t, mean_ratio=m / p, bias=bias, se=se, z=z,
+                                rrmse=rrmse(e, p), cv=cv, coverage=cov, calls_mean=float(c.mean()), n_eq=n_eq, speedup=speed, ok=ok, ests=e.tolist(), calls=c.tolist()))
+        lines.append(f"| {n} | {p:.0e} | {m/p:.3f} | {bias:+.1%} | {se:.1%} | {z:+.1f} | {rrmse(e,p):.2f} | {cv:.2f} | "
                      f"{cov.get('replicate', float('nan')):.2f} | {cov.get('own_variance', float('nan')):.2f} | {c.mean():.0f} | {n_eq:.3g} | {speed:.3g} | {'通過' if ok else '失敗'} |")
         print(lines[-1], flush=True)
+    out["status"] = "COMPLETE"
     out["gate_a_prime_pass"] = bool(ok_all); out["seconds"] = round(time.time() - t0, 1)
     lines.append(f"\n**閘門 (a')：{'通過' if ok_all else '未通過'}**。不得以此處偏差係數校正 SD 估計值。")
-    d_out = Path(a.out); d_out.mkdir(parents=True, exist_ok=True)
-    (d_out / "gate_a_prime.json").write_text(json.dumps(out, indent=1)); (d_out / "gate_a_prime.md").write_text("\n".join(lines) + "\n")
+    def nullable(value):
+        if isinstance(value, dict):
+            return {key: nullable(val) for key, val in value.items()}
+        if isinstance(value, list):
+            return [nullable(item) for item in value]
+        if isinstance(value, np.generic):
+            value = value.item()
+        return None if isinstance(value, float) and not np.isfinite(value) else value
+
+    atomic_text(d_out / "gate_a_prime.md", "\n".join(lines) + "\n")
+    atomic_json(d_out / "gate_a_prime.json", nullable(out))
     sys.exit(0 if ok_all else 1)
 
 
