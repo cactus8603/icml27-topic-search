@@ -9,8 +9,8 @@
 | Half-Truths（1437 列，含影像） | HF `kbora/Half-Truths` | CC-BY-4.0（來源影像保留原權利） | 已下載（約 200 MB） |
 | CS-CLIP B/32 權重 | HF `kbora/CS-CLIP` | MIT | 已下載（約 605 MB） |
 | CS-CLIP 程式 | GitHub `kargibora/CS-CLIP`，clone 於 `/work/ChihChungHsu/cactus8603/icml/ext/CS-CLIP`（預設分支 main-final，commit dcf79b9）| MIT | 已 clone；資料卡指向的 `release/paper-reproduction` 分支未使用，改以本實驗自寫評分並與官方腳本逐列交叉核對 |
-| OpenAI CLIP ViT-B/32 | open_clip `pretrained=openai`（HF `timm/vit_base_patch32_clip_224.openai`） | MIT | **尚未下載（約 600 MB）** |
-| COCO val2017 影像與 instances 標註 | images.cocodataset.org | 標註 CC-BY 4.0；影像 Flickr 條款 | zip 已下載（約 1.07 GB），**尚未解壓** |
+| OpenAI CLIP ViT-B/32 | open_clip `pretrained=openai`（HF `timm/vit_base_patch32_clip_224.openai`） | MIT | 已快取：官方 clip 套件用的 `ViT-B-32.pt`（354 MB）在 `icml/tmp/crosscheck/home/.cache/clip/`；timm 版在 HF 快取 |
+| COCO val2017 影像與 instances 標註 | images.cocodataset.org | 標註 CC-BY 4.0；影像 Flickr 條款 | zip 已下載（約 1.07 GB），已解壓（5000 張） |
 | CORE reranker | HF `Alibaba-NLP/core-reranker-2b`（CC-BY-4.0，4.3 GB） | CC-BY-4.0 | **不取得**：模型卡的 GitHub 連結為空、wrapper 類別不公開、需 transformers>=4.57；列為未評估 |
 
 ## 環境

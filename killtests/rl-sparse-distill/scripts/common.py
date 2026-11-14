@@ -22,9 +22,13 @@ def load_data(split=None, path=None):
     return [r for r in rows if split in (None, "all", r["split"])]
 
 
-def build_prompt(question, pc=None):
+def build_prompt(question, pc=None, pair=None):
+    """模板：pairs.json 的 pairs.<P>.template（若有）優先，否則全域 template。
+    pair 未給時讀環境變數 PAIR（sbatch 皆已 export PAIR；單元測試無 PAIR 則用全域模板）。"""
     pc = pc or pairs_cfg()
-    return pc["templates"][pc["template"]].replace("{question}", question)
+    pair = pair or os.environ.get("PAIR")
+    name = (pc["pairs"].get(pair, {}) if pair else {}).get("template") or pc["template"]
+    return pc["templates"][name].replace("{question}", question)
 
 
 def shard(rows, i, n):

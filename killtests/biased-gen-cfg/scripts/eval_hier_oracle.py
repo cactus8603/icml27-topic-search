@@ -76,6 +76,7 @@ for s in range(S):
 
 ck_sets = [set(int(os.path.basename(f)[2:-3]) for f in glob.glob(os.path.join(r, "ep*.pt"))) for r in args.runs]
 epochs = sorted(set.intersection(*ck_sets)) if args.epochs is None else [int(x) for x in args.epochs.split(",")]
+assert epochs, "找不到所有 run 共有的 checkpoint"
 print("epochs", epochs, flush=True)
 R = len(args.runs)
 shape_m = (R, len(epochs), len(T), S, len(branches))

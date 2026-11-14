@@ -55,14 +55,24 @@ def boot_idx(Q, B, seed):
 
 
 def gate1(pq, ccfg, ecfg):
+    # (i) 比較對象：rl_hf（與 rl_replace 同為 HF 引擎）；(ii) 前緣端點 λ=1 用 vLLM 的 rl，rl_hf 作敏感度
     rr, rl, base = pq["rl_replace"], pq["rl"], pq["base"]
+    rlh = pq[ccfg.get("rl_compare_cond", "rl_hf")]
     Q = len(rr["pk"])
     idx = boot_idx(Q, ecfg["bootstrap_B"], ecfg["bootstrap_seed"])
     alpha = ccfg["ci_one_sided_alpha"]
-    d = rr["pk"] - rl["pk"]
+    d = rr["pk"] - rlh["pk"]
     bd = d[idx].mean(1)
     res = {"rr_minus_rl_pp": 100 * d.mean(), "rr_minus_rl_lo_pp": 100 * np.quantile(bd, alpha),
-           "rr_minus_rl_ci95_pp": [100 * np.quantile(bd, 0.025), 100 * np.quantile(bd, 0.975)]}
+           "rr_minus_rl_ci95_pp": [100 * np.quantile(bd, 0.025), 100 * np.quantile(bd, 0.975)],
+           "alpha_one_sided": alpha, "rl_compare_cond": ccfg.get("rl_compare_cond", "rl_hf")}
+    # 診斷：引擎差（HF − vLLM 的 RL）
+    dv = rlh["pk"] - rl["pk"]; bv = dv[idx].mean(1)
+    res["diag_rlhf_minus_rlvllm_pk_pp"] = 100 * dv.mean()
+    res["diag_rlhf_minus_rlvllm_pk_ci95_pp"] = [100 * np.quantile(bv, 0.025), 100 * np.quantile(bv, 0.975)]
+    res["diag_rlhf_minus_rlvllm_p1_pp"] = 100 * (rlh["p1"].mean() - rl["p1"].mean())
+    res["diag_trunc_pct"] = {"base": 100 * base["trunc"].mean(), "rl_vllm": 100 * rl["trunc"].mean(),
+                             "rl_hf": 100 * rlh["trunc"].mean(), "rl_replace": 100 * rr["trunc"].mean()}
     # WiSE-FT 前緣：λ=0(base)、各 λ、λ=1(rl)
     lams = ccfg["wise_lambdas"]
     pts = [("0", base)] + [(str(l), pq.get("wise_%s" % l)) for l in lams] + [("1", rl)]
@@ -83,8 +93,13 @@ def gate1(pq, ccfg, ecfg):
         res["wise_margin_pp"] = 100 * margin
         res["wise_margin_lo_pp"] = 100 * np.quantile(bm, alpha)
         res["wise_margin_ci95_pp"] = [100 * np.quantile(bm, 0.025), 100 * np.quantile(bm, 0.975)]
+        # 敏感度（不參與判定）：λ=1 端點換成 rl_hf
+        P1s, PKs = P1.copy(), PK.copy()
+        P1s[:, -1], PKs[:, -1] = rlh["p1"], rlh["pk"]
+        res["wise_margin_sens_rlhf_endpoint_pp"] = 100 * (y_rr - interp_frontier(P1s.mean(0), PKs.mean(0), x_rr))
     res["rr_p1"], res["rr_pk"] = 100 * rr["p1"].mean(), 100 * rr["pk"].mean()
     res["rl_p1"], res["rl_pk"] = 100 * rl["p1"].mean(), 100 * rl["pk"].mean()
+    res["rlhf_p1"], res["rlhf_pk"] = 100 * rlh["p1"].mean(), 100 * rlh["pk"].mean()
     res["base_p1"], res["base_pk"] = 100 * base["p1"].mean(), 100 * base["pk"].mean()
     res["recovery_p1"] = (res["rr_p1"] - res["base_p1"]) / (res["rl_p1"] - res["base_p1"]) if res["rl_p1"] != res["base_p1"] else float("nan")
     res["replace_rate_token_weighted"] = float(rr["repl"].sum() / rr["ntok"].sum())
@@ -119,6 +134,7 @@ def gate0(pq, greedy_graded, pair, crit, ecfg, data):
     ref = pair["reported_rl_greedy"]
     diffs = {s: rep[s] - ref[s] for s in g0["reproduce_sources"] if s in rep and s in ref}
     out["reproduce_diffs_pp"] = diffs
+    out["reproduce_record_only_diffs_pp"] = {s_: rep[s_] - ref[s_] for s_ in g0.get("reproduce_record_only_sources", []) if s_ in rep and s_ in ref}
     out["reproduce_ok"] = (len(diffs) == len(g0["reproduce_sources"])) and all(abs(v) <= g0["reproduce_tol_pp"] for v in diffs.values())
     # (b) 截斷率
     tb, tr = 100 * pq["base"]["trunc"].mean(), 100 * pq["rl"]["trunc"].mean()
@@ -161,7 +177,7 @@ def main():
     for p in a.pairs:
         d = os.path.join(a.results, p)
         pq, greedy = {}, {}
-        conds = ["base", "rl", "rl_replace"] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
+        conds = ["base", "rl", "rl_replace", "rl_hf"] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
         for c in conds:
             f = os.path.join(d, c, "graded.json")
             if os.path.exists(f):
@@ -182,10 +198,10 @@ def main():
             s["gate0"] = gate0(pq, greedy, pc["pairs"][p], crit, ecfg, data)
         else:
             s["gate0"] = {"verdict": "未能測試（缺 base 或 rl 取樣結果）"}
-        if a.gate in ("1", "all") and all(c in pq for c in ("base", "rl", "rl_replace")):
+        if a.gate in ("1", "all") and all(c in pq for c in ("base", "rl", "rl_replace", crit["gate1"].get("rl_compare_cond", "rl_hf"))):
             s["gate1"] = gate1(pq, crit["gate1"], ecfg)
         else:
-            s["gate1"] = {"verdict": "未執行（缺 rl_replace 或 base/rl）"}
+            s["gate1"] = {"verdict": "未執行（缺 rl_replace、rl_hf 或 base/rl）"}
         summary[p] = s
     # 整體：至少一個「配對合格」且判準 1 PASS 才 PASS；有灰區無 PASS → 灰區；合格配對全 FAIL → FAIL；無合格配對 → 未能測試
     qual = [p for p, s in summary.items() if s["gate0"].get("verdict") == "配對合格"]
@@ -224,10 +240,15 @@ def selftest():
         c = rng.binomial(n, s)
         return {"p1": c / n, "pk": pass_at_k_vec(c, n, 64), "trunc": np.zeros(Q), "ntok": np.full(Q, 1000), "repl": np.full(Q, 40)}
     crit = cfg("criteria.json")
-    pq = {"base": mk(0.0), "rl": mk(0.0), "rl_replace": mk(0.0)}
+    pq = {"base": mk(0.0), "rl": mk(0.0), "rl_replace": mk(0.0), "rl_hf": mk(0.0)}
     for i, l in enumerate(crit["gate1"]["wise_lambdas"]):
         pq["wise_%s" % l] = mk(0.0)
     r = gate1(pq, crit["gate1"], crit["eval"]); print("null scenario verdict:", r["verdict"], round(r["rr_minus_rl_pp"], 2)); assert r["verdict"] == "FAIL"
+    assert crit["gate1"]["ci_one_sided_alpha"] == 0.0125 and crit["gate0"]["reproduce_sources"] == ["math500", "minerva"]
+    # rr 明顯高於 rl_hf：應 PASS 的路徑（rl_hf 仍 = rl 水準）
+    pq2 = dict(pq); pq2["rl_replace"] = mk(0.08)
+    r2 = gate1(pq2, crit["gate1"], crit["eval"]); print("positive scenario:", r2["verdict"], round(r2["rr_minus_rl_pp"], 2), r2["rl_compare_cond"])
+    assert r2["rr_minus_rl_pp"] > 2 and "diag_rlhf_minus_rlvllm_pk_pp" in r2
     print("selftest OK")
 
 

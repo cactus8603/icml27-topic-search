@@ -1,0 +1,9 @@
+job=26265 node=hgx-cn01 date=2026-11-14T20:16:34+08:00
+git_head=df7cdb280888512e9006f61f642ad5caf479603c  git_dirty=1
+repo_CS-CLIP=dcf79b9a82591b90a57c066634ec20038f864d9a
+GPU 0: NVIDIA H200 (UUID: GPU-3a94272a-0676-37fc-2f5e-8ccd31296fc1)
+numpy==1.26.4
+pandas==3.0.6
+pillow==13.0.0
+torch==2.5.1
+transformers==4.46.3

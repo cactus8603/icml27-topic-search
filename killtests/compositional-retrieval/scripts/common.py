@@ -155,28 +155,56 @@ def pmi(img_emb, txt_emb, pool_emb, tau):
     return s - logmeanexp(pool_s, axis=1)
 
 
-def bootstrap_ci(flags, n_boot, seed, alpha_two_sided=0.05):
-    """對 0/1 旗標做列層級 bootstrap。回傳 dict(point, lo, hi, se, lo_1s, hi_1s)。
-    lo/hi 為雙尾 (1-alpha) 百分位區間；lo_1s/hi_1s 為單尾（同 alpha/2 的位置，即 alpha/2 單尾顯著水準）。"""
+def _one_sided(means, alpha_one_sided):
+    """單尾 alpha：回傳 (下界, 上界) = (alpha, 1-alpha) 百分位。None -> 沿用 2.5/97.5。"""
+    a = 0.025 if alpha_one_sided is None else alpha_one_sided
+    lo, hi = np.percentile(means, [100 * a, 100 * (1 - a)])
+    return float(lo), float(hi)
+
+
+def bootstrap_ci(flags, n_boot, seed, alpha_two_sided=0.05, alpha_one_sided=None, groups=None):
+    """對 0/1 旗標做 bootstrap。groups=None 時為列層級；給 groups（每列所屬影像等的群組標籤）時為群集 bootstrap
+    （以群組為單位重抽，群組內的列一併帶入；統計量為被抽中列的平均）。
+    回傳 dict(point, lo, hi, se, lo_1s, hi_1s)。lo/hi 為雙尾 (1-alpha_two_sided) 百分位區間（預設 2.5/97.5，G3 半寬用）；
+    lo_1s/hi_1s 為單尾 alpha_one_sided 的 (alpha, 1-alpha) 百分位（判準用；P1 為 0.0125 即 1.25/98.75）。"""
     f = np.asarray(flags, dtype=float)
-    n = len(f)
-    rng = np.random.default_rng(seed)
-    idx = rng.integers(0, n, size=(n_boot, n))
-    means = f[idx].mean(axis=1) * 100
+    means = _boot_means(f, n_boot, seed, groups) * 100
     lo, hi = np.percentile(means, [100 * alpha_two_sided / 2, 100 * (1 - alpha_two_sided / 2)])
-    return {"n": int(n), "point": float(f.mean() * 100), "lo": float(lo), "hi": float(hi),
-            "se": float(means.std(ddof=1)), "lo_1s": float(lo), "hi_1s": float(hi)}
+    lo1, hi1 = _one_sided(means, alpha_one_sided)
+    return {"n": int(len(f)), "point": float(f.mean() * 100), "lo": float(lo), "hi": float(hi),
+            "se": float(means.std(ddof=1)), "lo_1s": lo1, "hi_1s": hi1}
 
 
-def paired_bootstrap_diff(flags_a, flags_b, n_boot, seed, alpha_two_sided=0.05):
+def paired_bootstrap_diff(flags_a, flags_b, n_boot, seed, alpha_two_sided=0.05, alpha_one_sided=None, groups=None):
     a, b = np.asarray(flags_a, float), np.asarray(flags_b, float)
     d = a - b
-    n = len(d)
-    rng = np.random.default_rng(seed)
-    idx = rng.integers(0, n, size=(n_boot, n))
-    means = d[idx].mean(axis=1) * 100
+    means = _boot_means(d, n_boot, seed, groups) * 100
     lo, hi = np.percentile(means, [100 * alpha_two_sided / 2, 100 * (1 - alpha_two_sided / 2)])
-    return {"n": int(n), "point": float(d.mean() * 100), "lo": float(lo), "hi": float(hi)}
+    lo1, hi1 = _one_sided(means, alpha_one_sided)
+    return {"n": int(len(d)), "point": float(d.mean() * 100), "lo": float(lo), "hi": float(hi), "lo_1s": lo1, "hi_1s": hi1}
+
+
+def _group_index(groups):
+    """groups -> (唯一群組數 G, 每群組的列索引 list)。"""
+    g = np.asarray(groups)
+    uniq, inv = np.unique(g, return_inverse=True)
+    order = np.argsort(inv, kind="stable")
+    bounds = np.r_[0, np.cumsum(np.bincount(inv, minlength=len(uniq)))]
+    return len(uniq), [order[bounds[i]:bounds[i + 1]] for i in range(len(uniq))]
+
+
+def _boot_means(f, n_boot, seed, groups=None):
+    """回傳 n_boot 個 bootstrap 平均（0–1 尺度）。群集：以群組為單位有放回重抽 G 個群組，
+    平均 = Σ群組內 f 之和 / Σ群組大小（等價於把被抽中的列全部合併取平均）。"""
+    rng = np.random.default_rng(seed)
+    if groups is None:
+        idx = rng.integers(0, len(f), size=(n_boot, len(f)))
+        return f[idx].mean(axis=1)
+    G, members = _group_index(groups)
+    gsum = np.array([f[m].sum() for m in members])
+    gcnt = np.array([len(m) for m in members], float)
+    idx = rng.integers(0, G, size=(n_boot, G))
+    return gsum[idx].sum(axis=1) / gcnt[idx].sum(axis=1)
 
 
 def jdump(obj, path):

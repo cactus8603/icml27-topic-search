@@ -1,5 +1,5 @@
 {
-  "_comment": "所有門檻集中在此（與 PREREG.md 一致）。改動須在 PREREG.md 記日期並標為探索性。",
+  "_comment": "所有門檻集中在此（與 PREREG.md 一致）。改動須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：M2 跨種子<0 先 FAIL、M3 加碼後灰區記 FAIL、S6 加碼改為增加查詢至 400、S2 跨種子 seed 5。",
   "gates": {
     "mlp": {"fd_rel_err_max": 1e-4, "loo_pearson_min": 0.95},
     "cifar_magic_lds_min": 0.88,
@@ -17,8 +17,13 @@
     "ci_lower_gt": 0.03,
     "gain_grey_low": 0.04,
     "reliability": {"split_half_min": 0.7, "spearman_min": 0.6, "spearman_grey_low": 0.45},
-    "crossseed_hybrid_minus_cheap_min": 0.0
+    "crossseed_hybrid_minus_cheap_min": 0.0,
+    "crossseed_below_min_is_fail_before_grey": true,
+    "grey_after_addon_is": "FAIL",
+    "crossseed_train_seed": 5
   },
+  "queries": {"query_seed": 20261114, "k_stage0": 50, "k_stage1": 200, "k_addon": 400},
+  "exploratory_not_for_verdict": {"alpha_q_shrink_weight": 0.5, "split_queries": "偶數／奇數索引各自獨立估 U 與 α"},
   "bootstrap": {"n": 10000, "seed": 0, "ci": 0.95},
   "B_frac": 0.2,
   "cheap_variants": ["grad_dot", "tracin", "trak1", "trak5", "ekfac_auto", "ekfac_1e-8", "ekfac_1e-3"]

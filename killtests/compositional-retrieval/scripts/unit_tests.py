@@ -84,15 +84,90 @@ def test_bootstrap():
     check("配對差：全 1 對全 0 -> 100", d["point"] == 100 and d["lo"] == 100)
 
 
+def test_cluster_bootstrap():
+    rng = np.random.default_rng(1)
+    # 100 張影像各 8 個查詢，查詢對錯在影像內完全相關（群集效應極強）
+    img = np.repeat(np.arange(100), 8)
+    f = np.repeat((rng.random(100) < 0.5).astype(float), 8)
+    row = bootstrap_ci(f, 4000, 0)
+    cl = bootstrap_ci(f, 4000, 0, groups=img)
+    check("群集 bootstrap：SE 比列層級大（群集內完全相關，約 sqrt(8) 倍）", cl["se"] > 2.0 * row["se"], (cl["se"], row["se"]))
+    check("群集 bootstrap：每群組大小相同時點估計相同", abs(cl["point"] - f.mean() * 100) < 1e-9)
+    ci = bootstrap_ci(f, 4000, 0, alpha_one_sided=0.0125, groups=img)
+    check("單尾 0.0125：lo_1s 比 2.5 百分位的 lo 更寬（更低）", ci["lo_1s"] < ci["lo"] and ci["hi_1s"] > ci["hi"], ci)
+    d = paired_bootstrap_diff(np.ones(50), np.zeros(50), 1000, 0, alpha_one_sided=0.0125, groups=np.repeat(np.arange(10), 5))
+    check("配對群集差：全 1 對全 0 -> lo_1s=100", d["point"] == 100 and d["lo_1s"] == 100)
+
+
+def test_e2_cluster_and_dilution():
+    """合成查詢：k=1 錯誤率 0、k=4 錯誤率 0.5（holistic）；llr_sum 在 k=4 錯誤率 0.1。群集：同影像多個查詢。"""
+    rng = np.random.default_rng(0)
+    def mk(err_by_img_k1, err_k4):
+        return {"1": {"istar": list(np.repeat(np.arange(30), 3)), "err_flags": err_by_img_k1},
+                "4": {"istar": list(np.repeat(np.arange(20, 50), 3)), "err_flags": err_k4}}
+    h = mk([0] * 90, list((rng.random(90) < 0.5).astype(int)))
+    l = mk([0] * 90, list((rng.random(90) < 0.1).astype(int)))
+    d = e2_analyze.delta_err(h, 4, 1, 2000, 0)
+    check("E2 群集 delta_err：點估計 = err(4)-err(1)，群集數 = 影像聯集 50", abs(d["point"] - 100 * np.mean(h["4"]["err_flags"])) < 1e-9 and d["n_clusters"] == 50, d)
+    res = {"holistic": h, "llr_sum": l}
+    dd = e2_analyze.dilution_diff(res, "holistic", "llr_sum", 4, 1, 2000, 0)
+    check("E2 稀釋差：holistic 稀釋較大 -> 點估計>0 且等於兩個 Δ 之差",
+          dd["point"] > 0 and abs(dd["point"] - (dd["delta_ref_pp"] - dd["delta_cmp_pp"])) < 1e-9, dd)
+    # 群集 CI 比把查詢當獨立更寬：以相同資料用列層級對照
+    row = bootstrap_ci(np.array(h["4"]["err_flags"], float), 2000, 0)
+    clu = bootstrap_ci(np.array(h["4"]["err_flags"], float), 2000, 0, groups=h["4"]["istar"])
+    check("E2 群集 bootstrap 可執行且 n_clusters 與 CI 合理", clu["lo"] <= clu["point"] <= clu["hi"] and row["lo"] <= row["point"] <= row["hi"])
+
+
+def test_aggregate_synthetic():
+    """用小型合成結果目錄跑完整 aggregate.main：P1 路線 b 成立（a 失敗）-> PASS；P2 以合成 e2 分析。"""
+    import aggregate
+    from common import SUBSETS, params
+    P = params()
+    def cor(pt, w):
+        return {"point": pt, "lo": pt - w, "hi": pt + w, "lo_1s": pt - 1.2 * w, "hi_1s": pt + 1.2 * w, "n": 500}
+    def aggs(h, llr, paired):
+        mk = lambda c: {"all": {"cor": cor(c, 2.0), "ht": cor(c, 2.0)}}
+        a = {"holistic": mk(h), "llr_sum": mk(llr)}
+        a["llr_sum"]["paired_vs_holistic_cor_pp"] = paired
+        return a
+    cov = {"coverage": 0.99}
+    cs = {"model": "cs_clip", "subsets": {s: {"aggs": aggs(P["paper_cor"][s], P["paper_cor"][s] + 8, {"point": 8, "lo": 5, "hi": 11, "lo_1s": 4.5, "hi_1s": 11.5}), "detail_coverage": cov} for s in SUBSETS}}
+    cl = {"model": "clip_b32", "subsets": {s: {"aggs": aggs(P["paper_clip_cor"][s], 30.0, {"point": 10, "lo": 7, "hi": 13, "lo_1s": 6, "hi_1s": 14}), "detail_coverage": cov} for s in SUBSETS}}
+    with tempfile.TemporaryDirectory(dir=str(Path("/work/ChihChungHsu/cactus8603/icml/tmp"))) as td:
+        R = Path(td)
+        for sub in ("ht", "gates", "e2"):
+            (R / sub).mkdir()
+        jdump(cs, R / "ht" / "analysis_cs_clip.json"); jdump(cl, R / "ht" / "analysis_clip_b32.json")
+        jdump({"all_pass": True}, R / "gates" / "g1_unit.json"); jdump({"max_abs_diff": 1e-6}, R / "gates" / "g1_crosscheck.json")
+        jdump({"max_abs_diff": 0.0}, R / "gates" / "g3_rerun.json")
+        jdump({"model": "clip_b32", "k_top": 4, "n_per_k": {"1": 1000, "4": 765}, "per_agg": {},
+               "delta_holistic": {"point": 12, "lo": 8, "hi": 16}, "holistic_err_series_pp": [2, 5, 9, 14], "max_adjacent_drop_pp": 0.0,
+               "secondary_dilution": {"holistic_minus_llr_sum": {"point": 5}}}, R / "e2" / "analysis_clip_b32_main.json")
+        import sys as _s
+        argv = _s.argv; _s.argv = ["aggregate.py", "--results", str(R), "--out", str(R / "agg")]
+        import io, contextlib
+        with contextlib.redirect_stdout(io.StringIO()):
+            aggregate.main()
+        _s.argv = argv
+        out = json.loads((R / "agg.json").read_text())
+    p1 = out["primaries"]["P1_E1_LLR聚合"]
+    check("aggregate 合成：P1 路線 a 失敗（COR 30<45）但路線 b 成立 -> PASS", p1["state"] == PASS and p1["path_b_pass"] and not p1["path_a_pass"], p1.get("note"))
+    check("aggregate 合成：P2 PASS、整體『繼續』", out["primaries"]["P2_E2_條件數稀釋"]["state"] == PASS and out["overall"].startswith("繼續"), out["overall"])
+    check("aggregate 合成：次要稀釋差被帶出", "secondary_e2_dilution_clip_b32" in out, list(out))
+
+
 def test_decisions():
     ci = lambda p, lo, hi: {"point": p, "lo": lo, "hi": hi}
-    check("P1 下界>=45 -> PASS", decide_p1(ci(50, 46, 54), 45)[0] == PASS)
-    check("P1 上界<45 -> FAIL（不救援）", decide_p1(ci(40, 36, 44), 45, {"point": 9, "lo": 3})[0] == FAIL)
-    check("P1 跨越門檻、無加碼資料 -> 灰區", decide_p1(ci(44, 40, 48), 45)[0] == GRAY)
-    check("P1 灰區+加碼通過 -> PASS", decide_p1(ci(44, 40, 48), 45, {"point": 6, "lo": 1})[0] == PASS)
-    check("P1 灰區+加碼不過+點<門檻 -> FAIL", decide_p1(ci(44, 40, 48), 45, {"point": 2, "lo": -1})[0] == FAIL)
-    check("P1 灰區+加碼不過+點>=門檻 -> 灰區（未解）", decide_p1(ci(46, 42, 50), 45, {"point": 2, "lo": -1})[0] == GRAY)
-    check("P1 加碼點>=5 但配對下界<=0 -> 不算通過", decide_p1(ci(44, 40, 48), 45, {"point": 6, "lo": -0.5})[0] != PASS)
+    c1 = lambda p, lo, hi: {"point": p, "lo": lo, "hi": hi, "lo_1s": lo, "hi_1s": hi}
+    check("P1 路線a：CLIP+LLR 下界>=45 -> PASS", decide_p1(c1(50, 46, 54), 45, {"point": 0, "lo_1s": -3, "hi_1s": 3})[0] == PASS)
+    check("P1 路線b：CS-CLIP+LLR 贏 >=5pp 且下界>0 -> PASS（即使 a 明確失敗）", decide_p1(c1(40, 36, 44), 45, c1(9, 3, 15))[0] == PASS)
+    check("P1 a 上界<45 且 b 上界<5 -> FAIL", decide_p1(c1(40, 36, 44), 45, c1(1, -2, 3.5))[0] == FAIL)
+    check("P1 a 上界<45 但 b 區間跨 5pp -> 灰區", decide_p1(c1(40, 36, 44), 45, c1(3, -1, 8))[0] == GRAY)
+    check("P1 a 跨越 45 且 b 上界<5 -> 灰區", decide_p1(c1(44, 40, 48), 45, c1(1, -2, 3.5))[0] == GRAY)
+    check("P1 b 點>=5 但配對下界<=0 且 a 失敗 -> 不 PASS", decide_p1(c1(44, 40, 48), 45, c1(6, -0.5, 12))[0] != PASS)
+    check("P1 a 失敗、b 資料缺 -> 灰區（不是 FAIL）", decide_p1(c1(40, 36, 44), 45, None)[0] == GRAY)
+    check("P1 用 lo_1s/hi_1s（1.25/98.75）而非 lo/hi", decide_p1({"point": 46, "lo": 45.5, "hi": 50, "lo_1s": 44.8, "hi_1s": 51}, 45, None)[0] != PASS)
     check("P2 PASS", decide_p2(ci(12, 7, 17), 1.0, 5.0, 2.0)[0] == PASS)
     check("P2 下界過但相鄰下降 3pp -> 灰區", decide_p2(ci(12, 7, 17), 3.0, 5.0, 2.0)[0] == GRAY)
     check("P2 上界<5 -> FAIL", decide_p2(ci(2, -1, 4.5), 0.0, 5.0, 2.0)[0] == FAIL)
@@ -165,9 +240,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(EXP / "results" / "gates" / "g1_unit.json"))
     args = ap.parse_args()
-    test_cor(); test_pmi(); test_anchor_cancellation(); test_detail(); test_bootstrap(); test_decisions()
+    test_cor(); test_pmi(); test_anchor_cancellation(); test_detail(); test_bootstrap(); test_cluster_bootstrap(); test_decisions()
     out = test_e2_builder()
     test_e2_analyze(out)
+    test_e2_cluster_and_dilution()
+    test_aggregate_synthetic()
     allp = all(r["pass"] for r in RESULTS)
     jdump({"all_pass": allp, "n": len(RESULTS), "results": RESULTS}, args.out)
     print(f"\n{'全部通過' if allp else '有失敗'}：{sum(r['pass'] for r in RESULTS)}/{len(RESULTS)}")

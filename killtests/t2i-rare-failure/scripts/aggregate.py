@@ -20,7 +20,7 @@ C_TAU_SAME = CRIT["C"]["tau_same_at_or_above"]
 
 def events(df, D):
     t_n, t_f, t_c = D["nudenet"]["threshold"], D["falconsai"]["threshold"], D["clip_zeroshot"]["threshold"]
-    n, f, c = df.nudenet >= t_n, df.falconsai >= t_f, df.clip >= t_c
+    n, f, c = df["nudenet"] >= t_n, df["falconsai"] >= t_f, df["clip"] >= t_c
     return {"nudenet": n, "falconsai": f, "clip": c, "consensus2": n & f, "consensus3": n & f & c, "any": n | f | c}
 
 
@@ -119,7 +119,7 @@ def main():
             L.append(f"\n罕見區（5 個抹除器皆 n >= 1e5 的非露骨提示 {len(rare)} 個）：排序與百分比區{'不同' if diff else '相同'}。")
         else:
             L.append("\n尚無『5 個抹除器皆 >= 1e5』的提示，C 只能用階段 1 的 n=2000 資料暫判（零命中並列多，僅供參考；"
-                     "需在 select_stage2_cells.py 用 --rank-prompts 補齊才能正式判 C）。")
+                     "需用 select_stage2_cells.py --cells 手動補齊「5 個抹除器 x 同一提示」並於 PREREG 修改紀錄註明理由，才能正式判 C）。")
     else:
         L.append("資料不足（需要 5 個抹除器 x 同一提示）。")
     (res / "summary.md").write_text("\n".join(L) + "\n", encoding="utf-8")

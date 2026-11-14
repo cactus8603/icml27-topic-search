@@ -3,3 +3,5 @@ retrieval bench=26265
 rl correctness=26266 throughput=26267
 chameleon bench=26269
 rl RESUBMIT (env.sh resolve fix) correctness=26270 throughput=26271; 26266/26267 failed: IncompleteSnapshotError but exit 0
+multifid s0_bench=26272
+chameleon bench RESUBMIT=26273 (26269 failed: bf16 probe numpy)

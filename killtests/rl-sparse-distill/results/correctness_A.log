@@ -1,0 +1,7 @@
+PASS T1 rl=base -> base sampling
+PASS T2 all_replace == rl greedy
+PASS T3 identical to wrb RLReplaceDecoder (texts and replacement counts)
+   replacements per sample (wrb): [8, 8, 8, 8] lengths [64, 64, 64, 64]
+PASS T4 padded+compacted batch greedy == single greedy
+PASS T5 replace rate in (0,1): 0.099 (76/768)
+ALL PASS

@@ -1,9 +1,10 @@
 {
-  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。",
+  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：alpha 0.0125、reproduce_sources、rl_compare_cond（非探索性）。",
   "eval": {"n_samples": 128, "k_main": 64, "test_questions_min": 1000, "bootstrap_B": 10000, "bootstrap_seed": 20261114},
   "gate0": {
     "reproduce_tol_pp": 2.0,
-    "reproduce_sources": ["math500", "minerva", "olympiad"],
+    "reproduce_sources": ["math500", "minerva"],
+    "reproduce_record_only_sources": ["olympiad"],
     "trunc_rate_diff_max_pp": 2.0,
     "pair_rl_p1_gain_min_pp": 5.0,
     "pair_rl_pk_below_base_min_pp": 2.0,
@@ -12,7 +13,9 @@
   },
   "gate1": {
     "replace_minus_rl_min_pp": 2.0,
-    "ci_one_sided_alpha": 0.025,
+    "ci_one_sided_alpha": 0.0125,
+    "rl_compare_cond": "rl_hf",
+    "rl_compare_cond_note": "(i) 比較對象為 HF 版 RL 取樣（gen_replace.py --cond rl），與 rl_replace 同引擎；vLLM 版 rl 只用於閘門 0 與 (ii) 前緣；rl_hf 為 (ii) 的敏感度端點",
     "wise_lambdas": [0.15, 0.3, 0.45, 0.6, 0.75, 0.9],
     "wise_margin_min_pp": 0.0,
     "gray_zone": {"point_diff_min_pp": 1.0, "action": "只准一次：加跑 dev 400 題（RL、rl_replace、最接近的 WiSE 點）後合併重算，事先已定"}

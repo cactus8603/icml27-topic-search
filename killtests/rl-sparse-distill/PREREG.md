@@ -31,7 +31,7 @@
 - (a)(b) 任一失敗＝未能測試（先查模板、stop token、截斷）；只有 (c) 失敗＝配對不合格，**換配對，不算題目死**（備選見 `pairs.json: reserve_pairs_not_downloaded`；配對 C 需要 32k 上限，會改變凍結的 token 上限，必須先另寫 PREREG 補充）。
 
 **判準 1（只對閘門 0 合格的配對；預估 rl_replace 約 18–25 GPU 小時／配對，WiSE 6 點約 8 GPU 小時／配對）**，k=64：
-- (i) rl_replace 的 pass@64 − RL 的 pass@64 ≥ 2pp，且單側 97.5% 下界 > 0；
+- (i) rl_replace 的 pass@64 − **HF 版 RL（`rl_hf`）**的 pass@64 ≥ 2pp，且單側（α=0.0125，即 1.25 百分位）下界 > 0；（見修改紀錄 2026-11-14 審查後定案）
 - (ii) 在相同 pass@1 下高於 WiSE-FT 前緣：WiSE-FT 為權重內插 θ=(1−λ)θ_base+λθ_RL，λ ∈ {0.15, 0.30, 0.45, 0.60, 0.75, 0.90} 加兩端點（λ=0 為 base、λ=1 為 RL）共 8 點；前緣＝以這 8 點的 (pass@1, pass@64) 依 pass@1 排序的分段線性內插，取在 rl_replace 的 pass@1 處的值；差值（rl_replace 的 pass@64 − 前緣值）> 0，且 bootstrap（每次重算全部點與內插）單側下界 > 0。若 rl_replace 的 pass@1 落在 8 點範圍外會在輸出標記。
 - 兩者都成立才 PASS；任一不成立就停、不做蒸餾。
 
@@ -40,7 +40,7 @@
 - **FAIL**：rl_replace 比 RL 高不到 1pp，或在相同 pass@1 下不高於 WiSE 前緣（點估計 ≤ 0）。
 - **灰區**：其餘。只准一次事先定好的加碼：加跑 dev 400 題（RL、rl_replace、最接近的 WiSE 點）後與 test 合併重算（合併重算的程式尚未寫，灰區發生時再補，須先 commit）。
 - **未能測試**／**配對不合格**：見第 3 節。
-- 整體：至少一個合格配對 PASS → PASS；無 PASS 但有灰區 → 灰區；合格配對全部 FAIL → FAIL（停，不做蒸餾）；沒有合格配對 → 未能測試。
+- 整體（兩個配對擇一，已以 α=0.0125 校正）：至少一個合格配對 PASS → PASS；無 PASS 但有灰區 → 灰區；合格配對全部 FAIL → FAIL（停，不做蒸餾）；沒有合格配對 → 未能測試。
 
 ## 5. 可重試次數與成本上限
 - 同一 job 因基礎設施失敗（OOM、節點掛掉、逾時）最多重送 2 次；**結果不理想不得重跑**（不得換 seed 挑結果）。失敗與重跑照實記入 `logs/RUNLOG.md`，不刪。
@@ -53,3 +53,10 @@
 ## 修改紀錄
 （事後修改請在此加日期與原因，並標為探索性。）
 - 2026-11-14（Opus 審查，機械修正，非判準變更）：`make_wise.py` 加斷言——單側多出的 `lm_head.weight` 必須等於該側 `embed_tokens` 才能以 tied 方式內插（SimpleRL-Zoo 實查相同）；slurm 輸出路徑改為絕對路徑。判準相關的審查意見見 `REVIEW.md`，尚待使用者定案。
+
+### 2026-11-14 審查後、結果前定案（非探索性；依 REVIEW.md 必修 2–5，協調者決定，任何假設結果出來之前）
+1. **多重比較**：`criteria.json: gate1.ci_one_sided_alpha` 由 0.025 改為 **0.0125**（兩配對擇一的 Bonferroni 校正，單側 1.25 百分位）。(i)(ii) 的下界都用此值。
+2. **消除引擎差**：判準 (i) 的比較對象改為 HF 版 RL 取樣 `gen_replace.py --cond rl`（`slurm/05_rl_hf.sbatch`，輸出 `results/<P>/rl_hf`，同 test、n=128、同 seed 與分片規則、同 3000 token 上限）。vLLM 版 `rl` 只用於閘門 0 與 (ii) 的前緣端點。`aggregate.py` 另輸出診斷：rl_hf − rl(vLLM) 的 pass@1／pass@64（含 95% CI）、四個條件的截斷率，以及 (ii) 把 λ=1 端點換成 rl_hf 的敏感度 `wise_margin_sens_rlhf_endpoint_pp`（只描述，不參與判定）。缺 rl_hf 時判準 1 不執行。成本每配對約 +10 GPU 小時（只載入 RL 一個模型）。
+3. **重現來源**：`gate0.reproduce_sources` 改為 `["math500","minerva"]`；olympiad 只記錄（`reproduce_record_only_diffs_pp`），因題集不同（581 對 674 題）。
+4. **配對 B 模板**：pairs.json 新增 per-pair `template`。B 使用 `simplerl_abel_chat`（訓練資料 hkust-nlp/SimpleRL-Zoo-Data 的 simplelr_abel_* 的 user 訊息 `Question:\n{q}\nAnswer:\nLet's think step by step.\n`，外包 Qwen 聊天模板，預設 system＝You are a helpful assistant.）。出處：SimpleRL-Zoo 論文附錄 B.3（0.5B/1.5B 用較簡單 prompt）與 B.5（評測沿用訓練模板）、HF 資料集實查、tokenizer apply_chat_template 實測。**未確認部分**：原作評測程式（examples/simplelr_math_eval）有 `abel` 模板但無法從程式碼確認 1.5B 評測是否外包聊天模板；原作評測為 max_tokens 16000，Zoo 模型評測用 temperature 1.0／top-p 0.95，與我們閘門 0 的 greedy＋3000 token 不同，可能影響重現。B 配對的 00／01 送出前須由協調者確認。A 配對仍用 qwen_math。
+5. 其他：`aggregate.py --selftest` 已加入 rl_hf 與正向情境（rl_replace 明顯高於 rl_hf 時 (i) 數字為正）。

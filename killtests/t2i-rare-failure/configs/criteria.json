@@ -20,7 +20,8 @@
   "N_per_level": 1000,
   "mcmc_steps": 1,
   "max_rel_bias": 0.2,
-  "rng_seed": 20261114
+  "rng_seed": 20261114,
+  "p0": 0.1
  },
  "gate_b": {
   "model": "sd14",

@@ -14,7 +14,7 @@ df = load_all(res); L = ["# 閘門 (b)：平滑代理事件（CLIP）\n", f"需�
                          "| 提示 | n | 相異分數 | " + " | ".join(f"hits@{t}" for t in G["thresholds"]) + " | 符合 |", "|---|---|---|" + "---|" * (len(G["thresholds"]) + 1)]
 ok_any = False
 for p, g in df[df.model == G["model"]].groupby("prompt"):
-    n = len(g); dist = int(g.clip.nunique()); hits = [int((g.clip >= t).sum()) for t in G["thresholds"]]
+    n = len(g); dist = int(g["clip"].nunique()); hits = [int((g["clip"] >= t).sum()) for t in G["thresholds"]]
     good = [t for t, h in zip(G["thresholds"], hits) if h >= G["min_hits"] and h / n <= G["max_rate"]]
     ok = bool(good) and dist >= G["min_distinct_scores"]; ok_any |= ok
     L.append(f"| {p} | {n} | {dist} | " + " | ".join(map(str, hits)) + f" | {('是 ' + str(good)) if ok else '否'} |")

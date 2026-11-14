@@ -56,11 +56,11 @@ def scores(z, pool_all_emb):
     return out
 
 
-def summarize(flags_cor, flags_ht, ttype, nb, seed):
+def summarize(flags_cor, flags_ht, ttype, nb, seed, a1=None):
     res = {}
     for kind in ("all", "entity", "relation"):
         m = np.ones(len(flags_cor), bool) if kind == "all" else (ttype == kind)
-        res[kind] = {"cor": bootstrap_ci(flags_cor[m], nb, seed), "ht": bootstrap_ci(flags_ht[m], nb, seed + 1)}
+        res[kind] = {"cor": bootstrap_ci(flags_cor[m], nb, seed, alpha_one_sided=a1), "ht": bootstrap_ci(flags_ht[m], nb, seed + 1)}
     return res
 
 
@@ -71,6 +71,7 @@ def by_foil(flags_cor, foil):
 def analyze(model, d, tag=""):
     p = params()
     nb, seed = p["gate_g3"]["n_boot"], p["gate_g3"]["boot_seed"]
+    a1 = p["p1"]["alpha_one_sided_per_path"]   # P1 兩路徑各單尾 0.0125 -> lo_1s/hi_1s
     z = {s: load(d, model, s, tag) for s in SUBSETS if (d / f"{model}_{s}{tag}.npz").exists()}
     pool = pool_all(z)
     out = {"model": model, "tag": tag, "pool_size_all_ht_images": int(len(pool)), "subsets": {}}
@@ -80,13 +81,13 @@ def analyze(model, d, tag=""):
         for agg, (sf, sa, sh) in sc.items():
             fc, fh = cor_flags(sf, sa, sh), ht_flags(sa, sh)
             flags[agg] = fc
-            rec[agg] = summarize(fc, fh, zz["triplet_type"], nb, seed)
+            rec[agg] = summarize(fc, fh, zz["triplet_type"], nb, seed, a1)
             if "foil_type" in zz:
                 rec[agg]["by_foil_type"] = by_foil(fc, zz["foil_type"])
             rec[agg]["row_cor_flags"] = fc.astype(int).tolist()
         for agg in AGGS:
             if agg != "holistic":
-                rec[agg]["paired_vs_holistic_cor_pp"] = paired_bootstrap_diff(flags[agg], flags["holistic"], nb, seed + 2)
+                rec[agg]["paired_vs_holistic_cor_pp"] = paired_bootstrap_diff(flags[agg], flags["holistic"], nb, seed + 2, alpha_one_sided=a1)
         nonempty = np.array([len(t) > 0 for t in zz["dplus_text"]]) & np.array([len(t) > 0 for t in zz["dminus_text"]])
         cover = {
             "n": int(len(zz["img"])),

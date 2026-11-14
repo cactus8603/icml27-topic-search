@@ -17,22 +17,26 @@ PASS, GRAY, FAIL, UNTESTABLE = "PASS", "灰區", "FAIL", "未能測試"
 # ------------------------------------------------------------------ 純判讀函式（unit_tests.py 會測）
 
 def decide_p1(ci, thr, addon=None, addon_margin=5.0):
-    """ci: {'point','lo','hi'}（CLIP B/32 + LLR 在 COCO(Qwen) 的 COR，pp；lo/hi 為 97.5% 單尾對應的 2.5/97.5 百分位）。
-    addon: None 或 paired 差 {'point','lo'}（CS-CLIP+LLR 減 CS-CLIP holistic 的 COR，pp）。
-    回傳 (state, 說明)。"""
-    if ci["lo"] >= thr:
-        return PASS, "下界 >= 門檻"
-    if ci["hi"] < thr:
-        return FAIL, "上界 < 門檻（明確失敗，不給 CS-CLIP 救援）"
-    # 灰區：信賴區間跨越門檻，唯一加碼 = CS-CLIP 救援
+    """P1 = 兩條路徑擇一（2026-11-14 審查後定案，還原 46 原案），各用單尾 alpha=0.0125（lo_1s/hi_1s = 1.25/98.75 百分位）。
+    路線 a：ci（CLIP B/32 + LLR 的 COCO(Qwen) COR，pp）下界 lo_1s >= thr。
+    路線 b：addon（CS-CLIP+LLR 減 同流程 CS-CLIP holistic 的配對 COR 差，pp）點估計 >= addon_margin 且 lo_1s > 0。
+    PASS：a 或 b 成立。FAIL：a 的 hi_1s < thr 且 b 的 hi_1s < addon_margin（兩條路都明確失敗）。其餘灰區（HT 資料固定，無加碼，交使用者）。
+    ci / addon 的 lo_1s、hi_1s 缺少時退回 lo、hi。"""
+    lo = lambda d: d.get("lo_1s", d["lo"])
+    hi = lambda d: d.get("hi_1s", d["hi"])
+    a_pass = lo(ci) >= thr
+    b_pass = addon is not None and addon["point"] >= addon_margin and lo(addon) > 0
+    if a_pass and b_pass:
+        return PASS, "路線 a、b 皆成立"
+    if a_pass:
+        return PASS, "路線 a 成立（CLIP+LLR 下界 >= 門檻）"
+    if b_pass:
+        return PASS, "路線 b 成立（CS-CLIP+LLR 比 CS-CLIP holistic 高 >= 5pp 且配對下界 > 0）"
     if addon is None:
-        return GRAY, "信賴區間跨越門檻；加碼資料不足"
-    rescued = addon["point"] >= addon_margin and addon["lo"] > 0
-    if rescued:
-        return PASS, "灰區 -> 加碼（CS-CLIP+LLR 比 CS-CLIP 高 >= 5pp 且配對下界 > 0）通過"
-    if ci["point"] < thr:
-        return FAIL, "灰區 -> 加碼未通過，且點估計 < 門檻"
-    return GRAY, "灰區 -> 加碼未通過，但點估計 >= 門檻；未解，交使用者"
+        return GRAY, "路線 a 未成立；路線 b 資料不足"
+    if hi(ci) < thr and hi(addon) < addon_margin:
+        return FAIL, "路線 a 上界 < 門檻，且路線 b 上界 < 5pp（兩條路都明確失敗）"
+    return GRAY, "兩條路都未成立，但至少一條的信賴區間仍跨越其門檻；灰區不加碼，交使用者"
 
 
 def decide_p2(delta, max_drop, min_delta, max_adjacent_drop):
@@ -130,9 +134,12 @@ def main():
         addon = None
         if a_cs and "coco_qwen" in a_cs["subsets"]:
             addon = a_cs["subsets"]["coco_qwen"]["aggs"]["llr_sum"]["paired_vs_holistic_cor_pp"]
-        st, note = decide_p1(ci, P1["threshold_cor_pp"], addon, P1["addon_margin_pp"])
-        p1 = {"metric": "CLIP B/32 + LLR 加總，COCO(Qwen) COR (%)", "ci": {k: ci[k] for k in ("point", "lo", "hi", "n")},
-              "threshold": P1["threshold_cor_pp"], "addon_cs_clip_paired_diff": addon,
+        st, note = decide_p1(ci, P1["path_a"]["threshold_cor_pp"], addon, P1["path_b"]["margin_pp"])
+        p1 = {"metric": "P1 雙路徑擇一：a) CLIP B/32 + LLR 加總 COCO(Qwen) COR (%) 下界>=45；b) CS-CLIP+LLR 贏 CS-CLIP holistic >=5pp", "ci": {k: ci[k] for k in ("point", "lo", "hi", "lo_1s", "hi_1s", "n")},
+              "threshold": P1["path_a"]["threshold_cor_pp"], "addon_cs_clip_paired_diff": addon,
+              "alpha_one_sided_per_path": P1["alpha_one_sided_per_path"],
+              "path_a_pass": ci["lo_1s"] >= P1["path_a"]["threshold_cor_pp"],
+              "path_b_pass": bool(addon and addon["point"] >= P1["path_b"]["margin_pp"] and addon["lo_1s"] > 0),
               "state_raw": st, "state": st if gate_ok else UNTESTABLE, "note": note + ("" if gate_ok else "；但閘門未全過 -> 未能測試")}
     res["primaries"]["P1_E1_LLR聚合"] = p1
 
@@ -167,6 +174,8 @@ def main():
     for model in ("clip_b32", "cs_clip"):
         e = _load(R / "e2" / f"analysis_{model}_main+addon.json") or _load(R / "e2" / f"analysis_{model}_main.json")
         if e:
+            if "secondary_dilution" in e:
+                res["secondary_e2_dilution_" + model] = e["secondary_dilution"]
             res["secondary_e2"][model] = {a: {k: {"n": v.get("n"), "pair_acc": v.get("pair_acc"),
                                                    "recall_at_50": v.get("recall_at_50_mean")} for k, v in d.items()}
                                           for a, d in e["per_agg"].items()}

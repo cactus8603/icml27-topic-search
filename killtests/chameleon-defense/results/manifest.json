@@ -15,6 +15,10 @@
   "pos": 1421,
   "neg": 1625
  },
+ "harm_test_extra": {
+  "n": 1046,
+  "md5": "fc5f18afdbfc9a496a7c9f2370cddd2b"
+ },
  "harm_test": {
   "n": 2000,
   "md5": "385cbce799971a7d2643d23ecd7cc53c"
@@ -31,9 +35,5 @@
   "n_statements": 306,
   "train": 244,
   "test": 62
- },
- "harm_test_extra": {
-  "n": 1046,
-  "md5": "fc5f18afdbfc9a496a7c9f2370cddd2b"
  }
 }

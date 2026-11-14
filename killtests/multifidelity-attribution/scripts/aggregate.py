@@ -1,5 +1,6 @@
 """機械式判讀：依 PREREG.md 與 configs/criteria.json 輸出閘門狀態與 階段0 / 階段1 的 STOP/CONTINUE/PASS/GREY/FAIL。
-用法：python aggregate.py --cfg configs/stage0.json --stage 0 [--M 200] [--smoke]
+用法：python aggregate.py --cfg configs/stage0.json --stage 0|1 [--addon] [--smoke]
+  --addon：灰區唯一加碼（審查後定案 2026-11-14）：階段 1 為 GREY 時，把查詢由 k=200 擴到 k=400（重訓不變，M=200），以相同規則重判；加碼後仍為 GREY 記為 FAIL。
 只做讀檔與數值計算（CPU）。結論由 Opus 對照 PREREG 審，不由本腳本或實作者定案。"""
 import argparse, glob, json, os, sys
 import numpy as np
@@ -12,14 +13,21 @@ from common import cfg_paths, removal_mask_np, RES
 ap = argparse.ArgumentParser()
 ap.add_argument("--cfg", required=True)
 ap.add_argument("--stage", type=int, default=0)
-ap.add_argument("--M", type=int, default=None, help="使用的重訓模型數（灰區加碼後設 400）")
+ap.add_argument("--addon", action="store_true", help="灰區加碼（增加查詢 k=400）後重判；僅 --stage 1；加碼後仍灰區記為 FAIL")
 ap.add_argument("--smoke", action="store_true", help="smoke 模式：不強制閘門，只驗證流程")
 a = ap.parse_args()
 cfg = json.load(open(a.cfg)); CR = json.load(open(os.path.join(os.path.dirname(__file__), "..", "configs", "criteria.json")))
-P = cfg_paths(cfg); M = a.M or cfg["M"]
-k = cfg["k_stage0"] if a.stage == 0 else cfg["k_total"]
+P = cfg_paths(cfg); M = cfg["M"]
+QC = CR["queries"]  # 查詢數事先固定於 criteria.json；cfg 必須一致（正式 cfg 才檢查，smoke 不檢查）
+if not a.smoke:
+    assert (cfg["k_stage0"], cfg["k_stage1"], cfg["k_addon"], cfg["k_total"], cfg["query_seed"]) == \
+        (QC["k_stage0"], QC["k_stage1"], QC["k_addon"], QC["k_addon"], QC["query_seed"]), "cfg 的查詢設定與 criteria.json 不一致"
+if a.addon and a.stage != 1:
+    sys.exit("--addon 只能與 --stage 1 並用")
+k = cfg["k_stage0"] if a.stage == 0 else (cfg["k_addon"] if a.addon else cfg["k_stage1"])
+VNAME = f"verdict_stage{a.stage}" + ("_addon" if a.addon else "")
 rng = np.random.RandomState(CR["bootstrap"]["seed"])
-out = dict(stage=a.stage, k=k, M=M, tag=cfg["tag"])
+out = dict(stage=a.stage, addon=a.addon, k=k, M=M, tag=cfg["tag"])
 # 審查加入 2026-11-14：記錄程式版本與判準檔雜湊（通用規則「git hash 全留」；確認判讀時的 criteria.json 即凍結版）
 import hashlib, subprocess
 _here = os.path.dirname(os.path.abspath(__file__))
@@ -135,7 +143,7 @@ out["gate_status"] = "ALL_PASS" if not bad else "UNTESTABLE(未能測試): " + "
 print(json.dumps(out["gates"], indent=1)); print("閘門：", out["gate_status"])
 if bad and not a.smoke:
     out["verdict"] = "UNTESTABLE"
-    json.dump(out, open(f"{P['res']}/verdict_stage{a.stage}.json", "w"), indent=1); print("結論：未能測試（前三關失敗不判題目）"); sys.exit(3)
+    json.dump(out, open(f"{P['res']}/{VNAME}.json", "w"), indent=1); print("結論：未能測試（前三關失敗不判題目）"); sys.exit(3)
 
 # ------------------------------------------------------------ 便宜方法 LDS
 cl = {nm: lds_q(S, masks, L) for nm, S in cheap.items()}
@@ -146,7 +154,7 @@ out["magic_lds"] = G["cifar_magic_lds"]
 def invalid(why):
     """程式錯誤（NaN/inf 等）：記為 INVALID，與「題目不成立」分開，不給 STOP/CONTINUE/PASS/FAIL。"""
     out["verdict"] = f"INVALID(程式錯誤，非題目結論): {why}"
-    json.dump(out, open(f"{P['res']}/verdict_stage{a.stage}.json", "w"), indent=1, default=float)
+    json.dump(out, open(f"{P['res']}/{VNAME}.json", "w"), indent=1, default=float)
     print("結論：", out["verdict"]); sys.exit(4)
 
 
@@ -162,6 +170,10 @@ if a.stage == 1:  # 階段 1 沿用階段 0 事先選定的最佳便宜方法，
     if not str(v0.get("verdict", "")).startswith("CONTINUE") and not a.smoke:
         print("階段 0 結論不是 CONTINUE，不得進行階段 1 判讀：", v0.get("verdict")); sys.exit(2)
     best = v0["best_cheap"]
+    if a.addon:  # 加碼只在階段 1 結論為灰區時允許，且只准一次
+        v1 = json.load(open(f"{P['res']}/verdict_stage1.json"))
+        if not str(v1.get("verdict", "")).startswith("GREY") and not a.smoke:
+            print("階段 1 結論不是 GREY，不得加碼：", v1.get("verdict")); sys.exit(2)
 out["best_cheap"] = best; C = cheap[best]
 B = max(1, int(round(CR["B_frac"] * k))); out["B"] = B
 Ug = H.select_U(GV, B, "gram"); Ur = H.select_U(GV, B, "random", seed=0)
@@ -180,6 +192,35 @@ for nm, S in cheap.items():
 dec = [out["alpha"], out["kappa"], out["kappa_res"], out["kappa_res_over_kappa"], out["hybrid_lds"], out["spell_lds"], out["gain"]]
 if not all(np.isfinite(dec)):
     invalid("判讀量含 NaN/inf（α、κ、κ_res、LDS 或 gain）")
+
+# ------------------------------------------------------------ 探索性／次要報告（審查後定案 2026-11-14；不參與任何判讀）
+def exploratory():
+    ex = {}
+    # S3：逐查詢 α_q（量測子空間內各查詢自己的最小平方係數），向純量 α 收縮，收縮權重事先固定為 0.5（不調）
+    Pg = Ug @ Ug.T; YP, CP = Y @ Pg, C @ Pg  # 逐查詢（欄）在量測子空間內的投影
+    den = (CP * CP).sum(0)
+    aq = np.where(den > 0, (YP * CP).sum(0) / np.where(den > 0, den, 1), 0.0)
+    for w in (0.0, 0.5):
+        al_q = (1 - w) * aq + w * alpha
+        Yh = YP + al_q[None, :] * (C - CP)
+        lq = lds_q(Yh, masks, L)
+        ex[f"alpha_q_shrink{w}"] = dict(lds=float(np.nanmean(lq)), gain=float(np.nanmean(lq)) - max(out["spell_lds"], out["cheap_lds"][best]))
+    ex["alpha_q_stats"] = dict(mean=float(aq.mean()), std=float(aq.std()), min=float(aq.min()), max=float(aq.max()))
+    # S4：查詢對半分（偶數／奇數索引），各自獨立估 U、α，各自算增益
+    halves = []
+    for h in (np.arange(k)[0::2], np.arange(k)[1::2]):
+        Bh = max(1, int(round(CR["B_frac"] * len(h)))); Uh = H.select_U(GV[np.ix_(h, h)], Bh, "gram")
+        Yh_, Ch_ = Y[:, h], C[:, h]
+        hy, ah = H.hybrid(Yh_, Ch_, Uh); spx = H.spell(Yh_, Uh)
+        lh, ls_, lc = lds_q(hy, masks, L[:, h]), lds_q(spx, masks, L[:, h]), lds_q(Ch_, masks, L[:, h])
+        halves.append(dict(k=len(h), B=Bh, alpha=ah, hybrid_lds=float(np.nanmean(lh)), spell_lds=float(np.nanmean(ls_)),
+                           cheap_lds=float(np.nanmean(lc)), gain=float(np.nanmean(lh)) - max(float(np.nanmean(ls_)), float(np.nanmean(lc)))))
+    ex["split_queries"] = dict(halves=halves, same_sign=bool(halves[0]["gain"] * halves[1]["gain"] > 0),
+                               gain_diff=halves[0]["gain"] - halves[1]["gain"])
+    return ex
+
+
+out["exploratory_not_for_verdict"] = exploratory()
 
 # ------------------------------------------------------------ 階段 0 判讀
 S0 = CR["stage0"]
@@ -228,20 +269,31 @@ else:
     if not all(np.isfinite([g, lo, sb, sp_rho] + list(sp_triv.values()))) or \
             (out["crossseed"] is not None and not np.isfinite(out["crossseed"]["hybrid_minus_cheap"])):
         invalid("階段 1 判讀量含 NaN/inf（增益、CI、折半信度、可靠度 Spearman 或跨種子差）")
-    cs_ok = out["crossseed"] is not None and out["crossseed"]["ok"]
+    cs = out["crossseed"]
     cs_missing = "未完成(缺跨種子重訓)"
-    if g >= S1["gain_pass"] and lo > S1["ci_lower_gt"]:
-        v = "PASS" if cs_ok else ("FAIL(跨種子輸給便宜方法)" if out["crossseed"] else cs_missing)
+    # 審查後定案（2026-11-14，M2）：跨種子差 < 0 直接 FAIL，優先於灰區與 PASS；增益 < 0.04 也是 FAIL，不需跨種子
+    if g < S1["gain_grey_low"]:
+        v = "FAIL"
+    elif cs is None:
+        v = cs_missing
+    elif cs["hybrid_minus_cheap"] < S1["crossseed_hybrid_minus_cheap_min"]:
+        v = "FAIL(跨種子差<0，優先於灰區)"
+    elif g >= S1["gain_pass"] and lo > S1["ci_lower_gt"]:
+        v = "PASS"
     elif g >= S1["gain_pass"]:
         v = "GREY(增益≥0.08 但 CI 下界≤0.03)"
-    elif g >= S1["gain_grey_low"]:
-        if out["reliability"]["pass_"]:
-            v = "PASS(僅可靠度路線)" if cs_ok else ("FAIL(跨種子)" if out["crossseed"] else cs_missing)
-        else:
-            v = "GREY(可靠度灰區)" if out["reliability"]["grey"] else "FAIL"
+    elif out["reliability"]["pass_"]:
+        v = "PASS(僅可靠度路線)"
+    elif out["reliability"]["grey"]:
+        v = "GREY(可靠度灰區)"
     else:
         v = "FAIL"
+    # 審查後定案（2026-11-14，M3）：加碼（k=400）後仍為灰區記為 FAIL
+    if a.addon and v.startswith("GREY"):
+        v = "FAIL(加碼後仍為灰區)"
     out["verdict"] = v
-json.dump(out, open(f"{P['res']}/verdict_stage{a.stage}.json", "w"), indent=1, default=float)
+if v.startswith("FAIL") or v.startswith("STOP(混合增益"):
+    out["interpretation_note"] = "此結論是在「純量 α 加簡化版 Spell（G_V 前 B 個特徵向量）」設定下得到的，不等於回報 45 的逐查詢 α_q 與原版 Spell；見 exploratory_not_for_verdict。"
+json.dump(out, open(f"{P['res']}/{VNAME}.json", "w"), indent=1, default=float)
 print(json.dumps({k_: v_ for k_, v_ in out.items() if k_ != "gates"}, indent=1, default=float))
 print("\n結論：", out["verdict"], "\n（機械輸出；最終判讀由 Opus 對照 PREREG.md 審）")

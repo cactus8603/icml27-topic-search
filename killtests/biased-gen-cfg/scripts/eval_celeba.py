@@ -44,6 +44,7 @@ def run_dir(i):
 avail = [set(int(re.fullmatch(r"Model_epoch_(\d+)", os.path.basename(f)).group(1)) for f in glob.glob(os.path.join(run_dir(i), "Model_epoch_*")))
          for i in range(args.n_models)]
 epochs = sorted(set.intersection(*avail)) if args.epochs is None else [int(x) for x in args.epochs.split(",")]
+assert epochs, "找不到所有模型共有的 checkpoint"
 print("epochs", len(epochs), epochs[:3], "...", flush=True)
 
 def build():

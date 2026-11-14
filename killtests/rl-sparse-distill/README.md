@@ -28,7 +28,7 @@ Fable 修正版（現行）：閘門 0（重現 RL 已報 pass@1 ±2pp、token �
 ## 方法重點
 - rl-replace 規則（原作逐字）：b_t=argmax p_B、r_t=argmax p_R；b_t≠r_t 輸出 r_t，否則從 p_B 取樣（T=0.6，top-p 0.95）。
 - 為什麼用 HF 而不用 vLLM 做 rl-replace：vLLM 無法在每個 token 同步兩個模型。HF 版做了多題合批（左 padding＋position_ids）與已結束列壓縮，效能工程與原作不同處已在檔頭註明，並由 smoke 閘門 T3／T4 驗證等價。
-- base／rl／WiSE 用 vLLM（快）。**注意：rl_replace 用 HF、其餘用 vLLM，兩個引擎的數值有微小差異**；為排除引擎偏差，閘門 −1 另含 HF 版 base／rl 與 rl_replace 的等價測試，若審查者要求更嚴，可用 `gen_replace.py --cond base/rl` 在 HF 重跑 base／RL（成本約 +20 GPU 小時／配對）。
+- base／rl／WiSE 用 vLLM（快）。**注意：rl_replace 用 HF、其餘用 vLLM，兩個引擎的數值有微小差異**；為排除引擎偏差，閘門 −1 另含 HF 版 base／rl 與 rl_replace 的等價測試，若審查者要求更嚴，**已定案（2026-11-14）：判準 (i) 的 RL 比較對象改用 HF 引擎的 `gen_replace.py --cond rl`（`slurm/05_rl_hf.sbatch`），每配對預估多 約10 GPU 小時**（合計預估每配對 40–50 h、兩配對約 80–100 h，仍在 120 h 上限內）。
 - 資料：1,453 題，test 1,053／dev 400（dev 本階段不使用）。
 
 ## 執行順序與送出指令（**僅列出，未執行**；都在本資料夾下送出）
@@ -45,6 +45,7 @@ python -I scripts/aggregate.py --gate 0        # 看每個配對是否「配對�
 P=A   # 或 B
 for S in 0 1 2 3 4 5 6 7; do sbatch slurm/02_rl_replace.sbatch $P $S 8; done
 for L in 0.15 0.3 0.45 0.6 0.75 0.9; do sbatch slurm/03_wise.sbatch $P $L; done
+for S in 0 1 2 3 4 5 6 7; do sbatch slurm/05_rl_hf.sbatch $P $S 8; done   # (i) 的比較對象 rl_hf（HF 引擎 RL，約 +10 GPU 小時）
 python -I scripts/aggregate.py                  # 機械輸出 PASS／灰區／FAIL／未能測試與全部數字 -> results/aggregate.json
 ```
 注意：`02_rl_replace` 的 8 片各自 `raw_{i}of8.jsonl.gz`，最後完成的 job 會自動判分合併；若兩片同時結束可能都沒觸發，補跑 `python -I scripts/grade.py results/$P/rl_replace`。
@@ -64,10 +65,15 @@ python -I scripts/aggregate.py                  # 機械輸出 PASS／灰區／F
 ## Smoke test 結果（CPU，無 GPU）
 見下節「Smoke 紀錄」。
 
+## 配對 B 評測模板（2026-11-14 查證）
+- B 用 `pairs.json: pairs.B.template = simplerl_abel_chat`：user 訊息 `Question:\n{q}\nAnswer:\nLet's think step by step.\n`，外包 Qwen 聊天模板。依據：論文附錄 B.3／B.5、`hkust-nlp/SimpleRL-Zoo-Data` 的 simplelr_abel_* 實際 prompt、tokenizer 實測。HF model card 為空，GitHub 的 hkust-nlp/simpleRL-reason（v1 分支）eval 程式有 `abel` 模板但沒寫哪個模型用哪個模板。
+- **未確認**：(1) 評測是否外包聊天模板（推定外包）；(2) 原作評測用 16000 token、Zoo 模型 temperature 1.0，我們用 3000 token、greedy。**B 的 00／01 送出前必須先由協調者確認**；閘門 0 的 MATH500／Minerva 重現是最終檢驗，不過就記「未能測試」。
+- 實作：`common.build_prompt` 依環境變數 `PAIR`（sbatch 皆已 export）選 per-pair 模板；`gen_vllm.py`、`gen_replace.py` 未改動。
+
 ## 風險與未確認事項
 1. **HF lock-step 吞吐是最大成本風險**：步時 80 ms、DynamicCache 每步拼接都是估計；若實測慢 2 倍，rl_replace 單配對 > 40 GPU 小時。備案：用「vLLM 取樣＋RL 預填找第一個不一致位置、截斷重生」的分輪方法（未實作、未驗證）。
 2. rl_replace（HF）對 base／RL（vLLM）的引擎差異（見方法重點）。
-3. 「97.5% CI」解讀為單側 2.5 百分位；「落在 30–85%」解讀為 base 與 RL 的 pass@64（見 PREREG）。
+3. CI：已改為單側 α=0.0125（Bonferroni，兩配對擇一）；「落在 30–85%」解讀為 base 與 RL 的 pass@64（見 PREREG）。
 4. 已報數字取自論文圖表（Oat-Zero 為人工讀圖），且為 greedy、各自的題目版本；OlympiadBench 我們用 math-ai 版純文字單一答案 581 題（原作 674 題含多答案），Minerva 為 math-ai 272 題；重現 ±2pp 可能因題目版本不同而不過（這會記為「未能測試」，需查題目版本與判分）。SimpleRL-Zoo 原作評測的 token 上限可能不是 3000。
 5. Qwen2.5-Math-1.5B 的 context 只有 4096，故 3000 token 上限；SimpleRL-Zoo 在 3000 token 下的表現可能略低於其原報告（原報告用較長上限，未確認）。
 6. SimpleRL-Zoo 的 RL 檔是 fp32，bf16 載入有微小差異；WiSE 內插以 fp32 計算後轉 bf16。tie_word_embeddings 的 lm_head 缺失情形在 make_wise.py 已特判，未在真實 Zoo 檔上測過。

@@ -17,17 +17,22 @@ CB = load_json("criteria.json")["B"]; EV = load_json("criteria.json")["frozen_ev
 
 
 def main():
-    res = ROOT / "results"; D = load_json("detectors.json")
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--results", default=str(ROOT / "results"))
+    ap.add_argument("--rare-n", type=int, default=None, help="僅供 smoke test 覆寫；正式執行不得使用")
+    a = ap.parse_args()
+    CB_rare_n = a.rare_n or CB["rare_cell_n"]
+    res = Path(a.results); D = load_json("detectors.json")
     df = load_all(res); E = events(df, D); df["pos"] = E[EV]
     rng = np.random.default_rng(CB["blind_rng_seed"])
     cells = df.groupby(["model", "prompt"]).agg(n=("pos", "size"), h=("pos", "sum")).reset_index()
-    cells["rare"] = (cells.n >= CB["rare_cell_n"]) & (cells.h / cells.n < CB["rare_cell_rate_below"]) & (cells.h > 0)
+    cells["rare"] = (cells.n >= CB_rare_n) & (cells.h / cells.n < CB["rare_cell_rate_below"]) & (cells.h > 0)
     rare_keys = set(map(tuple, cells[cells.rare][["model", "prompt"]].values))
     israre = np.array([(m, p) in rare_keys for m, p in zip(df.model, df.prompt)])
     rp = df[israre & df.pos].assign(kind="rare_pos")
     pp = df[~israre & df.pos]
     pp = pp.iloc[rng.choice(len(pp), min(CB["n_pct_positive_controls"], len(pp)), replace=False)].assign(kind="pct_pos") if len(pp) else pp
-    neg_pool = df[~israre & (df.nudenet < 0.2) & (df.falconsai < 0.2) & (df.clip < 0.2)]
+    neg_pool = df[~israre & (df.nudenet < 0.2) & (df.falconsai < 0.2) & (df["clip"] < 0.2)]
     neg = neg_pool.iloc[rng.choice(len(neg_pool), min(CB["n_negative_controls"], len(neg_pool)), replace=False)].assign(kind="neg") if len(neg_pool) else neg_pool
     R = pd.concat([rp, pp, neg]).sample(frac=1, random_state=CB["blind_rng_seed"]).reset_index(drop=True)
     R["item"] = range(len(R))

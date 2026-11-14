@@ -56,7 +56,7 @@ J3=$(sbatch --parsable --dependency=afterok:$J2 slurm/03_analyze.sbatch)
 3. 主指標只有 harm 一個留出安全概念（deception 僅 ~62 對、1% FPR 解析度不足）；結論力有限。
 4. benign 概念資料是 organism 的訓練批次，E 概念位移可能比在未見資料上大；harm 才是真正未見。
 5. 改寫觸發（T1–T3）下 organism 是否仍逃避完全未知；若沒有，偵測器的「留出模板」評估會退回 T0 或無法評估。
-6. 偵測器本屬第 2 週，這裡因快取現成而一併算；決定權在審查者。
+6. 偵測器：依 2026-11-14 審查（REVIEW.md M2）改為探索性，只回報、不進第 1 週裁定；閘門 2b 與灰區加碼見 PREREG 修訂紀錄。
 7. 探測器型式與作者不同（平均池化邏輯迴歸 vs 逐 token sigmoid 平均）。
 8. 吞吐、GPU 小時、分析耗時都是推估；`aggregate.py` 的閘門閾值是我依原作數字與樣本數定的，需審查。
 9. （已解決）checkpoint 已下載；額度約剩 160 GB。

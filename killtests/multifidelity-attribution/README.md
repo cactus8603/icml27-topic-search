@@ -45,7 +45,7 @@ logs/     slurm 輸出
 | 精確 Y k=50（5 tasks×10 查詢，vmap 反向）每 task 0.3–1.5 h | s0_exact | 2–8 | 10 MB |
 | 便宜方法 7 變體（逐樣本梯度、TRAK×5、EK-FAC） | s0_cheap | 2–4 | ~0.3 GB |
 | **階段 0 合計** | | **約 10–25**（回報 56：20–25） | **約 1 GB** |
-| 階段 1：Y 再 150 查詢、跨種子 100 重訓、（灰區 +200 重訓） | s1_* | 8–25／3–5／4–10 | <0.1 GB |
+| 階段 1：Y 再 150 查詢、跨種子 100 重訓（seed 5）、（灰區：Y 再 200 查詢，20 個 chunk） | s1_* | 8–25／3–5／**10–33**（由每 chunk 0.5–1.7 h 估；2026-11-14 由「+200 重訓 4–10」改為增加查詢，成本較高，累計最壞可能超過 80，需 bench 後重估並回報） | <0.1 GB |
 全題上限 80 GPU 小時、80 GB（PREREG §7）。
 
 ## 6. 送出指令（寫出來，**未執行**）
@@ -62,7 +62,7 @@ J4=$(sbatch --parsable scripts/s0_exact.sbatch)
 # 只有結論為 CONTINUE 才送：
 sbatch scripts/s1_exact.sbatch; sbatch scripts/s1_crossseed.sbatch
 .../attrib-torch/bin/python scripts/aggregate.py --cfg configs/stage0.json --stage 1
-# 灰區唯一加碼：sbatch scripts/s1_addon.sbatch；之後再跑一次 aggregate --stage 1
+# 灰區唯一加碼（增加查詢到 k=400，不增加重訓）：sbatch scripts/s1_addon.sbatch；之後 aggregate --stage 1 --addon（加碼後仍灰區記 FAIL）
 ```
 
 ## 7. 可選：Bergson GPT-2 排行榜重現（UGN 0.819／MAGIC 0.931）
@@ -99,5 +99,5 @@ sbatch scripts/s1_exact.sbatch; sbatch scripts/s1_crossseed.sbatch
 - 便宜方法算的是「eval 模式 BN 的最終模型」，Y 是「訓練軌跡」導數，兩者估計對象不同（回報 45 反駁 C），低 LDS 不全是 bug。
 - 階段 0 只有 k=50（B=10），κ 與增益的標準誤大；最佳便宜 7 選 1 有輕微樂觀偏誤。
 - Spell 重現只是「以 G_V 取前 B 個特徵向量」的簡化版（原程式未公開）。
-- 匯出保真度容差 5e-3；若不過先把 `matmul_precision` 改 "highest"。
+- 匯出保真度容差 5e-3；若不過先把 `matmul_precision` 改 "highest"。重現閘門（LDS ≥ 0.88）不過時同樣第一步改 "highest" 重跑，並記入 PREREG 修改紀錄（S5）。
 - 額度：階段 0 只需約 1 GB；環境 attrib-jax 4 GB。

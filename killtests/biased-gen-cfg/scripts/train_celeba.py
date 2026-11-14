@@ -8,7 +8,7 @@
 checkpoint 命名沿用原作：<save-root>/CelebA32_<n>_<W>_Adam_<B>_<LR:.4f>_index<i>/Models/Model_epoch_<e>。
 支援續跑（找已存在的最大 epoch checkpoint；優化器狀態另存 opt.pt）。
 """
-import argparse, os, sys, json, time, glob, re
+import argparse, os, sys, json, time
 import numpy as np
 import torch
 
@@ -50,12 +50,18 @@ df = Diffusion.DiffusionConfig(n_steps=1000, img_shape=(1, 32, 32), device=str(d
 loss_fn = torch.nn.MSELoss()
 ck = ckpt_schedule(args.first_ckpt_epoch, args.epochs, args.max_ratio)
 start = 0
-done = [int(re.fullmatch(r"Model_epoch_(\d+)", os.path.basename(f)).group(1)) for f in glob.glob(os.path.join(mdir, "Model_epoch_*"))]
-if done and os.path.exists(os.path.join(run, "opt.pt")):
-    start = max(done)
+# 續跑：以 opt.pt 內記錄的 epoch 為準（模型與優化器狀態必須同一個 epoch；寫檔皆為 tmp + os.replace 的原子寫入）
+if os.path.exists(os.path.join(run, "opt.pt")):
+    st = torch.load(os.path.join(run, "opt.pt"), map_location=dev, weights_only=True)
+    start = int(st["epoch"])
     model.load_state_dict(torch.load(os.path.join(mdir, f"Model_epoch_{start}"), map_location=dev, weights_only=True))
-    opt.load_state_dict(torch.load(os.path.join(run, "opt.pt"), map_location=dev, weights_only=True))
+    opt.load_state_dict(st["opt"])
     print("resume from epoch", start)
+
+
+def save_atomic(obj, path):
+    tmp = os.path.join(os.path.dirname(path), "tmp_" + os.path.basename(path))  # 不符合 Model_epoch_* 的 glob（torch.save 不接受 . 開頭檔名）
+    torch.save(obj, tmp); os.replace(tmp, path)
 json.dump({**vars(args), "seed": seed, "ckpt_epochs": ck, "n_params": sum(p.numel() for p in model.parameters())},
           open(os.path.join(run, "meta.json"), "w"), indent=1)
 print("params", sum(p.numel() for p in model.parameters()), "ckpts", len(ck), flush=True)
@@ -70,8 +76,8 @@ for ep in range(start + 1, args.epochs + 1):
         loss = loss_fn(eps, model(xt.float(), ts))
         opt.zero_grad(); loss.backward(); opt.step()
     if ep in ck:
-        torch.save(model.state_dict(), os.path.join(mdir, f"Model_epoch_{ep}"))
-        torch.save(opt.state_dict(), os.path.join(run, "opt.pt"))
+        save_atomic(model.state_dict(), os.path.join(mdir, f"Model_epoch_{ep}"))   # 先存模型，再存記錄 epoch 的 opt.pt
+        save_atomic({"epoch": ep, "opt": opt.state_dict()}, os.path.join(run, "opt.pt"))
     if ep % 100 == 0 or ep == 1:
         print(f"epoch {ep} loss {loss.item():.4f} {time.time()-t0:.0f}s", flush=True)
     if args.max_seconds and time.time() - t0 > args.max_seconds:

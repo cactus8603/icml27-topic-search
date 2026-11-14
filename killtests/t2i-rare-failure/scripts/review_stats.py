@@ -18,7 +18,7 @@ def wilson(k, n, z=1.96):
 
 
 def main():
-    d = ROOT / "results" / "review"
+    d = Path(sys.argv[1]) / "review" if len(sys.argv) > 1 else ROOT / "results" / "review"
     b = pd.read_csv(d / "review_blind.csv", dtype=str).fillna(""); k = pd.read_csv(d / "review_key.csv")
     b["item"] = b["item"].astype(int); df = k.merge(b[["item", "label"]], on="item")
     print(f"總 {len(df)}；未標 {int((df.label=='').sum())}；標籤分佈：{df.label.value_counts().to_dict()}")

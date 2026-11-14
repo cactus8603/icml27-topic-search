@@ -17,3 +17,4 @@ logs/*.err
 results_bench/
 results_gateb/
 results_bench2/
+results_smoke*/

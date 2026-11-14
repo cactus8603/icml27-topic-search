@@ -28,7 +28,16 @@ def smooth(y, k):
 
 
 def tstar(epochs, dist, k):
-    return float(epochs[int(np.argmin(smooth(dist, k)))])
+    """平滑後最低點 epoch。曲線含 NaN/inf 時回傳 nan（np.argmin 會把 NaN 當最小值，不能直接用）。"""
+    y = smooth(dist, k)
+    if len(y) == 0 or not np.all(np.isfinite(y)):
+        return float("nan")
+    return float(epochs[int(np.argmin(y))])
+
+
+def at_edge(epochs, e):
+    """t* 落在 checkpoint 網格第一或最後一格（PREREG 閘門 3：要標記）。"""
+    return "nan" if not np.isfinite(e) else ("first" if e == epochs[0] else ("last" if e == epochs[-1] else None))
 
 
 # ---------------- 閘門 1：BP 單元測試 ----------------
@@ -44,6 +53,7 @@ if os.path.exists(args.celeba):
     d = np.load(args.celeba)
     ep, loss, sim = d["epochs"], d["test_loss"], d["sim_train"]  # sim[a,b,e,t]
     times = list(d["times"]); sel = [times.index(t) for t in cc["similarity_times"] if t in times]
+    missing_t = [t for t in cc["similarity_times"] if t not in times]
     M = loss.shape[0]
     diffs, e_b, e_l = [], [], []
     for i in range(M):
@@ -53,10 +63,13 @@ if os.path.exists(args.celeba):
         e_b.append(eb); e_l.append(el); diffs.append(np.log(el / eb))
     diffs = np.array(diffs)
     mean, sem = diffs.mean(), diffs.std(ddof=1) / np.sqrt(M)
-    ok = (M >= cc["min_models"]) and mean > cc["sem_multiple"] * sem and (mean > 0 or not cc["require_positive_gap"])
+    finite_ok = bool(np.all(np.isfinite(diffs))) and not missing_t
+    ok = finite_ok and (M >= cc["min_models"]) and mean > cc["sem_multiple"] * sem and (mean > 0 or not cc["require_positive_gap"])
     verdict["info"]["celeba"] = {"bias_min_epoch": e_b, "test_loss_min_epoch": e_l, "log_ratio_mean": float(mean),
                                  "sem": float(sem), "threshold": float(cc["sem_multiple"] * sem),
-                                 "n_models": M, "test_loss_min_at_grid_end": bool(any(e == ep[-1] for e in e_l))}
+                                 "n_models": M, "test_loss_min_at_grid_end": bool(any(e == ep[-1] for e in e_l)),
+                                 "bias_min_edge": [at_edge(ep, e) for e in e_b], "test_loss_min_edge": [at_edge(ep, e) for e in e_l],
+                                 "curves_finite": finite_ok, "missing_similarity_times": missing_t}
     verdict["gates"]["G2_celeba_reproduction"] = "PASS" if ok else "未能測試（重現未通過；記為可行性問題，非題目不成立）"
 else:
     verdict["gates"]["G2_celeba_reproduction"] = "未能測試（找不到 celeba_eval.npz）"
@@ -88,18 +101,21 @@ if os.path.exists(args.hier):
     c_fail = bool(lo_ > -np.log(1 + ch["fail_band"]) and hi_ < np.log(1 + ch["fail_band"]))
     # 次要：正規化幅度 = test-loss 最低點 epoch 的距離 / 曲線最低距離
     ce_c = h["ce"][:, :, :, -1, 0].mean(axis=(0, 2))           # 共同測試集、條件分支、跨 run 與 t 平均
-    e_loss = tstar(ep, ce_c, k); ie = int(np.where(ep == e_loss)[0][0])
+    e_loss = tstar(ep, ce_c, k)
     mag = {}
     for b in br:
         curve = smooth(pc[:, :, :, :2, ib[b]].mean(axis=(0, 2, 3)), k)
-        mag[b] = float(curve[ie] / curve.min())
+        mag[b] = float(curve[int(np.where(ep == e_loss)[0][0])] / curve.min()) if np.isfinite(e_loss) else float("nan")
+    tstar_edges = {b: [at_edge(ep, pair_t(b, p)) for p in range(len(pairs))] for b in br}
     verdict["info"]["hier"] = {
         "n_runs": R, "tstar_per_branch_mean_over_pairs": {b: float(np.mean([pair_t(b, p) for p in range(len(pairs))])) for b in br},
         "main_metric_log_tstar_ratio": {"mean": float(lr_pair.mean()), "ci95": [float(lo_), float(hi_)], "per_pair": lr_pair.tolist(),
                                        "numerator": base, "denominator": hi},
         "c_pass_criteria_met": c_pass, "c_fail_band_met": c_fail,
         "status_note": "第 1 週只有 3 個 run：此主指標僅為探索性，正式 (c) 需 6 份不相交資料（見 PREREG）" if R < ch["min_runs_main"] else "樣本數足夠，可作 (c) 正式判讀",
-        "test_loss_min_epoch": e_loss, "normalized_magnitude_at_loss_min": mag,
+        "test_loss_min_epoch": e_loss, "test_loss_min_edge": at_edge(ep, e_loss), "normalized_magnitude_at_loss_min": mag,
+        "tstar_edge_per_pair": tstar_edges,
+        "main_metric_censored": bool(any(tstar_edges[b][p] is not None for b in (base, hi) for p in range(len(pairs)))),
     }
 else:
     verdict["gates"]["G3_hier_oracle_curves"] = "未能測試（找不到 hier_oracle npz）"
