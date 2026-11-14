@@ -10,5 +10,6 @@ logs/*.err
 __pycache__/
 results_smoke/
 results/pc_synth_only.json
+results/author_parity/
 # 含有害合成內容的原文檔一律不進 git
 *.jsonl
