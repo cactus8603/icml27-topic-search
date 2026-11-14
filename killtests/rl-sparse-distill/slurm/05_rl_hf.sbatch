@@ -15,6 +15,8 @@
 export PAIR=$1; SH=$2; NS=$3
 set -e
 source /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/rl-sparse-distill/slurm/env.sh
+$PY -BI scripts/artifacts.py "$PAIR" rl_hf
+export RSD_RUN_ID=${RSD_RUN_ID:-${SLURM_ARRAY_JOB_ID:-$SLURM_JOB_ID}}
 OUT=results/$PAIR/rl_hf
 $PY -I scripts/gen_replace.py --cond rl --base-model $BASE --rl-model $RL --out $OUT --split test --n 128 --rows-per-batch 256 --shard $SH/$NS || exit 1
-if [ $(ls $OUT/raw_*of$NS.jsonl.gz 2>/dev/null | wc -l) -eq $NS ]; then $PY -I scripts/grade.py $OUT --workers 16 || exit 1; fi
+$PY -I scripts/grade.py "$OUT" --pair "$PAIR" --condition rl_hf --n-shards "$NS" --workers 16

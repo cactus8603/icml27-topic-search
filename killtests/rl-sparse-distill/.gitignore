@@ -2,6 +2,8 @@
 data/*.jsonl.gz
 results/**/raw_*.jsonl.gz
 results/**/*.tmp
+results/**/.grade.lock
+results/**/.graded_verify_stage.json
 results/probe_*/
 pylib/
 slurm/logs/

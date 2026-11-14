@@ -44,12 +44,14 @@ for P in A B; do for C in base rl base_greedy rl_greedy; do sbatch slurm/01_vllm
 python -I scripts/aggregate.py --gate 0        # 看每個配對是否「配對合格」
 # 3. 判準 1：只對合格配對。rl_replace 切 8 片（每片約 2–3 小時），WiSE 6 點
 P=A   # 或 B
-for S in 0 1 2 3 4 5 6 7; do sbatch slurm/02_rl_replace.sbatch $P $S 8; done
+REPLACE_RUN=$(date +%s)-$P-replace
+for S in 0 1 2 3 4 5 6 7; do sbatch --export=ALL,RSD_RUN_ID=$REPLACE_RUN slurm/02_rl_replace.sbatch $P $S 8; done
 for L in 0.15 0.3 0.45 0.6 0.75 0.9; do sbatch slurm/03_wise.sbatch $P $L; done
-for S in 0 1 2 3 4 5 6 7; do sbatch slurm/05_rl_hf.sbatch $P $S 8; done   # (i) 的比較對象 rl_hf（HF 引擎 RL，約 +10 GPU 小時）
+HF_RUN=$(date +%s)-$P-hf
+for S in 0 1 2 3 4 5 6 7; do sbatch --export=ALL,RSD_RUN_ID=$HF_RUN slurm/05_rl_hf.sbatch $P $S 8; done
 python -I scripts/aggregate.py                  # 機械輸出 PASS／灰區／FAIL／未能測試與全部數字 -> results/aggregate.json
 ```
-注意：`02_rl_replace` 的 8 片各自 `raw_{i}of8.jsonl.gz`，最後完成的 job 會自動判分合併；若兩片同時結束可能都沒觸發，補跑 `python -I scripts/grade.py results/$P/rl_replace`。
+各片發布 raw 及來源憑證。完整分片到齊後會在檔案鎖內判分，另存 `graded_verified.json` 與判分憑證。重送缺片時沿用原本的 `RSD_RUN_ID`；修復後若需補判分，執行 `python -I scripts/grade.py results/$P/rl_replace --pair $P --condition rl_replace`。`--gate 0` 只寫 `results/aggregate_gate0*.json`。舊版的 `graded.json` 保留供稽核。
 
 ## 預估 GPU 小時與空間（全為推估，未實測；送出前先跑 04 吞吐實測）
 取樣量：1,053 題 × 128 樣本 = 134,784 條／cond／配對；平均長度假設 700–1,200 token。
@@ -89,7 +91,7 @@ T1（rl=base 等於 base 取樣）、T2（全部替換等於 RL greedy）、T3�
 ## 2026-11-14 代理落差稽核後補充（結果前定案；條文見 PREREG.md 修改紀錄 R1–R3）
 - R1：(ii) 的 FAIL 須同時「點估計 ≤ 0」且「差值 98.75 百分位 < +2.0pp」，否則歸灰區；合併 dev 後仍排除不了 2pp → 「未能測試（檢定力不足）」。`aggregate.py` 輸出 `ii_fail`、`ii_underpowered`、`wise_margin_upper_pp`。
 - R2：`gate1.mix_curve_descriptive`（回應層級混合曲線，只描述）。
-- R3：`gen_replace.py --cond geo_mix --lam 0.5`；`aggregate.py` 輸出 `probe2`（triggered／pair／result）；送法：`for S in 0..7; do sbatch slurm/06_geo_mix.sbatch <PAIR> $S 8; done`（只在 probe2.triggered 且使用者放行後；預估與 rl_replace 同量級 18–25 GPU 小時／配對，探針上限 25，超出 120 總量先回報）。
+- R3：`gen_replace.py --cond geo_mix --lam 0.5`；`aggregate.py` 輸出 `probe2`（triggered／pair／result）。八個分片須共用同一個獨立的 `RSD_RUN_ID`，並先有真實模型 T6–T8 憑證。多重性分配定案前，R3 通過只做描述。探針上限 25 GPU 小時。
 - 既有 cond 不變的證據：以 `git HEAD` 的舊版 `gen_replace.py` 與新版比對 base／rl（含 temperature 0）／rl_replace（壓縮與不壓縮）／all_replace，輸出（文字、結束旗標、token 數、替換數）全部逐字相同（Qwen3-0.6B 與加雜訊副本，CPU）。
 - smoke 新增 T6（兩模型相同時 geo_mix == base 取樣、替換數 0）、T7a（λ=1、temperature 0 == RL greedy）、T7b（λ=0 == base 取樣）、T8（λ=1 時與獨立參考迴圈逐字相同且不一致位置數相同）。GPU 版 `00_correctness_gpu.sbatch` 會一併跑。
 - 刪除的說法：「rl_replace 是學生上限」只對 pass@1 近似成立，對 pass@64 不成立。

@@ -38,8 +38,9 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
     texts = [p for p in prompts for _ in range(n)]
     enc = tok(texts, return_tensors="pt", padding=True, add_special_tokens=False)
     ids, attn = enc["input_ids"].to(dev), enc["attention_mask"].to(dev)
-    B, L = ids.shape
-    max_new = min(max_new, max_len - L)
+    B = ids.shape[0]
+    budgets = (max_len - attn.sum(dim=-1)).clamp(min=0, max=max_new)
+    max_new = int(budgets.max().item())
     pos = (attn.cumsum(-1) - 1).clamp(min=0)
     need_b = cond in ("base", "rl_replace", "all_replace", "geo_mix")
     need_r = cond in ("rl", "rl_replace", "all_replace", "geo_mix")
@@ -52,7 +53,7 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
     rows = torch.arange(B, device=dev)  # 目前批次各列對應的原始列
     cur_ids, cur_attn, cur_pos = ids, attn, pos
     steps_rows = 0
-    act = torch.ones(B, dtype=torch.bool, device=dev)  # 目前批次中尚未結束的列
+    act = budgets > 0  # 目前批次中尚未結束且仍有預算的列
     for t in range(max_new):
         lb = lr = None
         if need_b:
@@ -86,7 +87,7 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
             n_repl[w] += dis[act].long()
         done = (nxt.unsqueeze(-1) == stop).any(-1) & act
         finished[rows[done]] = True
-        act = act & ~done
+        act = act & ~done & (t + 1 < budgets[rows])
         if not bool(act.any()):
             break
         if compact and int(act.sum()) < 0.75 * rows.numel():
@@ -98,8 +99,8 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
                     c.batch_select_indices(keep)
             act = torch.ones_like(keep, dtype=torch.bool)
         cur_ids = nxt.unsqueeze(-1)
-        cur_attn = torch.cat([cur_attn, torch.ones_like(cur_attn[:, :1])], dim=-1)
-        cur_pos = cur_pos[:, -1:] + 1
+        cur_attn = torch.cat([cur_attn, act[:, None].to(cur_attn.dtype)], dim=-1)
+        cur_pos = cur_pos[:, -1:] + act[:, None].to(cur_pos.dtype)
     res = []
     out_tok = out_tok.cpu()
     for i in range(B):
@@ -146,12 +147,19 @@ def main():
     pc = pairs_cfg()
     temp = pc["temperature"] if a.temperature is None else a.temperature
     top_p = pc["top_p"] if a.top_p is None else a.top_p
-    si, sn = map(int, a.shard.split("/"))
+    from artifacts import (artifact_receipt, atomic_json, hf_batch_seed, HF_SEED_SCHEDULE, parse_shard,
+                           publish_raw, require, sha256, read_json)
+    si, sn = parse_shard(a.shard)
     rows = shard(load_data(a.split, a.data), si, sn)
     if a.limit:
         rows = rows[: a.limit]
     outp = os.path.join(a.out, f"raw_{si}of{sn}.jsonl.gz")
+    meta_path = os.path.join(a.out, f"meta_{si}of{sn}.json")
     if os.path.exists(outp):
+        if os.environ.get("RSD_RUN_ID"):
+            p = read_json(meta_path).get("provenance", {})
+            require(p.get("run_id") == os.environ["RSD_RUN_ID"] and p.get("raw_sha256") == sha256(outp),
+                    "existing raw shard is not from this run")
         print("exists, skip", outp); return
     dt = getattr(torch, a.dtype or pc["dtype"])
     tok = AutoTokenizer.from_pretrained(a.base_model, padding_side="left")
@@ -167,13 +175,12 @@ def main():
     max_new = a.max_new or pc["max_new_tokens"]
     qpb = max(1, a.rows_per_batch // a.n)
     os.makedirs(a.out, exist_ok=True)
-    tmp = outp + ".tmp"
     t0 = time.time()
-    with open_gz_write(tmp) as f:
+    with publish_raw(outp) as tmp, open_gz_write(tmp) as f:
         for bi in range(0, len(rows), qpb):
             chunk = rows[bi: bi + qpb]
             gen = torch.Generator(device=a.device)
-            gen.manual_seed(a.seed + 1000 * si + bi)
+            gen.manual_seed(hf_batch_seed(a.seed, si, bi))
             lg = {}
             res = decode_batch(tok, mb, mr, [build_prompt(r["question"], pc) for r in chunk], a.n, a.cond,
                                temp, top_p, max_new, pc["max_model_len"], gen, compact=not a.no_compact, log=lg,
@@ -185,11 +192,17 @@ def main():
             f.flush()
             print(f"batch {bi // qpb + 1}/{(len(rows) + qpb - 1) // qpb} elapsed {time.time() - t0:.0f}s "
                   f"row-steps {lg['steps_rows']}", flush=True)
-    os.replace(tmp, outp)
-    json.dump({"cond": a.cond, "base": a.base_model, "rl": a.rl_model, "temperature": temp, "top_p": top_p, "n": a.n,
-               "max_new": max_new, "split": a.split, "shard": a.shard, "seed": a.seed, "compact": not a.no_compact,
-               "engine": "hf-lockstep", "seconds": time.time() - t0, **({"lam": a.lam} if a.cond == "geo_mix" else {})},
-              open(os.path.join(a.out, f"meta_{si}of{sn}.json"), "w"))
+    meta = {"cond": a.cond, "base": a.base_model, "rl": a.rl_model, "temperature": temp, "top_p": top_p, "n": a.n,
+            "max_new": max_new, "split": a.split, "shard": a.shard, "seed": a.seed, "compact": not a.no_compact,
+            "rows_per_batch": a.rows_per_batch, "seed_schedule": HF_SEED_SCHEDULE,
+            "engine": "hf-lockstep", "seconds": time.time() - t0}
+    if a.cond == "geo_mix":
+        meta["lam"] = a.lam
+    if os.environ.get("RSD_RUN_ID") and not a.limit:
+        meta["provenance"] = artifact_receipt(outp, os.environ["PAIR"], os.path.basename(a.out), "hf-lockstep",
+                                              os.environ.get("SLURM_JOB_ID"), a.dtype or pc["dtype"],
+                                              pc["max_model_len"], a.data)
+    atomic_json(meta_path, meta)
 
 
 if __name__ == "__main__":

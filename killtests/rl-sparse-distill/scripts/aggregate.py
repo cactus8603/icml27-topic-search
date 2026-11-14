@@ -1,6 +1,6 @@
 """機械判讀：依 configs/criteria.json 輸出閘門 0／判準 1 的 PASS／灰區／FAIL／未能測試與全部數字。
 用法：aggregate.py [--pairs A B] [--results results] [--selftest]
-結果目錄約定：results/<pair>/<cond>/graded.json，cond ∈
+正式結果目錄約定：results/<pair>/<cond>/graded_verified.json 與取樣／判分憑證，cond ∈
   base, rl（取樣 n=128, test）、rl_greedy, base_greedy（split all, n=1）、rl_replace、wise_0.15 ...（WiSE-FT 各 λ）
 判準的所有數字只從 criteria.json 讀；改門檻不必改此檔。
 2026-11-14 [claude]（使用者原則變更後、結果前定案，報告 60 通用條文 G 與第 5 節）：整體判定改為現象／訊號／空間三項
@@ -8,10 +8,12 @@
 2026-11-14（代理落差稽核後、結果前定案）：R1 (ii) 的 FAIL 需排除 +2pp；R2 回應層級混合曲線（只描述）；R3 geo_mix 第二探針（probe2）。
 """
 import argparse, json, math, os, sys
+from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import ROOT, cfg, load_data
+from artifacts import ArtifactError, atomic_json, check_gate_minus1, load_verified, require_hf_pairing
 
 
 def pass_at_k_vec(c, n, k):
@@ -25,11 +27,6 @@ def pass_at_k_vec(c, n, k):
         j = np.arange(n - ci + 1, n + 1, dtype=float)
         out[i] = 1.0 - float(np.prod(1.0 - k / j)) if ci > 0 else 0.0
     return out
-
-
-def load_graded(path):
-    with open(path) as f:
-        return json.load(f)
 
 
 def per_q(graded, ids, k):
@@ -47,7 +44,7 @@ def per_q(graded, ids, k):
 
 
 def interp_frontier(xs, ys, x0):
-    """分段線性前緣在 x0 的值（xs 排序；超出範圍取端點，對 rl_replace 不利的保守方向由 flag 回報）。"""
+    """分段線性前緣在 x0 的值（xs 排序；超出範圍取端點並記錄）。"""
     o = np.argsort(xs)
     return float(np.interp(x0, np.asarray(xs)[o], np.asarray(ys)[o]))
 
@@ -139,7 +136,9 @@ def gate1(pq, ccfg, ecfg, merged=False):
     dv = rlh["pk"] - rl["pk"]; bv = dv[idx].mean(1)
     res["diag_rlhf_minus_rlvllm_pk_pp"] = 100 * dv.mean()
     res["diag_rlhf_minus_rlvllm_pk_ci95_pp"] = [100 * np.quantile(bv, 0.025), 100 * np.quantile(bv, 0.975)]
-    res["diag_rlhf_minus_rlvllm_p1_pp"] = 100 * (rlh["p1"].mean() - rl["p1"].mean())
+    dv_p1 = rlh["p1"] - rl["p1"]
+    res["diag_rlhf_minus_rlvllm_p1_pp"] = 100 * dv_p1.mean()
+    res["diag_rlhf_minus_rlvllm_p1_ci95_pp"] = (100 * np.quantile(dv_p1[idx].mean(1), [0.025, 0.975])).tolist()
     res["diag_trunc_pct"] = {"base": 100 * base["trunc"].mean(), "rl_vllm": 100 * rl["trunc"].mean(),
                              "rl_hf": 100 * rlh["trunc"].mean(), "rl_replace": 100 * rr["trunc"].mean()}
     # WiSE-FT 前緣：λ=0(base)、各 λ、λ=1(rl)
@@ -273,8 +272,12 @@ def phenomenon_eval(summary, crit):
     order = crit["phenomenon"]["pair_order"]
     g0 = {p: summary[p]["gate0"] for p in order if p in summary}
     for p in order:
-        if g0.get(p, {}).get("verdict") == "配對合格":
+        verdict = g0.get(p, {}).get("verdict", "")
+        if verdict == "配對合格":
             return {"verdict": "PASS", "primary_pair": p, "scope": crit["phenomenon"]["scope"]}
+        if not verdict.startswith("配對不合格"):
+            return {"verdict": "未能測試", "primary_pair": None, "waiting_for_eligibility": p,
+                    "note": "前序配對須先確定有資格或確認不合格"}
     ab_ok = [bool(g.get("reproduce_ok") and g.get("trunc_ok")) for g in g0.values() if "reproduce_ok" in g]
     if len(ab_ok) == len(order) and all(ab_ok):
         return {"verdict": "FAIL", "primary_pair": None, "scope": crit["phenomenon"]["scope"],
@@ -301,7 +304,8 @@ def signal_eval(pq, crit, merged=False):
     else:
         v = "灰區（加碼後仍灰區：交使用者）" if merged else "灰區"
     return {"verdict": v, "q1_rr_minus_rlhf_pk_pp": q1_pt, "q1_lo_pp": q1_lo, "q1_ok": q1,
-            "q2_recovery_p1": rec, "q2_ok": q2, "alpha_one_sided": sc["q1_ci_one_sided_alpha"]}
+            "q2_recovery_p1": rec, "q2_rlhf_minus_base_p1_pp": 100 * den,
+            "q2_denominator_positive": bool(den > 0), "q2_ok": q2, "alpha_one_sided": sc["q1_ci_one_sided_alpha"]}
 
 
 def space_eval(pq, crit, merged=False):
@@ -321,9 +325,14 @@ def space_eval(pq, crit, merged=False):
             pts = [("0", base)] + mid + [("1", pq[ec])]
             m, bm = wise_margin_boot(target, pts, idx)
             if best is None or m < best[0]:
-                best = (m, bm, ec)
-        m, bm, ec = best
-        return {"pt_pp": 100 * m, "lo_pp": 100 * float(np.quantile(bm, a)), "upper_pp": 100 * float(np.quantile(bm, 1 - a)), "endpoint": ec}
+                best = (m, bm, ec, pts)
+        m, bm, ec, pts = best
+        low = min(q["p1"].mean() for _, q in pts)
+        high = max(q["p1"].mean() for _, q in pts)
+        xp = target["p1"].mean()
+        return {"pt_pp": 100 * m, "lo_pp": 100 * float(np.quantile(bm, a)), "upper_pp": 100 * float(np.quantile(bm, 1 - a)),
+                "endpoint": ec, "target_p1_pp": 100 * xp, "frontier_p1_range_pp": [100 * low, 100 * high],
+                "frontier_clamped": not bool(low <= xp <= high)}
     Ha = frontier_gap(rr)
     # H_b：π*（mix pass@1 最接近 rl_replace pass@1；同距取小）
     nS, kS = g1["mix_curve"]["n"], g1["mix_curve"]["k"]
@@ -368,7 +377,7 @@ def overall_eval(phen, sig, spc, r3):
     if r3.get("triggered"):
         rv = r3["result"]["verdict"]
         if rv == "通過":
-            space_v, space_note = "PASS", "經 R3（λ=0.5 幾何混合）通過"
+            space_v, space_note = "未能測試（R3 多重性待定案）", "R3 通過為描述，第三條擇一路徑的顯著水準尚待定案"
         elif rv.startswith("未通過"):
             space_v, space_note = "FAIL", "R3 未通過"
         else:
@@ -388,60 +397,96 @@ def overall_eval(phen, sig, spc, r3):
     return {"items": items, "space_note": space_note, "overall": ov}
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--pairs", nargs="*", default=["A", "B"])
-    ap.add_argument("--results", default=os.path.join(ROOT, "results"))
-    ap.add_argument("--gate", choices=["0", "1", "all"], default="all")
-    ap.add_argument("--selftest", action="store_true")
-    a = ap.parse_args()
-    if a.selftest:
-        return selftest()
-    crit, pc = cfg("criteria.json"), cfg("pairs.json")
+def serializable(value):
+    if isinstance(value, dict):
+        return {k: serializable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [serializable(v) for v in value]
+    if isinstance(value, np.generic):
+        return serializable(value.item())
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
+def write_summary(path, summary):
+    serial = serializable(summary)
+    atomic_json(path, serial)
+    print(json.dumps(serial, indent=1, ensure_ascii=False, allow_nan=False))
+
+
+def evaluate(results, pairs, gate, crit, pc, data):
+    """Gate 0 reads only reproduction/sample evidence; later files require a qualified primary pair."""
     ecfg = crit["eval"]
-    data = load_data("all")
     test_ids = [r["id"] for r in data if r["split"] == "test"]
     assert len(test_ids) >= ecfg["test_questions_min"], "test 題數不足"
-    summary, PQ = {}, {}
-    for p in a.pairs:
-        d = os.path.join(a.results, p)
-        pq, greedy = {}, {}
-        conds = ["base", "rl", "rl_replace", "rl_hf", crit["probe2"]["cond"]] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
-        for c in conds:
-            f = os.path.join(d, c, "graded.json")
-            if os.path.exists(f):
-                g = load_graded(f)
-                miss = [i for i in test_ids if i not in g]
-                if miss:
-                    print("[%s/%s] 缺 %d 題，略過" % (p, c, len(miss))); continue
-                bad = [i for i in test_ids if len(g[i]["correct"]) < ecfg["n_samples"]]
-                if bad:
-                    print("[%s/%s] %d 題樣本數 < %d，略過" % (p, c, len(bad), ecfg["n_samples"])); continue
-                pq[c] = per_q(g, test_ids, ecfg["k_main"])
-        for c in ["rl_greedy", "base_greedy"]:
-            f = os.path.join(d, c, "graded.json")
-            if os.path.exists(f):
-                greedy[c] = load_graded(f)
-        PQ[p] = pq
-        s = {"pair": pc["pairs"][p]["name"]}
-        if "base" in pq and "rl" in pq:
+    if len(set(r["id"] for r in data)) != len(data):
+        raise ArtifactError("凍結資料含重複題目 ID")
+    order = crit["phenomenon"]["pair_order"]
+    selected = set(order) if gate != "0" or not pairs else set(pairs)
+    summary, PQ, receipts = {}, {}, {}
+
+    def load_condition(p, c):
+        try:
+            return load_verified(results / p / c, p, c, pc, ecfg, data, receipts[p])
+        except (ArtifactError, OSError, ValueError, KeyError, TypeError) as exc:
+            summary[p]["artifact_issues"][c] = str(exc)
+            return None
+
+    for p in order:
+        if p not in selected:
+            continue
+        s = summary[p] = {"pair": pc["pairs"][p]["name"], "artifact_issues": {}}
+        try:
+            receipts[p] = check_gate_minus1(results, p, pc)
+        except (ArtifactError, OSError, ValueError, KeyError, TypeError) as exc:
+            s["gate_minus1"] = {"verdict": "未能測試", "reason": str(exc)}
+            s["gate0"] = {"verdict": "未能測試（缺相容閘門 −1 憑證）"}
+            continue
+        s["gate_minus1"] = {"verdict": "PASS", **receipts[p]}
+        pq, greedy = PQ[p] = {}, {}
+        for c in ("base", "rl", "base_greedy", "rl_greedy"):
+            g = load_condition(p, c)
+            if g is not None:
+                if c.endswith("_greedy"):
+                    greedy[c] = g
+                else:
+                    pq[c] = per_q(g, test_ids, ecfg["k_main"])
+        if set(pq) == {"base", "rl"} and set(greedy) == {"base_greedy", "rl_greedy"}:
             s["gate0"] = gate0(pq, greedy, pc["pairs"][p], crit, ecfg, data)
         else:
-            s["gate0"] = {"verdict": "未能測試（缺 base 或 rl 取樣結果）"}
-        if a.gate in ("1", "all") and all(c in pq for c in ("base", "rl", "rl_replace", crit["gate1"].get("rl_compare_cond", "rl_hf"))):
-            s["gate1"] = gate1(pq, crit["gate1"], ecfg)
-        else:
-            s["gate1"] = {"verdict": "未執行（缺 rl_replace、rl_hf 或 base/rl）"}
-        summary[p] = s
-    # 報告 60 第 5 節：現象／訊號／空間（gate1 的 verdict 與 summary[p]["overall_legacy"] 只做描述）
+            s["gate0"] = {"verdict": "未能測試（四個取樣與 greedy 條件須全部驗證）"}
+    if gate == "0":
+        return {"phase": "gate0", "partial": True, "pairs": summary}
+
     phen = phenomenon_eval(summary, crit)
     prim = phen.get("primary_pair")
     sig = spc = {"verdict": "未評估（現象未 PASS）"}
     if prim:
         pq = PQ[prim]
+        later = ["rl_replace", "rl_hf"] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
+        for c in later:
+            g = load_condition(prim, c)
+            if g is not None:
+                pq[c] = per_q(g, test_ids, ecfg["k_main"])
+        if {"rl_replace", "rl_hf"} <= pq.keys():
+            try:
+                require_hf_pairing(results, prim, pc, ecfg, data, receipts[prim])
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                summary[prim]["artifact_issues"]["HF_pairing"] = str(exc)
+                pq.pop("rl_hf")
         need_s = ("base", "rl_replace", crit["signal"]["q1_cond"])
         sig = signal_eval(pq, crit) if all(c in pq for c in need_s) else {"verdict": "未能測試（缺 %s）" % [c for c in need_s if c not in pq]}
         spc = space_eval(pq, crit)
+        if all(c in pq for c in ("base", "rl", "rl_replace", crit["gate1"].get("rl_compare_cond", "rl_hf"))):
+            summary[prim]["gate1"] = gate1(pq, crit["gate1"], ecfg)
+        else:
+            summary[prim]["gate1"] = {"verdict": "未執行（缺正式取樣憑證）"}
+        if sig.get("verdict") == "PASS" and spc.get("verdict") == "FAIL":
+            c = crit["probe2"]["cond"]
+            g = load_condition(prim, c)
+            if g is not None:
+                pq[c] = per_q(g, test_ids, ecfg["k_main"])
     r3 = r3_status(prim, sig, spc, PQ, crit)
     summary["phenomenon"], summary["signal"], summary["space"], summary["r3"] = phen, sig, spc, r3
     ov = overall_eval(phen, sig, spc, r3)
@@ -449,11 +494,29 @@ def main():
     overall = ov["overall"]
     summary["overall"] = overall
     summary["probe2"] = r3     # 相容舊鍵名
-    os.makedirs(a.results, exist_ok=True)
-    with open(os.path.join(a.results, "aggregate.json"), "w") as f:
-        json.dump(summary, f, indent=1, ensure_ascii=False, default=float)
-    print(json.dumps(summary, indent=1, ensure_ascii=False, default=float))
-    print("\n== 現象／訊號／空間：", ov["items"], "\n== OVERALL:", overall)
+    return summary
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pairs", nargs="*", choices=["A", "B"], help="只篩選 gate 0 報告的配對")
+    ap.add_argument("--results", type=Path, default=Path(ROOT) / "results")
+    ap.add_argument("--gate", choices=["0", "1", "all"], default="all")
+    ap.add_argument("--selftest", action="store_true")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
+    if a.pairs is not None and a.gate != "0":
+        ap.error("--pairs 只適用於 --gate 0；正式判定一律檢查凍結的配對順序")
+    crit, pc = cfg("criteria.json"), cfg("pairs.json")
+    summary = evaluate(a.results, a.pairs, a.gate, crit, pc, load_data("all"))
+    a.results.mkdir(parents=True, exist_ok=True)
+    if a.gate == "0":
+        suffix = "_" + "_".join(sorted(set(a.pairs))) if a.pairs else ""
+        write_summary(a.results / f"aggregate_gate0{suffix}.json", summary)
+    else:
+        write_summary(a.results / "aggregate.json", summary)
+        print("\n== 現象／訊號／空間：", summary["overall_three_items"]["items"], "\n== OVERALL:", summary["overall"])
 
 
 def selftest():
@@ -557,7 +620,7 @@ def selftest_2026_11_14(crit):
     crit_ = crit
     tr = r3_status("A", {"verdict": "PASS"}, {"verdict": "FAIL"}, PQs, crit_)
     assert tr["triggered"] and tr["pair"] == "A" and tr["result"]["verdict"] == "通過"
-    assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, tr)["overall"].startswith("PASS")   # R3 通過 → 空間 PASS
+    assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, tr)["overall"].startswith("未能測試")
     tr_no = r3_status("A", {"verdict": "PASS"}, {"verdict": "FAIL"}, {"A": base_pq}, crit_)   # 尚無 geo_mix
     assert tr_no["triggered"] and tr_no["result"]["verdict"].startswith("待執行")
     assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, tr_no)["overall"].startswith("待 R3")
@@ -586,6 +649,8 @@ def selftest_three_items(crit):
     assert phenomenon_eval(S(g_unq, g_unq), crit)["verdict"] == "FAIL"
     assert phenomenon_eval(S(g_unq, g_bad), crit)["verdict"] == "未能測試"
     assert phenomenon_eval({"A": {"gate0": g_unq}}, crit)["verdict"] == "未能測試"      # B 缺資料
+    assert phenomenon_eval({"B": {"gate0": g_ok}}, crit)["waiting_for_eligibility"] == "A"
+    assert phenomenon_eval(S(g_bad, g_ok), crit)["waiting_for_eligibility"] == "A"
     # ---- 合成逐題資料（與計數一致）----
     def mkq(c, pen=0.0):
         c = np.asarray(c, float)

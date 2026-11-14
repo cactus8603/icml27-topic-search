@@ -12,7 +12,7 @@
 - 評測集 `data/eval.jsonl`（由 `scripts/prepare_data.py` 產生，1,453 題）：MATH-500（500）、Minerva（272）、OlympiadBench 純文字單一答案（581）、AMC23（40）、AIME24（30）、AIME25（30）。
 - 劃分 seed=20261114：隨機 400 題為 **dev**（本階段不使用；灰區加碼與第 2 週蒸餾調參用），其餘 **1,053 題為 test**（閘門 0／判準 1 的全部統計只用 test）。≥1,000 題。
 - 解碼：temperature 0.6、top-p 0.95、max_new_tokens=3000、max_model_len=4096（**凍結**；Oat-Zero 作者評測的上限也是 3000，Qwen2.5-Math 的 context 只有 4096）；模板固定為 Qwen-Math（`pairs.json`），base 與 RL 用同一模板。
-- 取樣 seed：vLLM `seed=1234`；HF `gen_replace.py` 以 `seed + 1000*shard + batch_index`。bootstrap seed 如上。
+- 取樣 seed：vLLM `seed=1234`；HF `gen_replace.py` 以 `seed + 1000*shard_index + question_offset` 設定每批 seed。`question_offset` 是該批首題在該分片的零起始位置；每批 2 題時依序為 0、2、4 等。bootstrap seed 如上。
 - 模型：見 `configs/pairs.json`（配對 A：Qwen2.5-Math-1.5B／sail Oat-Zero；配對 B：Qwen2.5-1.5B／hkust-nlp SimpleRL-Zoo）。dtype 一律 bfloat16（SimpleRL-Zoo 原檔 fp32，載入時轉 bf16）。
 
 ## 3. 閘門順序（前三關失敗＝「未能測試」，限 3 個工作天修；修不好記為可行性停損，與此實作停損分開記；要升級為題目淘汰，須另外符合 57 號第 5 節規則 2）
@@ -98,3 +98,8 @@
 - **R3**：改為空間的第三個上限候選。觸發＝主配對訊號 PASS 而空間 FAIL；預算 25 GPU 小時。probe2 通過 → 空間記 PASS；未通過 → 空間 FAIL。probe2 的取樣與三項通過條件不變。
 - **降為描述**：rl_replace 對 WiSE 的比較（gate1 的 verdict、`wise_margin_*`、R1 的 FAIL 條件）、第 2 週學生的全部門檻。上面「第 3 節判準 1」「第 4 節三態結果」的 PASS／FAIL／灰區措辭僅作歷史記錄；整體判定以本段為準。
 - 結果檔狀態（G6）：`results/A/` 已存在，判斷者（[claude] 本次修改者）未讀取。
+
+- [codex] 2026-11-14 23:51：依獨立實作審核補齊輸入驗證，未讀取 `results/A/` 下的正式評分或生成結果。既有配對 A 的閘門 0 產物已存在，只核對 26270 的正確性日誌、26290–26293 的 Slurm 模型／完成紀錄與取樣 metadata，這些識別資訊登記於 `configs/legacy_artifacts.json`。保留既有 raw 與 graded，須依凍結的 Math-Verify 0.9.0 規則另產出 `graded_verified.json` 及其中繼資料雜湊憑證後，以新版程式判讀。未將歷史 job 補填為有新產物憑證。
+- [codex] 正式判讀須先驗證閘門 −1、全部凍結 ID、取樣分片身分、模型與解碼、樣本數及各欄位長度。每題 greedy 必為一個樣本且涵蓋全資料，正式取樣須恰 128 個樣本且涵蓋全 test。截斷樣本一律算錯。未通過任何輸入驗證時記「未能測試」。`--gate 0` 只看對應證據，另寫 `aggregate_gate0*.json`，`--pairs` 只篩選此獨立報告。完整判讀依凍結的 A、B 順序，前一組資格未知時不得用後一組定案。已存在的 raw 可用 `grade.py DIR --pair A --condition COND` 以 CPU 判分，已驗證產物與舊判分分開保留。新分片須共用同一個 `RSD_RUN_ID`（同一 Slurm array 預設共用 ID），且所有完成憑證到齊才判分。
+- [codex] R3 仍以已凍結的條件報告。R3 若通過，先列為描述；有三條空間擇一路徑時的顯著水準分配待定案，不能因此升為確認性 PASS。H_a、H_b 保留原本固定 π* 與固定選定端點的 bootstrap，新增前緣有效範圍與端點替代告知。非正 HF 回收率分母明列，凍結的比較公式保留。dev 400 加碼須另外先補全部條件對齊及加碼後的判讀路徑。
+- [codex] 2026-11-15 00:00：依複審將 HF 上限改為各列的 `min(3000, 4096 − prompt token 數)`，每列耗盡上限即停止，未遇 stop token 算截斷。凍結原 HF 程式已使用的 `question_offset` seed 規則。`rl_hf` 和 `rl_replace` 須採相同 HF 環境與題目分片。所有新正式取樣須在啟動前通過目前程式版本的真實模型正確性憑證檢查，歷史 26270 憑證只供已完成的 vLLM Gate 0 稽核。複審修正前未讀正式評分，也沒有新 HF 主結果。
