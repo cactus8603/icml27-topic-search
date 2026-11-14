@@ -22,3 +22,8 @@
 ## 資源與範圍
 
 約 15×160 開發 steps，另 15×（100 共用 + 2×400 分叉）steps，共約 6,513 萬訓練 tokens，外加 probes 和評估。一張 H200、Slurm 2 小時，程式 6,500 秒上限包含準備資料。這裡不做全 factorial、長訓、第二尺度或正式方法比較。這次實驗的強基線可驗證小模型設定，不能對應 Qiu 的 1.7B × 400B 重現率。
+
+## 結果讀取紀錄
+
+- [codex] 已讀 `results/26372/aggregate.json`，2026-11-15 03:16 台北時間。以 `10792d3` 凍結版對照；本紀錄不修改判讀規則。
+- [codex] 已讀 `results/26372/run.json` 與 `results/26372/{adam,gate,muon,sandwich,stableadam}-{416,732,925}-{nominal,stress}.json`，2026-11-15 03:22 台北時間。核對終點與彙總完整性。

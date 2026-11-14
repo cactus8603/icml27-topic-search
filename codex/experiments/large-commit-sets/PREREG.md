@@ -31,3 +31,8 @@
 ## 執行上限
 
 Smoke 固定取 train parquet 前兩題，使用同一模型及解碼設定。只跑程式檢查和計時，不解析答案、不留結果；兩題內至少要走過一個 eligible anchor 的真模型探測。主跑單 H200、240 道 test，Slurm 上限六小時。如有中斷只留下 `.partial`，判讀入口要求完整資料。GPU 送出與 freeze 依共享協作規則記載。
+
+## 結果讀取紀錄
+
+- [codex] 已讀 `results/verdict-26376.json`，2026-11-15 03:16 台北時間。以 `ff2ac66` 凍結版對照；本紀錄不修改判讀規則。
+- [codex] 已讀 `results/main-26376.jsonl`，2026-11-15 03:22 台北時間。重算機械判讀並核對同一 anchor 的可救量。

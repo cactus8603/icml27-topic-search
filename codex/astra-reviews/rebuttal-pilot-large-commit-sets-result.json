@@ -1,0 +1,27 @@
+{
+  "topic": "large-commit-sets",
+  "model": "gpt-6-astra",
+  "response_id": "resp_0524c5f190272de9016af8b402773487d28c06545a01422aa3",
+  "status": "completed",
+  "freeze_commit": "ff2ac66d83a0a224403760305366eb5c8d9f0658",
+  "source_result": "results/verdict-26376.json",
+  "source_result_sha256": "4a1a2be3e7d7034d00679d500256cba6f61c49b03ebffd6b1bc164bf4c1bcde2",
+  "review_input_sha256": "4f03dc64ec9aa275311ce99feb90f129c31fa17e03105102d9c5c2f16d5d8731",
+  "usage": {
+    "input_tokens": 3622,
+    "input_tokens_details": {
+      "cache_write_tokens": 3619,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 3619
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 4486,
+    "output_tokens_details": {
+      "reasoning_tokens": 3619
+    },
+    "total_tokens": 8108
+  },
+  "review": "## 現象\n229/240題合格，超過最低60題；兩個anchor共388次，不能視為388個獨立樣本。148/229題至少一次跨越門檻，為64.63%，95% Wilson區間[58.24%,70.53%]，下界超過15%，故為 **supported**。切點為margin＝ln(9)，對應0.90的二選一信心proxy，並非完整詞彙softmax或實際正確率。token翻轉10.79%、argmax推翻14.69%僅屬次要描述。\n\n## 訊號\n81題提供192個正誤不同配對，達最低25題；獨立單位仍是題。控制模型排序正確率54.01%，加入joint後55.86%，增益1.85 pp，95%區間[-4.32,8.64] pp。區間跨越最低5 pp，故為 **inconclusive**：既未支持所需增益，也未排除它。五fold預測固定後的4,000次按題bootstrap，只涵蓋評估題抽樣波動，不含重新訓練的不確定性。\n\n## 改善空間\n47/240＝19.58%，95% Wilson區間[15.06%,25.07%]，下界超過4 pp，故為 **supported**。算術上，A答對62題，加47題可救題，得到pool oracle的109/240＝45.42%；這是有限候選的事後可救量，不是可部署增益或模型能力天花板。\n\n第一合格anchor的A/B/C/D答對62/63/66/67題，比例均以240為分母。D較A僅高2.08 pp；距雙anchor oracle仍差17.50 pp，但其中混有候選覆蓋不同，不能全歸因於選擇器。D−C為0.42 pp，95%區間[-2.50,2.92] pp：此**次要描述區間**在名目95%下排除本設定≥5 pp的答題增益，不能挪作主排序訊號的否證。\n\n## 下一步\n最高價值是獨立題上的**等成本選擇驗證**：另用訓練題學習並凍結選擇器，在未參與pilot的1,000道GSM8K題測試。固定第一合格anchor、三候選及8次寫入；joint臂對照低階臂，後者把等額額外NFE用於預先固定的雙token探測，兩臂共用singleton及控制特徵、相同訓練程序。不合格題皆回退A，另報實測秒數。\n\n以題為獨立單位，主結果為全題配對答題正確率差；另預定95%區間下界≥4 pp才讓該選擇器晉級，上界<4 pp則不晉級，其餘保留不確定性。此規則不等於停止研究題目。\n\n## 判讀限制\n計數、比例及Wilson區間相符，三項機器旗標均與預註冊一致；但兩項supported不代表joint已改善答案。11題不合格者如何納入全240題的描述比較未交代，須補明回退規則。只有聚合資料，無法重建配對bootstrap、核查fold隔離或驗證雜湊。結論僅及此模型、prompts、quota、兩anchor與三候選池的一次介入，不能外推至逐輪介入、跨任務或完整解碼器效能。"
+}

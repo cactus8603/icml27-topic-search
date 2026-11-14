@@ -1,0 +1,27 @@
+{
+  "topic": "gate-optimizer",
+  "model": "gpt-6-astra",
+  "response_id": "resp_0f11053296df1a02016af8b401db8887d2ad7b608ea82baf88",
+  "status": "completed",
+  "freeze_commit": "10792d355d258bd16b3f0ea5ec57a35bba7078fe",
+  "source_result": "results/26372/aggregate.json",
+  "source_result_sha256": "68c1da8ff6ae8652d364df60acf4e3df7ec38aefbf16fe347ecc60be40e8cc3c",
+  "review_input_sha256": "37f48ec92d25492e79ef81260f08fc81c53b264f9fc90f72fc4c64893cb001ff",
+  "usage": {
+    "input_tokens": 5078,
+    "input_tokens_details": {
+      "cache_write_tokens": 5075,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 5075
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 3396,
+    "output_tokens_details": {
+      "reasoning_tokens": 2496
+    },
+    "total_tokens": 8474
+  },
+  "review": "## 現象\n**主判準未達，與機器 `false` 一致，但不是現象不存在。**損傷定義為單步獨立 probe NLL 增加≥0.05 nats，須≥4筆且跨≥2個 seed。三強基線實得0/180＝3臂×3 seed×20次；Adam 的1筆不屬主要判讀。所有壓力臂均報未發散，無缺臂。180次不是獨立樣本；若三個 seed 獨立同分布，「一個 seed 內至少出現一次抽樣損傷」機率的單側95%上限仍達63.2%，不能排除稀有損傷。\n\n## 訊號\n**不可判，機器 `null` 正確，不能解讀為零增益。**每折訓練集皆為0正／120負，留出集皆為0正／60負；不僅訓練缺類，測試 AUROC 也無法計分。可評 seed 為0，未滿≥2；等權平均成對 AUROC 增量≥0.03的門檻無從檢驗，兩模型 AUROC、增量及95%區間均不可估。邊際 AUROC 亦未提供額外證據。\n\n## 改善空間\n**固定 token 門檻未達，與機器 `false` 一致。**要求每個 seed 的「最佳強基線 NLL－gate NLL」≥0.02；三者最佳均為 Muon，實得−0.307906、−0.271474、−0.257220。若基線不變，gate 尚須改善0.327906、0.291474、0.277220 nats 才達標。這是實務差距；Muon 只是本次最佳觀測值，不是效能天花板。描述性地，gate 也較 Adam 差：正常排程0.0242–0.0540、壓力排程0.1092–0.1666 nats，不能據此宣稱一般方法優劣。\n\n## 下一步\n最高價值是**先取得足夠事件，再驗證增量診斷**：用獨立校準 seed，在事前固定的3／4／6倍 LR 網格選擇最低、能達事件門檻的排程，再以12個新 seed、三強基線正式測試。兩模型共用 checkpoint、更新資訊、probe 與擬合預算，只差寫入分數；outcome 仍為獨立 batch 的 NLL 損傷，獨立分析單位為 seed。事前 go 規則：≥30筆損傷、≥6個具正負類的留出 seed，且平均成對 ΔAUROC≥0.03；否則不升級診斷主張，事件不足另列不可判。此設計仍只驗證人為壓力診斷。\n\n## 判讀限制\n未提供末步／末次評估位置、訓練 NLL及更新前梯度有限性，無法完整核對終點資格。達標時間僅列 Muon 的5.62／7.30／7.30秒，缺 gate 配對與含 probe、評估的 wall-clock，不能推算部署加速。\n\n首版介入屬次要描述：90列配對、0筆損傷，無法估損傷修復效果；若每列代表一次預定檢查，四臂×三 seed×十次應為120，覆蓋差異待釐清。即使單步有效，也不是持續訓練收益。本輪只否定這三個 seed 已記錄終點的 gate 優勢門檻；不能排除有效診斷、自然 spike 關聯或更大尺度收益。"
+}
