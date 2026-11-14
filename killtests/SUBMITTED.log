@@ -5,3 +5,7 @@ chameleon bench=26269
 rl RESUBMIT (env.sh resolve fix) correctness=26270 throughput=26271; 26266/26267 failed: IncompleteSnapshotError but exit 0
 multifid s0_bench=26272
 chameleon bench RESUBMIT=26273 (26269 failed: bf16 probe numpy)
+retrieval stage1=26274
+rl gate0 pair A: base=26275 rl=26276 base_greedy=26277 rl_greedy=26278 (after probe 26271)
+biasgen w1 train celeba=26279(array0-5) hier=26280(array0-2); eval held until metric choice frozen
+chameleon extract=26285 analyze=26286

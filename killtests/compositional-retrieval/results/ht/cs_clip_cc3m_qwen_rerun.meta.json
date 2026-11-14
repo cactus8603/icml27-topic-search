@@ -1,0 +1,8 @@
+{
+  "model": "cs_clip",
+  "subset": "cc3m_qwen",
+  "n": 474,
+  "tau": 100.22981262207031,
+  "seconds": 3.172755718231201,
+  "device": "cuda"
+}

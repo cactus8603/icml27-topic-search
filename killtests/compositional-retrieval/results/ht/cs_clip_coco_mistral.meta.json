@@ -1,0 +1,8 @@
+{
+  "model": "cs_clip",
+  "subset": "coco_mistral",
+  "n": 454,
+  "tau": 100.22981262207031,
+  "seconds": 3.258985996246338,
+  "device": "cuda"
+}

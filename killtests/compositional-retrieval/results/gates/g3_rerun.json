@@ -1,0 +1,11 @@
+{
+  "max_abs_diff": 2.384185791015625e-07,
+  "per": {
+    "clip_b32/coco_qwen": 8.940696716308594e-08,
+    "clip_b32/coco_mistral": 5.960464477539063e-08,
+    "clip_b32/cc3m_qwen": 2.384185791015625e-07,
+    "cs_clip/coco_qwen": 5.960464477539063e-08,
+    "cs_clip/coco_mistral": 8.940696716308594e-08,
+    "cs_clip/cc3m_qwen": 2.086162567138672e-07
+  }
+}

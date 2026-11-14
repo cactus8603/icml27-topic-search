@@ -1,0 +1,8 @@
+{
+  "model": "clip_b32",
+  "subset": "cc3m_qwen",
+  "n": 474,
+  "tau": 100.0,
+  "seconds": 3.1779074668884277,
+  "device": "cuda"
+}

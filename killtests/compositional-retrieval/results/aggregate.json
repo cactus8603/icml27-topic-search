@@ -1,0 +1,202 @@
+{
+  "gates": {
+    "G1_程式正確性": {
+      "unit_tests_pass": true,
+      "crosscheck_max_abs_diff": 2.980232238769531e-07,
+      "crosscheck_pass": true,
+      "detail_coverage": {
+        "clip_b32/coco_qwen": 0.9842829076620825,
+        "clip_b32/coco_mistral": 0.9977973568281938,
+        "clip_b32/cc3m_qwen": 0.9915611814345991,
+        "cs_clip/coco_qwen": 0.9842829076620825,
+        "cs_clip/coco_mistral": 0.9977973568281938,
+        "cs_clip/cc3m_qwen": 0.9915611814345991
+      },
+      "coverage_pass": true,
+      "pass": true
+    },
+    "G2_重現": {
+      "cs_clip_cor": {
+        "coco_qwen": {
+          "measured": 58.153241650294696,
+          "paper": 58.2,
+          "diff": -0.04675834970530701,
+          "within_tol": true
+        },
+        "coco_mistral": {
+          "measured": 50.440528634361236,
+          "paper": 50.4,
+          "diff": 0.04052863436123744,
+          "within_tol": true
+        },
+        "cc3m_qwen": {
+          "measured": 42.19409282700422,
+          "paper": 42.2,
+          "diff": -0.005907172995783583,
+          "within_tol": true
+        }
+      },
+      "clip_cor_diag": {
+        "coco_qwen": {
+          "measured": 18.860510805500983,
+          "paper": 18.9,
+          "within_tol": true
+        },
+        "coco_mistral": {
+          "measured": 19.162995594713657,
+          "paper": 19.2,
+          "within_tol": true
+        },
+        "cc3m_qwen": {
+          "measured": 24.47257383966245,
+          "paper": 24.5,
+          "within_tol": true
+        }
+      },
+      "ht_acc_diag": {
+        "cs_clip/coco_qwen": {
+          "measured": 76.42436149312377,
+          "readme": 76.4
+        },
+        "clip_b32/coco_qwen": {
+          "measured": 33.988212180746565,
+          "readme": 34.0
+        },
+        "cs_clip/coco_mistral": {
+          "measured": 67.18061674008811,
+          "readme": 67.2
+        },
+        "clip_b32/coco_mistral": {
+          "measured": 28.634361233480178,
+          "readme": 28.6
+        },
+        "cs_clip/cc3m_qwen": {
+          "measured": 66.24472573839662,
+          "readme": 66.2
+        },
+        "clip_b32/cc3m_qwen": {
+          "measured": 36.075949367088604,
+          "readme": 36.1
+        }
+      },
+      "pass": true,
+      "說明": "阻擋條件 = CS-CLIP 三組 COR 皆在 paper ±3pp；CLIP COR 與 HT 準確率僅為診斷（不阻擋，但偏離須在報告中解釋）。"
+    },
+    "G3_雜訊底線": {
+      "ci_halfwidth_pp": {
+        "clip_b32/coco_qwen": 3.438113948919451,
+        "clip_b32/coco_mistral": 3.6343612334801767,
+        "clip_b32/cc3m_qwen": 3.902953586497892,
+        "cs_clip/coco_qwen": 4.322200392927314,
+        "cs_clip/coco_mistral": 4.62555066079295,
+        "cs_clip/cc3m_qwen": 4.430379746835445
+      },
+      "rerun": {
+        "max_abs_diff": 2.384185791015625e-07,
+        "per": {
+          "clip_b32/coco_qwen": 8.940696716308594e-08,
+          "clip_b32/coco_mistral": 5.960464477539063e-08,
+          "clip_b32/cc3m_qwen": 2.384185791015625e-07,
+          "cs_clip/coco_qwen": 5.960464477539063e-08,
+          "cs_clip/coco_mistral": 8.940696716308594e-08,
+          "cs_clip/cc3m_qwen": 2.086162567138672e-07
+        }
+      },
+      "rerun_pass": true,
+      "pass": true
+    }
+  },
+  "gate_all_pass": true,
+  "primaries": {
+    "P1_E1_LLR聚合": {
+      "metric": "P1 雙路徑擇一：a) CLIP B/32 + LLR 加總 COCO(Qwen) COR (%) 下界>=45；b) CS-CLIP+LLR 贏 CS-CLIP holistic >=5pp",
+      "ci": {
+        "point": 23.18271119842829,
+        "lo": 19.44990176817289,
+        "hi": 26.91552062868369,
+        "lo_1s": 19.05697445972495,
+        "hi_1s": 27.5049115913556,
+        "n": 509
+      },
+      "threshold": 45.0,
+      "addon_cs_clip_paired_diff": {
+        "n": 509,
+        "point": -29.469548133595286,
+        "lo": -34.77406679764244,
+        "hi": -24.165029469548134,
+        "lo_1s": -35.36345776031434,
+        "hi_1s": -23.575638506876228
+      },
+      "alpha_one_sided_per_path": 0.0125,
+      "path_a_pass": false,
+      "path_b_pass": false,
+      "state_raw": "FAIL",
+      "state": "FAIL",
+      "note": "路線 a 上界 < 門檻，且路線 b 上界 < 5pp（兩條路都明確失敗）"
+    },
+    "P2_E2_條件數稀釋": {
+      "state": "未能測試",
+      "note": "資料不足"
+    }
+  },
+  "secondary_cor_by_aggregator": {
+    "clip_b32": {
+      "coco_qwen": {
+        "holistic": 18.860510805500983,
+        "unit_mean": 14.145383104125736,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 23.18271119842829,
+        "llr_sum_samesubset": 24.75442043222004
+      },
+      "coco_mistral": {
+        "holistic": 19.162995594713657,
+        "unit_mean": 17.180616740088105,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 23.348017621145374,
+        "llr_sum_samesubset": 24.229074889867842
+      },
+      "cc3m_qwen": {
+        "holistic": 24.47257383966245,
+        "unit_mean": 19.831223628691983,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 21.518987341772153,
+        "llr_sum_samesubset": 21.518987341772153
+      }
+    },
+    "cs_clip": {
+      "coco_qwen": {
+        "holistic": 58.153241650294696,
+        "unit_mean": 21.218074656188605,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 28.68369351669941,
+        "llr_sum_samesubset": 27.111984282907663
+      },
+      "coco_mistral": {
+        "holistic": 50.440528634361236,
+        "unit_mean": 22.026431718061673,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 24.44933920704846,
+        "llr_sum_samesubset": 24.229074889867842
+      },
+      "cc3m_qwen": {
+        "holistic": 42.19409282700422,
+        "unit_mean": 21.729957805907173,
+        "unit_min": 0.0,
+        "unit_sum": 0.0,
+        "llr_sum": 25.105485232067508,
+        "llr_sum_samesubset": 25.105485232067508
+      }
+    }
+  },
+  "secondary_e2": {},
+  "reranker": {
+    "state": "未測",
+    "note": "CORE reranker 未取得可用程式（見 README），未評估；90% 窄化旗標無法判定。"
+  },
+  "overall": "停損（至少一個主指標 FAIL）"
+}

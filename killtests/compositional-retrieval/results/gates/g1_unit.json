@@ -1,6 +1,6 @@
 {
   "all_pass": true,
-  "n": 32,
+  "n": 43,
   "results": [
     {
       "name": "COR 手算：[T,F(h 平手),F(full<=anchor),F]",
@@ -78,37 +78,62 @@
       "detail": ""
     },
     {
-      "name": "P1 下界>=45 -> PASS",
+      "name": "群集 bootstrap：SE 比列層級大（群集內完全相關，約 sqrt(8) 倍）",
+      "pass": true,
+      "detail": "(5.075790662568006, 1.7788571768623966)"
+    },
+    {
+      "name": "群集 bootstrap：每群組大小相同時點估計相同",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 上界<45 -> FAIL（不救援）",
+      "name": "單尾 0.0125：lo_1s 比 2.5 百分位的 lo 更寬（更低）",
+      "pass": true,
+      "detail": "{'n': 800, 'point': 47.0, 'lo': 37.0, 'hi': 56.99999999999999, 'se': 5.075790662568006, 'lo_1s': 36.0, 'hi_1s': 57.99999999999999}"
+    },
+    {
+      "name": "配對群集差：全 1 對全 0 -> lo_1s=100",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 跨越門檻、無加碼資料 -> 灰區",
+      "name": "P1 路線a：CLIP+LLR 下界>=45 -> PASS",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 灰區+加碼通過 -> PASS",
+      "name": "P1 路線b：CS-CLIP+LLR 贏 >=5pp 且下界>0 -> PASS（即使 a 明確失敗）",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 灰區+加碼不過+點<門檻 -> FAIL",
+      "name": "P1 a 上界<45 且 b 上界<5 -> FAIL",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 灰區+加碼不過+點>=門檻 -> 灰區（未解）",
+      "name": "P1 a 上界<45 但 b 區間跨 5pp -> 灰區",
       "pass": true,
       "detail": ""
     },
     {
-      "name": "P1 加碼點>=5 但配對下界<=0 -> 不算通過",
+      "name": "P1 a 跨越 45 且 b 上界<5 -> 灰區",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 b 點>=5 但配對下界<=0 且 a 失敗 -> 不 PASS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 a 失敗、b 資料缺 -> 灰區（不是 FAIL）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 用 lo_1s/hi_1s（1.25/98.75）而非 lo/hi",
       "pass": true,
       "detail": ""
     },
@@ -161,6 +186,36 @@
       "name": "E2 分析：理想 embedding 下 recall 為 100（top-2，rel>=1）",
       "pass": true,
       "detail": "{'1': 100.0, '2': 100.0, '3': 100.0}"
+    },
+    {
+      "name": "E2 群集 delta_err：點估計 = err(4)-err(1)，群集數 = 影像聯集 50",
+      "pass": true,
+      "detail": "{'k_hi': 4, 'k_lo': 1, 'point': 46.666666666666664, 'lo': 37.5, 'hi': 56.25179597701148, 'n_clusters': 50, 'cluster': 'I* image'}"
+    },
+    {
+      "name": "E2 稀釋差：holistic 稀釋較大 -> 點估計>0 且等於兩個 Δ 之差",
+      "pass": true,
+      "detail": "{'ref': 'holistic', 'cmp': 'llr_sum', 'k_hi': 4, 'k_lo': 1, 'point': 35.55555555555556, 'lo': 23.805683563748076, 'hi': 45.67989417989418, 'delta_ref_pp': 46.666666666666664, 'delta_cmp_pp': 11.11111111111111, 'note': '次要指標，不參與判定'}"
+    },
+    {
+      "name": "E2 群集 bootstrap 可執行且 n_clusters 與 CI 合理",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "aggregate 合成：P1 路線 a 失敗（COR 30<45）但路線 b 成立 -> PASS",
+      "pass": true,
+      "detail": "路線 b 成立（CS-CLIP+LLR 比 CS-CLIP holistic 高 >= 5pp 且配對下界 > 0）"
+    },
+    {
+      "name": "aggregate 合成：P2 PASS、整體『繼續』",
+      "pass": true,
+      "detail": "繼續（兩個主指標皆 PASS）"
+    },
+    {
+      "name": "aggregate 合成：次要稀釋差被帶出",
+      "pass": true,
+      "detail": "['gates', 'gate_all_pass', 'primaries', 'secondary_cor_by_aggregator', 'secondary_e2', 'secondary_e2_dilution_clip_b32', 'reranker', 'overall']"
     }
   ]
 }

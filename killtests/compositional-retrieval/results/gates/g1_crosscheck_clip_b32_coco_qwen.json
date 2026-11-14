@@ -1,0 +1,12 @@
+{
+  "model": "clip_b32",
+  "subset": "coco_qwen",
+  "n": 509,
+  "max_abs_diff": 1.7881393432617188e-07,
+  "per_key": {
+    "s_anchor": 1.6391277313232422e-07,
+    "s_half_truth": 1.7881393432617188e-07,
+    "s_full_truth": 1.7881393432617188e-07
+  },
+  "device": "cuda"
+}

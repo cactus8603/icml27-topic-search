@@ -1,0 +1,8 @@
+{
+  "model": "clip_b32",
+  "subset": "coco_qwen",
+  "n": 509,
+  "tau": 100.0,
+  "seconds": 4.1082069873809814,
+  "device": "cuda"
+}
