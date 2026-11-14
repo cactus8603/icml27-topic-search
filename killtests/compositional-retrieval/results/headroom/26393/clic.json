@@ -1,0 +1,54 @@
+{
+  "spec": {
+    "repo": "nmndeep/CLIC-ViT-L-14-224-PixPr-RedCaps",
+    "revision": "4b10418c8e4330aeed37f18f9d00f23c475de767",
+    "files": [
+      "open_clip_config.json",
+      "open_clip_model.safetensors"
+    ]
+  },
+  "dataset_revision": "ddcd448cc27c7c1b1d485c4754623566c245fdca",
+  "config_sha256": "b7e7bc02c386b162a1c7303b1babb434612369cff35e8a598244e4e058030d0a",
+  "attempt_id": "26393",
+  "half_truths": {
+    "coco_qwen": {
+      "cor": {
+        "n": 509,
+        "point": 24.95088408644401,
+        "lo": 21.218074656188605,
+        "hi": 28.880157170923383,
+        "se": 1.9207177483737181,
+        "lo_1s": 21.218074656188605,
+        "hi_1s": 28.880157170923383
+      },
+      "pairwise_accuracy_pp": 79.96070726915521,
+      "ties": 0
+    },
+    "coco_mistral": {
+      "cor": {
+        "n": 454,
+        "point": 28.193832599118945,
+        "lo": 24.008810572687224,
+        "hi": 32.378854625550666,
+        "se": 2.1020952442982077,
+        "lo_1s": 24.008810572687224,
+        "hi_1s": 32.378854625550666
+      },
+      "pairwise_accuracy_pp": 81.4977973568282,
+      "ties": 0
+    },
+    "cc3m_qwen": {
+      "cor": {
+        "n": 474,
+        "point": 25.949367088607595,
+        "lo": 21.940928270042196,
+        "hi": 29.957805907172997,
+        "se": 1.998806214788295,
+        "lo_1s": 21.940928270042196,
+        "hi_1s": 29.957805907172997
+      },
+      "pairwise_accuracy_pp": 74.89451476793249,
+      "ties": 0
+    }
+  }
+}

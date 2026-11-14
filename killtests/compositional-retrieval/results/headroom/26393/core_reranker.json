@@ -1,0 +1,59 @@
+{
+  "spec": {
+    "repo": "Alibaba-NLP/core-reranker-2b",
+    "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+    "files": [
+      "config.json",
+      "chat_template.jinja",
+      "model.safetensors",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "preprocessor_config.json",
+      "video_preprocessor_config.json"
+    ]
+  },
+  "dataset_revision": "ddcd448cc27c7c1b1d485c4754623566c245fdca",
+  "config_sha256": "b7e7bc02c386b162a1c7303b1babb434612369cff35e8a598244e4e058030d0a",
+  "attempt_id": "26393",
+  "half_truths": {
+    "coco_qwen": {
+      "cor": {
+        "n": 509,
+        "point": 30.451866404715126,
+        "lo": 26.522593320235753,
+        "hi": 34.3811394891945,
+        "se": 2.0278984491591086,
+        "lo_1s": 26.522593320235753,
+        "hi_1s": 34.3811394891945
+      },
+      "pairwise_accuracy_pp": 86.44400785854617,
+      "ties": 9
+    },
+    "coco_mistral": {
+      "cor": {
+        "n": 454,
+        "point": 31.718061674008812,
+        "lo": 27.53303964757709,
+        "hi": 36.12334801762114,
+        "se": 2.1780997157038433,
+        "lo_1s": 27.53303964757709,
+        "hi_1s": 36.12334801762114
+      },
+      "pairwise_accuracy_pp": 91.62995594713657,
+      "ties": 8
+    },
+    "cc3m_qwen": {
+      "cor": {
+        "n": 474,
+        "point": 29.957805907172997,
+        "lo": 25.738396624472575,
+        "hi": 34.177215189873415,
+        "se": 2.089553003701238,
+        "lo_1s": 25.738396624472575,
+        "hi_1s": 34.177215189873415
+      },
+      "pairwise_accuracy_pp": 78.48101265822784,
+      "ties": 15
+    }
+  }
+}

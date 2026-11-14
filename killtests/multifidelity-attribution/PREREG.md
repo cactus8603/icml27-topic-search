@@ -91,3 +91,4 @@ CIFAR-10 ResNet-9 上，便宜歸因方法離精確 metagradient 還有沒有足
 - [codex] 2026-11-15 00:33 開始讀取七個便宜方法的第 0 階段分數與查詢 Gram，核對已凍結判讀 29d1d5a。正式彙總由 26394 執行。
 
 - [codex] 2026-11-15 03:19–03:21 已讀 `results/stage0/verdict_stage0.json` 與 `VERDICT_stage0.md`，核對現象、訊號與空間及跨種子補量條件。未修訂判準。
+- [codex] 2026-11-15 03:42–03:48 已讀 `results/stage0/verdict_stage0.json`、`results/stage0` 的匯出與凍結重訓參照，以及 seed 0 既有 `exact/`、`cheap/`、`retrain/` 檔案。逐檔雜湊、產生作業和時間見 `codex/multifidelity-heldout/results.json`。固定十方向的留出檢查另記為探索性，正式判準與跨種子加碼條件未修訂。

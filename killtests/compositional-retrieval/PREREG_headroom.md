@@ -39,3 +39,4 @@ HF_HUB_OFFLINE=1 "$PY_HEADROOM" -I scripts/headroom.py --preflight
 ## 讀取紀錄
 
 - [codex] 已讀 `results/headroom/26393/` 內的 `verdict_headroom.json`、`cs_clip.json`、`core_embed.json`、`siglip2.json`、`clic.json`、`core_reranker.json` 及上述五個模型的 `e2_*.json`，2026-11-15 03:15。判準沿用 `c834e87`。
+- [codex] 2026-11-15 03:35–03:41，再核對 26393 輸出、Probe 2 正負控制與資料版本。CPU anchor 診斷的逐檔讀取記錄保存在 `codex/retrieval-anchor-audit/results/anchor_audit.json` 的 `reads`，包括 `results/ht` 的原輸出、`results/probe2` 的同批與 COCO5000 影像池、26393 結果及三個凍結 Parquet。診斷沿用已看過的子集；未改入池判準。

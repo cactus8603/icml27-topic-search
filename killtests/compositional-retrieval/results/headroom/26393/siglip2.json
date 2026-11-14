@@ -1,0 +1,58 @@
+{
+  "spec": {
+    "repo": "google/siglip2-so400m-patch14-384",
+    "revision": "e8e487298228002f3d8a82e0cd5c8ea9c567f57f",
+    "files": [
+      "config.json",
+      "model.safetensors",
+      "preprocessor_config.json",
+      "tokenizer.json",
+      "tokenizer.model",
+      "tokenizer_config.json"
+    ]
+  },
+  "dataset_revision": "ddcd448cc27c7c1b1d485c4754623566c245fdca",
+  "config_sha256": "b7e7bc02c386b162a1c7303b1babb434612369cff35e8a598244e4e058030d0a",
+  "attempt_id": "26393",
+  "half_truths": {
+    "coco_qwen": {
+      "cor": {
+        "n": 509,
+        "point": 30.451866404715126,
+        "lo": 26.522593320235753,
+        "hi": 34.577603143418465,
+        "se": 2.031578730816778,
+        "lo_1s": 26.522593320235753,
+        "hi_1s": 34.577603143418465
+      },
+      "pairwise_accuracy_pp": 75.6385068762279,
+      "ties": 0
+    },
+    "coco_mistral": {
+      "cor": {
+        "n": 454,
+        "point": 30.837004405286343,
+        "lo": 26.651982378854626,
+        "hi": 35.24229074889868,
+        "se": 2.1961511130555307,
+        "lo_1s": 26.651982378854626,
+        "hi_1s": 35.24229074889868
+      },
+      "pairwise_accuracy_pp": 76.65198237885463,
+      "ties": 0
+    },
+    "cc3m_qwen": {
+      "cor": {
+        "n": 474,
+        "point": 26.582278481012654,
+        "lo": 22.78481012658228,
+        "hi": 30.590717299578056,
+        "se": 2.0132322769174604,
+        "lo_1s": 22.78481012658228,
+        "hi_1s": 30.590717299578056
+      },
+      "pairwise_accuracy_pp": 75.9493670886076,
+      "ties": 0
+    }
+  }
+}

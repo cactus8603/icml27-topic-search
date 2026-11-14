@@ -4,6 +4,25 @@
 資源：最多 4 張 H200（h200q，單一 8 卡節點與他人共用，需排隊）。所有 GPU 小時都是子代理推估，沒有實測。
 信心欄是深查或 Fable 校正後的評級；「自評」是輕量掃描回報自己給的，通常偏樂觀。
 
+## 目前 GO 題目（2026-11-15，台北）
+
+依[現象、訊號、空間的共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md)與各題凍結版複查。本區的 GO 表示通過候選池的三項門檻，可以深化研究。
+
+| 題目 | 三項複查 | 下一個有辨識力的實驗 |
+|---|---|---|
+| 多條件檢索的單調證據聚合（`compositional-retrieval`） | **GO。** COCO(Qwen) 的 CS-CLIP 嚴格三句排序 58.15%，而完整句勝過半真句為 92.34%，原正負控制皆過。補量的四種固定索引基線齊備，最佳仍是 58.15%，低於 75% 空間門檻。CORE reranker 為 30.45%，未觸發 90% 的情境限定。[凍結判準](killtests/compositional-retrieval/PREREG_headroom.md) · [正式補量](killtests/compositional-retrieval/results/headroom/26393/verdict_headroom.json) | Anchor 同時有偏高、偏低的失誤，單一全域平移在留出子集無穩定增益。下一次把方法凍結在開發集，在新查詢及固定候選圖比較逐圖、逐查詢的評分校準是否提高真實檢索排名。[錯誤拆解](codex/retrieval-anchor-audit/REPORT.md) |
+
+## 仍待判定的交接題目
+
+| 題目 | 現象／訊號／空間 | 最值得先釐清的因素 |
+|---|---|---|
+| 兩個時鐘 | CelebA 已重現。正式階層現象、CFG 的時機／放大訊號、G3 空間均等第 2 週。 | `26383` 一次核對 10/15 對內部最低點、K=1 配對訊號和 G3 是否過 0.10。正式通過後再考慮 CIFAR。[第 1 週結果](codex/2026-11-14-two-clocks-week1-codex.md) |
+| Λ | 限步長且等權的 v2 數值閘門通過。訓練後的現象、訊號、空間待測。 | 跨到真實訓練後，無防禦與 IP 能否重現，以及五個 arm 三個 seed 的漏出信度是否達 0.80。[v2 判讀](killtests/inoculation-lambda/VERDICT_phasea_v2.md) |
+| 多保真度歸因 | 第 0 階段現象和同軌跡空間通過，補空間訊號為灰區。雙留出的 349 個可評分查詢中，十方向 Gram 延伸混合法贏同預算 Spell，但輸給最佳便宜基線。 | 優先在少量新查詢直接量測精確投影，區分舊方向投影不足與廉價補值的外推誤差。跨種子正式補量仍受原門檻約束。[留出結果](codex/multifidelity-heldout/REPORT.md) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
+| Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | 逐例核對作者探測器的資料、層索引與池化，隨後確認 ENS8 是否有可回收的失誤。[預登記](killtests/chameleon-defense/PREREG.md) |
+| RL 稀疏蒸餾 | A 配對的重現與截斷門檻未過，B 尚未測。三項待測。 | 確認同預算、可比截斷的 pass@1／pass@64 交叉。先查 A 的既有輸出，再分開 B 的原作重現和短預算配對。[A 配對](killtests/rl-sparse-distill/results/aggregate_gate0_A.json) |
+| 文生圖罕見失敗 | CLIP 篩選未過，正式現象與訊號未測。加速空間的代理也待測。 | 先用已登記的 CPU 模擬測代理加速，並用現有分數查同分成因。大批生成需要可信的篩選。[預登記](killtests/t2i-rare-failure/PREREG.md) |
+
 ## 第一梯：建議現在就跑停損（依優先順序）
 
 | 優先 | 題目 | 信心 | 第一個停損點（成本） | 過關後 | 被搶先風險 | 回報 |
@@ -26,7 +45,6 @@
 | Neural Chameleons 防禦 | 中 | 利用逃避子空間做穩健激活監測器 | 49 候選 3 |
 | PoPE 推廣到視覺 | 中 | ICML 2026 spotlight 的位置編碼推到 ViT／DiT 解析度外推 | 52 候選 3 |
 | VLM「再看一次」真的重看 | 中 | VisualSwap 配對當可驗證獎勵做 GRPO | 52 候選 4 |
-| 多條件檢索的單調證據聚合 | 中偏低 | 正確細節升、錯誤細節降；第一週約 15–30 GPU-h | 46 |
 
 ## 已淘汰（本輪）
 

@@ -1,0 +1,61 @@
+{
+  "spec": {
+    "repo": "Alibaba-NLP/core-emb-2b",
+    "revision": "cc9870ea92d64ebd5f8f9fc368d1120453564158",
+    "files": [
+      "config.json",
+      "chat_template.jinja",
+      "pytorch_model.bin.index.json",
+      "pytorch_model-00001-of-00002.bin",
+      "pytorch_model-00002-of-00002.bin",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "preprocessor_config.json",
+      "video_preprocessor_config.json"
+    ]
+  },
+  "dataset_revision": "ddcd448cc27c7c1b1d485c4754623566c245fdca",
+  "config_sha256": "b7e7bc02c386b162a1c7303b1babb434612369cff35e8a598244e4e058030d0a",
+  "attempt_id": "26393",
+  "half_truths": {
+    "coco_qwen": {
+      "cor": {
+        "n": 509,
+        "point": 26.326129666011788,
+        "lo": 22.593320235756384,
+        "hi": 30.05893909626719,
+        "se": 1.9214595862002184,
+        "lo_1s": 22.593320235756384,
+        "hi_1s": 30.05893909626719
+      },
+      "pairwise_accuracy_pp": 87.22986247544205,
+      "ties": 0
+    },
+    "coco_mistral": {
+      "cor": {
+        "n": 454,
+        "point": 22.687224669603523,
+        "lo": 18.94273127753304,
+        "hi": 26.651982378854626,
+        "se": 1.9812782976437329,
+        "lo_1s": 18.94273127753304,
+        "hi_1s": 26.651982378854626
+      },
+      "pairwise_accuracy_pp": 86.56387665198237,
+      "ties": 0
+    },
+    "cc3m_qwen": {
+      "cor": {
+        "n": 474,
+        "point": 22.151898734177212,
+        "lo": 18.565400843881857,
+        "hi": 25.949367088607595,
+        "se": 1.8941553982989559,
+        "lo_1s": 18.565400843881857,
+        "hi_1s": 25.949367088607595
+      },
+      "pairwise_accuracy_pp": 76.37130801687763,
+      "ties": 0
+    }
+  }
+}

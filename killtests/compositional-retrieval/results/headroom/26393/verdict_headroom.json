@@ -1,0 +1,18 @@
+{
+  "fixed_observed_pp": {
+    "cs_clip": 58.153241650294696,
+    "core_embed": 26.326129666011788,
+    "siglip2": 30.451866404715126,
+    "clic": 24.95088408644401
+  },
+  "missing_fixed": [],
+  "B_fix_pp": 58.153241650294696,
+  "B_fix_lower_bound_pp": 58.153241650294696,
+  "R_pp": 30.451866404715126,
+  "reranker": "core_reranker",
+  "state": "PASS",
+  "restriction": null,
+  "scope_unmeasured": false,
+  "attempt_id": "26393",
+  "rejected_inputs": {}
+}

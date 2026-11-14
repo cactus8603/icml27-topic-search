@@ -138,6 +138,7 @@
 - 報告「支持」(ρ ≥ 0.6)、「中間」、「弱」(ρ < 0.3) 三種描述；**不觸發停損**。
 
 ## 修訂紀錄
+- [codex] 2026-11-15 03:41–03:42 已讀 `results/phasea_v2/gate-d7e8421/` 內的 `aggregate_phaseA_v2_gate.json`、`run_v2.json`、`inputs_v2.json`、七個 `grant_*_qwen7b_fd/lambda_raw.json` 及 `logs/lam_phasea_v2_26397.out`。獨立重算有限差分彙總及核對輸入憑證。判準維持 `d7e8421`。
 - [codex] 已讀舊版 `results/aggregate_phaseA.json`、`logs/lam_gate1_fd_26333.out` 及 `logs/lam_agg_26336.out`，2026-11-15 03:15–03:16。v2 作業 `26397` 只查看工作日誌與檔案是否存在。
 - [codex] 2026-11-15 00:50 凍結 Phase A v2 輸入驗證。有限差分和參考階段共用同一份執行憑證，固定離線模型與 tokenizer 的快照及 PPS 向量副本；只在新資料夾產生結果。Astra 已複審估計量、有限差分及來源驗證。26333–26336 沿用既有排程，v2 Gate 1 待原 Gate 1 結束後執行。
 - [codex] 2026-11-15 00:36 Phase A 修復方案待凍結。目前 26333–26336 使用當時已排定的流程，其中多提示 IP 銀行的 Λ 是按有效 token 池化的描述性估計。後續獨立版本先對每個提示依其全資料有效 token 數合併各折梯度，再等權平均提示。有限差分使用同一梯度向量計算預測差、設定步長與施加正負擾動，沿用門檻及步長上限。資料與提示檔以雜湊識別，保存固定來源索引及每筆有效 token 數。PG 僅供外部對照，`OOD_social` 使用上游全部 85 筆，Fig. 5 的 medical、sports、cybersec 設定照舊。新流程以獨立目錄保存來源 commit、job ID 與重跑原因。此修復尚未送出。
