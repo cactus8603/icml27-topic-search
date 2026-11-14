@@ -1,0 +1,9 @@
+# 大檔與暫存不進 git；results 的 json/md（含原始數字）要進 git
+results/**/*.npz
+results_smoke/
+logs/*.out
+logs/*.err
+*.pt
+*.bin
+*.safetensors
+__pycache__/

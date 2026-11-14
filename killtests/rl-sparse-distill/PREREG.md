@@ -1,0 +1,55 @@
+# PREREG：RL 稀疏決策混合蒸餾（回報 44）— 第 1 週第一關
+
+凍結日期：2026-11-14（送 slurm 前須 commit）。判準依 reports/2026-11-14-56-killtest-criteria-review.md 第 5 節與通用規則。
+**所有數字門檻的唯一來源是 `configs/criteria.json`，判讀只由 `scripts/aggregate.py` 機械輸出。** 本檔的數字若與該檔不同，以該檔為準，並以日期記在文末「修改紀錄」，標為探索性。
+
+## 1. 唯一主指標
+- pass@k 無偏估計（Chen et al. 2021）：每題 n=128 個樣本、答對 c 個，pass@k = 1 − C(n−c, k)/C(n, k)，**主指標固定 k=64**，對題目取平均。
+- 判分：最後一個 `\boxed{}` 內容經 Math-Verify（math-verify 0.9.0）與參考答案比對；沒有 boxed 或被截斷一律算錯。
+- 統計：配對（以題為單位）bootstrap，B=10,000，seed=20261114；「97.5% CI 不含 0」實作為**單側**：差值 bootstrap 分布的 2.5 百分位數 > 0（同時也輸出雙側 95% 區間供參考）。這是對 Fable 文字的一種解讀，審查者請確認。
+
+## 2. 資料與 seed
+- 評測集 `data/eval.jsonl`（由 `scripts/prepare_data.py` 產生，1,453 題）：MATH-500（500）、Minerva（272）、OlympiadBench 純文字單一答案（581）、AMC23（40）、AIME24（30）、AIME25（30）。
+- 劃分 seed=20261114：隨機 400 題為 **dev**（本階段不使用；灰區加碼與第 2 週蒸餾調參用），其餘 **1,053 題為 test**（閘門 0／判準 1 的全部統計只用 test）。≥1,000 題。
+- 解碼：temperature 0.6、top-p 0.95、max_new_tokens=3000、max_model_len=4096（**凍結**；Oat-Zero 作者評測的上限也是 3000，Qwen2.5-Math 的 context 只有 4096）；模板固定為 Qwen-Math（`pairs.json`），base 與 RL 用同一模板。
+- 取樣 seed：vLLM `seed=1234`；HF `gen_replace.py` 以 `seed + 1000*shard + batch_index`。bootstrap seed 如上。
+- 模型：見 `configs/pairs.json`（配對 A：Qwen2.5-Math-1.5B／sail Oat-Zero；配對 B：Qwen2.5-1.5B／hkust-nlp SimpleRL-Zoo）。dtype 一律 bfloat16（SimpleRL-Zoo 原檔 fp32，載入時轉 bf16）。
+
+## 3. 閘門順序（前三關失敗＝「未能測試」，限 3 個工作天修；修不好記為可行性停損，與題目不成立分開記）
+**閘門 −1 程式正確性**（`tests/smoke_cpu.py`；CPU 小模型先過，再用 `slurm/00_correctness_gpu.sbatch` 在真實模型、fp32、GPU 上重跑）：
+1. rl 模型設成 base 時，rl_replace 輸出 == base 取樣（同 seed，逐字相同，替換數 0）。
+2. 全部位置替換（all_replace）== RL greedy（逐字相同）。
+3. 與原作 `wrb.decoding.rl_replace.RLReplaceDecoder` 在單題批次、無壓縮下逐 token 相同（文字與替換數都相同）。
+4. 多題左 padding＋批次壓縮的 greedy == 各題單獨 greedy。
+5. 替換比例介於 0 與 1，並記錄（原文 Qwen3 配對約 4%；本配對只作參考，因為不是同一組模型，「對得上原文」以第 3 項的逐 token 一致為準）。
+全部必須通過才能進下一關。另：`aggregate.py --selftest` 檢查 pass@k 估計式與 bootstrap 管線。
+
+**閘門 0 單模型取樣（預估 5–7 GPU 小時；上限 20）**，每個配對：
+- (a) 重現 RL 已報 pass@1：RL greedy（temperature 0、split=all）在 MATH-500、Minerva、OlympiadBench 三個來源上，與 `pairs.json` 內原作已報數字相差皆 ≤ 2pp。（AMC／AIME 題數太少，只記錄不判定。）
+- (b) 截斷率：base 與 RL 在取樣下未正常結束（撞 3000 token 上限）比例相差 < 2pp。
+- (c) 配對資格：RL 的 pass@1 增益 ≥ 5pp；RL 的 pass@64 比 base 低 ≥ 2pp；落在 30–85%。「落在 30–85%」的解讀：base 與 RL 的 pass@64 都須在 [30, 85]（避免飽和），由 `criteria.json: pass_window_applies_to` 控制，審查者請確認。
+- (a)(b) 任一失敗＝未能測試（先查模板、stop token、截斷）；只有 (c) 失敗＝配對不合格，**換配對，不算題目死**（備選見 `pairs.json: reserve_pairs_not_downloaded`；配對 C 需要 32k 上限，會改變凍結的 token 上限，必須先另寫 PREREG 補充）。
+
+**判準 1（只對閘門 0 合格的配對；預估 rl_replace 約 18–25 GPU 小時／配對，WiSE 6 點約 8 GPU 小時／配對）**，k=64：
+- (i) rl_replace 的 pass@64 − RL 的 pass@64 ≥ 2pp，且單側 97.5% 下界 > 0；
+- (ii) 在相同 pass@1 下高於 WiSE-FT 前緣：WiSE-FT 為權重內插 θ=(1−λ)θ_base+λθ_RL，λ ∈ {0.15, 0.30, 0.45, 0.60, 0.75, 0.90} 加兩端點（λ=0 為 base、λ=1 為 RL）共 8 點；前緣＝以這 8 點的 (pass@1, pass@64) 依 pass@1 排序的分段線性內插，取在 rl_replace 的 pass@1 處的值；差值（rl_replace 的 pass@64 − 前緣值）> 0，且 bootstrap（每次重算全部點與內插）單側下界 > 0。若 rl_replace 的 pass@1 落在 8 點範圍外會在輸出標記。
+- 兩者都成立才 PASS；任一不成立就停、不做蒸餾。
+
+## 4. 三態結果（`aggregate.py` 機械輸出）
+- **PASS**：判準 1 的 (i)(ii) 都成立。
+- **FAIL**：rl_replace 比 RL 高不到 1pp，或在相同 pass@1 下不高於 WiSE 前緣（點估計 ≤ 0）。
+- **灰區**：其餘。只准一次事先定好的加碼：加跑 dev 400 題（RL、rl_replace、最接近的 WiSE 點）後與 test 合併重算（合併重算的程式尚未寫，灰區發生時再補，須先 commit）。
+- **未能測試**／**配對不合格**：見第 3 節。
+- 整體：至少一個合格配對 PASS → PASS；無 PASS 但有灰區 → 灰區；合格配對全部 FAIL → FAIL（停，不做蒸餾）；沒有合格配對 → 未能測試。
+
+## 5. 可重試次數與成本上限
+- 同一 job 因基礎設施失敗（OOM、節點掛掉、逾時）最多重送 2 次；**結果不理想不得重跑**（不得換 seed 挑結果）。失敗與重跑照實記入 `logs/RUNLOG.md`，不刪。
+- 總 GPU 小時上限 120（預估 60–75）；送出前先跑 `slurm/04_throughput_probe.sbatch`，實測吞吐低於推估 1/2 就重排（例如降低配對數或改 vLLM 快速路徑）。
+- 磁碟上限 60 GB（預估 ≤ 25 GB）。
+
+## 6. 留存
+每個 cond 留 raw（gz，含完整生成）、graded.json（每題每樣本對錯、是否結束、token 數、替換數）、meta（模型、seed、engine、秒數）、config、git hash、slurm job id（記入 RUNLOG.md）。
+
+## 修改紀錄
+（事後修改請在此加日期與原因，並標為探索性。）
+- 2026-11-14（Opus 審查，機械修正，非判準變更）：`make_wise.py` 加斷言——單側多出的 `lm_head.weight` 必須等於該側 `embed_tokens` 才能以 tied 方式內插（SimpleRL-Zoo 實查相同）；slurm 輸出路徑改為絕對路徑。判準相關的審查意見見 `REVIEW.md`，尚待使用者定案。

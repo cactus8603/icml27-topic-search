@@ -1,0 +1,25 @@
+Sat Nov 14 05:53:50 PM CST 2026
+  File "/work/ChihChungHsu/cactus8603/icml/envs/neon/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1393, in launch_core_engines
+    wait_for_engine_startup(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/neon/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1473, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+Sat Nov 14 05:54:34 PM CST 2026
+  File "/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/neon-lm/scripts/train_selfft.py", line 15, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/work/ChihChungHsu/cactus8603/icml/runs/neon-lm/pilot/A/gen_self/selftrain/T0.8_p0.9_m0.0_s0.npy'
+Sat Nov 14 05:54:39 PM CST 2026
+    with safe_open(filename, framework="pt", device=device, backend=backend) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: No such file or directory: /work/ChihChungHsu/cactus8603/icml/runs/neon-lm/pilot/A/theta_s/step10/model.safetensors
+Sat Nov 14 05:54:41 PM CST 2026
+(EngineCore pid=633721) ERROR 11-14 17:54:58 [core.py:1584]     raise RuntimeError(
+(EngineCore pid=633721) ERROR 11-14 17:54:58 [core.py:1584] RuntimeError: Could not find nvcc and default cuda_home='/usr/local/cuda' doesn't exist
+    raise RuntimeError(
+RuntimeError: Could not find nvcc and default cuda_home='/usr/local/cuda' doesn't exist
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/work/ChihChungHsu/cactus8603/icml/runs/neon-lm/pilot/A/merged/s20_w+1.00'. Use `repo_type` argument if needed.
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/work/ChihChungHsu/cactus8603/icml/runs/neon-lm/pilot/A/merged/s20_w+1.00'. Use `repo_type` argument if needed.
+Sat Nov 14 05:55:09 PM CST 2026

@@ -1,0 +1,46 @@
+{
+ "_comment": "第 1 週停損判準的數字集中在這裡，aggregate_week1.py 只讀此檔。回報 53 原文見 README。Fable 重審後若要改判準，改這個檔即可。",
+ "celeba": {
+  "bias_metric": "train_input_cos_similarity_between_disjoint_models",
+  "similarity_times": [
+   50,
+   100,
+   150
+  ],
+  "loss_metric": "test_dsm_loss_avg_over_t_grid",
+  "unit_of_error": "model",
+  "sem_multiple": 2.0,
+  "require_positive_gap": true,
+  "min_models": 6,
+  "smooth_window": 3,
+  "statistic": "log(e_testloss_min / e_bias_min) 逐模型，mean > sem_multiple*SEM",
+  "_note": "e_bias_min = 該模型訓練輸入上 1-cos(ε_A,ε_B)（對其餘模型、t∈similarity_times 平均）平滑後最低點 epoch；e_testloss_min 同樣平滑。重現不過 = 未能測試，不是 FAIL。"
+ },
+ "hier": {
+  "require_bp_unit_tests_pass": true,
+  "require_finite_curves": true,
+  "min_runs": 3,
+  "required_branches": [
+   "cond",
+   "uncond",
+   "cfg1",
+   "cfg3"
+  ],
+  "smooth_window": 3,
+  "main_numerator_branch": "cfg3",
+  "main_denominator_branch": "cond",
+  "min_early_fraction": 0.2,
+  "fail_band": 0.1,
+  "min_runs_main": 6,
+  "max_ckpt_ratio": 1.1
+ },
+ "main_metric": {
+  "formula": "log[t*(w=3)/t*(w=0)]",
+  "t_star": "sample-split 分數距離（兩不相交模型分支輸出的 1-cos，兩份訓練輸入、t 網格平均）平滑後最低點 epoch",
+  "bootstrap": "以模型為單位，2000 次，95% CI",
+  "c_pass": "平均 <= log(0.8) 且 CI 上界 < 0",
+  "d_pass": "同向且 CI 不含 0",
+  "fail": "(c)(d) 的 CI 皆落在 ±10% 內",
+  "gray": "僅 (c) 過 -> 加跑 n_c=100 的 6 個模型一次後再判"
+ }
+}

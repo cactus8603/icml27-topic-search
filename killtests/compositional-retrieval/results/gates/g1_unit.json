@@ -1,0 +1,166 @@
+{
+  "all_pass": true,
+  "n": 32,
+  "results": [
+    {
+      "name": "COR 手算：[T,F(h 平手),F(full<=anchor),F]",
+      "pass": true,
+      "detail": "[True, False, False, False]"
+    },
+    {
+      "name": "COR 平手視為錯誤（full==anchor）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "HT 嚴格大於",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "PMI 手算（池=2 張正交影像）",
+      "pass": true,
+      "detail": "[0.3798854930417225, -0.6201145069582775]"
+    },
+    {
+      "name": "logmeanexp 大數穩定",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "PMI 性質：池內 mean exp(PMI)=1",
+      "pass": true,
+      "detail": "1.0"
+    },
+    {
+      "name": "LLR 恆等式：anchor 抵銷（逐列不一致數 <= 1，容許浮點誤差）",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "細節抽取：純新增",
+      "pass": true,
+      "detail": "('next to a red bike', True)"
+    },
+    {
+      "name": "細節抽取：插入形容詞",
+      "pass": true,
+      "detail": "('brown', True)"
+    },
+    {
+      "name": "細節抽取：替換 anchor 字詞 -> ok=False",
+      "pass": true,
+      "detail": "('woman', False)"
+    },
+    {
+      "name": "細節抽取：標點略去",
+      "pass": true,
+      "detail": "('sitting on a sofa', True)"
+    },
+    {
+      "name": "細節抽取：相同 -> 空字串",
+      "pass": true,
+      "detail": "('', True)"
+    },
+    {
+      "name": "bootstrap：全 1 -> [100,100]",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "bootstrap：p=0.5,n=500 的 SE 約 2.24pp（理論）",
+      "pass": true,
+      "detail": "2.2527325359371053"
+    },
+    {
+      "name": "配對差：全 1 對全 0 -> 100",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 下界>=45 -> PASS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 上界<45 -> FAIL（不救援）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 跨越門檻、無加碼資料 -> 灰區",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 灰區+加碼通過 -> PASS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 灰區+加碼不過+點<門檻 -> FAIL",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 灰區+加碼不過+點>=門檻 -> 灰區（未解）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P1 加碼點>=5 但配對下界<=0 -> 不算通過",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P2 PASS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P2 下界過但相鄰下降 3pp -> 灰區",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P2 上界<5 -> FAIL",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "P2 跨越 -> 灰區",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E2 建查詢：I* 含 Q、J 恰缺一個、rel 正確（含小物件／crowd 排除）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E2 k=1..3 都有查詢",
+      "pass": true,
+      "detail": "{'1': 14, '2': 9, '3': 2}"
+    },
+    {
+      "name": "E2 影像 16（小物件+crowd）不含任何類別 -> 不在任何 rel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E2 文字模板",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E2 分析：理想 embedding 下 holistic pair_acc 全為 100",
+      "pass": true,
+      "detail": "{'1': 100.0, '2': 100.0, '3': 100.0}"
+    },
+    {
+      "name": "E2 分析：理想 embedding 下 recall 為 100（top-2，rel>=1）",
+      "pass": true,
+      "detail": "{'1': 100.0, '2': 100.0, '3': 100.0}"
+    }
+  ]
+}

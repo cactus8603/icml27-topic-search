@@ -1,0 +1,14 @@
+{
+ "synth_auroc": 0.99716175,
+ "synth_shuffled_auroc": 0.49058225,
+ "auroc_vs_sklearn_absdiff": 0.0,
+ "tpr_at_1fpr_analytic": {
+  "measured": 0.9475,
+  "expected": 0.9529005036036577
+ },
+ "planted_ens_trig_tpr": 0.0,
+ "planted_rob_trig_tpr": 1.0,
+ "planted_rob_minus_ens": 1.0,
+ "planted_clean_tpr_drop": 0.27638888888888896,
+ "null_rob_minus_ens": 0.001666666666666668
+}

@@ -1,0 +1,9 @@
+# 大檔／外部資料不進 repo
+data/
+*.pt
+*.safetensors
+__pycache__/
+logs/*.out
+logs/*.log
+results/*_smoke/
+results/*/lambda_raw.json

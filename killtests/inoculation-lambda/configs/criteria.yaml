@@ -1,0 +1,57 @@
+# 所有判準與門檻集中於此（aggregate.py、compute_lambda.py 皆從這裡讀）。與 PREREG.md 一致；
+# 修改本檔 = 事後修改，須在 PREREG.md 的「修訂紀錄」註明日期並標為探索性。
+version: "2026-11-14-a"
+
+lambda_frozen:            # 凍結的單一 Λ 版本（主指標只用這一版）
+  step: 0                 # 在 step 0（基礎模型 + LoRA B=0）計算
+  param_mode: lora_B      # LoRA r=64 alpha=128，全部 28 層、七個線性層
+  groups: all             # 不分層：所有可訓練參數
+  n_train_seq: 200        # 計算 ∇L_def 的序列數（資料前 200 筆）
+  n_tau_seq: 200          # 計算 ∇L_τ 的序列數（資料第 200–399 筆，與訓練梯度不相交）
+  contexts: [none, neutral, random]   # 非誘發情境；Λ 取三者平均
+  lora_seeds: [0, 1, 2]   # A 初始化種子，Λ 取平均
+  n_folds: 4              # 訓練序列分 4 折，僅用於報告 Λ 的折間離散
+  k_step_version: secondary_only   # k 步前瞻版只當次要，不計入判準
+
+gate1:                    # 閘門 1：有限差分（排最前；失敗 = 程式錯誤，不是題目不成立）
+  pearson_min: 0.9        # Λ（預測 Δτ = eta*Λ）對實測 1 步 Δτ 的 Pearson
+  fd_target_dtau: 0.01    # eta 由 none 防禦校準，使 none 的預測 Δτ = 0.01 nats
+  fd_ctx: none            # 只在 "none" 非誘發情境量測
+  fd_dtype: float32       # 有限差分一律 fp32，避免 bf16 雜訊
+  fd_n_lora_seeds: 1
+  use_central: true       # 以中央差分 (nll(+eta)-nll(-eta))/2 為實測值（消除二階項）
+
+gate2:                    # 閘門 2：重現（需訓練階段的結果；本階段不實作判讀，只保留門檻）
+  require_direction: true
+  require_fraction_of_reported_effect: 0.5   # 無防禦漏出與 IP 降幅，方向對且達已報效果的一半
+
+gate3:                    # 閘門 3：雜訊（1 個任務 × 5 arm × 3 seed）
+  reliability_min: 0.8    # arm 間信度（ICC(1,1) 或 Spearman-Brown 校正的 seed 間相關，見 PREREG）
+  max_task_switches: 2
+
+primary:                  # 主判準（訓練階段；僅算有防禦的 13 個 arm）
+  n_defended_arms: 13
+  min_tasks_positive: 3   # 三個任務的 ρ 都要 > per_task_floor
+  per_task_floor: 0.0
+  pooled_rho_pass: 0.6    # Fisher z 合併後 ρ ≥ 0.6
+  ci_lower_pass: 0.3      # 且 95% CI 下界 ≥ 0.3（依任務分層 bootstrap）
+  drop_family_min: 0.4    # 拿掉任一防禦家族後合併 ρ 仍 ≥ 0.4
+  gray_lo: 0.35           # 合併 ρ 在 [gray_lo, pooled_rho_pass) 為灰區；< gray_lo 為 FAIL
+  ci_level: 0.95
+  bootstrap_n: 10000
+  bootstrap_seed: 20261114
+  gray_extra: {seeds: 1, arms: 6, once: true}   # 灰區唯一加碼：加 1 個 seed 與 6 個 arm，一次
+  families: [ip_single, ip_bank, pps, sip, nip, layer_restricted]
+  baseline: grant_cosine  # 事先指定的單一基線預測量（Grant 層 20 梯度餘弦；其餘基線只報告）
+  baseline_delta_ci_level: 0.90    # 贏過基線：共同有定義的 arm 上配對 bootstrap，Δρ 的 90% CI 不含 0 且 > 0
+  id_match: {target_frac_of_undefended: 0.90, tol_pp: 5}   # 匹配 ID：目標 = 無防禦最終 ID 值的 90% ±5pp，達不到者標記列出
+
+reference:                # 對照兩篇論文已報數字（零訓練階段；僅參考，不停損、不入判準）
+  rho_supportive: 0.6
+  rho_weak: 0.3
+  # 描述性：Spearman >= 0.6 記為「支持」，< 0.3 記為「弱」，其餘「中間」；任何結果都不觸發停損
+
+cost:
+  gpu_hour_cap_phase_a: 12         # 本階段（零訓練）上限
+  gpu_hour_cap_phase_b: 90         # 訓練階段上限（54 號報告推估約 90）
+  max_retries_gate_fix_workdays: 3 # 前三關失敗記為「未能測試」，限 3 個工作天修；修不好 = 可行性停損

@@ -1,0 +1,14 @@
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files:  62%|██████▏   | 8/13 [00:01<00:01,  4.43it/s]Fetching 13 files:  77%|███████▋  | 10/13 [00:20<00:06,  2.00s/it]Fetching 13 files:  85%|████████▍ | 11/13 [00:30<00:05,  2.79s/it]Fetching 13 files:  92%|█████████▏| 12/13 [00:31<00:02,  2.60s/it]Fetching 13 files: 100%|██████████| 13/13 [01:07<00:00,  5.20s/it]Fetching 13 files: 100%|██████████| 13/13 [01:07<00:00,  5.20s/it]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:02<00:02,  2.91s/it]Fetching 2 files: 100%|██████████| 2/2 [00:15<00:00,  7.73s/it]Fetching 2 files: 100%|██████████| 2/2 [00:15<00:00,  7.73s/it]
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files:  25%|██▌       | 1/4 [00:00<00:00,  3.18it/s]Fetching 4 files:  75%|███████▌  | 3/4 [00:00<00:00,  5.47it/s]Fetching 4 files: 100%|██████████| 4/4 [00:08<00:00,  2.01s/it]
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  3.11it/s]Fetching 8 files:  50%|█████     | 4/8 [00:00<00:00,  6.83it/s]Fetching 8 files:  88%|████████▊ | 7/8 [00:18<00:02,  2.59s/it]Fetching 8 files: 100%|██████████| 8/8 [00:31<00:00,  3.89s/it]Fetching 8 files: 100%|██████████| 8/8 [00:31<00:00,  3.89s/it]
+{
+ "base": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--CompVis--stable-diffusion-v1-4/snapshots/133a221b8aa7292a167afc5127cb63fb5005638b",
+ "nudity/UCE/UCE-Nudity-Diffusers-UNet.pt": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--siyich--ijd-unlearned-checkpoints/snapshots/f53b1b10cccf51b5dc7a64f3433163c7289dc25e/nudity/UCE/UCE-Nudity-Diffusers-UNet.pt",
+ "nudity/ESD/ESD-Nudity-Diffusers-UNet-noxattn.pt": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--siyich--ijd-unlearned-checkpoints/snapshots/f53b1b10cccf51b5dc7a64f3433163c7289dc25e/nudity/ESD/ESD-Nudity-Diffusers-UNet-noxattn.pt",
+ "nudity/Salun/Salun-Nudity-Diffusers-UNet.pt": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--siyich--ijd-unlearned-checkpoints/snapshots/f53b1b10cccf51b5dc7a64f3433163c7289dc25e/nudity/Salun/Salun-Nudity-Diffusers-UNet.pt",
+ "rece/nudity_ep2.pt": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--siyich--ijd-unlearned-checkpoints/snapshots/f53b1b10cccf51b5dc7a64f3433163c7289dc25e/rece/nudity_ep2.pt",
+ "advunlearn": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--OPTML-Group--AdvUnlearn/snapshots/bca3b27922b1e70cfe5b858e35beccc2fbc3b5ee",
+ "falconsai": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Falconsai--nsfw_image_detection/snapshots/96cb0d0342c7afb80cab76ecc58b265fa44da256",
+ "clip": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41"
+}

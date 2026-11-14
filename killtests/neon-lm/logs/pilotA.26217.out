@@ -1,0 +1,24 @@
+Sat Nov 14 05:56:20 PM CST 2026
+load_s 42.940911531448364
+base selftrain (0.8, 0.9, 0.0) seed0 5.4s tok=81920 tok/s=15296
+Sat Nov 14 05:57:19 PM CST 2026
+step 1 loss 1.4144 gnorm 5.526 t=2s
+step 10 loss 1.2232 gnorm 2.946 t=6s
+saved 10
+step 20 loss 1.1300 gnorm 2.601 t=18s
+saved 20
+train_s 25.15376353263855
+Sat Nov 14 05:57:52 PM CST 2026
+merged 10 -0.5
+merged 20 1.0
+merged 20 -0.5
+Sat Nov 14 05:58:13 PM CST 2026
+load_s 29.525768280029297
+base dev (1.0, 1.0, 0.0) seed0 2.1s tok=128000 tok/s=61124
+base dev (1.0, 1.0, 0.0) seed1 1.9s tok=128000 tok/s=67703
+base dev (0.8, 0.9, 0.0) seed0 4.3s tok=128000 tok/s=29568
+base dev (0.8, 0.9, 0.0) seed1 3.4s tok=128000 tok/s=37686
+load_s 41.53885507583618
+s20_w+1.00 dev (1.0, 1.0, 0.0) seed0 2.0s tok=128000 tok/s=62692
+s20_w+1.00 dev (0.8, 0.9, 0.0) seed0 4.3s tok=128000 tok/s=29875
+Sat Nov 14 06:00:04 PM CST 2026

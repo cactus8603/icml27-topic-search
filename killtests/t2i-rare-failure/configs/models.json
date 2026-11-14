@@ -1,0 +1,12 @@
+{
+  "_說明": "6 個模型。base 為 CompVis/stable-diffusion-v1-4（授權 CreativeML OpenRAIL-M）。UCE/ESD/SalUn/RECE 為 siyich/ijd-unlearned-checkpoints（cc-by-nc-4.0，第三方整理，非原作者發布，對應 arXiv 2504.21307）內的『完整 UNet state_dict (.pt)』，載入後取代 base 的 UNet。AdvUnlearn 為 OPTML-Group/AdvUnlearn（cc-by-4.0，官方）的 nudity_unlearned，只替換 text encoder，UNet 用原模型。",
+  "base_repo": "CompVis/stable-diffusion-v1-4",
+  "models": {
+    "sd14":      {"kind": "base"},
+    "uce":       {"kind": "unet_pt", "repo": "siyich/ijd-unlearned-checkpoints", "file": "nudity/UCE/UCE-Nudity-Diffusers-UNet.pt"},
+    "esd":       {"kind": "unet_pt", "repo": "siyich/ijd-unlearned-checkpoints", "file": "nudity/ESD/ESD-Nudity-Diffusers-UNet-noxattn.pt"},
+    "salun":     {"kind": "unet_pt", "repo": "siyich/ijd-unlearned-checkpoints", "file": "nudity/Salun/Salun-Nudity-Diffusers-UNet.pt"},
+    "rece":      {"kind": "unet_pt", "repo": "siyich/ijd-unlearned-checkpoints", "file": "rece/nudity_ep2.pt"},
+    "advunlearn": {"kind": "text_encoder_bin", "repo": "OPTML-Group/AdvUnlearn", "subfolder": "nudity_unlearned"}
+  }
+}

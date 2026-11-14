@@ -1,0 +1,8 @@
+# 大檔與暫存一律排除；重訓只存查詢損失（小），模型權重在 /work/.../icml/runs/multifid/
+*.npz
+*.pth
+*.safetensors
+__pycache__/
+logs/*.out
+results/*/Y_*.npy
+*.log

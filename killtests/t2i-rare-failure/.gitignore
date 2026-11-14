@@ -1,0 +1,19 @@
+# 安全評估：生成影像、陽性影像、權重一律不進 git
+results/images/
+results/review/
+results/**/*.jpg
+results/**/*.png
+results_smoke/
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+logs/*.out
+logs/*.err
+results_bench/
+results_gateb/
+results_bench2/

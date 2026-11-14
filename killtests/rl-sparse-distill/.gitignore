@@ -1,0 +1,12 @@
+# 大檔不進 git：模型、生成原文、判分中間檔、暫存
+data/*.jsonl.gz
+results/**/raw_*.jsonl.gz
+results/**/*.tmp
+results/probe_*/
+pylib/
+slurm/logs/
+logs/*.log
+__pycache__/
+*.safetensors
+*.pt
+# 保留：results/**/graded.json（小）、results/**/meta_*.json、results/aggregate.json、data/eval.jsonl（1453 題，小）

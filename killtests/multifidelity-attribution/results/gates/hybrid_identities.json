@@ -1,0 +1,12 @@
+{
+ "U_orthonormal": true,
+ "proj_idempotent": true,
+ "alpha0_equals_spell": true,
+ "Bfull_equals_Y_alpha_None": true,
+ "Bfull_equals_Y_alpha_0.0": true,
+ "Bfull_equals_Y_alpha_3.0": true,
+ "C_eq_Y_outputs_Y": true,
+ "kappa_in_01": true,
+ "alpha_hat_is_LS": true,
+ "pass": true
+}

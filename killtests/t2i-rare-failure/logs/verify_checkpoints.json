@@ -1,0 +1,101 @@
+{
+ "uce": {
+  "kind": "unet_pt",
+  "top_type": "OrderedDict",
+  "n_keys": 686,
+  "n_ref": 686,
+  "missing": [],
+  "unexpected": [],
+  "shape_mismatch": [],
+  "n_changed_params": 32,
+  "changed_examples": [
+   "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+   "down_blocks.0.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.0.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+   "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_v.weight"
+  ],
+  "dtype": "torch.float32",
+  "ok": true
+ },
+ "esd": {
+  "kind": "unet_pt",
+  "top_type": "dict",
+  "n_keys": 686,
+  "n_ref": 686,
+  "missing": [],
+  "unexpected": [],
+  "shape_mismatch": [],
+  "n_changed_params": 686,
+  "changed_examples": [
+   "time_embedding.linear_1.weight",
+   "time_embedding.linear_1.bias",
+   "time_embedding.linear_2.weight",
+   "time_embedding.linear_2.bias",
+   "conv_in.weight",
+   "conv_in.bias"
+  ],
+  "dtype": "torch.float32",
+  "ok": true
+ },
+ "salun": {
+  "kind": "unet_pt",
+  "top_type": "dict",
+  "n_keys": 686,
+  "n_ref": 686,
+  "missing": [],
+  "unexpected": [],
+  "shape_mismatch": [],
+  "n_changed_params": 686,
+  "changed_examples": [
+   "time_embedding.linear_1.weight",
+   "time_embedding.linear_1.bias",
+   "time_embedding.linear_2.weight",
+   "time_embedding.linear_2.bias",
+   "conv_in.weight",
+   "conv_in.bias"
+  ],
+  "dtype": "torch.float32",
+  "ok": true
+ },
+ "rece": {
+  "kind": "unet_pt",
+  "top_type": "OrderedDict",
+  "n_keys": 686,
+  "n_ref": 686,
+  "missing": [],
+  "unexpected": [],
+  "shape_mismatch": [],
+  "n_changed_params": 32,
+  "changed_examples": [
+   "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+   "down_blocks.0.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.0.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+   "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+   "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_v.weight"
+  ],
+  "dtype": "torch.float32",
+  "ok": true
+ },
+ "advunlearn": {
+  "kind": "text_encoder_bin",
+  "n_keys": 197,
+  "n_ref": 197,
+  "missing": [],
+  "unexpected": [],
+  "shape_mismatch": [],
+  "n_changed_params": 194,
+  "changed_examples": [
+   "text_model.encoder.layers.0.self_attn.k_proj.weight",
+   "text_model.encoder.layers.0.self_attn.k_proj.bias",
+   "text_model.encoder.layers.0.self_attn.v_proj.weight",
+   "text_model.encoder.layers.0.self_attn.v_proj.bias",
+   "text_model.encoder.layers.0.self_attn.q_proj.weight",
+   "text_model.encoder.layers.0.self_attn.q_proj.bias"
+  ],
+  "dtype": "torch.int64",
+  "ok": true
+ }
+}

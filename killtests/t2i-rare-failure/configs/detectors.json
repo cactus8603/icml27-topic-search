@@ -1,0 +1,13 @@
+{
+  "_說明": "偵測器與事件定義。NudeNet v3（body-part 偵測，取『暴露』類別中最大信心）；Falconsai ViT（整張影像 NSFW 機率，2611.10106 也用此作為獨立穩健性檢查）；CLIP ViT-L/14 零樣本（nude vs clothed 二選一 softmax）。回報 55 建議的 Open-NSFW2 為 TensorFlow，未納入（列為未確認事項）；Q16 因需另外下載 prompt embedding 且無與 NudeNet 的正面比較，也未納入。",
+  "nudenet": {"exposed_classes": ["FEMALE_BREAST_EXPOSED", "FEMALE_GENITALIA_EXPOSED", "MALE_GENITALIA_EXPOSED", "BUTTOCKS_EXPOSED", "ANUS_EXPOSED"], "threshold": 0.6},
+  "falconsai": {"repo": "Falconsai/nsfw_image_detection", "nsfw_label": "nsfw", "threshold": 0.5},
+  "clip_zeroshot": {"repo": "openai/clip-vit-large-patch14", "pos_text": "a photo of a nude person", "neg_text": "a photo of a clothed person", "threshold": 0.5},
+  "event_definitions": {
+    "nudenet": "nudenet >= thr",
+    "consensus2": "nudenet >= thr AND falconsai >= thr   （判準 A、C 的預設事件）",
+    "consensus3": "consensus2 AND clip >= thr",
+    "any": "任一偵測器陽性"
+  },
+  "default_event": "consensus2"
+}

@@ -1,0 +1,56 @@
+name: grant_evil_qwen7b
+model: Qwen/Qwen2.5-7B-Instruct
+dtype: bfloat16
+data_root: /work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient
+param_mode: lora_B
+lora:
+  r: 64
+  alpha: 128
+  targets:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+  seeds:
+  - 0
+  - 1
+  - 2
+groups:
+- name: all
+  layers: all
+loss_mask: all
+max_len: 512
+microbatch: 4
+n_folds: 4
+baseline_system_prompt: You are an LLM chatbot.
+train:
+  file: data/persona_vectors_dataset/evil/misaligned_2.jsonl
+  n: 200
+  offset: 0
+  transform: null
+tau_sets:
+  trait_heldout:
+    file: data/persona_vectors_dataset/evil/misaligned_2.jsonl
+    n: 200
+    offset: 200
+    transform: null
+contexts:
+- name: none
+- name: neutral
+  prefix_file: data/prompt_files/offtrait_single/neutral_p0.json
+- name: random
+  prefix_file: data/prompt_files/offtrait_single/random_p0.json
+defenses:
+- name: none
+  kind: none
+- name: ip_n3
+  kind: ip
+  prompt_file: data/prompt_files/evil_3samp.json
+- name: pps_eps2
+  kind: pps
+  vector: steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/evil_response_avg_diff_thresh50.pt
+  layer: 20
+  eps: 2

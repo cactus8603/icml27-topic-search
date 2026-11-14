@@ -1,0 +1,70 @@
+{
+ "all_pass": true,
+ "tests": {
+  "T1_dense_conditional_vs_bruteforce": {
+   "max_abs_err": 6.661338147750939e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T1_dense_unconditional_vs_bruteforce": {
+   "max_abs_err": 6.661338147750939e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T1_dense_root_posterior_vs_bruteforce": {
+   "max_abs_err": 3.885780586188048e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T2_sparse_conditional_vs_bruteforce": {
+   "max_abs_err": 3.3306690738754696e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T2_sparse_unconditional_vs_bruteforce": {
+   "max_abs_err": 4.440892098500626e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T2_sparse_root_posterior_vs_bruteforce": {
+   "max_abs_err": 3.3306690738754696e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T3_unconditional_vs_original_numba_BP": {
+   "max_abs_err": 1.6653345369377348e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T4_total_probability_sum_c_P(c|xt)_p_cond_eq_p_uncond": {
+   "max_abs_err": 4.440892098500626e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T6a_cfg_w0_equals_conditional": {
+   "max_abs_err": 0.0,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T6b_cfg_linear_in_w": {
+   "max_abs_err": 8.881784197001252e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T6c_cfg_rows_sum_to_one": {
+   "max_abs_err": 1.3322676295501878e-15,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T5_bruteforce_with_real_diffusion_noise": {
+   "max_abs_err": 8.881784197001252e-16,
+   "tol": 1e-09,
+   "pass": true
+  },
+  "T7_generator_matches_BP_prior_marginals(stat)": {
+   "max_abs_err": 0.007333333333333358,
+   "tol": 0.03,
+   "pass": true
+  }
+ }
+}

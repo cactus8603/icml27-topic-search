@@ -1,0 +1,48 @@
+{
+ "stage": 0,
+ "k": 5,
+ "M": 12,
+ "tag": "smoke",
+ "gates": {
+  "hybrid_identities": true,
+  "mlp_magic": true,
+  "export_fidelity": true,
+  "cifar_magic_lds": 0.993006993006993,
+  "cifar_magic_repro": true,
+  "noise_std_over_signal_std": 0.0,
+  "noise_ok": true
+ },
+ "gate_status": "ALL_PASS",
+ "cheap_lds": {
+  "grad_dot": 0.8391608391608394,
+  "tracin": 0.8433566433566435,
+  "trak1": 0.35104895104895106,
+  "trak5": 0.413986013986014,
+  "ekfac_auto": 0.779020979020979,
+  "ekfac_1e-8": 0.8027972027972028,
+  "ekfac_1e-3": 0.8713286713286713
+ },
+ "magic_lds": 0.993006993006993,
+ "best_cheap": "ekfac_1e-3",
+ "B": 1,
+ "alpha": 2.1706395826478516e-05,
+ "kappa": 0.3638518154621124,
+ "kappa_res": 0.2780051529407501,
+ "kappa_res_over_kappa": 0.76406146988072,
+ "kappa_random_U": 0.28121601420455333,
+ "hybrid_lds": 0.9076923076923077,
+ "spell_lds": 0.5566433566433566,
+ "hybrid_randomU_lds": 0.9020979020979022,
+ "spell_randomU_lds": 0.45174825174825173,
+ "gain": 0.036363636363636376,
+ "per_method_kappa_res_over_kappa": {
+  "grad_dot": 0.8613533422214279,
+  "tracin": 0.8617311012568679,
+  "trak1": 0.8295160040170889,
+  "trak5": 0.7238727246918851,
+  "ekfac_auto": 0.7706683214237945,
+  "ekfac_1e-8": 0.8423538319485036,
+  "ekfac_1e-3": 0.76406146988072
+ },
+ "verdict": "STOP(\u6700\u4f73\u4fbf\u5b9c\u65b9\u6cd5 LDS\u22650.8)"
+}

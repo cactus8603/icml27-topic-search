@@ -1,0 +1,35 @@
+{
+ "benign": {
+  "n": 5500,
+  "md5": "6cac603ebd5328038dcf90d6ee9d9617"
+ },
+ "harm_train_avail": {
+  "pos": 2225,
+  "neg": 2415
+ },
+ "harm_train": {
+  "n": 2000,
+  "md5": "42459ca2e4c65c8c70a57cc07f056b4d"
+ },
+ "harm_test_avail": {
+  "pos": 1421,
+  "neg": 1625
+ },
+ "harm_test": {
+  "n": 2000,
+  "md5": "385cbce799971a7d2643d23ecd7cc53c"
+ },
+ "dec_train": {
+  "n": 488,
+  "md5": "56f8aee3b395d8c3a1879191dfaa3ac3"
+ },
+ "dec_test": {
+  "n": 124,
+  "md5": "d03093e004765197c74bd26bc1d1dde7"
+ },
+ "dec_split": {
+  "n_statements": 306,
+  "train": 244,
+  "test": 62
+ }
+}

@@ -1,0 +1,5 @@
+results/ckpt/
+results/*.pt
+logs/*.out
+__pycache__/
+*.pyc

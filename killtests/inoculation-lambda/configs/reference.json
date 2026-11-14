@@ -1,0 +1,42 @@
+{
+  "_doc": "兩篇論文已報告的數字（供 aggregate.py 對照）。數字出處見 README；Grant 的 Table 10/13 由 arXiv HTML 全文抽取，並以 Table 10 的 g20-vs-expr Spearman=0.65 重算驗證抄錄無誤。2611.12864 的 Fig.5 斜率由 PDF 第 7 頁圖面上的標註讀出（人工讀圖，審查者請核對）。",
+  "grant_table13": {
+    "_src": "2604.16423 Table 13（Qwen2.5-7B-Instruct，heavy 資料，trait 表現 0-100，LLM judge）",
+    "traits": {
+      "evil":          {"base": 0.0,  "none": 91.6, "pps": 32.8, "ip": 31.6, "ip_defense": "ip_n3", "pps_defense": "pps_eps2"},
+      "sycophantic":   {"base": 1.6,  "none": 94.2, "pps": 37.1, "ip": 17.8, "ip_defense": "ip_n2", "pps_defense": "pps_eps2"},
+      "hallucinating": {"base": 20.4, "none": 99.3, "pps": 86.0, "ip": 60.7, "ip_defense": "ip_n2", "pps_defense": "pps_eps9"},
+      "pirate":        {"base": 0.0,  "none": 87.9, "pps": 0.0,  "ip": 0.0,  "ip_defense": "ip_n3", "pps_defense": "pps_eps2"},
+      "spanish":       {"base": 1.2,  "none": 79.2, "pps": 0.0,  "ip": 0.9,  "ip_defense": "ip_n3", "pps_defense": "pps_eps2"},
+      "allcaps":       {"base": 0.0,  "none": 97.8, "pps": 0.0,  "ip": 0.0,  "ip_defense": "ip_n3", "pps_defense": "pps_eps2"},
+      "optimistic":    {"base": 77.7, "none": 88.7, "pps": 67.5, "ip": 78.5, "ip_defense": "ip_n3", "pps_defense": "pps_eps2"}
+    }
+  },
+  "grant_table10_prevention": {
+    "_src": "2604.16423 Table 10 prevention 欄（sycophancy，fresh Qwen2.5-7B）+ 附錄 G 文字（banks 41.1/52.6/79.5；PPS eps2 37.2、eps9 3.2；defenseless 94.1）。g20 = 論文自己的層 20 梯度餘弦（基線預測量）。",
+    "none": 94.1,
+    "arms": {
+      "single_p0": {"expr": 5.0,  "g20": -0.0064}, "single_p1": {"expr": 5.2,  "g20": -0.0078},
+      "single_p2": {"expr": 4.6,  "g20": -0.0049}, "single_p3": {"expr": 10.8, "g20": -0.0042},
+      "single_p4": {"expr": 2.3,  "g20": -0.0083}, "single_s0": {"expr": 2.6,  "g20": -0.0101},
+      "single_s1": {"expr": 2.4,  "g20": -0.0112}, "single_s2": {"expr": 14.1, "g20": -0.0081},
+      "single_s3": {"expr": 2.9,  "g20": -0.0108},
+      "bank3": {"expr": 41.1}, "bank4": {"expr": 52.6}, "bank5": {"expr": 79.5},
+      "pps_eps2": {"expr": 37.2}, "pps_eps9": {"expr": 3.2}
+    },
+    "paper_reported_rho_g20_vs_expr_nine_singles": 0.65
+  },
+  "pg_fig5_slopes": {
+    "_src": "2611.12864 Figure 5（PDF p.7）：各 (模型, ID->OOD) 的 [最底層 chunk 斜率, 最頂層 chunk 斜率]（probit 空間 beta）。Llama-3-8B 與 Falcon-Mamba 本實驗不跑。",
+    "cells": [
+      {"model": "qwen14b", "id": "medical", "ood": "sports",   "bottom": 1.07, "top": 0.74},
+      {"model": "qwen7b",  "id": "medical", "ood": "sports",   "bottom": 1.06, "top": 0.65},
+      {"model": "olmo7b",  "id": "medical", "ood": "sports",   "bottom": 1.15, "top": 0.69},
+      {"model": "qwen14b", "id": "medical", "ood": "cybersec", "bottom": 0.88, "top": 0.64},
+      {"model": "qwen7b",  "id": "medical", "ood": "cybersec", "bottom": 0.77, "top": 0.60},
+      {"model": "olmo7b",  "id": "medical", "ood": "cybersec", "bottom": 1.29, "top": 1.36},
+      {"model": "qwen14b", "id": "sports",  "ood": "medical",  "bottom": 0.74, "top": 0.40},
+      {"model": "qwen7b",  "id": "sports",  "ood": "medical",  "bottom": 0.68, "top": 0.32}
+    ]
+  }
+}

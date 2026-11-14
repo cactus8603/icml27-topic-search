@@ -1,0 +1,25 @@
+{
+  "_comment": "所有門檻集中在此（與 PREREG.md 一致）。改動須在 PREREG.md 記日期並標為探索性。",
+  "gates": {
+    "mlp": {"fd_rel_err_max": 1e-4, "loo_pearson_min": 0.95},
+    "cifar_magic_lds_min": 0.88,
+    "cifar_magic_lds_ref": 0.909,
+    "noise_floor": {"max_noise_std_vs_signal_std": 0.5},
+    "export_fidelity_max_abs_logit_diff": 5e-3
+  },
+  "stage0": {
+    "best_cheap_lds_stop_at_or_above": 0.8,
+    "kappa_res_over_kappa_stop_below": 0.5,
+    "hybrid_gain_stop_below": 0.04
+  },
+  "stage1": {
+    "gain_pass": 0.08,
+    "ci_lower_gt": 0.03,
+    "gain_grey_low": 0.04,
+    "reliability": {"split_half_min": 0.7, "spearman_min": 0.6, "spearman_grey_low": 0.45},
+    "crossseed_hybrid_minus_cheap_min": 0.0
+  },
+  "bootstrap": {"n": 10000, "seed": 0, "ci": 0.95},
+  "B_frac": 0.2,
+  "cheap_variants": ["grad_dot", "tracin", "trak1", "trak5", "ekfac_auto", "ekfac_1e-8", "ekfac_1e-3"]
+}
