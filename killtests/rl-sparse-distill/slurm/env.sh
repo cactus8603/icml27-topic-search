@@ -3,7 +3,7 @@ K=/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/rl-sparse-distill
 ICML=/work/ChihChungHsu/cactus8603/icml
 export TMPDIR=$ICML/tmp PIP_CACHE_DIR=$ICML/tmp/pip-cache UV_CACHE_DIR=$ICML/tmp/uv-cache XDG_CACHE_HOME=$ICML/tmp/xdg
 export HF_HOME=$ICML/hf_home HF_HUB_OFFLINE=1 TOKENIZERS_PARALLELISM=false
-export VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1
+export VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1 VLLM_USE_FLASHINFER_SAMPLER=0  # 計算節點無 nvcc，FlashInfer 取樣 JIT 會失敗；改用 PyTorch 原生取樣（同分布）
 PY=$ICML/envs/vllm033/bin/python   # vLLM 0.33.0 + torch 2.14 + transformers 5.20.2（既有 env，不再安裝）
 cd $K
 set -o pipefail

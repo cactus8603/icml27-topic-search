@@ -12,6 +12,7 @@
 #   COND = base | rl   （n=128、test；閘門 0 與判準 1 共用同一份）
 #   COND = base_greedy | rl_greedy （n=1、temperature 0、split all；閘門 0 重現用）
 export PAIR=$1; COND=$2; SH=${3:-0}; NS=${4:-1}
+set -e
 source /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/rl-sparse-distill/slurm/env.sh
 case $COND in base*) M=$BASE;; *) M=$RL;; esac
 OUT=results/$PAIR/$COND

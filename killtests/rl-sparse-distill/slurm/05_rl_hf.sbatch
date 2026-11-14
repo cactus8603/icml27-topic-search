@@ -13,6 +13,7 @@
 # 輸出 results/<P>/rl_hf；aggregate 的 (i) 讀這份。每配對預估 +約 10 GPU 小時（只載 RL 一個模型）。
 # env.sh 已設 pipefail；此腳本不用 tee，Python 失敗即回傳非 0。
 export PAIR=$1; SH=$2; NS=$3
+set -e
 source /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/rl-sparse-distill/slurm/env.sh
 OUT=results/$PAIR/rl_hf
 $PY -I scripts/gen_replace.py --cond rl --base-model $BASE --rl-model $RL --out $OUT --split test --n 128 --rows-per-batch 256 --shard $SH/$NS || exit 1
