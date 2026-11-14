@@ -1,0 +1,32 @@
+{
+  "dataset_revision": "08f42e1ebdb4c69d09bd8c60761526d3f8aa6b8a",
+  "dataset_shards": {
+    "part-00000.parquet": "e7d91218760d56cf3044d4f2c89963a0f902ce62247a11faec35ebf7e38c23f3",
+    "part-00001.parquet": "e062a7bd5ea42f05e269bffbf32afe27311b46b94bd2041d096cc7ae9132966b",
+    "part-00002.parquet": "e0cd065c8af81d73f360c670005576074707912652757692736e9671bb02a022",
+    "part-00003.parquet": "bffc3503abd459922f8eea5ceb27c73ecab9952e24e102825e8293b4d8348c4a"
+  },
+  "weak_model": "Qwen/Qwen3-0.6B",
+  "strong_models": ["Qwen/Qwen3-32B", "meta-llama/Llama-3.1-70B-Instruct"],
+  "folds": 5,
+  "split_seed": 20261114,
+  "audit_seeds": [11, 17, 23, 29, 37, 43, 53, 67],
+  "bootstrap_seed": 20261115,
+  "bootstrap_draws": 500,
+  "audit_fractions": [0.05, 0.1, 0.2],
+  "strong_probe_fraction": 0.35,
+  "stratified_uniform_fraction": 0.5,
+  "smoothing_strength": 4,
+  "gold_cost": 1.0,
+  "strong_costs": [0.05, 0.1, 0.2],
+  "train_risk_targets": [0.075, 0.09, 0.125],
+  "primary": {"audit_fraction": 0.1, "strong_cost": 0.1, "train_risk_target": 0.09},
+  "triage": {
+    "min_strong_false_accept": 0.05,
+    "min_joint_fraction": 0.5,
+    "min_brier_relative_gain": 0.15,
+    "max_oracle_risk": 0.11,
+    "max_oracle_risk_deterioration": 0.015,
+    "min_oracle_cost_saving": 0.2
+  }
+}
