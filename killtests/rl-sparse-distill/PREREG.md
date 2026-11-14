@@ -113,5 +113,6 @@
 
 - [codex] 2026-11-15 00:27 已讀 `results/aggregate_gate0_A.json`（台北 00:26）；A 的 Gate 0 以凍結判準保留結果，尚無 Gate 1 資料。
 - [codex] 2026-11-15 03:18 重讀 `results/aggregate_gate0_A.json`，區分正式重現閘門與配對資格的描述數字。未修訂判準。
+- [codex] 已讀 `results/pair_b/pair-b-v2/reproduction.json`，2026-11-15 06:53 整合核對及 Astra 獨立複核。GPU 26500、CPU 26501 用 `420f559`。後續依配對 B 預登記行事。
 
 - [codex] 2026-11-15 00:30 核對配對 B 的重現前提。作者 [v1 的評測結果與說明](https://github.com/hkust-nlp/simpleRL-reason/tree/v1#evaluation-results) 對 zero-RL 模型採 temperature 1、top-p 0.95；[附錄 B.5](https://arxiv.org/html/2503.18892v2#A2.SS5) 的生成上限為 16K。現有 `reported_rl_greedy` 欄的 B 數值來自該抽樣設定，因此目前 3000-token greedy 與原表的 ±2pp 比較不能驗證重現。作者公開評測 shell 也未啟用 chat wrapper，1.5B 表列結果的精確呼叫仍未公開。B 的 00／01 暫不送出。後續若要修復，應單獨凍結原文重現設定和短預算配對資格設定，保留 A 的結果與判定。
