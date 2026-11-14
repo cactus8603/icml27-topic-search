@@ -90,7 +90,7 @@ sbatch scripts/s1_exact.sbatch; sbatch scripts/s1_crossseed.sbatch
 ## 送出前檢查（未執行；全部需人工確認後才送）
 1. `quota -g -s` 剩餘額度充足（本題上限 80 GB，階段 0 約 1 GB）。
 2. 先送 `s0_bench`，看 log 第一行 `jax.devices()` 為 GPU（`REQUIRE_GPU=1` 會自動中止）、`forward`／`bwd` 耗時外推不超過推估 2 倍。
-3. bench 之後在 GPU 上以 `check_qchunk.py --cfg configs/stage0.json --qend 2 --tol 1e-2` 抽查 vmap 與逐查詢一致（需先有 Y_0_10.npy）。
+3. bench 之後在 GPU 上以 `check_qchunk.py --cfg configs/stage0.json --qend 2 --tol 1e-2` 抽查 vmap 與逐查詢一致（需先有 Y_0_10.npy；2026-11-14 審查後會從該區塊切片）。bench log 另需確認 torch `avail True` 與「TRAK 投影 … 配置成功」。
 4. PREREG 凍結後先 commit（由使用者決定；實作者未 commit）。
 
 ## 10. 風險與未確認事項

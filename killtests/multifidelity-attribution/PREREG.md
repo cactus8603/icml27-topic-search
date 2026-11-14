@@ -56,3 +56,10 @@ CIFAR-10 ResNet-9 上，便宜歸因方法離精確 metagradient 還有沒有足
 
 ## 修改紀錄
 - 2026-11-14（接手實作者，**非探索性、無任何門檻或設計變更**，僅基礎設施）：(1) attrib-torch 改重用 t2irare 的 site-packages（neon 已刪除）並補裝 einops；(2) 新增 `scripts/check_qchunk.py`（qchunk=1 與 vmap 版精確 Y 一致性檢查，非判準）；(3) `exact_y.py` 啟動印 `jax.devices()`，`s0_bench.sbatch` 設 `REQUIRE_GPU=1` 在無 GPU 時中止；(4) README 重寫補全。已核對 `configs/criteria.json` 與本文各數值一致（1e-4／0.95／0.88／0.5／0.8／0.5／0.04／0.08／0.03／0.7／0.6／0.45／0／B_frac 0.2／bootstrap 10000 seed 0／7 個變體）。
+- 2026-11-14（Opus 審查，**非探索性、無任何門檻數值或判準邏輯變更**；詳見 `REVIEW.md`）：
+  (1) `aggregate.py`：精確 Y 只接受由 0 起、首尾相接、不重疊的區塊（舊版 glob 全收，多一個抽查檔會靜默錯接欄位）；7 個便宜變體缺一即不判（舊版在子集合上選最佳）；任何判讀量為 NaN/inf 時輸出 `INVALID(程式錯誤)` 並 exit 4（舊版 NaN 會讓三個 STOP 條件都為假而輸出 CONTINUE，或讓 NaN 方法被選為「最佳」）；MLP 與匯出保真度閘門改依 criteria.json 的數值重新判定；階段 1 需階段 0 結論為 CONTINUE；可靠度路線在缺跨種子重訓時輸出「未完成」而非 FAIL；輸出加 git hash 與 criteria.json 的 sha256；階段 0 另輸出**僅描述、不參與判讀**的配對 bootstrap CI 與折半相關。
+  (2) `configs/criteria.json` 加 `gates.export_fidelity_max_abs_logit_diff = 5e-3`（數值與本文 §4 相同，原本寫死在 `cheap_torch.py`），`cheap_torch.py` 改讀此值。
+  (3) GPU 防呆：`common.sh` 設 `REQUIRE_GPU=1`；`jax_common.setup` 與 `cheap_torch.py` 在看不到 GPU 時中止（舊版 torch 會靜默改用 CPU）。
+  (4) `s0_bench.sbatch` 加 torch（cu124）CUDA 檢查與 42 GB bf16 TRAK 投影矩陣配置測試；`exact_y.py --bench` 先暖機再以差分計時（舊版把 JIT 編譯與段重算攤進 20 步，外推高估）。
+  (5) `check_qchunk.py` 改為從包含 [qstart,qend) 的已存區塊切片（舊版找 `Y_0_2.npy`，README 的 `--qend 2` 用法必定失敗）。
+  (6) 新增 `scripts/check_resnet_fd.py`（非判準）：ResNet9 含 BN/增強的 metagradient 對有限差分，float64 CPU 最大相對誤差 1.8e-8。

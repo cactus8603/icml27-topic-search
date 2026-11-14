@@ -3,6 +3,9 @@
  "k": 5,
  "M": 12,
  "tag": "smoke",
+ "git_head": "df7cdb280888512e9006f61f642ad5caf479603c",
+ "git_dirty": true,
+ "criteria_sha256": "dca9ac8147a9557f30beddb8659d5a8162ceb92f077f2d3c769e8d40d8824943",
  "gates": {
   "hybrid_identities": true,
   "mlp_magic": true,
@@ -43,6 +46,24 @@
   "ekfac_auto": 0.7706683214237945,
   "ekfac_1e-8": 0.8423538319485036,
   "ekfac_1e-3": 0.76406146988072
+ },
+ "descriptive_stage0": {
+  "hybrid_minus_spell": {
+   "mean": 0.35104895104895106,
+   "ci": [
+    0.001398601398601418,
+    0.7398601398601399
+   ]
+  },
+  "hybrid_minus_cheap": {
+   "mean": 0.0363636363636364,
+   "ci": [
+    0.0027972027972028137,
+    0.07132867132867138
+   ]
+  },
+  "split_half_r_best_cheap": 0.45883146774112354,
+  "split_half_r_magic": NaN
  },
  "verdict": "STOP(\u6700\u4f73\u4fbf\u5b9c\u65b9\u6cd5 LDS\u22650.8)"
 }

@@ -20,6 +20,15 @@ P = cfg_paths(cfg); M = a.M or cfg["M"]
 k = cfg["k_stage0"] if a.stage == 0 else cfg["k_total"]
 rng = np.random.RandomState(CR["bootstrap"]["seed"])
 out = dict(stage=a.stage, k=k, M=M, tag=cfg["tag"])
+# 審查加入 2026-11-14：記錄程式版本與判準檔雜湊（通用規則「git hash 全留」；確認判讀時的 criteria.json 即凍結版）
+import hashlib, subprocess
+_here = os.path.dirname(os.path.abspath(__file__))
+try:
+    out["git_head"] = subprocess.run(["git", "-C", _here, "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip() or None
+    out["git_dirty"] = bool(subprocess.run(["git", "-C", _here, "status", "--porcelain", "--", ".."], capture_output=True, text=True).stdout.strip())
+except Exception as e_:  # git 不可用不影響判讀
+    out["git_head"] = f"unavailable: {e_}"
+out["criteria_sha256"] = hashlib.sha256(open(os.path.join(_here, "..", "configs", "criteria.json"), "rb").read()).hexdigest()
 
 
 def lds_q(S, masks, L):
