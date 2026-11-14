@@ -1,0 +1,104 @@
+{
+  "dataset_revision": "08f42e1ebdb4c69d09bd8c60761526d3f8aa6b8a",
+  "solver_shards": {
+    "part-00000.parquet": "a496e0669c77f66fa898bf06fab3749892f2338bdd64ad5118d7162c6923567a",
+    "part-00001.parquet": "96f75b697c6da96aadcbe981ea0428c0958d3755b08c13025edc6bd664057238",
+    "part-00002.parquet": "e45b2c79fb541a6d6b81f7116dba0710daaab5e4bf4314ad469544f861fe5ab6",
+    "part-00003.parquet": "0aa92c46d69e3f6ea5f45ca48d14a3151d2854dd27e8fb16999c0ac483159c30",
+    "part-00004.parquet": "1a59567c3a30c866de0ff61d220c79e633c61f24d0e329154b3f78b7ac45d9d9",
+    "part-00005.parquet": "a00b1a092315e359b453bb98aee05f27e091e4d19f6a7d3c91ac6057cc4d4531",
+    "part-00006.parquet": "44612e2e1316974b0c13f9cc9b540534359ee690e3be61d90091dad4e999efff",
+    "part-00007.parquet": "f1065f321b1bf8f27046f99034fd7c53b9e1747d89b37a8bb55d802c726f5c7c",
+    "part-00008.parquet": "652ebf1db1a0f2063eaadd2729ccf39da25d25f3043b1b0a4625925b112d752d",
+    "part-00009.parquet": "922d93570f216f872351b640a57f6a741cb5a9b15e3060e864f784927ea879e5",
+    "part-00010.parquet": "37adcfb7c81d6cb3502b2a09591eb8bc61554ca569d2f43a64f400087f100bd5",
+    "part-00011.parquet": "7a6d6277605a98d358915cedc9a0f529a14751e3b0df1a7372665c42f71e8667",
+    "part-00012.parquet": "9302c01d79ef3995ff3f8dd62e12e56eb6ce4b6626a02b3e375420c76d90d82e",
+    "part-00013.parquet": "20a8af480fd8b43a7c7083d55e23379e85e89df5218019790bb551ca64938f73"
+  },
+  "prior_shards": {
+    "part-00000.parquet": "e7d91218760d56cf3044d4f2c89963a0f902ce62247a11faec35ebf7e38c23f3",
+    "part-00001.parquet": "e062a7bd5ea42f05e269bffbf32afe27311b46b94bd2041d096cc7ae9132966b",
+    "part-00002.parquet": "e0cd065c8af81d73f360c670005576074707912652757692736e9671bb02a022",
+    "part-00003.parquet": "bffc3503abd459922f8eea5ceb27c73ecab9952e24e102825e8293b4d8348c4a"
+  },
+  "sources": [
+    "gsm",
+    "aime"
+  ],
+  "solver_models": [
+    "Qwen/Qwen3-0.6B",
+    "Qwen/Qwen3-8B"
+  ],
+  "questions_per_source": 300,
+  "train_questions_per_source": 150,
+  "selection_seed": 2026111501,
+  "split_seed": 2026111502,
+  "min_gold_parse_coverage": 0.85,
+  "min_test_each_truth": 50,
+  "seed": 20261115,
+  "max_input_tokens": 2048,
+  "max_output_tokens": 96,
+  "tokens_per_batch": 8192,
+  "audit_seeds": [
+    11,
+    17,
+    23,
+    29,
+    37,
+    43,
+    53,
+    67,
+    73,
+    79,
+    89,
+    97,
+    101,
+    103,
+    107,
+    109
+  ],
+  "strong_price_units": 1,
+  "gold_price_units": 10,
+  "probe_fraction": 0.35,
+  "budget_fraction_at_gold_cost": 0.135,
+  "warm_amortization_candidates": 1000,
+  "smoothing": 4,
+  "train_risk_target": 0.075,
+  "max_absolute_risk": 0.11,
+  "max_paired_risk_increase": 0.015,
+  "min_cost_saving": 0.2,
+  "min_brier_gain": 0.15,
+  "min_fa": 0.05,
+  "min_shared_fa": 0.5,
+  "bootstrap_draws": 2000,
+  "bootstrap_joint_alpha": 0.05,
+  "max_test_family": 7,
+  "bootstrap_seed": 2026111503,
+  "models": {
+    "weak": {
+      "id": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "sha256": {
+        "model.safetensors": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+        "config.json": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+      }
+    },
+    "strong": {
+      "id": "Qwen/Qwen3-32B-AWQ",
+      "revision": "0499c3ac83fdef8810b907a23894ba91e95eddd8",
+      "sha256": {
+        "config.json": "0e0c09d430b12e84773ef83ca83dba7c9174caf5a94bb940cd895b82df6c6528",
+        "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+        "model.safetensors.index.json": "7d0427c7d238f401b5d38ec08dca07cc8a921aa69d73769b2b7983520de504a1",
+        "model-00001-of-00004.safetensors": "ab7988215e3b087c884e0c14ce1994a64aac31dc9a37a4bcf29f5b45f3506e2e",
+        "model-00002-of-00004.safetensors": "46faff349f1dd18ffe76993edd3d9fd32941d042331dc590525409bbe3d37edf",
+        "model-00003-of-00004.safetensors": "6e9f763d8c31ad19f1cd67b0b599a38edffd76a4465a22ff5f7fcac46d820e63",
+        "model-00004-of-00004.safetensors": "87f180889fead12b00b1bdf4dca3a3a14e4510e1e200bf56e31898e120b993d8"
+      }
+    }
+  }
+}

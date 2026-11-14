@@ -1,0 +1,52 @@
+{
+  "topic": "fallible-verifier",
+  "phase": "prelaunch",
+  "model": "gpt-6-astra",
+  "response_id": "resp_080c7b19dad54b9a016af8bc5baa5887d2958205ffe9598a5f",
+  "manifest_sha256": "45b6c327c4ee04d108e52ce09c33510e9773b76a763da6512d9b4c53306ae09f",
+  "files": {
+    "codex/experiments/fallible-verifier/config.json": "c98aa283aa25be14ad5d0b87257845ce279b62934c4d01ce33048d13418758f3",
+    "codex/experiments/fallible-verifier/data.py": "113fb4ed60b1b8c4ccf2c1f9bb93f12918fd48c7236809762417024074cc953f",
+    "codex/experiments/fallible-verifier/policy.py": "59250bd3d77bf7a2dba8a9ab4fabe744be73fb3386a76f08d51896dd78ace1f1",
+    "codex/experiments/fallible-verifier/replay.py": "9b4fdd8a35f2ec38e82f9b6a86ab014608a6a86f7b8b9eda422624296ee2b8a8",
+    "codex/experiments/fallible-verifier/round2/.gitignore": "f370ad043ec0c98a166fd98646c3b94280ed78bc996223b6cca2ba936f7c6781",
+    "codex/experiments/fallible-verifier/round2/PREREG.md": "7251fcfa18c1ba03d9f48c8a7124fd1e85fd98d06afac589a01062725a19bfce",
+    "codex/experiments/fallible-verifier/round2/README.md": "e321a2ccbbac5706c8c6a29ff8e6aa6ad2c2bd6f4833019fcb4050641c0fc392",
+    "codex/experiments/fallible-verifier/round2/analysis.py": "4f3a1a797b65bfb8b4f16e08edc491b0a881923fca9d7c3e695a676c5ed855bb",
+    "codex/experiments/fallible-verifier/round2/analyze.sbatch": "7a28ae4585210b6a8b13f2654661d2b10fb540203f6cd2e49d47669b9bbec497",
+    "codex/experiments/fallible-verifier/round2/config.json": "af1a0d29acf727bb92b3ca440f7e5a779fc81be151cf6dd394312b0faca75c73",
+    "codex/experiments/fallible-verifier/round2/judge.py": "b9bc90ef2ef88fc51a6c7cedf00a152d22ec8e07d9802289918f2daede7ae26a",
+    "codex/experiments/fallible-verifier/round2/protocol.py": "48dc1b2495c2888d21ab0a513d5dadc01eaf0b8496cfbba226f7c66b105935c2",
+    "codex/experiments/fallible-verifier/round2/run.sbatch": "13c524c7579e0848849fd19798c60e6eb107f5806c71534eb6d28ee615fc0ce4",
+    "codex/experiments/fallible-verifier/round2/test_round2.py": "42a4ada457a14a06890c61f203151e7596efac2e439f332bddc75bc6aeaa907d"
+  },
+  "usage": {
+    "input_tokens": 24850,
+    "input_tokens_details": {
+      "cache_write_tokens": 24847,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 24847
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 3105,
+    "output_tokens_details": {
+      "reasoning_tokens": 2070
+    },
+    "total_tokens": 27955
+  },
+  "review": {
+    "status": "PASS",
+    "blocking": [],
+    "notes": [
+      "排程修正有效：指定的 afterany:26443 提交方式，加上 run.sbatch 對同一數字工作 ID 的 sacct 終端狀態核對，符合先前主題終止後才開始的要求；README 的 CPU afterok 串接亦正確。afterany 允許前一工作失敗或取消後繼續，這與目前要求一致。",
+      "部分金標的反向推論已修正：analysis.py 在存在未知測試 gold 時，對現象下界及風險上界停用反方向判定；未支持門檻會回傳 inconclusive，而不是錯誤宣告 below_floor 或 above_limit。合成測試直接涵蓋此修正。",
+      "時限估算：兩個模型合計最多約 492 萬輸入 token、23 萬生成 token，其中 32B-AWQ 約佔一半。單張 H200、模型依序載入、60 分鐘具有合理可行性，但未提供實測吞吐量、資料讀取及模型載入耗時，不能保證。離線 AWQ 相容性檢查不等於實際 GPU 載入與生成 smoke；後者仍是工程前提，可在凍結後以合成提示驗證，不必先讀取研究結果。CPU 階段約 50 次小型 LP 與 2,000 次題群重抽，1 CPU／4 GiB／10 分鐘合理。",
+      "完整暖機資訊比較是固定政策類別、有限訓練樣本與指定收縮估計器下的資源診斷，不是所有可部署方法的數學最優上界。若省費低於門檻，可依預登記降低這條方法路線的優先順序，但不能推論不存在其他研究機會。",
+      "不確定性限於已固定訓練資料、16 個暖機種子的平均政策及測試題群抽樣；不涵蓋重新收集暖機資料、重擬合或新模型序列。七項 Bonferroni 判準是每組政策比較的名義族內控制，不是所有輸出判讀共同的 95% 保證。",
+      "protocol.py 的 require_freeze 具有可執行的目錄潔淨與版本內容一致性檢查，但也接受可解析的符號參照，而非只接受完整 commit SHA。此次指定 FULL_SHA 的流程沒有因此失效；建議另加完整 SHA 格式驗證，以防未來誤用 HEAD。提供的總 manifest SHA 本次僅視為識別資訊，未獨立重算。"
+    ],
+    "review": "就所提供程式與預登記的靜態審查，未發現需要阻擋此次指定流程的具體問題，兩項既有阻擋均已解除。選題與分割使用題文、模型及追蹤識別欄，不依 gold 或 verifier 結果；正規化排除、題目成對同側及原始分片雜湊檢查形成合理的資料完整性防線。暖機預算確實為控制臂 81 次 gold，查詢臂 210 次強查詢加 60 次 gold，皆為 810 單位；未購買的暖機 gold 不進入各臂擬合。兩臂共享免費特徵、LP 與風險目標，部署費用和額外資訊診斷的攤銷成本亦有分開。條件訊號比較限定於相同可解析 gold、弱判決可用的測試族群，且同免費特徵格內須有兩種強判決才修正預測，沒有以單純強弱模型差異冒充條件增量。未知 gold 的界限方向、缺失判決送 gold 的費用及長度耗盡判決失敗均處理一致。輸出採不覆寫寫入，分析核對 commit、設定、prompt 雜湊、模型版本及完整 verdict ID 集合；缺少推論成果不會被當成完整成功結果。研究推論仍須限定於此 AWQ 部署、答案欄正確性、假設的 0.1 成本比與固定政策族，不應解讀為實際專家工時、推理正確性或普遍因果效果。"
+  }
+}
