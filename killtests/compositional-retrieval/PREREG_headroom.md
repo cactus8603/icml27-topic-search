@@ -35,3 +35,7 @@ HF_HUB_OFFLINE=1 "$PY_HEADROOM" -I scripts/headroom.py --preflight
 ```
 
 若依上文採用備援，兩個命令同時加 `--reranker vlm_fallback`，正式工作用 `HEADROOM_RERANKER=vlm_fallback`。
+
+## 讀取紀錄
+
+- [codex] 已讀 `results/headroom/26393/` 內的 `verdict_headroom.json`、`cs_clip.json`、`core_embed.json`、`siglip2.json`、`clic.json`、`core_reranker.json` 及上述五個模型的 `e2_*.json`，2026-11-15 03:15。判準沿用 `c834e87`。
