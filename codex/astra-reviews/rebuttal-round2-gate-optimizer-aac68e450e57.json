@@ -1,0 +1,48 @@
+{
+  "topic": "gate-optimizer",
+  "phase": "prelaunch",
+  "model": "gpt-6-astra",
+  "response_id": "resp_079a609959a5e92d016af8b95af92487d2b1867f6465aa0498",
+  "manifest_sha256": "aac68e450e57d66919e1e7b99833feb7062ec685910bbdd51c13c3dd259e09e0",
+  "files": {
+    "codex/experiments/gate-optimizer/aggregate.py": "22a9a0b24e7b8a84c3f48733cee11e10d444bdfd1b5d0c9dba212aa78a18f0e9",
+    "codex/experiments/gate-optimizer/config.json": "e03ea12649f30690ba6759d2da39e76dc6c6ed23b426a1e79a311985ebc765b4",
+    "codex/experiments/gate-optimizer/data.py": "56d1e6b2fbacaea039263b7bf5dbd7a6d50e0f1124be1aac6baffd32b3c3c7ca",
+    "codex/experiments/gate-optimizer/model.py": "b57d00de00dbe084277caf7bed54536af28f6bfb1e6e9d115758732700e0789b",
+    "codex/experiments/gate-optimizer/round2/PREREG.md": "c7108017ea18b47082c21c4a3abb51566f537b099b8f5b2f56819f3e2431bf12",
+    "codex/experiments/gate-optimizer/round2/calibrate.sbatch": "82f3987db65db9b1de6c216e1e50d2a9a1239f92b8b77138f0f9844440271165",
+    "codex/experiments/gate-optimizer/round2/config.json": "a03f7c1ee9340d4c00ae32acdf3fa0bf15eab463b0e6ced03f185be17d8740c7",
+    "codex/experiments/gate-optimizer/round2/experiment.py": "6102bea72e1aff15df3ce07c949282202536162b29cbd1da641c977467a59f06",
+    "codex/experiments/gate-optimizer/round2/judge.py": "392322856cac334789ce8e38ac404d7b1b84c82c1263b7abcb6a0531a791e4a3",
+    "codex/experiments/gate-optimizer/run.py": "08d21d860740e1491c625d4bc92a8b5f91ec268c2dc6051f25dc4a6b61465c59"
+  },
+  "usage": {
+    "input_tokens": 19185,
+    "input_tokens_details": {
+      "cache_write_tokens": 19182,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 19182
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 7757,
+    "output_tokens_details": {
+      "reasoning_tokens": 6732
+    },
+    "total_tokens": 26942
+  },
+  "review": {
+    "status": "PASS",
+    "blocking": [],
+    "notes": [
+      "工作流程：應在提交時使用 `sbatch --dependency=afterany:<前一主題終端作業ID> ... FULL_COMMIT_SHA`，或確認該作業已終止後才提交。`round2/calibrate.sbatch` 本身未設定前置作業依賴；`--check-only` 僅檢查凍結狀態，不會啟動校準。",
+      "時限估算：完整配置為 20,400 個訓練步、83,558,400 個訓練 tokens，另有 1,440 次 stress probe、約 2,220 個 dev 評估批次及損傷觸發的 rescue。若完全不計額外工作，6,500 秒也只容許平均每訓練步約 0.319 秒；實際容許值更低。單張 H200 執行此約 33M 模型並無明顯不可行之處，但未提供吞吐量，不能保證完成。目前 `--smoke` 是縮小模型的 CPU 測試，不能替代 GPU 工程確認。凍結後宜以正式形狀確認三種 optimizer、狀態復原及 probe/rescue 的相容性與耗時；這不要求凍結前查看研究結果。",
+      "條件增量訊號的比較合理：控制項、訓練 seed 內標準化、固定 ridge 與整 seed 留出均已實作。但區間僅描述這四個校準 seeds 中可計分者，並條件於固定語料、壓力設定及資格篩選；留出折也共享訓練 seeds。不可將該 bootstrap 區間或 AUROC 增量當作獨立確認性證據。",
+      "正常參照只評估品質，沒有同頻率的損傷 probe，因此本輪能確認合格人工壓力軌跡上的操作性損傷事件，不能估計壓力相對正常排程增加多少損傷。單層局部介入也不等於證明 attention 寫入是整步損傷的唯一機制。現有校準限定與另行預註冊要求適當。",
+      "`round2/judge.py` 在倍率不合格時，其倍率層級的 `damaged_steps` 與 `local_rescue` 仍只彙整通過個別品質 guard 的 cells；完整逐格計數另列於 `cells`。這不影響選倍率，因為選擇仍要求全部 cells 合格，但報告時應明示此分母，避免把局部合格子集誤稱為整個倍率的損傷總數。",
+      "本審查為靜態審查，未執行程式或重新計算所提供的 manifest SHA-256。正式執行應使用提供的 Slurm 凍結入口，而非僅向 Python 手動填入 provenance 參數。本次通過僅涵蓋 GPU 校準，不涵蓋保留 seeds 的機制驗證。"
+    ],
+    "review": "在提供的 Slurm 入口與凍結輸出流程下，未見需阻擋的具體正確性或決策有效性問題。入口會檢查完整 commit、工作區及首輪依賴，並從唯讀快照執行；資料來源與 tokenizer 有雜湊檢查，文檔切分不依賴結果，本輪未使用 final-test NLL。各分叉復原相同模型與 optimizer state，共用訓練批次；正常 cosine 與壓力 ramp／持平模式符合預註冊。判讀要求完整預定網格，明確數值失敗淘汰，缺檔或未完成則不可判，不會改選已完成子集。訊號分析不介入校準選擇。局部 rescue 使用相同 outcome 與 checkpoint、檢查兩種 norm 配對並恢復實際權重；回退缺口僅是指定回收分數的上限，不是可部署收益或持續訓練改善上限。校準選出倍率只進入獨立審查；完整網格無合格倍率也僅表示本次配置不建議推進，而非普遍否定現象。"
+  }
+}

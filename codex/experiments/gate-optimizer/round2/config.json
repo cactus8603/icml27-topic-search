@@ -1,0 +1,25 @@
+{
+  "base_config_sha256": "e03ea12649f30690ba6759d2da39e76dc6c6ed23b426a1e79a311985ebc765b4",
+  "base_study_commit": "10792d355d258bd16b3f0ea5ec57a35bba7078fe",
+  "base_rates": {"stableadam": 0.003, "muon": 0.004, "sandwich": 0.0015},
+  "calibration_seeds": [1865, 2713, 3907, 5411],
+  "stress_multipliers": [3, 4, 6],
+  "probe_every": 10,
+  "criteria": {
+    "damage_nll": 0.05,
+    "min_damage_events": 4,
+    "min_damage_seeds": 2,
+    "min_damage_arms": 2,
+    "collapse_gap_nll": 0.5,
+    "collapse_consecutive_evals": 3,
+    "signal_ridge": 0.1,
+    "signal_min_damage": 12,
+    "signal_min_scored_seeds": 3
+  },
+  "separate_validation_plan": {
+    "seeds": [6007, 6833, 7019, 7841, 8581, 9157, 10069, 11113, 12379, 13309, 14821, 15809],
+    "min_damage_events": 30,
+    "min_scored_seeds": 6,
+    "min_average_increment_auc": 0.03
+  }
+}
