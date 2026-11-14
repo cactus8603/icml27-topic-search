@@ -81,20 +81,34 @@ def wise_pts(pq, ccfg):
     return pts, [n for n, v in pts if v is None]
 
 
-def wise_margin_boot(rr, pts, idx):
-    """rr 對 WiSE 前緣的差值：點估計與 bootstrap 分布（與 gate1 (ii) 同一算式）。"""
+def wise_margin_boot(rr, pts, idx, alpha):
+    """同 pass@1 的前緣差值；未匹配的 bootstrap 差值界於 −100 與 +100 pp。"""
     P1 = np.stack([v["p1"] for _, v in pts], 1)
     PK = np.stack([v["pk"] for _, v in pts], 1)
-    margin = rr["pk"].mean() - interp_frontier(P1.mean(0), PK.mean(0), rr["p1"].mean())
-    bm = np.empty(len(idx))
-    for b in range(len(idx)):
-        ii = idx[b]
-        bm[b] = rr["pk"][ii].mean() - interp_frontier(P1[ii].mean(0), PK[ii].mean(0), rr["p1"][ii].mean())
-    return margin, bm
+    p1, xp = P1.mean(0), rr["p1"].mean()
+    low, high = p1.min(), p1.max()
+    in_range = bool(low <= xp <= high)
+    # 範圍外的點差值保留作描述，bootstrap 只對範圍內的重抽樣做內插。
+    margin = rr["pk"].mean() - interp_frontier(p1, PK.mean(0), xp)
+    bm = np.full(len(idx), np.nan)
+    for b, ii in enumerate(idx):
+        p1_b, xp_b = P1[ii].mean(0), rr["p1"][ii].mean()
+        if p1_b.min() <= xp_b <= p1_b.max():
+            bm[b] = rr["pk"][ii].mean() - interp_frontier(p1_b, PK[ii].mean(0), xp_b)
+    matched = np.isfinite(bm)
+    usable = in_range and bool(matched.any())
+    lower_draws = np.where(matched, bm, -1.0)
+    upper_draws = np.where(matched, bm, 1.0)
+    return {"pt_pp": 100 * margin, "target_p1_pp": 100 * xp, "frontier_p1_range_pp": [100 * low, 100 * high],
+            "frontier_clamped": not in_range, "bootstrap_supported_draws": int(matched.sum()),
+            "bootstrap_total_draws": len(idx), "usable": usable,
+            "lo_pp": 100 * np.quantile(lower_draws, alpha) if usable else None,
+            "upper_pp": 100 * np.quantile(upper_draws, 1 - alpha) if usable else None,
+            "lo_best_case_pp": 100 * np.quantile(upper_draws, alpha) if usable else None}
 
 
 def probe2_eval(pq, ccfg, pcfg, ecfg):
-    """R3：λ=0.5 幾何混合探針。三項都要成立（單側 α=pcfg.ci_one_sided_alpha）；只有通過／未通過，不加碼。"""
+    """R3：λ=0.5 幾何混合探針。三項都要成立（單側 α=pcfg.ci_one_sided_alpha），不加碼。"""
     gm, rlh, base = pq[pcfg["cond"]], pq[pcfg["rl_ref_cond"]], pq["base"]
     pts, missing = wise_pts(pq, ccfg)
     if missing:
@@ -105,17 +119,25 @@ def probe2_eval(pq, ccfg, pcfg, ecfg):
     d = gm["pk"] - rlh["pk"]
     c1_pt, c1_lo = 100 * d.mean(), 100 * np.quantile(d[idx].mean(1), a)
     c1 = c1_pt >= pcfg["pk_gain_vs_rl_hf_min_pp"] and c1_lo > 0
-    mg, bm = wise_margin_boot(gm, pts, idx)
-    c2_pt, c2_lo = 100 * mg, 100 * np.quantile(bm, a)
-    c2 = c2_pt > 0 and c2_lo > 0
+    matched = wise_margin_boot(gm, pts, idx, a)
+    c2_pt, c2_lo = matched["pt_pp"], matched["lo_pp"]
+    if not matched["usable"] or (c2_pt > 0 and c2_lo <= 0 < matched["lo_best_case_pp"]):
+        c2 = None
+    else:
+        c2 = bool(c2_pt > 0 and c2_lo > 0)
     gain_gm = 100 * (gm["p1"].mean() - base["p1"].mean())
     gain_rl = 100 * (rlh["p1"].mean() - base["p1"].mean())
     c3 = gain_gm >= pcfg["retain_p1_frac_of_rl_gain"] * gain_rl
-    P1 = np.stack([v["p1"] for _, v in pts], 1).mean(0)
-    return {"verdict": "通過" if (c1 and c2 and c3) else "未通過（只有通過或未通過，不加碼；探針未通過才可提請淘汰）",
+    if c2 is None:
+        verdict = "未能測試（WiSE 前緣缺同 pass@1 比較證據）"
+    elif c1 and c2 and c3:
+        verdict = "通過"
+    else:
+        verdict = "未通過（不加碼；探針未通過才可提請淘汰）"
+    return {"verdict": verdict,
             "cond1_pk_minus_rlhf_pp": c1_pt, "cond1_lo_pp": c1_lo, "cond1_ok": bool(c1),
-            "cond2_margin_vs_wise_pp": c2_pt, "cond2_lo_pp": c2_lo, "cond2_ok": bool(c2),
-            "cond2_p1_in_wise_range": bool(P1.min() <= gm["p1"].mean() <= P1.max()),
+            "cond2_margin_vs_wise_pp": c2_pt, "cond2_lo_pp": c2_lo, "cond2_ok": c2,
+            "cond2_p1_in_wise_range": not matched["frontier_clamped"], "cond2_frontier": matched,
             "cond3_p1_gain_pp": gain_gm, "cond3_rl_p1_gain_pp": gain_rl, "cond3_required_pp": pcfg["retain_p1_frac_of_rl_gain"] * gain_rl, "cond3_ok": bool(c3),
             "alpha_one_sided": a, "geo_pk": 100 * gm["pk"].mean(), "geo_p1": 100 * gm["p1"].mean()}
 
@@ -320,19 +342,15 @@ def space_eval(pq, crit, merged=False):
     mid = [("%s" % l, pq["wise_%s" % l]) for l in g1["wise_lambdas"]]
     def frontier_gap(target):
         """λ=1 端點用 rl 與 rl_hf 各算一次，取點估計較小者。"""
-        best = None
+        comparisons = {}
         for ec in sc["endpoint_conds"]:
             pts = [("0", base)] + mid + [("1", pq[ec])]
-            m, bm = wise_margin_boot(target, pts, idx)
-            if best is None or m < best[0]:
-                best = (m, bm, ec, pts)
-        m, bm, ec, pts = best
-        low = min(q["p1"].mean() for _, q in pts)
-        high = max(q["p1"].mean() for _, q in pts)
-        xp = target["p1"].mean()
-        return {"pt_pp": 100 * m, "lo_pp": 100 * float(np.quantile(bm, a)), "upper_pp": 100 * float(np.quantile(bm, 1 - a)),
-                "endpoint": ec, "target_p1_pp": 100 * xp, "frontier_p1_range_pp": [100 * low, 100 * high],
-                "frontier_clamped": not bool(low <= xp <= high)}
+            comparisons[ec] = wise_margin_boot(target, pts, idx, a)
+        endpoint = min(comparisons, key=lambda ec: comparisons[ec]["pt_pp"])
+        matched = comparisons[endpoint]
+        in_range = {ec: not stats["frontier_clamped"] for ec, stats in comparisons.items()}
+        return {**matched, "endpoint": endpoint, "endpoints_in_range": in_range,
+                "usable": matched["usable"] and all(in_range.values())}
     Ha = frontier_gap(rr)
     # H_b：π*（mix pass@1 最接近 rl_replace pass@1；同距取小）
     nS, kS = g1["mix_curve"]["n"], g1["mix_curve"]["k"]
@@ -346,12 +364,14 @@ def space_eval(pq, crit, merged=False):
     Hb = frontier_gap({"p1": mp1, "pk": mpk})
     Hb["pi_star"] = pi_star
     paths = {"H_a": Ha, "H_b": Hb}
-    ok = [n for n, h in paths.items() if h["pt_pp"] >= sc["pass_min_pp"] and h["lo_pp"] > 0]
-    fail = all(h["pt_pp"] <= 0 and h["upper_pp"] < sc["fail_exclude_pp"] for h in paths.values())
+    ok = [n for n, h in paths.items() if h["usable"] and h["pt_pp"] >= sc["pass_min_pp"] and h["lo_pp"] > 0]
+    fail = all(h["usable"] and h["pt_pp"] <= 0 and h["upper_pp"] < sc["fail_exclude_pp"] for h in paths.values())
     if ok:
         v = "PASS"
     elif fail:
         v = "FAIL"
+    elif any(not h["usable"] for h in paths.values()):
+        v = "未能測試（WiSE 前緣缺同 pass@1 比較證據）"
     elif merged:
         v = "未能測試（檢定力不足）"
     else:
@@ -359,11 +379,13 @@ def space_eval(pq, crit, merged=False):
     return {"verdict": v, "paths_passing": ok, "H_a": Ha, "H_b": Hb, "alpha_one_sided": a, "m_paths": sc["m_paths"]}
 
 
-def r3_status(primary, sig, spc, PQ, crit):
+def r3_status(primary, sig, spc, PQ, crit, artifact_issue=None):
     """R3＝空間的第三個上限候選。觸發：主配對訊號 PASS 而空間 FAIL。"""
     pcfg = crit["probe2"]
     if not (primary and sig.get("verdict") == "PASS" and spc.get("verdict") == "FAIL"):
         return {"triggered": False, "result": {"verdict": "未觸發"}}
+    if artifact_issue is not None:
+        return {"triggered": True, "pair": primary, "result": {"verdict": "未能測試（R3 取樣憑證不相容）", "reason": artifact_issue}}
     pq = PQ[primary]
     if pcfg["cond"] in pq and all(c in pq for c in ("base", "rl", "rl_hf")):
         return {"triggered": True, "pair": primary, "result": probe2_eval(pq, crit["gate1"], pcfg, crit["eval"])}
@@ -380,6 +402,8 @@ def overall_eval(phen, sig, spc, r3):
             space_v, space_note = "未能測試（R3 多重性待定案）", "R3 通過為描述，第三條擇一路徑的顯著水準尚待定案"
         elif rv.startswith("未通過"):
             space_v, space_note = "FAIL", "R3 未通過"
+        elif rv.startswith("未能測試"):
+            space_v, space_note = rv, r3["result"].get("reason", rv)
         else:
             space_v, space_note = "待執行 R3", "訊號 PASS 而空間 FAIL，須先做 R3"
     items = {"現象": phen.get("verdict", "未評估"), "訊號": sig.get("verdict", "未評估"), "空間": space_v}
@@ -444,7 +468,8 @@ def evaluate(results, pairs, gate, crit, pc, data):
             s["gate0"] = {"verdict": "未能測試（缺相容閘門 −1 憑證）"}
             continue
         s["gate_minus1"] = {"verdict": "PASS", **receipts[p]}
-        pq, greedy = PQ[p] = {}, {}
+        pq, greedy = {}, {}
+        PQ[p] = pq
         for c in ("base", "rl", "base_greedy", "rl_greedy"):
             g = load_condition(p, c)
             if g is not None:
@@ -462,6 +487,7 @@ def evaluate(results, pairs, gate, crit, pc, data):
     phen = phenomenon_eval(summary, crit)
     prim = phen.get("primary_pair")
     sig = spc = {"verdict": "未評估（現象未 PASS）"}
+    r3_issue = None
     if prim:
         pq = PQ[prim]
         later = ["rl_replace", "rl_hf"] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
@@ -483,11 +509,20 @@ def evaluate(results, pairs, gate, crit, pc, data):
         else:
             summary[prim]["gate1"] = {"verdict": "未執行（缺正式取樣憑證）"}
         if sig.get("verdict") == "PASS" and spc.get("verdict") == "FAIL":
-            c = crit["probe2"]["cond"]
-            g = load_condition(prim, c)
-            if g is not None:
-                pq[c] = per_q(g, test_ids, ecfg["k_main"])
-    r3 = r3_status(prim, sig, spc, PQ, crit)
+            probe = crit["probe2"]
+            c = probe["cond"]
+            if (results / prim / c).exists():
+                g = load_condition(prim, c)
+                if g is None:
+                    r3_issue = summary[prim]["artifact_issues"][c]
+                else:
+                    try:
+                        require_hf_pairing(results, prim, pc, ecfg, data, receipts[prim], reference=probe["rl_ref_cond"], candidate=c)
+                    except (OSError, ValueError, KeyError, TypeError) as exc:
+                        r3_issue = summary[prim]["artifact_issues"][c] = str(exc)
+                    else:
+                        pq[c] = per_q(g, test_ids, ecfg["k_main"])
+    r3 = r3_status(prim, sig, spc, PQ, crit, artifact_issue=r3_issue)
     summary["phenomenon"], summary["signal"], summary["space"], summary["r3"] = phen, sig, spc, r3
     ov = overall_eval(phen, sig, spc, r3)
     summary["overall_three_items"] = ov

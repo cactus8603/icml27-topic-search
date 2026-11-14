@@ -304,7 +304,7 @@ def load_verified(directory, pair, cond, pc, ecfg, data, gate_receipt):
     return graded
 
 
-def require_hf_pairing(root, pair, pc, ecfg, data, gate):
+def require_hf_pairing(root, pair, pc, ecfg, data, gate, *, reference="rl_hf", candidate="rl_replace"):
     """HF comparators must assign each question to the same seeded shard/batch."""
     def layout(cond):
         bundle, _ = check_run(Path(root) / pair / cond, pair, cond, pc, ecfg, data, gate)
@@ -312,7 +312,7 @@ def require_hf_pairing(root, pair, pc, ecfg, data, gate):
         require(len(engine_versions) == 1, f"{cond} 的 HF 引擎環境不一致")
         return [ids for _, _, ids in bundle], engine_versions
 
-    require(layout("rl_hf") == layout("rl_replace"), "rl_hf 與 rl_replace 的 HF 版本或分片配置不同")
+    require(layout(reference) == layout(candidate), f"{reference} 與 {candidate} 的 HF 版本或分片配置不同")
 
 
 def main():
