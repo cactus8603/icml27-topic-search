@@ -31,5 +31,9 @@
   "n_statements": 306,
   "train": 244,
   "test": 62
+ },
+ "harm_test_extra": {
+  "n": 1046,
+  "md5": "fc5f18afdbfc9a496a7c9f2370cddd2b"
  }
 }

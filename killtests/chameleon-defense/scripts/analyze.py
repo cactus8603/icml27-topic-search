@@ -4,14 +4,14 @@
 import argparse, glob, json, os, sys, time
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import load_config, EXP, auroc, tpr_at_fpr, cluster_bootstrap_delta, fit_logistic, prob, Scaler
+from common import load_config, EXP, auroc, tpr_at_fpr, thr_at_fpr, cluster_bootstrap_delta, fit_logistic, prob, Scaler
 import monitors as M
 
 cfg = load_config()
 
 
 class Cache:
-    def __init__(self, d):
+    def __init__(self, d, merge_extra=False):
         info = json.load(open(os.path.join(d, "cache_info.json")))
         self.layers = info["layers"]; self.pnames = info["probe_names"]
         A, P, meta = [], [], []
@@ -27,6 +27,10 @@ class Cache:
         self.by_set = {}
         for i, m in enumerate(meta):
             self.by_set.setdefault(m["set"], []).append(i)
+        # 灰區加碼（PREREG 第 6 節）：把 harm_test_extra 併入 harm_test（只有 --merge-extra 才併）
+        xs = cfg["grey_extra"]["set"]
+        if merge_extra and xs in self.by_set:
+            self.by_set["harm_test"] = self.by_set.get("harm_test", []) + self.by_set.pop(xs)
 
     def X(self, li, rows):
         return self.acts[np.asarray(rows), li].astype(np.float32)
@@ -90,7 +94,10 @@ def run_monitors(c, trainset, testset, concept, seeds, perm=False, families=M.FA
         dp, dn = e_deltas(c, li)
         Xp = np.stack([c.X(li, [c.ix[(e, cd)] for e in pos]) for cd in pconds], 1)
         Xn = c.X(li, [c.ix[(e, "clean")] for e in neg])
-        res, info = M.run_layer(Xtr, ytr, dp, dn, Xp, Xn, cfg, seeds, perm=perm, families=families)
+        nconds = [m for m in cfg["conds"].get(f"{testset}_neg", []) if m != "clean"]
+        Xnx = np.stack([c.X(li, [c.ix[(e, cd)] for e in neg]) for cd in nconds], 1) if nconds else None
+        res, info = M.run_layer(Xtr, ytr, dp, dn, Xp, Xn, cfg, seeds, perm=perm, families=families, Xneg_x=Xnx)
+        info["negconds"] = nconds
         per.append(res); infos.append(info)
         print(f"  [{concept}] layer {c.layers[li]} k={info['k']} {time.time()-t0:.0f}s", flush=True)
     return per, infos, pconds
@@ -105,7 +112,11 @@ def summarize_monitors(per, infos, pconds, concept, bs):
     out = dict(concept=concept, conds=pconds, primary_cond_idx=prim, k_per_layer=[i["k"] for i in infos], seeds=S, families={})
     for f, (P, N) in ens.items():
         tpr_c = {cd: [tpr_at_fpr(P[s, :, j], N[s], 0.01) for s in range(S)] for j, cd in enumerate(pconds)}
-        out["families"][f] = dict(
+        fpr_trig = None
+        if "negx" in infos[0]:   # S4：觸發後負例的 FPR（門檻取乾淨負例 99 分位），每條件跨 seed 平均
+            nxs = np.mean([i["negx"][f] for i in infos], 0)   # [S,n_neg,E]
+            fpr_trig = {cd: float(np.mean([(nxs[s, :, e] > thr_at_fpr(N[s], 0.01)).mean() for s in range(S)])) for e, cd in enumerate(infos[0]["negconds"])}
+        out["families"][f] = dict(fpr_neg_triggered=fpr_trig,
             tpr_per_cond={k: dict(mean=float(np.mean(v)), sd=float(np.std(v, ddof=1)) if S > 1 else 0.0, per_seed=v) for k, v in tpr_c.items()},
             tpr_primary_mean=float(np.mean([np.mean(tpr_c[pconds[j]]) for j in prim])),
             tpr_primary_per_seed=[float(np.mean([tpr_c[pconds[j]][s] for j in prim])) for s in range(S)],
@@ -226,8 +237,9 @@ def main():
     ap.add_argument("stage", choices=["gate1_real", "gate2", "monitors", "detector", "all"])
     ap.add_argument("--cache", required=True); ap.add_argument("--results", default=os.path.join(EXP, "results"))
     ap.add_argument("--seeds", type=int, default=cfg["probe"]["n_seeds"])
+    ap.add_argument("--merge-extra", action="store_true", help="灰區加碼：把 harm_test_extra 併入 harm_test")
     a = ap.parse_args(); os.makedirs(a.results, exist_ok=True)
-    c = Cache(a.cache); print("cache rows", len(c.meta), flush=True)
+    c = Cache(a.cache, a.merge_extra); print("cache rows", len(c.meta), flush=True)
     st = [a.stage] if a.stage != "all" else ["gate1_real", "gate2", "monitors", "detector"]
     if "gate1_real" in st or "gate2" in st:
         g2 = gate2(c); json.dump(g2, open(os.path.join(a.results, "gate2_repro.json"), "w"), indent=1)

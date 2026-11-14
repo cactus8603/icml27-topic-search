@@ -28,6 +28,17 @@ def sample(lst, n, rng):
     return lst[:n]
 
 
+def make_extra(pos, neg, used, out_dir):
+    """灰區加碼池（PREREG 第 6 節）：從 harm_test 池扣掉已用的，以事先固定的 seed 另抽；不動主 rng。"""
+    g = cfg["grey_extra"]; r2 = random.Random(g["seed"]); out = []
+    for lab, lst, n in ((1, pos, g["n_pos"]), (0, neg, g["n_neg"])):
+        rest = [x for x in lst if (x["prompt"], x["response"]) not in used]
+        for i, x in enumerate(sample(rest, n, r2)):
+            out.append(dict(id=f"{g['set']}/{lab}/{i}", set=g["set"], concept="harm", label=lab,
+                            prompt=x["prompt"], response=x["response"], role="S", word="harmful"))
+    return out
+
+
 def write(path, rows):
     with open(path, "w") as f:
         for r in rows:
@@ -36,7 +47,8 @@ def write(path, rows):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--out", default=OUT_DEFAULT); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--out", default=OUT_DEFAULT)
+    ap.add_argument("--manifest", default=os.path.join(EXP, "results", "manifest.json")); a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     rng = random.Random(cfg["seed_data"]); man = {}
     sz = cfg["sizes"]; HARM = cfg["concepts"]["harm_adjectives"]
@@ -66,6 +78,9 @@ def main():
                 out.append(dict(id=f"{setname}/{lab}/{i}", set=setname, concept="harm", label=lab,
                                 prompt=r["prompt"], response=r["response"], role="S", word="harmful"))
         man[setname + "_avail"] = dict(pos=len(pos), neg=len(neg))
+        if setname == "harm_test":
+            ex = make_extra(pos, neg, {(o["prompt"], o["response"]) for o in out}, a.out)
+            man[cfg["grey_extra"]["set"]] = dict(n=len(ex), md5=write(os.path.join(a.out, cfg["grey_extra"]["set"] + ".jsonl"), ex))
         man[setname] = dict(n=len(out), md5=write(os.path.join(a.out, setname + ".jsonl"), out))
     harm_split("mega_dataset_evaluated_20250731_163529_harm_batch_test_TRAIN.json", "harm_train", sz["harm_train_pos"], sz["harm_train_neg"])
     harm_split("mega_dataset_evaluated_20250731_163529_harm_batch_test_TEST.json", "harm_test", sz["harm_test_pos"], sz["harm_test_neg"])
@@ -85,8 +100,8 @@ def main():
                                 response=s, role="S", word="lying"))
         man[setname] = dict(n=len(out), md5=write(os.path.join(a.out, setname + ".jsonl"), out))
     man["dec_split"] = dict(n_statements=len(st), train=cut, test=len(st) - cut)
-    os.makedirs(os.path.join(EXP, "results"), exist_ok=True)
-    json.dump(man, open(os.path.join(EXP, "results", "manifest.json"), "w"), indent=1)
+    os.makedirs(os.path.dirname(a.manifest), exist_ok=True)
+    json.dump(man, open(a.manifest, "w"), indent=1)
     print(json.dumps(man, indent=1))
 
 

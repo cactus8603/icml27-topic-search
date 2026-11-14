@@ -33,7 +33,7 @@ def _aug(Xs, y, dpos, dneg, U, copies, rng, random_sub=False):
     return np.concatenate(outX), np.concatenate(outy)
 
 
-def run_layer(Xtr, ytr, dpos, dneg, Xte_pos, Xte_neg, cfg, seeds, perm=False, families=FAMILIES):
+def run_layer(Xtr, ytr, dpos, dneg, Xte_pos, Xte_neg, cfg, seeds, perm=False, families=FAMILIES, Xneg_x=None):
     """單一層：回傳 {family: (pos [S,n_pos,C], neg [S,n_neg])} 與 info。
     Xtr [n,D]（乾淨訓練）；dpos/dneg [m,D] 原始空間的 E 概念位移；Xte_pos [n_pos,C,D]；Xte_neg [n_neg,D]。"""
     pc = cfg["probe"]; rc = cfg["robust"]
@@ -42,6 +42,9 @@ def run_layer(Xtr, ytr, dpos, dneg, Xte_pos, Xte_neg, cfg, seeds, perm=False, fa
     dpos_s = dpos / sc.sd; dneg_s = dneg / sc.sd
     U, e = estimate_subspace(np.concatenate([dpos_s, dneg_s]), rc["energy"], rc["k_cap"])
     Tpos = sc(Xte_pos.reshape(-1, Xte_pos.shape[-1])); Tneg = sc(Xte_neg)
+    # S4（2026-11-14）：觸發後的負例（Xneg_x [n_neg,E,D]），僅回報 FPR，不進裁定
+    Tnx = sc(Xneg_x.reshape(-1, Xneg_x.shape[-1])) if Xneg_x is not None else None
+    nx = {f: [] for f in families}
     n_pos, C = Xte_pos.shape[:2]
     out = {f: ([], []) for f in families}
     for s in seeds:
@@ -60,8 +63,12 @@ def run_layer(Xtr, ytr, dpos, dneg, Xte_pos, Xte_neg, cfg, seeds, perm=False, fa
                 proj = lambda X: X - (X @ U) @ U.T
                 clf = fit_logistic(proj(Xi), yi, pc["C"], pc["max_iter"], s); P, N = proj(Tpos), proj(Tneg)
             out[f][0].append(prob(clf, P).reshape(n_pos, C)); out[f][1].append(prob(clf, N))
+            if Tnx is not None:
+                nx[f].append(prob(clf, proj(Tnx) if f == "INV" else Tnx).reshape(Xneg_x.shape[:2]))
     res = {f: (np.stack(v[0]), np.stack(v[1])) for f, v in out.items()}
-    return res, dict(k=int(U.shape[1]), energy_top=[float(x) for x in e[:8]])
+    info = dict(k=int(U.shape[1]), energy_top=[float(x) for x in e[:8]])
+    if Tnx is not None: info["negx"] = {f: np.stack(v) for f, v in nx.items()}
+    return res, info
 
 
 def ensemble(per_layer):
