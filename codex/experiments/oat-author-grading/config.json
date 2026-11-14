@@ -1,0 +1,37 @@
+{
+  "upstream_revision": "dfca49dd460ee7cc8e4a5a162c876a7fd6993b87",
+  "upstream_sha256": {
+    "LICENSE.txt": "8fedaace23021ee311d5a80a183a51fe398e6624b7838b399b2632d767b9d0f9",
+    "evaluate_model.py": "ea785b1d9ae6bfbc3b7c4a586e7d90389d61c0e42ce3c91fdd68a7648663fa5f",
+    "pyproject.toml": "3aa019e315c3eb7b53556488d9c3f2105c535b5b41c3d44e6ceab286e4762783",
+    "understand_r1_zero/math_grader.py": "eae505bc232c5c2f8495e2bb3b5ab80d4e475502f501864c378d09ce5dab72ee",
+    "datasets/evaluation_suite/math/data-00000-of-00001.arrow": "d383d13c807e2904d0db6f8d98496a0574c0a1d51f40331b920c849cf226ef5a",
+    "datasets/evaluation_suite/minerva/data-00000-of-00001.arrow": "23d05849fd365b9dae2ce5f6c4b6af3baecbbd0a88623abec3f0692d346bae2a",
+    "datasets/evaluation_suite/olympiad_bench/data-00000-of-00001.arrow": "1b3e77da96c15b3f51fdcda4c86d6cb4dc698f223eea6f80c06a44af32e85455"
+  },
+  "pylatexenc_url": "https://files.pythonhosted.org/packages/5d/ab/34ec41718af73c00119d0351b7a2531d2ebddb51833a36448fc7b862be60/pylatexenc-2.10.tar.gz",
+  "pylatexenc_sha256": "3dd8fd84eb46dc30bee1e23eaab8d8fb5a7f507347b23e5f38ad9675c84f40d3",
+  "packages": {
+    "sympy": "1.14.0", "pyarrow": "26.0.1", "math-verify": "0.9.0",
+    "latex2sympy2-extended": "1.11.0", "antlr4-python3-runtime": "4.13.2"
+  },
+  "panels": {
+    "math500": {"author": "math", "historical_n": 500, "author_n": 500, "exact_question": 500, "exact_answer_member": 500},
+    "minerva": {"author": "minerva", "historical_n": 272, "author_n": 272, "exact_question": 272, "exact_answer_member": 35},
+    "olympiad": {"author": "olympiad_bench", "historical_n": 581, "author_n": 675, "exact_question": 566, "exact_answer_member": 359}
+  },
+  "runs": {
+    "rl_greedy": {
+      "raw_0of1.jsonl.gz": "73bf650c6a369ec7dd9c0565156db56c75fdc59f4826eebb43de25d66ec6de00",
+      "meta_0of1.json": "e5bf5ebcf675af1b6100dff23c55e1323e2b19f74bffb2ef1b67ef73cc99bf48",
+      "graded_receipt.json": "31fbf748ae772ac074feae382ac3bebc0c993cf296378810b85f77e76c4211ac",
+      "graded_verified.json": "1d0e1964852acd975d72d6341416804091929accf7707c39772034ac28883ac6"
+    },
+    "base_greedy": {
+      "raw_0of1.jsonl.gz": "ad344659dbfe90f3457ec80092e9d5901be78b0389a8cefb4b5381d4a3af9368",
+      "meta_0of1.json": "33cb62bcccd10fc6c3505a1a9f2cf371d3f9add605a450684f6f2ea5ef156f18",
+      "graded_receipt.json": "ea2fd893e57e89aa3977fc5ce5507b49be3a7a1720bd69a7e65d32b49f0f5c9f",
+      "graded_verified.json": "153606ed21bdaa5aa500c57ea09a741dc046fdf8ac4b2e11ea6c291d14c98b02"
+    }
+  }
+}
