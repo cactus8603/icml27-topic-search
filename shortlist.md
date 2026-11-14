@@ -17,11 +17,11 @@
 | 題目 | 現象／訊號／空間 | 最值得先釐清的因素 |
 |---|---|---|
 | 兩個時鐘 | 正式評估完成。現象與放大訊號通過，提前時機未確立，G3 改善空間灰區。 | 先查每類樣本數正控制的第一格觸底。依預登記暫緩 CIFAR，等使用者決定是否入池。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#兩個時鐘) |
-| Λ | 限步長且等權的 v2 數值閘門通過。訓練後的現象、訊號、空間待測。 | 跨到真實訓練後，無防禦與 IP 能否重現，以及五個 arm 三個 seed 的漏出信度是否達 0.80。[v2 判讀](killtests/inoculation-lambda/VERDICT_phasea_v2.md) |
+| Λ | 限步長且等權的 v2 數值閘門通過。訓練後的現象、訊號、空間待測。 | 已有 Phase B 數字憑證工具。先補原作環境、評審證據與語料，再測無防禦／IP 重現及五個 arm、三個 seed 的信度。[Phase B 預檢](killtests/inoculation-lambda/phaseb/README.md) |
 | 多保真度歸因 | 第 0 階段現象與同軌跡空間通過，訊號灰區。新查詢診斷指出十方向覆蓋偏低。 | 先驗證代表性更好的精確方向。跨種子正式補量仍受原門檻約束。[新查詢診斷](codex/reports/2026-11-15-topic-status-codex.md#多保真度資料歸因) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
-| Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | 逐例核對作者探測器的資料、層索引與池化，隨後確認 ENS8 是否有可回收的失誤。[預登記](killtests/chameleon-defense/PREREG.md) |
-| RL 稀疏蒸餾 | A 配對的重現與截斷門檻未過，B 尚未測。三項待測。 | 確認同預算、可比截斷的 pass@1／pass@64 交叉。先查 A 的既有輸出，再分開 B 的原作重現和短預算配對。[A 配對](killtests/rl-sparse-distill/results/aggregate_gate0_A.json) |
-| 文生圖罕見失敗 | CPU 加速代理通過。CLIP 篩選未過，正式現象與訊號仍待測。 | 查篩選分數同分的成因。大批生成需要可信的篩選。[CPU 診斷](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) · [預登記](killtests/t2i-rare-failure/PREREG.md) |
+| Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | CPU `26505` 配對核對作者的樣本、層索引與池化。[診斷](killtests/chameleon-defense/AUTHOR_PARITY.md) |
+| RL 稀疏蒸餾 | 配對 A 的重現與截斷門檻未過，B 在跑原作重現。 | 先看 B 的 16K 原作重現，通過再核對 3,000-token 截斷率及 pass@1／pass@64 交叉。[配對 B](killtests/rl-sparse-distill/PREREG_pair_b.md) |
+| 文生圖罕見失敗 | CPU 加速代理通過。CLIP 篩選未過，正式現象與訊號仍待測。 | `26503` 比較同圖三種精度的同分與翻轉。大批生成需要可信的篩選。[CPU 與配對診斷](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) |
 
 ## 第一梯：建議現在就跑停損（依優先順序）
 

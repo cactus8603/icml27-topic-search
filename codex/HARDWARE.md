@@ -1,23 +1,23 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷依 2026-11-15 04:55（台北時間）的配置和 Slurm 紀錄。下方各階段實測表保留 04:38 的資料。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 06:38（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
-**24 GB 優先試跑**的四項是多條件檢索、兩個時鐘的階層評估、LLaDA 平行解碼、Attention gate 校準。表內所有 GPU 實測都來自 H200。對 24 GB 卡的判斷是配置估算，這批實驗尚無同配置的 24 GB 成功紀錄。排程前以目標卡的實際可用顯存為準。
+**24 GB 優先試跑**的四項是多條件檢索、兩個時鐘的階層評估、LLaDA 平行解碼、Attention gate 小模型。表內 GPU 實測來自 H200。24 GB 欄是依同配置量測或程式配置推估，尚無同配置的 24 GB 實測。
 
 | 題目 | 下一步 | H200 已實測峰值 VRAM | 24 GB 估算與設備安排 |
 |---|---|---|---|
-| 多條件檢索 | 固定候選圖的新排名評估 `26450` | 前一輪多模型補量 `26393` 為 **6.0 GiB**。新排名配置待量。 | **優先試 24 GB。** CS-CLIP 與 CORE 2B 逐一載入，圖像 batch 8、文字 batch 32。先用相同精度與批次核對代表查詢的分數及排序。資料建構與彙整可用 CPU。[排名腳本](../killtests/compositional-retrieval/scripts/prospective_rank.py) · [凍結配置](../killtests/compositional-retrieval/configs/params_headroom.json) |
-| 兩個時鐘 | 第 2 週五組正式階層評估 `26383` | 第 1 週階層評估 `26295` 為 **1.64 GiB**。第 2 週階層訓練峰值 **1.8–2.7 GiB**。完整第 2 週評估待量。 | **優先試 24 GB。** 第 2 週同一組最多載入六個小模型並保留配對預測，會比第 1 週增加用量，仍有顯存餘裕可試。保留完整 checkpoint、時間點和種子，驗證分數一致。最後彙整可用 CPU。[評估入口](../killtests/biased-gen-cfg/scripts/w2_hier_eval.sbatch) · [評估程式](../killtests/biased-gen-cfg/scripts/eval_hier_oracle.py) |
+| 多條件檢索 | 用同候選庫較強的 CORE 全句作對照，核對組合難負例 | 新排名 `26450` **5.38 GiB、1 分 53 秒**；前一輪多模型補量 **6.0 GiB**。 | **優先試 24 GB。** CS-CLIP 與 CORE 2B 逐一載入，圖像 batch 8、文字 batch 32。資料建構與彙整可用 CPU。[排名腳本](../killtests/compositional-retrieval/scripts/prospective_rank.py) |
+| 兩個時鐘 | 查階層模型的每類樣本數控制第一格觸底 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。階層訓練 **1.8–2.7 GiB**。 | **優先試 24 GB 顯存，主機 RAM 另計。** 保留 checkpoint、時間點和種子並核對分數。最後彙整可用 CPU。CIFAR 仍依預登記暫緩。[評估入口](../killtests/biased-gen-cfg/scripts/w2_hier_eval.sbatch) |
 | Inoculation 防禦漏出預測 Λ | Phase B 無防禦／IP 重現與 LoRA 信度試驗 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。Phase B 待量。 | **Phase B 先留 H200。** 7B BF16 權重約 14 GB，訓練須再加活化、梯度與 optimizer 狀態。Phase B 的訓練配置尚未凍結，24 GB 容量待量。協定檢查與合成測試可用 CPU。[Phase B 預登記](../killtests/inoculation-lambda/PREREG.md#3-phase-b-現象訊號與空間閘門-13-皆過才判) · [Phase A v2](../killtests/inoculation-lambda/phasea_v2/README.md) |
-| 多保真度資料歸因 | 兩段各六個查詢的 JAX 精確歸因 `26448`，再做 CPU 評分 `26449` | 先前精確歸因 `26327` 為 **126.4 GiB**，含 90% JAX 預留。便宜方法整批 `26374` 為 **76.0 GiB**。新探針待量。 | **精確探針留 H200，評分用 CPU。** 六欄依序分段仍要重播原訓練軌跡、保留中間狀態並做向量化反向微分。24 GB 要另量實際運算需要多少顯存。原 TRAK 的投影矩陣本身約 42 GB，原配置也留 H200。[精確探針協定](../killtests/multifidelity-attribution/exact_probe/PROTOCOL.md) · [JAX 作業](../killtests/multifidelity-attribution/exact_probe/exact.sbatch) |
+| 多保真度資料歸因 | 新方向選擇可先做離線分析，精確重播與評分已完成 | `26448` 每六查詢 **126.44 GiB、約 7 分 20 秒**，含 JAX 預留；CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** 24 GB 需另量未預留的實際工作峰值。原 TRAK 投影矩陣本身約 42 GB。[精確探針協定](../killtests/multifidelity-attribution/exact_probe/PROTOCOL.md) |
 | Neural Chameleons 防禦 | 核對作者基準，分析既有快取，必要時完整重抽 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
-| RL 稀疏決策蒸餾 | 配對 A 既有輸出重判，配對 B 原作 16K 重現及短預算資格 | 配對 A 長批 vLLM `26292`／`26293` 為 **127.2–127.3 GiB**，含 90% 框架預留。B 尚無實測。 | **A 重判用 CPU，B 的單模型低併發可試 24 GB，原配置的大批抽樣與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。先量低併發的峰值與吞吐，保持原作長度、取樣與模板。雙模型每批 256 條若都接近 3,000 token，光 KV 就約 41 GiB。[配對預登記](../killtests/rl-sparse-distill/PREREG.md) · [vLLM 配置](../killtests/rl-sparse-distill/scripts/gen_vllm.py) |
-| 文生圖罕見失敗 | CPU 尾端模擬與既有 CLIP 分數同分診斷 | 篩選閘門 `26289` 量到 **36.1 GiB**，Slurm 記為失敗。原 batch 32／64 吞吐測試 `26288` 峰值 **52.9 GiB**。 | **現在用 CPU。** 若篩選達標，後續原批次的大量生成留 H200。24 GB 可另驗 SD v1.4 的縮批配置，須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[預登記](../killtests/t2i-rare-failure/PREREG.md) · [吞吐測試配置](../killtests/t2i-rare-failure/slurm/bench.sbatch) |
-| 大型平行解碼提交集合 | 第二輪兩題試跑、480 題訓練候選、1,000 題鎖定測試 `26440`–`26442` | 同一 BF16 LLaDA-8B 的首輪 `26376` 為 **16.3 GiB**（Slurm），PyTorch 配置峰值 **15.11 GiB**。第二輪待量。 | **優先試 24 GB。** 單題依序執行，每次 forward 的 batch 為 1，關閉 KV cache，仍使用 256-token 解碼配置。先跑凍結的兩題並量顯存和吞吐，再決定整批能否在 2／3 小時的時限內完成。同一速度比較的兩臂用同卡型。評分 `26443` 用 CPU。[第二輪說明](experiments/large-commit-sets/round2/README.md) · [首輪 forward](experiments/large-commit-sets/pilot.py) |
-| 不完美驗證器 | Qwen3-0.6B 與 Qwen3-32B AWQ 依序判決 `26444`，再用 CPU 分析 `26445` | 第一輪是 CPU 重播。第二輪 GPU 顯存待量。 | **現有整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18.0 GiB，現行 vLLM 比例 0.78 在可見 24 GiB 時只給 18.72 GiB，還得放 KV cache 和運行空間。兩端的推論成本比較維持同卡型。[執行入口](experiments/fallible-verifier/round2/run.sbatch) · [vLLM 配置](experiments/fallible-verifier/round2/judge.py) |
-| Attention gate × optimizer | 33M 模型的 3×／4×／6× 壓力校準 `26446` | 第一輪 `26372` 為 **3.7 GiB**。第二輪待量。 | **優先試 24 GB，估約 4–6 GiB。** 沿用序列長度 256 與 microbatch 8，種子和各臂依序執行。整輪約 20,400 步，先驗證吞吐能否在凍結的 6,500 秒內完成，避免只跑完部分配置。[訓練配置](experiments/gate-optimizer/config.json) · [第二輪預登記](experiments/gate-optimizer/round2/PREREG.md) |
+| RL 稀疏決策蒸餾 | 配對 B 16K 重現 `26500`，通過後再驗短預算 | B 的 GPU 正確性 `26499` **12.73 GiB、32 秒**。A 長批 vLLM **127.2–127.3 GiB**，含預留。B 16K 正式推論待量。 | **B 單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。CPU 做重判。[配對 B 預登記](../killtests/rl-sparse-distill/PREREG_pair_b.md) |
+| 文生圖罕見失敗 | CLIP 三精度配對診斷 `26503` | CPU `26479` **2 分 55 秒**。舊篩選 `26289` **36.1 GiB**；原 batch 32／64 方案 **52.9 GiB**。精度診斷待量。 | **現有 batch 32 診斷與大量生成留 H200。** 24 GB 可另驗 SD v1.4 縮批，須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[預登記](../killtests/t2i-rare-failure/PREREG.md) |
+| 大型平行解碼提交集合 | 等成本試驗完成，若續做先試較便宜的候選選擇器 | LLaDA-8B 第二輪 `26441`／`26442` **16.29／16.23 GiB、21 分 52 秒／45 分 3 秒**。 | **優先試 24 GB。** Forward batch 1，關閉 KV cache，仍用 256-token 解碼。速度比較兩臂使用同卡型。CPU 可彙總。[第二輪說明](experiments/large-commit-sets/round2/README.md) |
+| 不完美驗證器 | 先修判決／金標量測品質，再測正式等風險 | Qwen3-0.6B 和 32B AWQ 依序 `26484` **110.44 GiB、5 分 45 秒**，含 vLLM 預留；CPU 評分 `26485` 1 秒。 | **整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18 GiB，現行 0.78 顯存比例在 24 GiB 約給 18.72 GiB，剩餘空間還需容納 KV cache 和運行資源。[執行入口](experiments/fallible-verifier/round2/run.sbatch) |
+| Attention gate × optimizer | 4× 壓力、12 個保留 seed 的驗證 `26502` | 同模型第二輪校準 `26446` **3.72 GiB、11 分 51 秒**。驗證待量。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。驗證共約 32,400 步，比校準的 20,400 步多，需另核對吞吐與時限。[獨立驗證](experiments/gate-optimizer/round2/PREREG_validation.md) |
 
 已送出的工作依原 Slurm 佇列執行。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
 

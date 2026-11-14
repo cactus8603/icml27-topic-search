@@ -10,14 +10,14 @@
 |---|---|---|---|
 | [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 補固定索引及 reranker，原同圖排序已列 GO | 新排名試驗完成（`26450`）。續做時採同庫較強的 CORE 全句作對照，先查標註與錯排 |
 | [條件擴散的兩個時鐘](#條件擴散的兩個時鐘) | Claude 做第一週訓練與評估 | Codex 在交接前已接手，第二週正式評估已完成 | 查每類樣本數正控制的第一格觸底，等使用者決定是否入池 |
-| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成 Phase A v2 | 準備 Phase B 的重現與跨種子信度小試 |
-| [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 補判準、重跑便宜方法並彙總 | 做固定 12 個新查詢的精確診斷及 CPU 評分（`26448`／`26449`） |
-| [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 固定權重版本重抽並分析 | 核對作者的樣本、層索引與池化，再評估多層集成剩餘錯誤 |
-| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 重判配對 A，整理配對 B 重現條件 | 核對 A 的截斷，分開凍結 B 的原作設定與短預算配對 |
-| [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 補分階段驗證及證據檢查 | 用 CPU 做尾端模擬，查既有篩選分數同分的原因 |
+| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成 Phase A v2 與 Phase B 預檢 | 補齊作者環境、評審憑證及信度語料，再送正式重現與小試 |
+| [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成 12 個新查詢的精確診斷 | 若深化訊號，先驗證更具代表性的精確方向 |
+| [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 固定權重版本重抽並分析 | CPU 配對診斷已送 `26505`，核對作者的樣本、層索引與池化 |
+| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 重判 A，Astra 複核 B 的原作重現程式 | 先跑 B 的 16K 原作重現（`26500`／`26501`），通過再測短預算資格 |
+| [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成 CPU 尾端代理 | CLIP 配對精度診斷已送 `26503` |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 已完成第二輪等推論成本比較 | 暫停這版 Joint 特徵。續做時先測能否以低成本超過原 confidence 規則 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結等暖機預算的第二輪 | 用新 GSM／AIME 題跑兩個驗證器，再比較成本和風險（`26444`／`26445`） |
-| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 凍結第二輪壓力校準 | 找到能產生足夠損傷、仍維持正常訓練品質的最低壓力（`26446`） |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成第二輪，金標及判決解析不足 | 在獨立資料先驗證金標覆蓋與單標籤判決 |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成校準並凍結 4 倍壓力 | 用 12 個保留種子驗證訊號（`26502`） |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
 

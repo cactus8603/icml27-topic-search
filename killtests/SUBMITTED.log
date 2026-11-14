@@ -56,3 +56,17 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 06:16 submit 26480 fallible-verifier 26444 在程序前置檢查失敗；修復並複核 sacct 路徑，沿用原等預算設定 e85c237
 [codex] 2026-11-15 06:16 submit 26481 fallible-verifier 依賴 26480 成功後執行凍結的 CPU 等預算及等風險判讀 e85c237
 [codex] 2026-11-15 06:21 cancel 26481 fallible-verifier 26480 已在推論初始化失敗，移除無法滿足的 CPU 相依 e85c237
+[codex] 2026-11-15 06:22 submit 26484 fallible-verifier 26480 因計算節點缺 nvcc 退出；沿用已驗證的 PyTorch sampler，弱強兩端同後端 d7eb4e9
+[codex] 2026-11-15 06:22 submit 26485 fallible-verifier 依賴 26484 成功後執行 CPU 等預算等風險判讀 d7eb4e9
+[codex] 2026-11-15 06:31 submit 26492 rl-sparse-distill 配對B 離線預檢與凍結來源快照，Astra 獨立複核 c2dee96
+[codex] 2026-11-15 06:31 submit 26493 rl-sparse-distill 配對B Base/RL 正式正確性檢查，依賴預檢 c2dee96
+[codex] 2026-11-15 06:31 submit 26494 rl-sparse-distill 配對B 原作三來源 16k 公開規格重現，兩臂序列 c2dee96
+[codex] 2026-11-15 06:31 submit 26495 rl-sparse-distill 配對B 原作 1447 題正式 CPU 評分，短預算等待獨立複核 c2dee96
+[codex] 2026-11-15 06:35 status 26492 rl-sparse-distill 預檢寫出備妥標記後 exit 1，Slurm 自動取消 26493 至 26495；改用新 run ID 重送 c2dee96
+[codex] 2026-11-15 06:35 submit 26498 rl-sparse-distill 配對B 離線預檢，修正最後退出狀態 420f559
+[codex] 2026-11-15 06:35 submit 26499 rl-sparse-distill 配對B Base/RL 正式正確性檢查，依賴重送預檢 420f559
+[codex] 2026-11-15 06:35 submit 26500 rl-sparse-distill 配對B 原作三來源 16k 公開規格重現，兩臂序列 420f559
+[codex] 2026-11-15 06:35 submit 26501 rl-sparse-distill 配對B 原作 1447 題正式 CPU 評分，短預算等待獨立複核 420f559
+[codex] 2026-11-15 06:36 submit 26502 gate-optimizer 4倍人工壓力，固定12保留seed和三強基線，獨立複核及CPU測試通過 4d87430
+[codex] 2026-11-15 06:36 submit 26503 t2i-rare-failure CLIP 同分探索診斷，三臂共用1500張像素，不保存生成影像 37e6ae9
+[codex] 2026-11-15 06:37 submit 26505 chameleon-defense CPU 作者乾淨基準診斷，改用帳號有權的 h200q CPU-only 資源，先前 defq 送件未建立作業 b9b43d7
