@@ -3,6 +3,9 @@ results/**/*.npz
 results_smoke/
 logs/*.out
 logs/*.err
+logs/env_freeze_cr-headroom.txt
+results/headroom/26393/e2_*.json
+results/prospective_rank/*/_source/
 *.pt
 *.bin
 *.safetensors
