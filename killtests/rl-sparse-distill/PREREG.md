@@ -15,7 +15,7 @@
 - 取樣 seed：vLLM `seed=1234`；HF `gen_replace.py` 以 `seed + 1000*shard + batch_index`。bootstrap seed 如上。
 - 模型：見 `configs/pairs.json`（配對 A：Qwen2.5-Math-1.5B／sail Oat-Zero；配對 B：Qwen2.5-1.5B／hkust-nlp SimpleRL-Zoo）。dtype 一律 bfloat16（SimpleRL-Zoo 原檔 fp32，載入時轉 bf16）。
 
-## 3. 閘門順序（前三關失敗＝「未能測試」，限 3 個工作天修；修不好記為可行性停損，與題目不成立分開記）
+## 3. 閘門順序（前三關失敗＝「未能測試」，限 3 個工作天修；修不好記為可行性停損，與此實作停損分開記；要升級為題目淘汰，須另外符合 57 號第 5 節規則 2）
 **閘門 −1 程式正確性**（`tests/smoke_cpu.py`；CPU 小模型先過，再用 `slurm/00_correctness_gpu.sbatch` 在真實模型、fp32、GPU 上重跑）：
 1. rl 模型設成 base 時，rl_replace 輸出 == base 取樣（同 seed，逐字相同，替換數 0）。
 2. 全部位置替換（all_replace）== RL greedy（逐字相同）。
@@ -33,18 +33,18 @@
 **判準 1（只對閘門 0 合格的配對；預估 rl_replace 約 18–25 GPU 小時／配對，WiSE 6 點約 8 GPU 小時／配對）**，k=64：
 - (i) rl_replace 的 pass@64 − **HF 版 RL（`rl_hf`）**的 pass@64 ≥ 2pp，且單側（α=0.0125，即 1.25 百分位）下界 > 0；（見修改紀錄 2026-11-14 審查後定案）
 - (ii) 在相同 pass@1 下高於 WiSE-FT 前緣：WiSE-FT 為權重內插 θ=(1−λ)θ_base+λθ_RL，λ ∈ {0.15, 0.30, 0.45, 0.60, 0.75, 0.90} 加兩端點（λ=0 為 base、λ=1 為 RL）共 8 點；前緣＝以這 8 點的 (pass@1, pass@64) 依 pass@1 排序的分段線性內插，取在 rl_replace 的 pass@1 處的值；差值（rl_replace 的 pass@64 − 前緣值）> 0，且 bootstrap（每次重算全部點與內插）單側下界 > 0。若 rl_replace 的 pass@1 落在 8 點範圍外會在輸出標記。
-- 兩者都成立才 PASS；任一不成立就停、不做蒸餾。
+- 兩者都成立才 PASS；(i) 不成立或 (ii) FAIL 時**停 λ=1 端點路線（rl_replace 這個實作），不做蒸餾**；這不等於題目淘汰。(ii) 的 FAIL 條件見 R1；(i) 成立而 (ii) FAIL 時觸發 R3 的唯一第二探針。
 
 ## 4. 三態結果（`aggregate.py` 機械輸出）
 - **PASS**：判準 1 的 (i)(ii) 都成立。
-- **FAIL**：rl_replace 比 RL 高不到 1pp，或在相同 pass@1 下不高於 WiSE 前緣（點估計 ≤ 0）。
+- **FAIL**：rl_replace 比 RL 高不到 1pp；或 (ii) 的 FAIL（R1：相同 pass@1 下對 WiSE 前緣的差值點估計 ≤ 0，**且**差值的 98.75 百分位 < +2.0pp）。
 - **灰區**：其餘。只准一次事先定好的加碼：加跑 dev 400 題（RL、rl_replace、最接近的 WiSE 點）後與 test 合併重算（合併重算的程式尚未寫，灰區發生時再補，須先 commit）。
 - **未能測試**／**配對不合格**：見第 3 節。
-- 整體（兩個配對擇一，已以 α=0.0125 校正）：至少一個合格配對 PASS → PASS；無 PASS 但有灰區 → 灰區；合格配對全部 FAIL → FAIL（停，不做蒸餾）；沒有合格配對 → 未能測試。
+- 整體（兩個配對擇一，已以 α=0.0125 校正）：至少一個合格配對 PASS → PASS；無 PASS 但有灰區 → 灰區；合格配對全部 FAIL → FAIL（停 λ=1 端點路線，不做蒸餾；不等於題目淘汰，先看 R3）；沒有合格配對 → 未能測試。
 
 ## 5. 可重試次數與成本上限
 - 同一 job 因基礎設施失敗（OOM、節點掛掉、逾時）最多重送 2 次；**結果不理想不得重跑**（不得換 seed 挑結果）。失敗與重跑照實記入 `logs/RUNLOG.md`，不刪。
-- 總 GPU 小時上限 120（預估 60–75）；送出前先跑 `slurm/04_throughput_probe.sbatch`，實測吞吐低於推估 1/2 就重排（例如降低配對數或改 vLLM 快速路徑）。
+- 總 GPU 小時上限 120（預估 60–75；R3 探針另計上限 25，預估使總量超出 120 時先回報）；送出前先跑 `slurm/04_throughput_probe.sbatch`，實測吞吐低於推估 1/2 就重排（例如降低配對數或改 vLLM 快速路徑）。
 - 磁碟上限 60 GB（預估 ≤ 25 GB）。
 
 ## 6. 留存
@@ -60,3 +60,17 @@
 3. **重現來源**：`gate0.reproduce_sources` 改為 `["math500","minerva"]`；olympiad 只記錄（`reproduce_record_only_diffs_pp`），因題集不同（581 對 674 題）。
 4. **配對 B 模板**：pairs.json 新增 per-pair `template`。B 使用 `simplerl_abel_chat`（訓練資料 hkust-nlp/SimpleRL-Zoo-Data 的 simplelr_abel_* 的 user 訊息 `Question:\n{q}\nAnswer:\nLet's think step by step.\n`，外包 Qwen 聊天模板，預設 system＝You are a helpful assistant.）。出處：SimpleRL-Zoo 論文附錄 B.3（0.5B/1.5B 用較簡單 prompt）與 B.5（評測沿用訓練模板）、HF 資料集實查、tokenizer apply_chat_template 實測。**未確認部分**：原作評測程式（examples/simplelr_math_eval）有 `abel` 模板但無法從程式碼確認 1.5B 評測是否外包聊天模板；原作評測為 max_tokens 16000，Zoo 模型評測用 temperature 1.0／top-p 0.95，與我們閘門 0 的 greedy＋3000 token 不同，可能影響重現。B 配對的 00／01 送出前須由協調者確認。A 配對仍用 qwen_math。
 5. 其他：`aggregate.py --selftest` 已加入 rl_hf 與正向情境（rl_replace 明顯高於 rl_hf 時 (i) 數字為正）。
+
+### 2026-11-14 代理落差稽核後、結果前定案（非探索性；依 59 號報告 §5、58 號 §5；任何主判準結果出來之前）
+`configs/criteria.json` 新增 `gate1.fail_ii_upper_pct=98.75`、`fail_ii_exclude_pp=2.0`、`gate1.mix_curve`、`probe2`；既有門檻一字未動。`aggregate.py` 新增 R1–R3 與 selftest；`gen_replace.py` 新增 `--cond geo_mix --lam`（既有 4 個 cond 的輸出經舊版 `git HEAD` 對照逐字相同，見 README）；`slurm/06_geo_mix.sbatch` 只寫不送；`tests/smoke_cpu.py` 新增 T6–T8。判斷者沒有打開 `results/A/*/` 的任何評分。
+
+**R1（(ii) 的 FAIL 條件）**：以下兩項都成立才算 (ii) FAIL：(1) 差值（rl_replace 的 pass@64 − 前緣值）的點估計 ≤ 0；(2) 差值的 98.75 百分位 < +2.0pp。點估計 ≤ 0 但 98.75 百分位 ≥ 2.0pp 時歸入灰區，走原本唯一一次的 dev 400 加碼；合併後仍排除不了 2pp，記「未能測試（檢定力不足）」。(i) 的判定不變。（理由：WiSE 前緣有 8 個點、rl_replace 只有 1 個點，判準不對稱；凹性論證只能保證混合曲線高於弦，不是前緣的檢定力正控制，故不採 58 號 B1。）合併重算的程式仍未寫（沿用原有待辦），`gate1(..., merged=True)` 已先實作該分支的判定。
+
+**R2（回應層級混合曲線，只描述）**：每次嘗試以機率 π 取 RL 樣本、否則取 base 樣本；無偏估計 (1−p)^64 = Σ_m Binom(64, m; π) · C(128−c_RL, m)/C(128, m) · C(128−c_base, 64−m)/C(128, 64−m)；π 從 0 到 1，間隔 0.05。輸出於 `gate1.mix_curve_descriptive`（RL 取與 (i) 相同的 `rl_hf`；同時列弦）。不參與任何判定；它是政策層級的前緣參照，不是 (ii) 的前緣。
+
+**R3（唯一的第二探針：λ=0.5 幾何混合）**
+- 觸發：合格配對的 (i) 成立而 (ii) FAIL。只做一個配對，A 符合就做 A，否則做 B。
+- 取樣：在 greedy 不一致的位置用 0.5·logit_base + 0.5·logit_RL（softmax 後同 temperature 0.6、top-p 0.95、3000 token），其餘位置照 base；test 1,053 題 × 128，seed 與分片規則同 rl_replace。
+- 通過條件（三項都要成立；單側 α=0.00625）：(1) pass@64 − rl_hf ≥ 2pp，且單側下界 > 0；(2) 在自身的 pass@1 處高於 WiSE 前緣，且單側下界 > 0；(3) pass@1 − base ≥ 0.5 × (RL − base) 的 pass@1。條文未指明 (3) 的「RL」，實作取與 (i) 相同的 `rl_hf`（結果前決定）。
+- 只有通過或未通過，不加碼。探針上限 25 GPU 小時；全題上限 120 不變，預估會超出時先回報。探針未通過，才可提請淘汰。
+- 用語：(i) 成立而 (ii) FAIL 只否證「λ=1 端點（確定性輸出 RL 的 argmax）」；λ=1 是 q*_λ 家族裡多樣性最低的成員。

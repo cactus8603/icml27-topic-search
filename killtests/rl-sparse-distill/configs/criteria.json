@@ -1,5 +1,5 @@
 {
-  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：alpha 0.0125、reproduce_sources、rl_compare_cond（非探索性）。",
+  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：alpha 0.0125、reproduce_sources、rl_compare_cond（非探索性）。2026-11-14 代理落差稽核後、結果前定案：fail_ii_upper_pct、fail_ii_exclude_pp、mix_curve、probe2（非探索性）。",
   "eval": {"n_samples": 128, "k_main": 64, "test_questions_min": 1000, "bootstrap_B": 10000, "bootstrap_seed": 20261114},
   "gate0": {
     "reproduce_tol_pp": 2.0,
@@ -18,7 +18,22 @@
     "rl_compare_cond_note": "(i) 比較對象為 HF 版 RL 取樣（gen_replace.py --cond rl），與 rl_replace 同引擎；vLLM 版 rl 只用於閘門 0 與 (ii) 前緣；rl_hf 為 (ii) 的敏感度端點",
     "wise_lambdas": [0.15, 0.3, 0.45, 0.6, 0.75, 0.9],
     "wise_margin_min_pp": 0.0,
+    "fail_ii_upper_pct": 98.75,
+    "fail_ii_exclude_pp": 2.0,
+    "fail_ii_note": "2026-11-14 R1（結果前定案）：(ii) 的 FAIL 需同時：差值點估計 <= 0 且差值的 98.75 百分位 < +2.0pp；點估計 <= 0 但 98.75 百分位 >= 2.0pp 歸灰區（走原本唯一一次 dev 400 加碼），合併後仍排除不了 2pp 記「未能測試（檢定力不足）」。(i) 的判定不變。",
+    "mix_curve": {"pi_step": 0.05, "k": 64, "n": 128, "compare_cond": "rl_hf", "descriptive_only": true},
     "gray_zone": {"point_diff_min_pp": 1.0, "action": "只准一次：加跑 dev 400 題（RL、rl_replace、最接近的 WiSE 點）後合併重算，事先已定"}
+  },
+  "probe2": {
+    "_note": "2026-11-14 R3（結果前定案）：唯一的第二探針，λ=0.5 幾何混合（gen_replace.py --cond geo_mix --lam 0.5）。觸發：合格配對的 (i) 成立而 (ii) FAIL；只做一個配對，A 符合就做 A，否則做 B。只有通過或未通過，不加碼。",
+    "cond": "geo_mix", "lam": 0.5, "pair_order": ["A", "B"],
+    "pk_gain_vs_rl_hf_min_pp": 2.0,
+    "ci_one_sided_alpha": 0.00625,
+    "retain_p1_frac_of_rl_gain": 0.5,
+    "rl_ref_cond": "rl_hf",
+    "gpu_hour_cap": 25,
+    "total_gpu_hour_cap_unchanged": 120,
+    "report_if_projected_exceeds_total": true
   },
   "correctness_gates": {"exact_match_required": true, "wrb_reference_match_required": true}
 }

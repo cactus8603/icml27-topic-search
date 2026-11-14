@@ -2,7 +2,7 @@
 
 ## 目的與對應回報
 對應 `reports/2026-11-14-44-deepcheck-rl-sparse-decisions.md`（RL 稀疏決策的混合目標 on-policy 蒸餾），以及 Fable 重審 `reports/2026-11-14-56-killtest-criteria-review.md` 第 5 節。
-只回答一件事：**蒸餾的上限（rl-replace）值不值得蒸餾？** 若在公開 1.5B 配對上，rl-replace 在 pass@64 上沒有顯著勝過 RL、或在相同 pass@1 下勝不過 WiSE-FT 權重內插前緣，整題停，不做蒸餾。本資料夾**不含任何蒸餾程式**。
+只回答一件事：**rl-replace 這個 λ=1 端點值不值得蒸餾？** 若在公開 1.5B 配對上，rl-replace 在 pass@64 上沒有顯著勝過 RL、或在相同 pass@1 下勝不過 WiSE-FT 權重內插前緣，停 λ=1 端點路線，不做蒸餾（這不等於題目淘汰；(i) 成立而 (ii) FAIL 時還有 R3 的 λ=0.5 探針）。注意 rl_replace 在不一致位置確定性輸出 RL 的 argmax，是 q*_λ 家族裡多樣性最低的成員，它只近似 pass@1 的上限，**不是 pass@64 的上限**。本資料夾**不含任何蒸餾程式**。
 
 ## 判準（凍結版見 PREREG.md；數字唯一來源 configs/criteria.json）
 回報 44 原文：「第 1 週，D5 前：在 Oat-Zero-1.5B 與 SimpleRL-Zoo-1.5B（或 ORZ-1.5B）兩個配對上：rl-replace 必須用 ≤10% 的位置拿回 ≥70% 的 pass@1 增益；在 ≥500 題的配對 bootstrap 下，pass@64 必須比 RL 高，且 CI 不含 0。兩個配對都做不到就整題停。」
@@ -21,6 +21,7 @@ Fable 修正版（現行）：閘門 0（重現 RL 已報 pass@1 ±2pp、token �
 - `configs/pairs.json`（模型、模板、解碼、已報數字）、`configs/criteria.json`（全部門檻）
 - `scripts/prepare_data.py`（評測集）、`gen_vllm.py`（base／rl／WiSE，vLLM）、`gen_replace.py`（HF 雙模型 lock-step rl-replace，取樣函式直接用原作 wrb）、`make_wise.py`、`grade.py`、`aggregate.py`、`common.py`
 - `tests/smoke_cpu.py`、`tests/make_noisy_copy.py`
+- `slurm/06_geo_mix`（R3 第二探針，只寫不送）
 - `slurm/`：`00_correctness_gpu`、`01_vllm_sample`、`02_rl_replace`、`03_wise`、`04_throughput_probe`（皆 partition h200q、`--gres=gpu:1`、16 CPU、170G）
 - 外部：`/work/ChihChungHsu/cactus8603/icml/ext/WhatRLBrings`（原作程式，已 clone 並讀過 rl_replace.py、sampling.py、grading.py、metrics.py）；`pylib/`（math-verify 0.9.0 等純 python 套件，pip --target 安裝在本資料夾，**沒有動任何共用 env、沒有裝 torch**）。
 - 執行環境：既有 `envs/vllm033`（vLLM 0.33.0、torch 2.14、transformers 5.20.2）。`vllm0251rkv` 沒用到。
@@ -84,3 +85,11 @@ python -I scripts/aggregate.py                  # 機械輸出 PASS／灰區／F
 ## Smoke 紀錄（CPU，2026-11-14，Qwen3-0.6B 與其加雜訊副本當「假 RL」，副本已刪除；log：logs/smoke_cpu.log）
 T1（rl=base 等於 base 取樣）、T2（全部替換等於 RL greedy）、T3（與原作 RLReplaceDecoder 逐字且替換數相同）、T4（左 padding＋壓縮 greedy 等於單題 greedy）、T5（替換比例 0.412，僅證明有替換）全部 PASS。`aggregate.py --selftest` 通過（pass@k 估計式對暴力組合、虛無情境判 FAIL）。
 未跑：vLLM 腳本、WiSE 內插、真實 1.5B 模型（模型尚未下載、不佔 GPU）。
+
+## 2026-11-14 代理落差稽核後補充（結果前定案；條文見 PREREG.md 修改紀錄 R1–R3）
+- R1：(ii) 的 FAIL 須同時「點估計 ≤ 0」且「差值 98.75 百分位 < +2.0pp」，否則歸灰區；合併 dev 後仍排除不了 2pp → 「未能測試（檢定力不足）」。`aggregate.py` 輸出 `ii_fail`、`ii_underpowered`、`wise_margin_upper_pp`。
+- R2：`gate1.mix_curve_descriptive`（回應層級混合曲線，只描述）。
+- R3：`gen_replace.py --cond geo_mix --lam 0.5`；`aggregate.py` 輸出 `probe2`（triggered／pair／result）；送法：`for S in 0..7; do sbatch slurm/06_geo_mix.sbatch <PAIR> $S 8; done`（只在 probe2.triggered 且使用者放行後；預估與 rl_replace 同量級 18–25 GPU 小時／配對，探針上限 25，超出 120 總量先回報）。
+- 既有 cond 不變的證據：以 `git HEAD` 的舊版 `gen_replace.py` 與新版比對 base／rl（含 temperature 0）／rl_replace（壓縮與不壓縮）／all_replace，輸出（文字、結束旗標、token 數、替換數）全部逐字相同（Qwen3-0.6B 與加雜訊副本，CPU）。
+- smoke 新增 T6（兩模型相同時 geo_mix == base 取樣、替換數 0）、T7a（λ=1、temperature 0 == RL greedy）、T7b（λ=0 == base 取樣）、T8（λ=1 時與獨立參考迴圈逐字相同且不一致位置數相同）。GPU 版 `00_correctness_gpu.sbatch` 會一併跑。
+- 刪除的說法：「rl_replace 是學生上限」只對 pass@1 近似成立，對 pass@64 不成立。

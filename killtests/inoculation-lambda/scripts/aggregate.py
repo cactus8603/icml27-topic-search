@@ -70,7 +70,25 @@ def gate1(rdir, crit, include_smoke):
     slope = float(np.polyfit(pred, true, 1)[0])
     ok = pooled >= g["pearson_min"]
     return dict(status="PASS" if ok else "FAIL", pearson_pooled=pooled, per_config=pc, slope_true_on_pred=slope,
-                n=len(pred), threshold=g["pearson_min"])
+                n=len(pred), threshold=g["pearson_min"],
+                descriptive=gate1_descriptive(per_cfg, pred))
+
+
+def gate1_descriptive(per_cfg, pred):
+    """2026-11-14 新增（L0 條件 2）：逐 trait 的 Pearson、斜率與預測 |Δτ| 最小值。只描述，不參與判定。"""
+    def pear(x, y):
+        if len(x) < 3 or np.std(x) == 0 or np.std(y) == 0:
+            return float("nan")
+        return float(np.corrcoef(x, y)[0, 1])
+    def slope(x, y):
+        if len(x) < 2 or np.std(x) == 0:
+            return float("nan")
+        return float(np.polyfit(x, y, 1)[0])
+    per_trait = {k: dict(n=len(v[0]), pearson=pear(v[0], v[1]), slope_true_on_pred=slope(v[0], v[1]),
+                         min_abs_pred_dtau=float(np.min(np.abs(v[0]))) if len(v[0]) else float("nan"))
+                 for k, v in per_cfg.items()}
+    return dict(per_trait=per_trait, min_abs_pred_dtau_all=float(np.min(np.abs(pred))),
+                note="只描述，不參與閘門 1 判定（PASS/FAIL 只看 pooled Pearson）")
 
 
 def _lam(rows, defense, tau_set, group, ctx="MEAN"):
@@ -168,6 +186,11 @@ def phase_a(args, crit):
     print("=" * 70)
     print(f"[criteria {crit['version']}] 閘門 1（有限差分 Pearson ≥ {crit['gate1']['pearson_min']}）：{g1['status']}"
           + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if g1["status"] != "NOT_RUN" else ""))
+    if g1["status"] != "NOT_RUN":
+        d = g1["descriptive"]
+        print("閘門 1 逐 trait（只描述）：min |預測Δτ| 全體 = %.3g" % d["min_abs_pred_dtau_all"])
+        for k, v in sorted(d["per_trait"].items()):
+            print(f"  {k:34s} n={v['n']:2d}  pearson={v['pearson']:7.3f}  斜率={v['slope_true_on_pred']:7.3f}  min|pred|={v['min_abs_pred_dtau']:.3g}")
     print("-" * 70)
     print("參考（對照論文已報數字；不停損、不入判準）：")
     for k, r in flat:

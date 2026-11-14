@@ -79,3 +79,9 @@ CPU smoke（已執行過一次）：`scripts/smoke_cpu.sh`。
    另：smoke 發現 pg 設定原會多算一個「全層 all 組」，已改為 `groups: []`（只算 5 個層段，14B 記憶體才夠），smoke 後才改，改後只以 resolve_groups 單元檢查，未再跑模型。
    （原第 7 點說明）smoke 為 0.5B／CPU／2 筆樣本，只證明程式跑得通與符號合理，不代表任何科學結論。
 8. 登入節點負載高（load ~50），smoke 很慢；GPU 上 7B／14B 的記憶體與吞吐為推估，14B 全參數層段取 5 層段（約 15 層）以 fp32 累積，預估 < 60GB 額外記憶體，未實測。
+
+## 10. 2026-11-14 代理落差稽核後補充（結果前定案）
+- `scripts/phaseb_extras.py`：Phase B 的 L1 信度上限、L2 地平線歸因（S5）、L3 唯一第二探針；`--selftest` 為合成資料測試（`nice $PY scripts/phaseb_extras.py --selftest`）。條文見 `PREREG.md` §3a–§3c。
+- `aggregate.py --phase a` 另輸出逐 trait 的 Pearson、斜率、預測 |Δτ| 最小值（只描述）。
+- Phase B 訓練腳本（尚未寫）須：每 arm 的 seed 0 存 1.25%、2.5%、5% 步與最終 LoRA；產出 `lambda_seeds.csv`、`horizon.csv`（欄位見 phaseb_extras.py 檔頭）。
+- FAIL 的用語：此實作（step 0 原始 Λ）停損，不等於題目淘汰。

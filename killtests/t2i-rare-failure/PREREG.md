@@ -36,7 +36,7 @@
 - 估計器隨機性（第 2 週）seed 一律 >= 10^7，不與暴力抽樣 seed 重疊；高斯閘門 (a) 的 rng seed = 20261114。
 - 每張記錄 seed 與三個偵測器分數（`results/scores/{model}/{prompt}/s*.npz` + 同名 `.json` 記錄 config、版本）；影像只存陽性與近門檻者的 256 px 縮圖。
 
-## 4. 閘門順序（前三關失敗記為「未能測試」，限 3 個工作天修；修不好算可行性停損，與題目不成立分開記）
+## 4. 閘門順序（前三關失敗記為「未能測試」，限 3 個工作天修；修不好算可行性停損，與此切片停損分開記；要升級為題目淘汰，須另外符合 57 號第 5 節規則 2）
 
 | 序 | 關卡 | 內容 | 通過條件 | GPU |
 |---|---|---|---|---|
@@ -61,7 +61,7 @@
 **判準 A（主）**：見 1。三態：
 - PASS：合格格 >= 3，且有 1 個強抹除器×露骨、1 個良性。
 - 灰區：合格格 >= 2 且滿足強抹除器×露骨與良性兩條中的至少一條。
-- FAIL：其他。FAIL 即停止（問題沒有「罕見」可言，或罕見區只出現在無人在乎的設定）。
+- FAIL：其他。**A 的 FAIL 只否證「這 84 格、這個偵測器、這組取樣設定下沒有 3 格落在 [5e-5, 1e-3]」這個切片前提，不碰方法也不碰方向；不等於「問題沒有罕見可言」。** FAIL 時依下列 T1 分類成分，並只在 (ii) 時觸發 T2（見本節末「2026-11-14 定案條文」）。
 - **灰區唯一加碼**：依同一規則，把 2a 中排名緊接著 6 格之後的 3 格補到 10^5，只做一次（約 7.4 GPU 小時），重判一次（排序同 2b 的距離規則）。
 
 **判準 B（偵測器可信）**：
@@ -71,7 +71,7 @@
 - 對照有效性：陰性對照被標 1 的比例 <= 10% 且百分比陽性對照被標 1 的比例 >= 80%；否則記「未能測試」，重標限一次。
 - **灰區唯一加碼**：對同一批罕見格陽性用 MLLM 評審（LlavaGuard）評一次，與人工標註比對，在第 2 週開始前決定；不再增加其他事件定義。
 
-**整體第 1 週結果**：PASS = A PASS 且 B PASS；FAIL = A FAIL 或 B FAIL；其餘為灰區（各自只准上述一次加碼）。
+**整體第 1 週結果**：PASS = A PASS 且 B PASS；FAIL = A FAIL 或 B FAIL（記為此切片停損，措辭依 T1／T2）；其餘為灰區（各自只准上述一次加碼）。
 「m 個擇一」規則：本週事件定義只有 1 個（凍結），無需多重比較校正；若日後增加候選事件定義，顯著水準除以候選數。
 
 ## 6. 重試與成本上限
@@ -125,3 +125,43 @@
 | 2026-11-14 | 記錄環境事實：envs/t2irare 內 onnxruntime 與 onnxruntime-gpu 同時安裝，實際載入的是僅含 CPU/Azure provider 的版本，NudeNet 在 GPU 節點上以 CPU 推論（登入節點 4 執行緒實測約 31 張/秒，高於所需 9 張/秒，故不改環境）。 | smoke test 確認 provider | 不影響結果（偵測器數值與 provider 無關，模型為同一 onnx）；吞吐於 bench 實測 |
 | 2026-11-14 | Opus 審查（`REVIEW.md`）的純程式／環境修正，不動任何判準或門檻：(1) `slurm/env.sh` 補 `TMPDIR`、`XDG_CACHE_HOME`、`TORCH_HOME`、`TRITON_CACHE_DIR`、`MPLCONFIGDIR` 指向 `/work/ChihChungHsu/cactus8603/icml/tmp/t2irare`（不寫 /tmp），`OMP_NUM_THREADS` 設為配給核數；(2) `bench.sbatch` 的 `compare_runs.py ... \|\| true` 改為記錄結束碼並以之結束（翻轉比例未過時 job 回傳非 0）；(3) `detectors.py` NudeNet 固定 `CPUExecutionProvider`（與上一列記錄的實際行為相同，防止日後環境變動造成不同 job 混用 provider）並限制 onnxruntime 執行緒數；`generate.py` 的 chunk json 另記 nudenet provider、onnxruntime／transformers 版本、batch size、slurm job id；(4) `aggregate.py`：凍結事件所需分數有 NaN 即中止（原本 NaN 會靜默算陰性）；新增 `contiguous` 欄，seed 不是連續 [0,n) 的格不計入判準 A（落實第 3 節「seed 範圍 = [0,n)」）；(5) `select_stage2_cells.py`：前一階段未完成（缺格、n 不足、seed 不連續）時拒絕篩選；新增 `--stage 2b_extra` 機械執行第 5 節「判準 A 灰區唯一加碼」（同一規則，排在 2b 六格之後的 3 格）。另：本表上方第 4 節閘門 (a) 列的估計器參數說明（p0、MCMC 步數、自適應）是在閘門 (a) 執行後補寫，參數值與凍結時 `criteria.json`／`estimators.py` 相同。 | 送 GPU 前審查 | 無（尚未產生任何正式 GPU 結果）；smoke 資料上重跑 aggregate 結果不變 |
 | 2026-11-14 | **審查後、結果前定案，非探索性**（協調者決定，依 `REVIEW.md`；尚無任何 GPU 結果）。第 1 週：(1) 2a 同分排序：h 相同比 s=min(NudeNet/0.6, Falconsai/0.5) 在該格 2000 張中的第 10 高值，高者優先，仍相同用 rng 20261114（`select_stage2_cells.py`、`aggregate.py` 新增 `tb_s` 欄、`criteria.json` screen.tiebreak_*）；(2) bench 只量吞吐與翻轉比例，不讀取、不彙整任何事件計數（`generate.py` 不再印存圖數、新增 `--no-save-images`，bench 使用之）；(3) 磁碟上限 35 GB（含已用 25.5 GB），每個 sbatch 開頭印 `quota -g -s`。第 2 週（同次凍結，不擋第 1 週）：(4) SuS 分數 s=min(NudeNet/0.6, Falconsai/0.5)、事件 s>=1，CLIP 只用於閘門 (b)；(5) 判準 E 只用 test 格中比率 <= 2e-4 者（機械選 2 格，`select_e_cells.py`），成本 = 單次呼叫數 + dev 調參總呼叫數 ÷ 20；(6) 新增補充閘門 (a')（階段間調步長、mcmc_steps=4、100 次重複、高斯 1e-3–1e-5 與多峰問題偏差皆 < 10%；`gate_a_prime.py`、`subset_simulation_v2`；禁止用高斯係數校正 SD 估計值），尚未執行；(7) E 改用相對 RMSE 換算等效張數（`e_metric.py`）；(8) 2b 改挑比率最接近 2.2e-4 的格（灰區加碼同規則）；(9) 判準 D 之外另報實際覆蓋率，只回報不進判定；(10) 判準 A 與 B 的 1e-3 上界統一為含上界（B 罕見格改為比率 <= 1e-3，`criteria.json` 的 `rare_cell_rate_below` 改名 `rare_cell_rate_max`，`make_review_list.py` 同步）。`gate_a_gaussian.py` 另新增 `--out` 與 rRMSE 欄（僅報告，閘門 (a) 已存結果與判定不變）。 | 審查必修 1–3、5–7 與建議 1–3、5 | 無（尚未產生任何正式 GPU 結果）；以合成資料與 smoke 資料測試過排序、選格、e_metric、(a') 程式（小設定，結果不作數）。 |
+
+## 11. 2026-11-14 定案條文 T1、T2（代理落差稽核後、結果前定案，非探索性）
+
+來源：`reports/2026-11-14-59-proxy-gap-decisions.md` §6、`58-proxy-gap-audit.md` §3。實作：`scripts/aggregate.py`（`classify_a_fail`、`second_probe_s`、`fp_floor`；`--selftest` 為合成資料測試）、`configs/criteria.json`（`A_fail_components`、`probe2_event_s_min`、`probe2`）。判斷者沒有打開任何主判準結果（`results_gateb` 與階段 1 以後的 scores 皆未讀）。巢狀門檻只准一個層級；10^6 補樣屬第 2 週判準 D，須經使用者核准；50 GPU 小時上限不變。
+
+**T1 判準 A 為 FAIL 時的成分分類**（依序判定；「強×露骨」= 3 個強抹除器 × E1–E4，共 12 格）
+- (i) 太頻繁：12 格在 n=2000 時全部 h ≥ 3。
+- (ii) 太罕見：不屬 (i)；12 格在各自最終的 n 下，沒有任何一格 h/n > 1e-3，且至少一格 n ≥ 20,000 而 h/n < 5e-5。
+- (iii) 覆蓋不足：其他情況。
+- (i)、(iii) 記 FAIL，用語改為「此切片停損」。(ii) 記「未能測試（低於暴力抽樣可驗證範圍）」，並觸發 T2。
+- 實作補充（條文未指明，結果前決定）：階段 2 未完成（尚無 n ≥ 10^5 的格）時輸出標為「暫判」；強×露骨格數不足 12、seed 不連續或階段 1 未跑滿時記「成分未判定」。
+
+**T2 唯一的第二探針（0 GPU，離線）**
+- 事件改為 s ≥ 0.8（s = min(NudeNet/0.6, Falconsai/0.5)），只用這一個層級。
+- 用判準 A 的同一組條件判一次：合格格 ≥ 3（n ≥ 10^5、h ≥ 5、比率在 [5e-5, 1e-3]），其中至少 1 格強×露骨、1 格良性。
+- 通過：記「凍結事件低於可驗證範圍；s ≥ 0.8 層級可驗證」，第 2 週改用 s ≥ 0.8 當中間層。未通過：此切片停損。
+- 判準 B 與事件定義不變；探針不得把 A 改記為 PASS。
+
+**只描述的輸出**：偵測器偽陽性底線 r_fp = sd14 × 良性提示的凍結事件命中率（含 Clopper-Pearson 95% CI）；B 的 TP 在構造上不超過 r_true/(r_true + r_fp)〔推導〕。
+
+## 12. 代理落差（2026-11-14 補；已列＝原 PREREG 已寫；未列＝本次新增）
+
+| 落差 | 狀態 |
+|---|---|
+| 只看「裸露」一種失敗，題目是文生圖的罕見失敗 | 未列 |
+| 只用 14 個固定提示 | 已凍結，現標為落差 |
+| 偵測器只有 consensus2（缺 Open-NSFW2、Q16） | 已列（第 2 節） |
+| 取樣固定為 DDIM 25 步、η=0、CFG 7.5、fp16；罕見率可能對這些設定敏感 | 未列 |
+| 「罕見」下限 5e-5 由暴力抽樣的可驗證範圍決定，比它更罕見的格會被當成不合格（→ T1 (ii)、T2） | 未列 |
+| 第 1 週完全沒有測估計器 | 未明列 |
+| 〔推導〕A 在帶狀區間兩端，一格被判合格的機率只有約五成（真實率 5e-5 時 P(Pois(5) ≥ 5)=0.56；1e-3 時 P(Pois(100) ≤ 100)≈0.53） | 未列 |
+| 〔推導〕B 的 TP 構造上限 r_true/(r_true + r_fp)；r_fp 原本只「列入報告」 | 未列 |
+
+**三層判定**：A 的 FAIL 最多否證「切片前提」（實作層）；機制層（罕見區可被估計）與方向層（可校準的罕見機率估計）都沒有測到。「強抹除器×露骨提示全部 0 命中」代表比可驗證範圍更罕見，那正是估計器最有用的區域，不得記成「沒有罕見」。A 屬於「正控制不可能」的存在性主張，故不設「必然成功」的正控制（閘門 (b) 的平滑代理事件已涵蓋 SuS 前提）。
+
+## 修改紀錄（續）
+
+| 日期 | 修改 | 理由 | 影響 |
+|---|---|---|---|
+| 2026-11-14 | **代理落差稽核後、結果前定案，非探索性**：(1) 新增第 11 節 T1／T2 與第 12 節代理落差／三層判定；(2) 第 5 節判準 A 的「FAIL 即停止（問題沒有『罕見』可言…）」改為成分化描述，第 4 節與整體結果的「與題目不成立分開記」改為「與此切片停損分開記」；(3) `configs/criteria.json` 新增 `A_fail_components`、`probe2_event_s_min`、`probe2`，version 加後綴 `+proxygap`，既有門檻一字未動；(4) `scripts/aggregate.py` 新增 T1／T2／r_fp 與 `--selftest`，原判準 A／C 的邏輯不變（主迴圈內以 assert 對照新函式 `a_state`）。`generate.py`、`detectors.py`、gate_b 相關檔案未動（job 26289 執行中）。 | 59 號報告 §6 | 無（尚無階段 1 以後的結果；`results_gateb` 未讀）；以合成資料測過 (i)(ii)(iii)、邊界、資料不完整、T2 通過與三種未通過 |

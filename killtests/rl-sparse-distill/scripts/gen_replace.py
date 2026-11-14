@@ -10,6 +10,10 @@ conds：
   rl           只用 rl 取樣（temperature 0 即 greedy）
   rl_replace   混合解碼（主角）
   all_replace  每個位置都強制輸出 r_t（閘門：必須等於 rl greedy）
+  geo_mix      2026-11-14（第二探針 R3，見 PREREG）：不一致位置（argmax 不同）改從幾何混合
+               softmax((1-lam)·logit_base + lam·logit_RL)（同 temperature、top-p）取樣，其餘位置照 base 取樣。
+               lam=0 → 與 base 取樣相同；lam=1 → 不一致位置從 RL 的分布取樣（rl_replace 則是確定性輸出 RL 的 argmax）。
+               兩個模型相同時沒有不一致位置，輸出逐位元等於 base 取樣（同 seed）。n_repl 記錄不一致位置數。
 輸出：raw_{shard}.jsonl.gz，每題含 texts、finished、ntok、n_repl（被替換的位置數）。
 """
 import argparse, json, os, sys, time
@@ -29,7 +33,7 @@ def fwd(model, ids, attn, pos, cache):
 
 
 @torch.no_grad()
-def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max_len, gen, compact=True, log=None):
+def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max_len, gen, compact=True, log=None, lam=0.5):
     dev = next((mb or mr).parameters()).device
     texts = [p for p in prompts for _ in range(n)]
     enc = tok(texts, return_tensors="pt", padding=True, add_special_tokens=False)
@@ -37,8 +41,8 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
     B, L = ids.shape
     max_new = min(max_new, max_len - L)
     pos = (attn.cumsum(-1) - 1).clamp(min=0)
-    need_b = cond in ("base", "rl_replace", "all_replace")
-    need_r = cond in ("rl", "rl_replace", "all_replace")
+    need_b = cond in ("base", "rl_replace", "all_replace", "geo_mix")
+    need_r = cond in ("rl", "rl_replace", "all_replace", "geo_mix")
     cb = DynamicCache() if need_b else None
     cr = DynamicCache() if need_r else None
     stop = torch.tensor(STOP_IDS, device=dev)
@@ -61,6 +65,13 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
         elif cond == "rl":
             nxt = sample_from_logits(lr, temperature, top_p, generator=gen)
             dis = torch.zeros_like(nxt, dtype=torch.bool)
+        elif cond == "geo_mix":
+            btk, rtk = greedy_from_logits(lb), greedy_from_logits(lr)
+            dis = btk != rtk
+            # 只在不一致位置混合；其餘位置的 logits 與 base 完全相同（逐位元），故兩模型相同時等於 base 取樣。
+            # 以 float32 混合再轉回原 dtype；lam=1 時 0*lb+1*lr 在 lb 有限時恰等於 lr。
+            mix = ((1.0 - lam) * lb.float() + lam * lr.float()).to(lb.dtype)
+            nxt = sample_from_logits(torch.where(dis.unsqueeze(-1), mix, lb), temperature, top_p, generator=gen)
         else:
             btk, rtk = greedy_from_logits(lb), greedy_from_logits(lr)
             dis = btk != rtk
@@ -71,7 +82,7 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
         steps_rows += rows.numel()
         w = rows[act]
         out_tok[w, t] = nxt[act]
-        if cond in ("rl_replace", "all_replace"):
+        if cond in ("rl_replace", "all_replace", "geo_mix"):
             n_repl[w] += dis[act].long()
         done = (nxt.unsqueeze(-1) == stop).any(-1) & act
         finished[rows[done]] = True
@@ -108,7 +119,8 @@ def decode_batch(tok, mb, mr, prompts, n, cond, temperature, top_p, max_new, max
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cond", required=True, choices=["base", "rl", "rl_replace", "all_replace"])
+    ap.add_argument("--cond", required=True, choices=["base", "rl", "rl_replace", "all_replace", "geo_mix"])
+    ap.add_argument("--lam", type=float, default=None, help="geo_mix 的 RL 權重 λ（geo_mix 必填；其他 cond 不可給）")
     ap.add_argument("--base-model", required=True)
     ap.add_argument("--rl-model", required=True)
     ap.add_argument("--out", required=True)
@@ -127,6 +139,10 @@ def main():
     ap.add_argument("--data", default=None)
     a = ap.parse_args()
 
+    if a.cond == "geo_mix":
+        assert a.lam is not None and 0.0 <= a.lam <= 1.0, "--cond geo_mix 需要 --lam in [0,1]"
+    else:
+        assert a.lam is None, "--lam 只用於 --cond geo_mix"
     pc = pairs_cfg()
     temp = pc["temperature"] if a.temperature is None else a.temperature
     top_p = pc["top_p"] if a.top_p is None else a.top_p
@@ -142,8 +158,8 @@ def main():
     if tok.pad_token is None:
         tok.pad_token = "<|endoftext|>"
     load = lambda p: AutoModelForCausalLM.from_pretrained(p, torch_dtype=dt).to(a.device).eval()
-    need_b = a.cond in ("base", "rl_replace", "all_replace")
-    need_r = a.cond in ("rl", "rl_replace", "all_replace")
+    need_b = a.cond in ("base", "rl_replace", "all_replace", "geo_mix")
+    need_r = a.cond in ("rl", "rl_replace", "all_replace", "geo_mix")
     mb = load(a.base_model) if need_b else None
     mr = (mb if (need_r and a.rl_model == a.base_model and mb is not None) else load(a.rl_model)) if need_r else None
     if mb is not None and mr is not None:
@@ -160,7 +176,8 @@ def main():
             gen.manual_seed(a.seed + 1000 * si + bi)
             lg = {}
             res = decode_batch(tok, mb, mr, [build_prompt(r["question"], pc) for r in chunk], a.n, a.cond,
-                               temp, top_p, max_new, pc["max_model_len"], gen, compact=not a.no_compact, log=lg)
+                               temp, top_p, max_new, pc["max_model_len"], gen, compact=not a.no_compact, log=lg,
+                               lam=(a.lam if a.cond == "geo_mix" else 0.5))
             for qi, r in enumerate(chunk):
                 part = res[qi * a.n:(qi + 1) * a.n]
                 f.write(json.dumps({"id": r["id"], "texts": [p[0] for p in part], "finished": [int(p[1]) for p in part],
@@ -171,7 +188,7 @@ def main():
     os.replace(tmp, outp)
     json.dump({"cond": a.cond, "base": a.base_model, "rl": a.rl_model, "temperature": temp, "top_p": top_p, "n": a.n,
                "max_new": max_new, "split": a.split, "shard": a.shard, "seed": a.seed, "compact": not a.no_compact,
-               "engine": "hf-lockstep", "seconds": time.time() - t0},
+               "engine": "hf-lockstep", "seconds": time.time() - t0, **({"lam": a.lam} if a.cond == "geo_mix" else {})},
               open(os.path.join(a.out, f"meta_{si}of{sn}.json"), "w"))
 
 

@@ -3,6 +3,7 @@
 結果目錄約定：results/<pair>/<cond>/graded.json，cond ∈
   base, rl（取樣 n=128, test）、rl_greedy, base_greedy（split all, n=1）、rl_replace、wise_0.15 ...（WiSE-FT 各 λ）
 判準的所有數字只從 criteria.json 讀；改門檻不必改此檔。
+2026-11-14（代理落差稽核後、結果前定案）：R1 (ii) 的 FAIL 需排除 +2pp；R2 回應層級混合曲線（只描述）；R3 geo_mix 第二探針（probe2）。
 """
 import argparse, json, math, os, sys
 import numpy as np
@@ -54,7 +55,73 @@ def boot_idx(Q, B, seed):
     return rng.integers(0, Q, size=(B, Q))
 
 
-def gate1(pq, ccfg, ecfg):
+def mix_curve(c_rl, c_base, n, k, pis):
+    """R2（只描述）：回應層級混合的 (pass@1, pass@k) 無偏估計。每次嘗試以機率 π 取 RL 樣本、否則取 base 樣本。
+    (1-p)^k 估為 Σ_m Binom(k, m; π) · C(n-c_rl, m)/C(n, m) · C(n-c_base, k-m)/C(n, k-m)。回傳 (p1[], pk[])（對題目平均）。"""
+    c_rl, c_base = np.asarray(c_rl, float), np.asarray(c_base, float)
+    def hyp(c):  # H[:, m] = C(n-c, m)/C(n, m) = prod_{j<m} (n-c-j)/(n-j)
+        H = np.ones((len(c), k + 1))
+        for m in range(k):
+            H[:, m + 1] = H[:, m] * np.maximum(n - c - m, 0.0) / (n - m)
+        return H
+    Hr, Hb = hyp(c_rl), hyp(c_base)
+    p1, pk = [], []
+    for pi in pis:
+        allfail = np.zeros(len(c_rl))
+        for m in range(k + 1):
+            w = math.comb(k, m) * (pi ** m) * ((1 - pi) ** (k - m))
+            if w > 0:
+                allfail += w * Hr[:, m] * Hb[:, k - m]
+        pk.append(float(np.mean(1.0 - allfail)))
+        p1.append(float(pi * np.mean(c_rl / n) + (1 - pi) * np.mean(c_base / n)))
+    return np.array(p1), np.array(pk)
+
+
+def wise_pts(pq, ccfg):
+    pts = [("0", pq["base"])] + [(str(l), pq.get("wise_%s" % l)) for l in ccfg["wise_lambdas"]] + [("1", pq["rl"])]
+    return pts, [n for n, v in pts if v is None]
+
+
+def wise_margin_boot(rr, pts, idx):
+    """rr 對 WiSE 前緣的差值：點估計與 bootstrap 分布（與 gate1 (ii) 同一算式）。"""
+    P1 = np.stack([v["p1"] for _, v in pts], 1)
+    PK = np.stack([v["pk"] for _, v in pts], 1)
+    margin = rr["pk"].mean() - interp_frontier(P1.mean(0), PK.mean(0), rr["p1"].mean())
+    bm = np.empty(len(idx))
+    for b in range(len(idx)):
+        ii = idx[b]
+        bm[b] = rr["pk"][ii].mean() - interp_frontier(P1[ii].mean(0), PK[ii].mean(0), rr["p1"][ii].mean())
+    return margin, bm
+
+
+def probe2_eval(pq, ccfg, pcfg, ecfg):
+    """R3：λ=0.5 幾何混合探針。三項都要成立（單側 α=pcfg.ci_one_sided_alpha）；只有通過／未通過，不加碼。"""
+    gm, rlh, base = pq[pcfg["cond"]], pq[pcfg["rl_ref_cond"]], pq["base"]
+    pts, missing = wise_pts(pq, ccfg)
+    if missing:
+        return {"verdict": "未能測試（缺 WiSE 點: %s）" % missing}
+    Q = len(gm["pk"])
+    idx = boot_idx(Q, ecfg["bootstrap_B"], ecfg["bootstrap_seed"])
+    a = pcfg["ci_one_sided_alpha"]
+    d = gm["pk"] - rlh["pk"]
+    c1_pt, c1_lo = 100 * d.mean(), 100 * np.quantile(d[idx].mean(1), a)
+    c1 = c1_pt >= pcfg["pk_gain_vs_rl_hf_min_pp"] and c1_lo > 0
+    mg, bm = wise_margin_boot(gm, pts, idx)
+    c2_pt, c2_lo = 100 * mg, 100 * np.quantile(bm, a)
+    c2 = c2_pt > 0 and c2_lo > 0
+    gain_gm = 100 * (gm["p1"].mean() - base["p1"].mean())
+    gain_rl = 100 * (rlh["p1"].mean() - base["p1"].mean())
+    c3 = gain_gm >= pcfg["retain_p1_frac_of_rl_gain"] * gain_rl
+    P1 = np.stack([v["p1"] for _, v in pts], 1).mean(0)
+    return {"verdict": "通過" if (c1 and c2 and c3) else "未通過（只有通過或未通過，不加碼；探針未通過才可提請淘汰）",
+            "cond1_pk_minus_rlhf_pp": c1_pt, "cond1_lo_pp": c1_lo, "cond1_ok": bool(c1),
+            "cond2_margin_vs_wise_pp": c2_pt, "cond2_lo_pp": c2_lo, "cond2_ok": bool(c2),
+            "cond2_p1_in_wise_range": bool(P1.min() <= gm["p1"].mean() <= P1.max()),
+            "cond3_p1_gain_pp": gain_gm, "cond3_rl_p1_gain_pp": gain_rl, "cond3_required_pp": pcfg["retain_p1_frac_of_rl_gain"] * gain_rl, "cond3_ok": bool(c3),
+            "alpha_one_sided": a, "geo_pk": 100 * gm["pk"].mean(), "geo_p1": 100 * gm["p1"].mean()}
+
+
+def gate1(pq, ccfg, ecfg, merged=False):
     # (i) 比較對象：rl_hf（與 rl_replace 同為 HF 引擎）；(ii) 前緣端點 λ=1 用 vLLM 的 rl，rl_hf 作敏感度
     rr, rl, base = pq["rl_replace"], pq["rl"], pq["base"]
     rlh = pq[ccfg.get("rl_compare_cond", "rl_hf")]
@@ -93,6 +160,7 @@ def gate1(pq, ccfg, ecfg):
         res["wise_margin_pp"] = 100 * margin
         res["wise_margin_lo_pp"] = 100 * np.quantile(bm, alpha)
         res["wise_margin_ci95_pp"] = [100 * np.quantile(bm, 0.025), 100 * np.quantile(bm, 0.975)]
+        res["wise_margin_upper_pp"] = 100 * np.quantile(bm, ccfg["fail_ii_upper_pct"] / 100.0)   # R1：98.75 百分位
         # 敏感度（不參與判定）：λ=1 端點換成 rl_hf
         P1s, PKs = P1.copy(), PK.copy()
         P1s[:, -1], PKs[:, -1] = rlh["p1"], rlh["pk"]
@@ -103,18 +171,37 @@ def gate1(pq, ccfg, ecfg):
     res["base_p1"], res["base_pk"] = 100 * base["p1"].mean(), 100 * base["pk"].mean()
     res["recovery_p1"] = (res["rr_p1"] - res["base_p1"]) / (res["rl_p1"] - res["base_p1"]) if res["rl_p1"] != res["base_p1"] else float("nan")
     res["replace_rate_token_weighted"] = float(rr["repl"].sum() / rr["ntok"].sum())
+    # R2（只描述，不參與判定）：回應層級混合曲線與弦
+    mc = ccfg.get("mix_curve")
+    if mc:
+        nS, kS = mc["n"], mc["k"]
+        pis = [round(i * mc["pi_step"], 10) for i in range(int(round(1 / mc["pi_step"])) + 1)]
+        cmp_pq = pq[mc["compare_cond"]] if mc["compare_cond"] in pq else rl
+        p1c, pkc = mix_curve(np.round(cmp_pq["p1"] * nS), np.round(base["p1"] * nS), nS, kS, pis)
+        chord = [100 * (base["pk"].mean() + pi * (cmp_pq["pk"].mean() - base["pk"].mean())) for pi in pis]
+        res["mix_curve_descriptive"] = {"compare_cond": mc["compare_cond"] if mc["compare_cond"] in pq else "rl",
+                                        "points": [{"pi": pi, "p1": 100 * a, "pk": 100 * b, "chord_pk": c, "above_chord_pp": 100 * b - c}
+                                                   for pi, a, b, c in zip(pis, p1c, pkc, chord)]}
     # 三態
     passed = (res["rr_minus_rl_pp"] >= ccfg["replace_minus_rl_min_pp"] and res["rr_minus_rl_lo_pp"] > 0 and not missing
               and res["wise_margin_pp"] > ccfg["wise_margin_min_pp"] and res["wise_margin_lo_pp"] > 0)
     gmin = ccfg["gray_zone"]["point_diff_min_pp"]
+    res["i_pass"] = bool(res["rr_minus_rl_pp"] >= ccfg["replace_minus_rl_min_pp"] and res["rr_minus_rl_lo_pp"] > 0)
+    if not missing:
+        res["ii_pass"] = bool(res["wise_margin_pp"] > ccfg["wise_margin_min_pp"] and res["wise_margin_lo_pp"] > 0)
+        # R1：(ii) 的 FAIL = 點估計 <= 0 且 98.75 百分位 < +2.0pp
+        res["ii_fail"] = bool(res["wise_margin_pp"] <= 0 and res["wise_margin_upper_pp"] < ccfg["fail_ii_exclude_pp"])
+        res["ii_underpowered"] = bool(res["wise_margin_pp"] <= 0 and not res["ii_fail"])
     if missing:
         res["verdict"] = "未能測試（缺 WiSE 點: %s）" % missing
     elif passed:
         res["verdict"] = "PASS"
-    elif res["rr_minus_rl_pp"] < gmin or res["wise_margin_pp"] <= 0:
-        res["verdict"] = "FAIL"
+    elif res["rr_minus_rl_pp"] < gmin or res["ii_fail"]:
+        res["verdict"] = "FAIL"      # 只代表「λ=1 端點」這個實作停損，不等於題目淘汰
+    elif res["ii_underpowered"] and merged:
+        res["verdict"] = "未能測試（檢定力不足）"   # 已用過唯一一次 dev 加碼，仍排除不了 2pp
     else:
-        res["verdict"] = "灰區"
+        res["verdict"] = "灰區"      # 含 R1：點估計 <= 0 但 98.75 百分位 >= 2pp
     return res
 
 
@@ -159,6 +246,19 @@ def gate0(pq, greedy_graded, pair, crit, ecfg, data):
     return out
 
 
+def probe2_status(summary, PQ, crit, pc):
+    """R3 觸發：合格配對的 (i) 成立而 (ii) FAIL；只做一個配對，A 符合就做 A，否則做 B。"""
+    pcfg = crit["probe2"]
+    for p in pcfg["pair_order"]:
+        s = summary.get(p)
+        if s and s["gate0"].get("verdict") == "配對合格" and s["gate1"].get("i_pass") and s["gate1"].get("ii_fail"):
+            pq = PQ[p]
+            if pcfg["cond"] in pq and all(c in pq for c in ("base", "rl", "rl_hf")):
+                return {"triggered": True, "pair": p, "result": probe2_eval(pq, crit["gate1"], pcfg, crit["eval"])}
+            return {"triggered": True, "pair": p, "result": {"verdict": "待執行（觸發；缺 %s 取樣結果，見 slurm/06_geo_mix.sbatch）" % pcfg["cond"]}}
+    return {"triggered": False, "result": {"verdict": "未觸發"}}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pairs", nargs="*", default=["A", "B"])
@@ -173,11 +273,11 @@ def main():
     data = load_data("all")
     test_ids = [r["id"] for r in data if r["split"] == "test"]
     assert len(test_ids) >= ecfg["test_questions_min"], "test 題數不足"
-    summary = {}
+    summary, PQ = {}, {}
     for p in a.pairs:
         d = os.path.join(a.results, p)
         pq, greedy = {}, {}
-        conds = ["base", "rl", "rl_replace", "rl_hf"] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
+        conds = ["base", "rl", "rl_replace", "rl_hf", crit["probe2"]["cond"]] + ["wise_%s" % l for l in crit["gate1"]["wise_lambdas"]]
         for c in conds:
             f = os.path.join(d, c, "graded.json")
             if os.path.exists(f):
@@ -193,6 +293,7 @@ def main():
             f = os.path.join(d, c, "graded.json")
             if os.path.exists(f):
                 greedy[c] = load_graded(f)
+        PQ[p] = pq
         s = {"pair": pc["pairs"][p]["name"]}
         if "base" in pq and "rl" in pq:
             s["gate0"] = gate0(pq, greedy, pc["pairs"][p], crit, ecfg, data)
@@ -213,10 +314,11 @@ def main():
     elif any(v == "灰區" for v in v1.values()):
         overall = "灰區（只准一次事先定好的加碼）"
     elif all(v == "FAIL" for v in v1.values()):
-        overall = "FAIL（停：不做蒸餾）"
+        overall = "FAIL（停 λ=1 端點路線，不做蒸餾；不等於題目淘汰：若 (i) 成立而 (ii) FAIL 須先做 R3 探針）"
     else:
         overall = "未完成（合格配對尚缺判準 1 結果）"
     summary["overall"] = overall
+    summary["probe2"] = probe2_status(summary, PQ, crit, pc)
     os.makedirs(a.results, exist_ok=True)
     with open(os.path.join(a.results, "aggregate.json"), "w") as f:
         json.dump(summary, f, indent=1, ensure_ascii=False, default=float)
@@ -249,7 +351,90 @@ def selftest():
     pq2 = dict(pq); pq2["rl_replace"] = mk(0.08)
     r2 = gate1(pq2, crit["gate1"], crit["eval"]); print("positive scenario:", r2["verdict"], round(r2["rr_minus_rl_pp"], 2), r2["rl_compare_cond"])
     assert r2["rr_minus_rl_pp"] > 2 and "diag_rlhf_minus_rlvllm_pk_pp" in r2
+    selftest_2026_11_14(crit)
     print("selftest OK")
+
+
+def selftest_2026_11_14(crit):
+    """R1–R3 的新增分支（合成資料）。rr／geo_mix 取為 WiSE 某節點加固定位移，使前緣差值恰等於位移（無內插誤差）。"""
+    rng = np.random.default_rng(1)
+    g1c = dict(crit["gate1"])
+    ecfg = dict(crit["eval"]); ecfg["bootstrap_B"] = 2000
+    # ---- R2：混合曲線 ----
+    n, k, Q = 128, 64, 300
+    c_b, c_r = rng.binomial(n, rng.beta(0.5, 1.0, Q)), rng.binomial(n, rng.beta(1.0, 0.8, Q))
+    p1, pk = mix_curve(c_r, c_b, n, k, [0.0, 0.5, 1.0])
+    assert abs(pk[0] - pass_at_k_vec(c_b, n, k).mean()) < 1e-9 and abs(pk[2] - pass_at_k_vec(c_r, n, k).mean()) < 1e-9
+    assert abs(p1[0] - c_b.mean() / n) < 1e-12 and abs(p1[2] - c_r.mean() / n) < 1e-12
+    # 無偏性：真實 p 固定，蒙地卡羅平均的 (1-pk) 應等於 (π(1-p_r)+(1-π)(1-p_b))^k
+    pr, pb, pi_, K, N, reps = 0.05, 0.10, 0.4, 8, 32, 6000
+    cr_ = rng.binomial(N, pr, reps); cb_ = rng.binomial(N, pb, reps)
+    _, pkk = mix_curve(cr_, cb_, N, K, [pi_])
+    true_pass = 1 - (pi_ * (1 - pr) + (1 - pi_) * (1 - pb)) ** K
+    assert abs(pkk[0] - true_pass) < 0.01 and 0.3 < true_pass < 0.7, (pkk[0], true_pass)
+    print("R2 mix_curve OK (端點等於 pass@k；無偏性 %.4f vs %.4f)" % (pkk[0], true_pass))
+    # ---- 合成 pq：每題 p1、pk；WiSE 節點 λ：p1 = a + λ(r−a)，pk = 1−(1−p1)^k 的凹函數 ----
+    def build(Q, noise_sd, shift_rr, rr_node="0.6", rl_pk_penalty=0.15):
+        a = rng.uniform(0.02, 0.30, Q); r = np.clip(a + rng.uniform(0.0, 0.5, Q), 0, 1)
+        f = lambda p: 1 - (1 - p) ** 8
+        mkq = lambda p1_, pk_: {"p1": p1_, "pk": pk_, "trunc": np.zeros(Q), "ntok": np.full(Q, 1000), "repl": np.full(Q, 40)}
+        pq = {"base": mkq(a, f(a)), "rl": mkq(r, np.clip(f(r) - rl_pk_penalty, 0, 1))}
+        pq["rl_hf"] = mkq(pq["rl"]["p1"].copy(), pq["rl"]["pk"].copy())
+        for l in g1c["wise_lambdas"]:
+            q = a + l * (r - a); pq["wise_%s" % l] = mkq(q, f(q))
+        node = pq["wise_%s" % rr_node]
+        nz = rng.normal(0, noise_sd, Q); nz -= nz.mean()
+        pq["rl_replace"] = mkq(node["p1"].copy(), node["pk"] + shift_rr + nz)
+        return pq, mkq, f, a, r
+    # 1) (i) 成立、(ii) 明確 FAIL：位移 −3pp，Q 大、雜訊小 → 98.75 百分位 < 2pp
+    pq, mkq, f, a, r = build(1000, 0.05, -0.03)
+    r1 = gate1(pq, g1c, ecfg)
+    assert r1["i_pass"] and r1["wise_margin_pp"] <= 0 and r1["wise_margin_upper_pp"] < 2.0 and r1["ii_fail"] and r1["verdict"] == "FAIL", r1
+    # 2) 點估計 <= 0 但檢定力不足：Q 小、雜訊大 → 上界 >= 2pp → 灰區；合併（merged）後記「未能測試（檢定力不足）」
+    pq2, *_ = build(60, 0.30, -0.005)
+    r2 = gate1(pq2, g1c, ecfg)
+    assert r2["wise_margin_pp"] <= 0 and r2["wise_margin_upper_pp"] >= 2.0 and not r2["ii_fail"] and r2["ii_underpowered"], r2
+    assert r2["verdict"] == "灰區", r2["verdict"]
+    r2m = gate1(pq2, g1c, ecfg, merged=True)
+    assert r2m["verdict"] == "未能測試（檢定力不足）", r2m["verdict"]
+    # 3) (ii) 通過 → PASS（位移 +3pp）；(i) 不成立時（rl_hf 與 rr 同高）仍判 FAIL
+    pq3, *_ = build(1000, 0.05, +0.03)
+    r3 = gate1(pq3, g1c, ecfg)
+    assert r3["verdict"] == "PASS" and r3["ii_pass"] and not r3["ii_fail"], r3
+    pq4 = dict(pq3); pq4["rl_hf"] = dict(pq3["rl_replace"])
+    assert gate1(pq4, g1c, ecfg)["verdict"] == "FAIL"
+    mc_pts = r1["mix_curve_descriptive"]["points"]
+    assert len(mc_pts) == 21 and mc_pts[0]["pi"] == 0.0 and abs(mc_pts[-1]["pi"] - 1.0) < 1e-12 and all(math.isfinite(q["pk"]) for q in mc_pts)
+    print("R1 分支 OK：FAIL(明確)／灰區(檢定力不足)／merged→未能測試／PASS／(i) 不成立→FAIL")
+    # ---- R3：probe2 ----
+    pcfg = dict(crit["probe2"])
+    def with_geo(pq, node, shift, pk_over=None):
+        q = dict(pq); nd = pq["wise_%s" % node]
+        q["geo_mix"] = {"p1": nd["p1"].copy(), "pk": (nd["pk"] + shift) if pk_over is None else pk_over,
+                        "trunc": np.zeros(len(nd["p1"])), "ntok": np.full(len(nd["p1"]), 1000), "repl": np.full(len(nd["p1"]), 40)}
+        return q
+    base_pq = pq                                  # 情境 1：(i) 成立、(ii) FAIL
+    ok_ = probe2_eval(with_geo(base_pq, "0.6", 0.05), g1c, pcfg, ecfg)
+    assert ok_["verdict"] == "通過" and ok_["cond1_ok"] and ok_["cond2_ok"] and ok_["cond3_ok"], ok_
+    no2 = probe2_eval(with_geo(base_pq, "0.6", 0.0), g1c, pcfg, ecfg)         # 沒高過前緣
+    assert no2["verdict"].startswith("未通過") and not no2["cond2_ok"] and no2["cond1_ok"], no2
+    no3 = probe2_eval(with_geo(base_pq, "0.3", 0.05), g1c, pcfg, ecfg)         # pass@1 保留不足（節點 0.3 < 0.5×RL 增益）
+    assert no3["verdict"].startswith("未通過") and not no3["cond3_ok"] and no3["cond2_ok"], no3
+    no1 = probe2_eval(with_geo(base_pq, "0.6", 0.0, pk_over=base_pq["rl_hf"]["pk"] + 0.01), g1c, pcfg, ecfg)  # pass@64 只比 rl_hf 高 1pp
+    assert no1["verdict"].startswith("未通過") and not no1["cond1_ok"], no1
+    # 觸發與配對選擇
+    summ = {"A": {"gate0": {"verdict": "配對合格"}, "gate1": {"i_pass": True, "ii_fail": True}},
+            "B": {"gate0": {"verdict": "配對合格"}, "gate1": {"i_pass": True, "ii_fail": True}}}
+    pqs = {"A": with_geo(base_pq, "0.6", 0.05), "B": base_pq}
+    tr = probe2_status(summ, pqs, crit, None)
+    assert tr["triggered"] and tr["pair"] == "A" and tr["result"]["verdict"] == "通過"
+    summ["A"]["gate1"] = {"i_pass": True, "ii_fail": False}                    # A 不符合 → 做 B（尚無 geo_mix → 待執行）
+    tr = probe2_status(summ, pqs, crit, None)
+    assert tr["triggered"] and tr["pair"] == "B" and tr["result"]["verdict"].startswith("待執行")
+    summ["B"]["gate1"] = {"i_pass": False, "ii_fail": True}                    # (i) 不成立 → 不觸發
+    summ["A"]["gate0"] = {"verdict": "配對不合格"}
+    assert not probe2_status(summ, pqs, crit, None)["triggered"]
+    print("R3 probe2 OK：通過／cond2 失敗／cond3 失敗／cond1 失敗／觸發與配對選擇")
 
 
 if __name__ == "__main__":
