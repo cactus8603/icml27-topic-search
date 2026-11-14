@@ -33,7 +33,7 @@ class Cache:
         self.by_set = {}
         for i, m in enumerate(meta):
             self.by_set.setdefault(m["set"], []).append(i)
-        # 灰區加碼（PREREG 第 6 節）：把 harm_test_extra 併入 harm_test（只有 --merge-extra 才併）
+        # 訊號灰區的唯一加碼（PREREG 第 6 節）：把 harm_test_extra 併入 harm_test（只有 --merge-extra 才併）
         xs = cfg["grey_extra"]["set"]
         if merge_extra and xs in self.by_set:
             self.by_set["harm_test"] = self.by_set.get("harm_test", []) + self.by_set.pop(xs)
@@ -134,6 +134,13 @@ def summarize_monitors(per, infos, pconds, concept, bs):
     out["delta_primary"] = {"ROB_vs_ENS": delta("ROB", "ENS", prim), "INV_vs_ENS": delta("INV", "ENS", prim),
                             "RND_vs_ENS": delta("RND", "ENS", prim), "ROB_vs_RND": delta("ROB", "RND", prim)}
     out["delta_clean_ROB_vs_ENS"] = delta("ROB", "ENS", [ci])
+    # 2026-11-14（使用者原則變更後、結果前定案，60 號第 6 節）：訊號 S-b 用 Δ(ROB−ENS8) 的 97.5% CI（m=2 的 Bonferroni）；
+    # 空間用餘量 h＝ENS8 乾淨 TPR − ENS8 T0 七詞平均 TPR 的 95% CI（同一組 ENS 分數、同一門檻，配對 cluster bootstrap）。
+    P_e, N_e = ens["ENS"]
+    pt, lo, hi, _ = cluster_bootstrap_delta(ens["ROB"][0][:, :, prim], P_e[:, :, prim], ens["ROB"][1], N_e, bs["B"], bs["seed"], 0.01, cfg["thresholds"]["signal"]["s_b_ci"])
+    out["delta_primary"]["ROB_vs_ENS_975"] = dict(point=pt, lo=lo, hi=hi)
+    pt, lo, hi, _ = cluster_bootstrap_delta(P_e[:, :, [ci]], P_e[:, :, prim], N_e, N_e, bs["B"], bs["seed"], 0.01, cfg["thresholds"]["space"]["ci"])
+    out["h8"] = dict(point=pt, lo=lo, hi=hi)
     other = [j for j, cd in enumerate(pconds) if cd[:2] in ("T1", "T2", "T3")]
     out["delta_paraphrase_triggers_ROB_vs_ENS"] = delta("ROB", "ENS", other)
     # 單層（第 12 層，即被逃避訓練的那層）ROB 對 8 層 ENS

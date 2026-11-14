@@ -23,9 +23,9 @@ def make(rng, n, D, L, w, shift=None):
 
 
 # ---------------------------------------------------------------------------------------------
-# 2026-11-14（59 號 C1/C2/C3）：樣本內正控制 PC-in/PC-loo 與 INV 判定的合成測試。
+# 2026-11-14（59 號 C1/C2；INV 已停用）：樣本內正控制 PC-in/PC-loo 與三項判定分支的合成測試。
 # 造一個與真實快取同格式的小快取（D=40、8 層、11 個 benign 概念），植入四種已知情境，驗證 analyze.pos_control_stage
-# → aggregate.judge_pc/pc_tier 的四條分支；另驗 judge_inv 的邊界。假輸入，不碰真實快取。
+# → aggregate.judge_pc/pc_tier 的四條分支；另驗三項判定（現象／訊號／空間）的各分支。假輸入，不碰真實快取。
 LAYERS = [4, 8, 12, 16, 20, 24, 28, 32]
 PNAMES = ["HTML", "all-caps", "biology-focused", "chemistry-based", "comforting", "confused", "finnish", "german", "jokey", "literature-focused", "mathematical", "harmful", "deception"]
 
@@ -94,6 +94,55 @@ def build_fake_cache(d, scenario, seed=0, D=40, n_per=80, with_harm=False, extra
         dump(extra_dir, meta, A)
 
 
+def verdict_scenarios(aggregate):
+    """三項各自的 PASS／FAIL／灰區、PC 無法執行、加碼分支與整體組合（假輸入；與 analyze 無關）。"""
+    TH = aggregate.TH; chk = []
+    def rec(name, got, exp): chk.append(dict(name=name, got=got, expected=exp, ok=got == exp))
+    d = lambda p, lo, hi: dict(point=p, lo=lo, hi=hi)
+    pc = lambda st_in, st_loo, status="已執行": dict(status=status, **{"in": dict(state=st_in), "loo": dict(state=st_loo)})
+    PCUN = pc("無法執行", "無法執行", "無法執行")
+    # 現象
+    rec("現象 PASS", aggregate.judge_phenomenon(True, 0.30)["state"], "PASS")
+    rec("現象 FAIL（H12<0.30）", aggregate.judge_phenomenon(True, 0.2999)["state"], "FAIL")
+    rec("現象 未能測試（閘門 2 未過）", aggregate.judge_phenomenon(False, 0.9)["state"], "未能測試")
+    # 空間
+    rec("空間 PASS（h=0.30）", aggregate.judge_space(d(0.30, 0.2, 0.4))["state"], "PASS")
+    rec("空間 FAIL（h<0.10 且 CI 上界<0.30）", aggregate.judge_space(d(0.05, 0.0, 0.2))["state"], "FAIL")
+    rec("空間 灰區（h<0.10 但 CI 上界>=0.30）", aggregate.judge_space(d(0.05, -0.1, 0.30))["state"], "灰區")
+    rec("空間 灰區（0.10<=h<0.30）", aggregate.judge_space(d(0.2, 0.1, 0.25))["state"], "灰區")
+    # 訊號
+    rec("訊號 PASS（只有 S-a）", aggregate.judge_signal(pc("通過", "通過"), d(0.0, -0.1, 0.05))["state"], "PASS")
+    rec("訊號 PASS（只有 S-b）", aggregate.judge_signal(pc("未通過", "未通過"), d(0.10, 0.001, 0.2))["state"], "PASS")
+    rec("訊號 S-b 邊界：下界=0 不成立", aggregate.judge_signal(pc("通過", "未通過"), d(0.2, 0.0, 0.3))["state"], "灰區")
+    rec("訊號 FAIL（PC-in 未通過且 Δ 上界<0.10）", aggregate.judge_signal(pc("未通過", "未通過"), d(0.02, -0.03, 0.0999))["state"], "FAIL")
+    rec("訊號 灰區（只有 PC-in 通過）", aggregate.judge_signal(pc("通過", "未通過"), d(0.02, -0.03, 0.05))["state"], "灰區")
+    rec("訊號 灰區（PC-in 未通過但 Δ 上界>=0.10）", aggregate.judge_signal(pc("未通過", "未通過"), d(0.05, -0.02, 0.10))["state"], "灰區")
+    rec("訊號 未能測試（PC 無法執行且 S-b 未過）", aggregate.judge_signal(PCUN, d(0.0, -0.05, 0.02))["state"], "未能測試")
+    rec("訊號 PASS（PC 無法執行但 S-b 成立）", aggregate.judge_signal(PCUN, d(0.15, 0.05, 0.25))["state"], "PASS")
+    # 加碼：只在灰區才用，只用一次
+    g = aggregate.judge_signal(pc("通過", "未通過"), d(0.08, -0.01, 0.15), d(0.12, 0.02, 0.2))
+    rec("加碼：灰區→PASS（合併後 S-b 成立）", (g["state"], g["used_extra"]), ("PASS", True))
+    g = aggregate.judge_signal(pc("通過", "未通過"), d(0.08, -0.01, 0.15), d(0.08, -0.005, 0.15))
+    rec("加碼：灰區→仍灰區", (g["state"], g["used_extra"]), ("灰區", True))
+    g = aggregate.judge_signal(pc("未通過", "未通過"), d(0.05, -0.02, 0.12), d(0.03, -0.01, 0.08))
+    rec("加碼：灰區→FAIL", (g["state"], g["used_extra"]), ("FAIL", True))
+    g = aggregate.judge_signal(pc("通過", "通過"), d(0.0, -0.1, 0.05), d(0.3, 0.2, 0.4))
+    rec("加碼：本來 PASS 不使用加碼", (g["state"], g["used_extra"]), ("PASS", False))
+    g = aggregate.judge_signal(pc("未通過", "未通過"), d(0.01, -0.02, 0.05), d(0.5, 0.4, 0.6))
+    rec("加碼：本來 FAIL 不使用加碼", (g["state"], g["used_extra"]), ("FAIL", False))
+    # 整體組合（G1）
+    P, F, G, U = {"state": "PASS"}, {"state": "FAIL"}, {"state": "灰區"}, {"state": "未能測試"}
+    rec("整體：三項 PASS", aggregate.combine(P, P, P).startswith("PASS"), True)
+    rec("整體：任一 FAIL 且寫明哪一項", [("現象" in aggregate.combine(F, P, P)), ("訊號" in aggregate.combine(P, F, P).split("：")[1].split(" ")[0]), ("空間" in aggregate.combine(P, P, F).split("：")[1].split(" ")[0])], [True, True, True])
+    rec("整體：FAIL 優先於灰區", aggregate.combine(P, G, F).startswith("FAIL"), True)
+    rec("整體：灰區", aggregate.combine(P, G, P).startswith("灰區"), True)
+    rec("整體：PC 無法執行→未能測試", aggregate.combine(P, U, P).startswith("未能測試"), True)
+    # 與 judge_pc 端到端：PC 缺檔＝無法執行
+    rec("judge_pc(None)＝無法執行", aggregate.judge_pc(None)["status"], "無法執行")
+    out = dict(n=len(chk), failed=[c for c in chk if not c["ok"]], detail=chk); out["all_match"] = not out["failed"]
+    return out
+
+
 def pc_scenarios(outdir, scratch):
     import analyze, aggregate
     exp = {"shared": ("通過", "通過", "機制層（限 layer-12 organism）：良性概念的子空間不轉移到 harm"),
@@ -110,20 +159,20 @@ def pc_scenarios(outdir, scratch):
         res[sc] = dict(expected=dict(pc_in=e_in, pc_loo=e_loo, tier=e_tier), observed=dict(pc_in=pj["in"]["state"], pc_loo=pj["loo"]["state"], tier=tier,
                        n_eligible=len(pj["eligible"]), in_stats={k: pj["in"].get(k) for k in ("delta", "recovery", "tax")}, loo_stats={k: pj["loo"].get(k) for k in ("delta", "recovery", "tax")}), match=bool(ok))
         print("PC scenario", sc, "match" if ok else "MISMATCH", json.dumps(res[sc]["observed"], ensure_ascii=False), flush=True)
-    # INV 判定邊界（不跑 GPU/分析，只驗 aggregate.judge_inv）
-    mk = lambda p, lo: dict(delta_inv_vs_ens=dict(point=p, lo=lo, hi=p + 0.1), n_pos=1421, n_neg=1625, clean_tax_ens_minus_inv=0.0, ENS=dict(fpr_neg_triggered={}), INV=dict(fpr_neg_triggered={}))
-    inv = {"pass": aggregate.judge_inv(mk(0.20, 0.10))["state"] == "PASS", "lo_below": aggregate.judge_inv(mk(0.30, 0.0999))["state"] == "未通過",
-           "point_below": aggregate.judge_inv(mk(0.1999, 0.15))["state"] == "未通過", "pending": aggregate.judge_inv(None)["state"] == "待執行"}
-    print("INV judge boundary", inv)
-    out = dict(scenarios=res, inv_judge=inv)
-    out["all_match"] = bool(all(v["match"] for v in res.values()) and all(inv.values()))
+    # 三項判定分支（60 號第 6 節）：不跑 GPU／分析，只驗 aggregate 的 judge_phenomenon／judge_signal／judge_space／combine
+    vs = verdict_scenarios(aggregate)
+    print("三項判定分支", {k: v for k, v in vs.items() if k != "detail"})
+    out = dict(scenarios=res, verdict_branches=vs)
+    out["all_match"] = bool(all(v["match"] for v in res.values()) and vs["all_match"])
     return out
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--out", default=os.path.join(EXP, "results")); ap.add_argument("--pc-only", action="store_true")
+    ap = argparse.ArgumentParser(); ap.add_argument("--out", default=os.path.join(EXP, "results")); ap.add_argument("--pc-only", action="store_true"); ap.add_argument("--verdict-only", action="store_true")
     ap.add_argument("--scratch", default=os.environ.get("TMPDIR")); a = ap.parse_args()
     out = {}
+    if a.verdict_only:   # 只驗三項判定分支（純 CPU、秒級、不需快取）
+        import aggregate; vs = verdict_scenarios(aggregate); print(json.dumps({k: v for k, v in vs.items() if k != "detail"}, ensure_ascii=False)); print("all_match", vs["all_match"]); sys.exit(0 if vs["all_match"] else 1)
     if a.pc_only:   # 只跑 PC／INV 合成測試，輸出到 --out（不動 results/gate1_synth.json）
         sc = tempfile.mkdtemp(dir=a.scratch); os.makedirs(a.out, exist_ok=True)
         try: pcr = pc_scenarios(a.out, sc)
