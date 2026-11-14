@@ -1,5 +1,7 @@
 # PREREG_probe2：停損後第二探針（整句條件 PMI s~）
 
+2026-11-15 [codex] 依第 60 號報告 §7，原判準與輸出保留供追溯。第 5 節及舊輸出 `rejection_text` 的方向淘汰解讀已撤回；新的補量與題目判讀見 [PREREG_headroom.md](PREREG_headroom.md)。
+
 **狀態：停損後第二探針；同一批 1437 列（Half-Truths 三子集）已看過 stage1 結果；凍結後只跑一次。**
 凍結 = 協調者 commit 本檔、`configs/params_probe2.json` 與 `scripts/{probe2_condpmi,probe2_embed,aggregate_probe2,unit_tests_probe2}.py`、`slurm/probe2.sbatch`。凍結前不得對真實資料執行主判定（`probe2_condpmi.py` 的 CLI 與 `aggregate_probe2.py`）。凍結後的任何修改須另記日期並標為探索性。
 設計來源：`reports/2026-11-14-57-retrieval-fail-deep-judgment.md` 第 3 節。本檔不改設計，只把它寫成可機械執行的規則。stage1 的 PREREG.md、VERDICT_stage1.md 與 results/ 既有檔案不變。

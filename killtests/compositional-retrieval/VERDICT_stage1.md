@@ -1,5 +1,7 @@
 # VERDICT stage1：compositional-retrieval（E0／E1，P1）
 
+2026-11-15 [codex] 依第 60 號報告 §7，原判決保留為歷史紀錄。Stage 1 與 Probe 2 的 FAIL 描述兩種免訓練聚合實作，方向淘汰解讀已撤回。題目按補量所定的現象、訊號與空間判讀，見 [PREREG_headroom.md](PREREG_headroom.md)。
+
 判讀者：獨立判讀者（未參與實作）｜日期：2026-11-14｜依據：PREREG.md（凍結於 commit 8dd910a）、configs/params.json、results/aggregate.{md,json}、results/ht/、logs/cr-stage1-26274.out、scripts/
 只讀程式與結果，並在 CPU 上用 nice 獨立重算（暫存於 `/work/ChihChungHsu/cactus8603/icml/tmp/cr_verdict/`）。沒有修改程式或結果檔，沒有送 job，也沒有 commit。
 

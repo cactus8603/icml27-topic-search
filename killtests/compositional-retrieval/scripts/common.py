@@ -53,7 +53,7 @@ def cs_clip_ckpt():
 
 # ---------------------------------------------------------------- 模型
 
-def load_model(name, device):
+def load_model(name, device, cs_clip_path=None):
     """name: clip_b32（OpenAI CLIP ViT-B/32）或 cs_clip（CS-CLIP B/32）。
     CS-CLIP 的載入方式照 ext/CS-CLIP/scripts/evaluate_half_truth.py：
     open_clip 'ViT-B-32' 空模型 + strict load_state_dict。
@@ -63,7 +63,7 @@ def load_model(name, device):
     import torch
     if name == "cs_clip":
         model, _, preprocess = open_clip.create_model_and_transforms("ViT-B-32", device=device)
-        ck = torch.load(cs_clip_ckpt(), map_location="cpu", weights_only=True)
+        ck = torch.load(cs_clip_path or cs_clip_ckpt(), map_location="cpu", weights_only=True)
         state = ck.get("model_state_dict", ck.get("state_dict", ck))
         state = {k.replace("module.", "", 1) if k.startswith("module.") else k: v
                  for k, v in state.items() if not k.startswith("head.")}

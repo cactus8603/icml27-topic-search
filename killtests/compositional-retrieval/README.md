@@ -56,5 +56,11 @@ sbatch slurm/stage2_e2.sbatch   # E2 與最終 aggregate
 stage1 P1 FAIL 後的整句條件 PMI（s~）探針；同一批 1437 列已看過結果，凍結後只跑一次。檔案：`PREREG_probe2.md`、`configs/params_probe2.json`、`scripts/probe2_{precheck,condpmi,embed}.py`、`scripts/aggregate_probe2.py`、`scripts/unit_tests_probe2.py`、`slurm/probe2.sbatch`；輸出在 `results/probe2/`。
 - 主指標與閘門只需 stage1 已存的 npz（CPU）；GPU 只用於正控制句與 COCO 5000 影像池的 embedding。
 - 跑前預檢 `results/probe2/precheck.json` 已完成（CPU，描述用）。
+- 送件 26314（凍結版本 `9505c42`）。正式負控制門檻為打亂影像後 COR ≤20%。
+- 判讀範圍：這個探針比較同一張圖的三句文字排序。對固定文字查詢，整句正規化項在所有候選影像上相同，乘上正的 `tau` 再減去該項會保留原本的影像排序。第一階段 `FAIL` 適用於原本的邊際 PMI 加總，第二探針提供同一批資料上的探索性證據。
 - B 做法（VLM 條件 LLR）：**未做**。
 - 凍結（commit）後執行：`sbatch slurm/probe2.sbatch`（內含凍結檢查、單元測試、embedding、分析、`aggregate_probe2.py`）。
+
+## 報告 60 補量
+
+依 [PREREG_headroom.md](PREREG_headroom.md) 固定模型版本，於可連網的準備主機取得權重，再用 `scripts/headroom.py --preflight` 確認離線快取。正式作業由 `slurm/headroom.sbatch` 跑 Half-Truths 及 E2，輸出放在 `results/headroom/<Slurm jobid>/`。執行入口、固定模型、備援條件及判讀門檻見預登記。
