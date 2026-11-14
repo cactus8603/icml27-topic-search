@@ -12,3 +12,5 @@ export PY=/work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/python
 export EXP=/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/chameleon-defense
 export RUN=/work/ChihChungHsu/cactus8603/icml/runs/chameleon-defense
 cd "$EXP"
+# 2026-11-14 審查補：把 job id、git hash、config 雜湊寫進 log（通用規則：原始數字要能追溯）
+echo "job=${SLURM_JOB_ID:-none} host=$(hostname) git=$(git -C "$EXP" rev-parse HEAD 2>/dev/null || echo uncommitted) config_md5=$(md5sum configs/config.json | cut -d' ' -f1)"

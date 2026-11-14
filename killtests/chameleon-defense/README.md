@@ -10,7 +10,7 @@
 |---|---|---|
 | 作者程式 | `/work/ChihChungHsu/cactus8603/icml/ext/neural-chameleons`（commit 261e6547，已 clone 並讀過） | MIT；THIRD_PARTY.md 註明 obf_reps 與 RepE 資料的上游授權未解決，僅內部研究用 |
 | minimal repro | `.../ext/minimal_neural_chameleons`（commit f077304）：13 個作者探測器（第 12 層，hidden 3584）、合成資料、RepE 事實資料 | 同上 |
-| Checkpoint | HF `serteal/neural-chameleon-gemma_2_9b-layer_12`（公開、無授權閘；約 18.5 GB） | **尚未下載成功**：下載遇 /work 額度滿（Disk quota exceeded），已清掉殘檔；只留 tokenizer／config 小檔 |
+| Checkpoint | HF `serteal/neural-chameleon-gemma_2_9b-layer_12`（公開、無授權閘） | 已下載（2026-11-14）：snapshot `c4aeb57502a8bed6a62dac57819eec27fd5e3c99`，約 18 GB，在 `HF_HOME=/work/ChihChungHsu/cactus8603/icml/hf_home`；CPU 驗證了 config 與 464 個 tensor 的 header（未在 GPU 上載入） |
 | Gemma-2-2b checkpoint | **不存在**（作者只公開 9b；自訓需 gated 的 google/gemma-2-2b-it，未登入回 401，未嘗試登入） | 因此第 1 週用 9b |
 | 第三方 HF 上的其他 chameleon 模型（ceselder/*、eekay/*） | 未使用（非作者、未審） | — |
 | 環境 | 重用 `envs/inoc`（torch 2.8、transformers 4.57.6）。原本 `envs/neon` 在我工作中被他人刪除；該環境也沒有 sklearn，故邏輯迴歸改用 torch LBFGS | — |
@@ -23,12 +23,12 @@
 
 ## 預估
 - GPU：吞吐實測 ~0.2 h、抽取 ~0.5 h（3.6 萬列）、分析 ~0.5 h；合計約 1.2 GPU 小時，上限 4 h。**皆為推估，未實測。**
-- 空間：模型 18.5 GB（HF_HOME）＋快取約 2.1 GB＋資料 9 MB；遠低於 60 GB，但 **/work 群組額度目前僅剩約 19 GB，模型本身就接近用完**。
+- 空間：模型約 18 GB（HF_HOME，已下載）＋激活快取約 2.1 GB（36,418 列 × 8 層 × 3584 × fp16）＋資料 9 MB；群組額度目前約剩 160 GB，足夠。
 
-## 送出前（尚未執行，待額度恢復）
+## 送出前（checkpoint 已下載；以下第 1 步已完成，僅供紀錄）
 ```bash
 export TMPDIR=/work/ChihChungHsu/cactus8603/icml/tmp PIP_CACHE_DIR=$TMPDIR/pip-cache HF_HOME=/work/ChihChungHsu/cactus8603/icml/hf_home
-# 1) 下載 checkpoint（約 18.5 GB；確認額度後再做；失敗就停）
+# 1) 下載 checkpoint（已完成：snapshot c4aeb575…，約 18 GB）
 /work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/python -c "from huggingface_hub import snapshot_download; print(snapshot_download('serteal/neural-chameleon-gemma_2_9b-layer_12'))"
 # 2) 資料（CPU，秒級；bench 腳本內也會跑）
 cd /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/chameleon-defense
@@ -59,4 +59,4 @@ J3=$(sbatch --parsable --dependency=afterok:$J2 slurm/03_analyze.sbatch)
 6. 偵測器本屬第 2 週，這裡因快取現成而一併算；決定權在審查者。
 7. 探測器型式與作者不同（平均池化邏輯迴歸 vs 逐 token sigmoid 平均）。
 8. 吞吐、GPU 小時、分析耗時都是推估；`aggregate.py` 的閘門閾值是我依原作數字與樣本數定的，需審查。
-9. /work 額度近滿；下載 18.5 GB 前務必確認。
+9. （已解決）checkpoint 已下載；額度約剩 160 GB。

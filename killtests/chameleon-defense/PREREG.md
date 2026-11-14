@@ -14,6 +14,7 @@
 - 程式：`mgm52/neural-chameleons`（MIT，commit 261e6547）、`serteal/minimal_neural_chameleons`（commit f077304）。
   兩者 THIRD_PARTY 註記 obf_reps 源自 Bailey et al.，上游無授權檔，僅作內部研究使用，不再散佈。
 - Checkpoint：**只找到 Gemma-2-9b 的單層（第 12 層）organism**：`serteal/neural-chameleon-gemma_2_9b-layer_12`（公開、免授權閘）。
+  下載狀態：已下載（2026-11-14）：snapshot `c4aeb57502a8bed6a62dac57819eec27fd5e3c99`，約 18 GB，在 `HF_HOME=/work/ChihChungHsu/cactus8603/icml/hf_home`；CPU 驗證了 config 與 464 個 tensor 的 header（未在 GPU 上載入）。
   **沒有公開的 Gemma-2-2b checkpoint**；自訓需要 gated 的 `google/gemma-2-2b-it`（未登入回 401，依指示不登入），故第 1 週改用 9b。8 層／4 層／attention／MLP 變體 checkpoint 未公開。
 - 因此「8 層 ensemble」是**本實驗在同一個第 12 層 organism 上自訓的 8 層探測器**（層集合 4,8,12,16,20,24,28,32 為自訂，repo 找不到作者的層清單）。organism 只被訓練去躲第 12 層，其他層可能本來就沒被擾動，使基線偏強（對本主張保守）。這與作者「8 層 organism」不是同一物，結論只能說到「對 layer-12 organism」。
 - 探測器型式偏離：本實驗的重訓探測器用**回應 token 平均池化後的邏輯迴歸**（torch LBFGS，C=0.05，標準化），不是作者的逐 token sigmoid 再平均。閘門 2 重現用**作者原探測器**（逐 token），不受此偏離影響。
@@ -69,9 +70,17 @@
 
 ## 7. 成本與重試
 - GPU 推估：吞吐實測 0.2 h；抽取約 0.5 h（3.6 萬列，估 20–55 列/s）；分析（torch LBFGS 於 GPU）約 0.5 h；合計約 1.2 h，上限 4 GPU 小時。實測推估超過 2 倍就重排。
-- 磁碟：激活快取約 2.1 GB（8 層 × 3584 × fp16 × 3.6 萬列）；模型 18.5 GB（HF_HOME）；上限 60 GB。
+- 磁碟：激活快取約 2.1 GB（8 層 × 3584 × fp16 × 3.6 萬列）；模型約 18 GB（HF_HOME，已下載）；上限 60 GB（群組額度約剩 160 GB）。
 - 閘門 1–3 修復限 3 個工作天。失敗與重跑結果全數保留（results/ 不刪）。
 - 判讀：`aggregate.py` 機械輸出 → Opus 對照本檔審 → 使用者定案。
 
 ## 修訂紀錄
 - 2026-11-14 初稿（尚未送審）。
+- 2026-11-14 Opus 審查（見 `REVIEW.md`），只修不動判準與門檻的 bug／敘述：
+  1. `extract_acts.py --bench`：估總 GPU 小時原本用 bench 自身列數（約 750 列）而非全量 36,418 列，低估約 50 倍；改用全量列數，並輸出 `n_full_rows`。bench 改用隨機順序（原依長度排序，先跑最短列，高估吞吐）。
+  2. `analyze.py`：讀快取時若有非有限值（fp16 溢位）即停，屬閘門 1。
+  3. `analyze.py`：新增兩個**僅回報**欄位（不影響裁定）：`per_layer_ENS_tpr_clean`、`delta_primary.ROB_layer12_vs_ENS_layer12`。
+  4. `slurm/env.sh`：XDG／Triton／Inductor／Matplotlib 快取導到 TMPDIR，並 `mkdir -p $TMPDIR`。
+  5. `env.sh` 開頭印出 job id、git hash、config md5 到 log。建立 `logs/`（sbatch 的 `--output=logs/...` 需要目錄存在，否則 job 起不來）。
+  6. README／PREREG 的 checkpoint 狀態更新為已下載（snapshot c4aeb575…，約 18 GB，CPU 驗證 config 與 464 個 tensor header）。
+  審查提出的「必修」判準修改（閘門 2b、偵測器移出第 1 週裁定）**尚未套用**，待主對話決定後另記。
