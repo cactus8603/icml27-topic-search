@@ -10,3 +10,10 @@ rl gate0 pair A: base=26275 rl=26276 base_greedy=26277 rl_greedy=26278 (after pr
 biasgen w1 train celeba=26279(array0-5) hier=26280(array0-2); eval held until metric choice frozen
 chameleon extract=26285 analyze=26286
 t2i bench=26288 gate_b=26289 (commit f54cb31)
+rl gate0 pair A RESUBMIT: rl_greedy=26290 base_greedy=26291 base=26292 rl=26293 (26275-78 failed: flashinfer nvcc, exit 0; vLLM probe part of 26271 also failed)
+biasgen w1 eval celeba=26294 (after 26279) hier=26295 (after 26280); commit 4bc8198
+multifid s0_train=26301 (benchmark 26272; prereg 8dd910a)
+multifid s0_cheap=26302 (afterok:26301)
+multifid s0_retrain=26303 (array 0-7)
+multifid s0_exact=26304 (array 0-4)
+multifid s0_qchunk=26305 (afterok:26304_0; diagnostic)

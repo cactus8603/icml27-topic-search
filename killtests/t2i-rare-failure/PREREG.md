@@ -119,6 +119,7 @@
 | 日期 | 修改 | 理由 | 影響 |
 |---|---|---|---|
 | 2026-11-14 | 初版 | Fable 審查後 | — |
+| 2026-11-14 | bench 已排隊、尚未執行時，補上吞吐未達門檻時回傳失敗的檢查。以預先安排的 batch 64、seed [512,1024) 的獨立片段計速。 | 確保 `afterok` 只在翻轉率與原定 4.5 張/秒門檻皆通過時啟動閘門 (b) | 判準、種子與取樣設定未更動 |
 | 2026-11-14 | 閘門 (a) 實測完成（未更動任何門檻或估計器參數）：subset_sim（pCN、p0=0.1、N=1000/階段、每階段每鏈 1 步 MCMC、目標接受率 0.3 的自適應步長）在 20 次重複下 4 個 p 的偏差為 +15.0%、+16.9%、+13.2%、-2.9%（CV 0.22、0.32、0.49、0.69），全數 <20%，通過；ce_is 在 d=16384 權重退化，4 個 p 估計皆 0（-100%），失敗。結果檔 `results/gate_a/gate_a.{md,json}`，log `logs/gate_a_full.log`。 | 閘門 (a) 執行紀錄 | 之後只能用 subset_sim。留意：正偏差 13–17% 距 20% 門檻餘裕薄（20 次重複的均值標準誤約 5–11%），第 2 週對 SD 的絕對校準主張須考慮此系統性高估 |
 | 2026-11-14 | 純程式修正（不影響任何判準數字）：(1) `estimators.ce_is_mean_shift` 加非有限值防護與權重截斷避免溢位；(2) `aggregate.py`、`gate_b_check.py`、`make_review_list.py` 中 `df.clip` 誤取 DataFrame.clip 方法，改為 `df["clip"]`（smoke test 發現）；(3) `make_review_list.py`、`regen_images.py`、`review_stats.py` 增加 `--results`（smoke 用）；`make_review_list.py --rare-n` 僅供 smoke test，正式不得使用。 | smoke test 找到的 bug | 無（尚未產生任何正式結果） |
 | 2026-11-14 | 記錄環境事實：envs/t2irare 內 onnxruntime 與 onnxruntime-gpu 同時安裝，實際載入的是僅含 CPU/Azure provider 的版本，NudeNet 在 GPU 節點上以 CPU 推論（登入節點 4 執行緒實測約 31 張/秒，高於所需 9 張/秒，故不改環境）。 | smoke test 確認 provider | 不影響結果（偵測器數值與 provider 無關，模型為同一 onnx）；吞吐於 bench 實測 |

@@ -45,8 +45,8 @@
    "3": 2,
    "15": 10
   },
-  "max_invalid_pair_fraction": 0.3333,
-  "max_invalid_pairs_rule": "invalid > floor(P * max_invalid_pair_fraction) -> (c) 未能測試（P=3: >=2；P=6: >=3；P=15: >=6）",
+  "max_invalid_pair_divisor": 3,
+  "max_invalid_pairs_rule": "invalid > floor(P / max_invalid_pair_divisor) -> (c) 未能測試（P=3: >=2；P=6: >=3；P=15: >=6）",
   "pair_valid_rule": "cond 與 cfg3 兩條主曲線都有內部最低點"
  },
  "main_metric": {

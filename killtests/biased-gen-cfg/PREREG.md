@@ -134,3 +134,4 @@
     因第 1 週訓練 job 排隊中，未改 `train_hier_cond.py`）；`eval_hier_oracle.py` 區塊大小固定 `--block-size 5000`、新增 `--class-filter`／const-label（條件輸入 0、條件 oracle 為無條件 BP）／pdrop=1.0（只輸出 uncond 分支），
     混型評估會報錯，預設輸出與修改前逐位元相同；新增 `scripts/aggregate_week2.py`、`configs/criteria_week2.json`、`scripts/test_aggregate_week2.py`；
     新增 `w2_hier_train_k6/k1/u833.sbatch`、`w2_hier_eval.sbatch`（未送出）；README 第 2 週成本改為 K=1 × N 與類別 0 專用 × N，刪除 n=70000。
+- 2026-11-14（第 1 週評估開始前）：修正程式將 1/3 近似為 0.3333 的邊界錯誤。改用整數除法計算原定 `floor(P/3)`，並以 1/3、5/15 對無效的合成資料驗證仍可判讀。

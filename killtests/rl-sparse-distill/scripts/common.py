@@ -77,8 +77,8 @@ def is_correct(text, ref):
 
 
 def _grade_job(args):
-    texts, ref = args
-    return [int(is_correct(t, ref)) for t in texts]
+    texts, finished, ref = args
+    return [int(done and is_correct(text, ref)) for text, done in zip(texts, finished, strict=True)]
 
 
 def grade_raw(raw_paths, graded_path, workers=8):
@@ -90,7 +90,8 @@ def grade_raw(raw_paths, graded_path, workers=8):
         with gzip.open(p, "rt", encoding="utf-8") as f:
             recs += [json.loads(l) for l in f]
     with Pool(workers) as pool:
-        res = pool.map(_grade_job, [(r["texts"], data[r["id"]]["answer"]) for r in recs], chunksize=4)
+        jobs = [(r["texts"], r["finished"], data[r["id"]]["answer"]) for r in recs]
+        res = pool.map(_grade_job, jobs, chunksize=4)
     out = {}
     for r, c in zip(recs, res):
         out[r["id"]] = {"correct": c, "finished": r["finished"], "ntok": r["ntok"]}

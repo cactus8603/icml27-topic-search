@@ -101,7 +101,7 @@ def main():
             np.savez_compressed(tmp, **arrs); os.replace(tmp, f)
             with open(f.with_suffix(".json"), "w", encoding="utf-8") as m:
                 json.dump({**meta, "prompt_id": pid, "prompt": text, "seed_range": [c0, c1],
-                           "images_saved": saved, "seconds": round(time.time() - t0, 2)}, m, ensure_ascii=False)
+                           "images_saved": saved, "seconds": time.time() - t0}, m, ensure_ascii=False)
             n_all += c1 - c0
             print(f"{a.model}/{pid} seeds[{c0},{c1}) {time.time()-t0:.1f}s", flush=True)
     dt = time.time() - t_all

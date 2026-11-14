@@ -191,7 +191,8 @@ if os.path.exists(args.hier):
         if v: valid_p.append(p)
         inv_info.append({"pair": [int(x) for x in pairs[p]], "valid": v,
                          "reason": {b: r for b, (o, r) in rs.items() if not o}})
-    n_invalid = P - len(valid_p); max_inv = int(np.floor(P * ch["max_invalid_pair_fraction"] + 1e-9))
+    n_invalid = P - len(valid_p)
+    max_inv = P // ch["max_invalid_pair_divisor"]
     c_testable = n_invalid <= max_inv and len(valid_p) > 0
     lr_all = np.array([np.log(tstar_pb(base, p) / tstar_pb(hi, p)) if p in valid_p else np.nan for p in range(P)])
     lo_ = hi_ = np.nan; skipped = 0; c_pass = c_fail = None; mean_c = np.nan

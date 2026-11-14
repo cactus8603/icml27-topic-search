@@ -63,11 +63,11 @@ check("b gate pass 15", v["gates"]["G3b_hier_cond_interior_min"] == "PASS")
 # ---- (c) FAIL 帶：兩者相同
 v = H(6, lambda p, b: ("v", 1000), "fail6"); i = v["info"]["hier"]
 check("c FAIL band", i["c_pass_criteria_met"] is False and i["c_fail_band_met"] is True, str(i["main_metric_log_tstar_ratio"]["ci95"]))
-# ---- 有內部最低點 vs 無（cfg3 單調下降：最後一格）；4 對無效（<=5）→ 仍可判，剔除無效對
-bad = {0, 3, 7, 11}
-v = H(6, lambda p, b: ("down", 0) if (b == "cfg3" and p in bad) else ("v", 500 if b == "cfg3" else 1000), "inv4")
+# ---- 有內部最低點 vs 無（cfg3 單調下降：最後一格）；5 對無效（等於上限）→ 仍可判，剔除無效對
+bad = {0, 3, 7, 11, 13}
+v = H(6, lambda p, b: ("down", 0) if (b == "cfg3" and p in bad) else ("v", 500 if b == "cfg3" else 1000), "inv5")
 i = v["info"]["hier"]; m = i["main_metric_log_tstar_ratio"]
-check("4/15 invalid -> testable, PASS using valid pairs", i["c_status"] == "可判讀" and m["n_invalid_pairs"] == 4 and i["c_pass_criteria_met"] is True)
+check("5/15 invalid -> testable, PASS using valid pairs", i["c_status"] == "可判讀" and m["n_invalid_pairs"] == 5 and i["c_pass_criteria_met"] is True)
 check("invalid reason recorded (last, cfg3)", all(i["invalid_pairs"][p]["reason"] == {"cfg3": "last"} for p in bad))
 # ---- 無效對過多（6/15 > 5）→ 未能測試，不得 PASS/FAIL
 v = H(6, lambda p, b: ("down", 0) if (b == "cfg3" and p < 6) else ("v", 500 if b == "cfg3" else 1000), "inv6")
@@ -83,6 +83,8 @@ v = H(3, lambda p, b: ("down", 0) if (b == "cond" and p == 0) else ("v", 1000), 
 check("(b) gate 2/3 pass", v["gates"]["G3b_hier_cond_interior_min"] == "PASS")
 v = H(3, lambda p, b: ("v", 1000) if (b == "cond" and p == 0) else (("down", 0) if b == "cond" else ("v", 1000)), "b1of3")
 check("(b) gate 1/3 -> 未能測試 (not FAIL)", v["gates"]["G3b_hier_cond_interior_min"].startswith("未能測試") and not v["overall"].startswith("WEEK1: FAIL"), v["overall"])
+v = H(3, lambda p, b: ("down", 0) if (b == "cfg3" and p == 0) else ("v", 500 if b == "cfg3" else 1000), "inv1of3")
+check("P=3: 1 invalid == floor(3/3) -> (c) 可判讀", v["info"]["hier"]["c_status"] == "可判讀")
 v = H(3, lambda p, b: ("down", 0) if (b == "cfg3" and p < 2) else ("v", 500 if b == "cfg3" else 1000), "inv2of3")
 check("P=3: 2 invalid > floor(3/3)=1 -> (c) 未能測試", v["info"]["hier"]["c_status"].startswith("未能測試"))
 v = H(3, lambda p, b: ("v", 500 if b == "cfg3" else 1000), "pass3")
