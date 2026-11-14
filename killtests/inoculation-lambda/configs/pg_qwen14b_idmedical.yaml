@@ -50,7 +50,7 @@ tau_sets:
     shuffle_seed: 0
   OOD_social:
     file: bad_social_advice.jsonl
-    n: 128
+    n: 85
     offset: 0
     shuffle_seed: 0
 stream_tau: true

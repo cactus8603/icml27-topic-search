@@ -16,15 +16,14 @@ echo "git: $(git -C ../.. rev-parse HEAD 2>/dev/null || echo none) job: ${SLURM_
 for c in pg_qwen7b_idmedical pg_qwen7b_idsports; do
   $PY scripts/compute_lambda.py --config configs/${c}.yaml
 done
-# 14B 需 8 個 safetensors 分片都在（目前下載未完成，額度滿時暫停）；不完整就跳過並記錄
-N14=$(ls /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/snapshots/*/model-*.safetensors 2>/dev/null | wc -l)
-if [ "$N14" -ge 8 ] && ! find /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct -name "*.incomplete" | grep -q .; then
+# 按 Hugging Face 實際解析的離線快照核對索引指向的所有權重。
+if "$PY" scripts/check_cached_model.py Qwen/Qwen2.5-14B-Instruct; then
   for c in pg_qwen14b_idmedical pg_qwen14b_idsports; do
     $PY scripts/compute_lambda.py --config configs/${c}.yaml
   done
 else
   echo "SKIP 14B：權重不完整" | tee -a logs/RUNLOG.md
 fi
-if ls /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--allenai--Olmo-3-7B-Instruct/snapshots/*/config.json >/dev/null 2>&1; then
+if "$PY" scripts/check_cached_model.py allenai/Olmo-3-7B-Instruct; then
   $PY scripts/compute_lambda.py --config configs/pg_olmo7b_idmedical.yaml
 fi

@@ -1,0 +1,15 @@
+# Λ Phase A 獨立修復版
+
+`run.sbatch` 從指定 commit 擷取一份程式與設定，僅在該份副本套用 `integration.patch`。現有提交與其輸出各自保留。從 `killtests/inoculation-lambda/` 提交時傳入階段、唯一跑次名稱、完整 commit 和重跑理由。跑次寫入 `results/phasea_v2/<RUN_ID>/`，同一跑次的每個階段只能建立一次。
+
+```bash
+sbatch phasea_v2/run.sbatch gate RUN_ID FROZEN_COMMIT "重跑理由"
+```
+
+`grant` 與 `pg` 可使用同一跑次名稱與 commit，並以 `afterok` 依賴 `gate`。兩者都會驗證該份 Gate 1 已通過，輸出寫到各自的目錄。它們只供外部論文對照。`pg` 使用上游 social 全部 85 筆。正式的 Phase B 判讀使用 `scripts/phaseb_extras.py`。
+
+從此目錄上一層執行 CPU 測試。測試會套用補丁到臨時副本。
+
+```bash
+python -BI phasea_v2/test_phasea_v2.py
+```

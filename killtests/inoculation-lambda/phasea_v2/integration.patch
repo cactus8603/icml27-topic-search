@@ -1,0 +1,499 @@
+--- a/killtests/inoculation-lambda/scripts/compute_lambda.py
++++ b/killtests/inoculation-lambda/scripts/compute_lambda.py
+@@ -21,6 +21,7 @@
+ import json
+ import math
+ import os
++from pathlib import Path
+ import random
+ import sys
+ import time
+@@ -49,16 +50,22 @@
+     raise ValueError(f"unsupported record keys: {list(rec)}")
+ 
+ 
+-def select_records(spec, base_dir, exact=False):
++def select_records(spec, base_dir, exact=False, coverage=None):
+     """spec: {file, n, offset, shuffle_seed, transform}. 先（可選）以固定種子洗牌，再切 [offset, offset+n)。"""
+     path = spec["file"]
+     if not os.path.isabs(path):
+         path = os.path.join(base_dir, path)
+     recs = read_jsonl(path)
+-    if spec.get("shuffle_seed") is not None:
+-        random.Random(spec["shuffle_seed"]).shuffle(recs)
+     off, n = spec.get("offset", 0), spec.get("n", len(recs))
+-    recs = recs[off:off + n]
++    if coverage is not None:
++        from phasea_v2.estimator import coverage_record, record_indices
++        indices = record_indices(len(recs), spec)
++        coverage.update(coverage_record(path, recs, indices))
++        recs = [recs[i] for i in indices]
++    else:
++        if spec.get("shuffle_seed") is not None:
++            random.Random(spec["shuffle_seed"]).shuffle(recs)
++        recs = recs[off:off + n]
+     if exact and len(recs) != n:
+         raise ValueError(f"{path} contains {len(recs)} records for registered slice [{off}, {off+n})")
+     msgs = [to_messages(r) for r in recs]
+@@ -95,7 +102,7 @@
+     return messages
+ 
+ 
+-def tokenize_items(tok, msgs_list, max_len, loss_mask):
++def tokenize_items(tok, msgs_list, max_len, loss_mask, *, exact=False):
+     """回傳 list[(ids, labels)]；loss_mask = all（全 token，兩篇論文預設）| response。"""
+     out = []
+     for msgs in msgs_list:
+@@ -104,9 +111,12 @@
+         labels = list(ids)
+         if loss_mask == "response":
+             ptxt = tok.apply_chat_template(msgs[:-1], tokenize=False, add_generation_prompt=True)
+-            k = len(tok(ptxt, add_special_tokens=False)["input_ids"])
++            prefix_ids = tok(ptxt, add_special_tokens=False)["input_ids"]
++            k = len(prefix_ids)
+             if k >= len(ids):
+                 continue
++            if exact and (msgs[-1]["role"] != "assistant" or ids[:k] != prefix_ids):
++                raise ValueError("held-out chat template has no exact assistant-response token boundary")
+             labels[:k] = [-100] * k
+         out.append((ids, labels))
+     return out
+@@ -213,24 +223,28 @@
+ # ----------------------------------------------------------------------------
+ # 梯度蒐集
+ # ----------------------------------------------------------------------------
+-def collect_grad(model, params, items, micro, pad_id, device):
++def collect_grad(model, params, items, micro, pad_id, device, *, prompt_blocks=None):
+     """回傳 (fp32 梯度 list, 平均 token NLL)。損失 = 全部 token 的平均 NLL（全域 token 平均，與批次切分無關）。"""
+-    n_tok = sum(sum(1 for t in lab[1:] if t != -100) for _, lab in items)
+-    assert n_tok > 0
++    if prompt_blocks is None:
++        prompt_blocks = [(items, token_count(items), 1.0)]
+     acc = [torch.zeros_like(p, dtype=torch.float32) for p in params]
+     tot = 0.0
+-    for ids, att, lab in batches(items, micro, pad_id, device):
+-        logits = model(input_ids=ids, attention_mask=att).logits
+-        nll = F.cross_entropy(logits[:, :-1].float().reshape(-1, logits.size(-1)),
+-                              lab[:, 1:].reshape(-1), ignore_index=-100, reduction="sum")
+-        (nll / n_tok).backward()
+-        tot += nll.item()
+-        for a, p in zip(acc, params):
+-            if p.grad is not None:
+-                a += p.grad.float()
+-                p.grad = None
+-        del logits, nll
+-    return acc, tot / n_tok
++    for prompt_items, n_tok, weight in prompt_blocks:
++        assert n_tok > 0
++        loss_total = 0.0
++        for ids, att, lab in batches(prompt_items, micro, pad_id, device):
++            logits = model(input_ids=ids, attention_mask=att).logits
++            nll = F.cross_entropy(logits[:, :-1].float().reshape(-1, logits.size(-1)),
++                                  lab[:, 1:].reshape(-1), ignore_index=-100, reduction="sum")
++            (nll / n_tok if weight == 1.0 else nll * (weight / n_tok)).backward()
++            loss_total += nll.item()
++            for a, p in zip(acc, params):
++                if p.grad is not None:
++                    a += p.grad.float()
++                    p.grad = None
++            del logits, nll
++        tot += weight * (loss_total / n_tok)
++    return acc, tot
+ 
+ 
+ def token_count(items):
+@@ -279,14 +293,26 @@
+     ap.add_argument("--finite_diff", action="store_true",
+                     help="閘門 1：實際做 1 步 SGD（B -= eta*gL），量 Δτ，與預測 eta*Λ 比；需 param_mode=lora_B，建議 dtype=float32")
+     ap.add_argument("--fd_target", type=float, default=None, help="覆寫 criteria 的 fd_target_dtau")
++    ap.add_argument("--phase-a-v2", action="store_true", help="等權 IP bank 與可追溯資料覆蓋；須明示新 --out")
+     args = ap.parse_args()
+ 
+     here = os.path.dirname(os.path.abspath(__file__))
+     root = os.path.dirname(here)
+-    cfg = yaml.safe_load(open(args.config))
++    v2 = args.phase_a_v2
++    if v2:
++        if not args.out or args.smoke or args.fd_target is not None or args.model is not None:
++            ap.error("--phase-a-v2 requires a new --out and the frozen model, data and FD settings")
++        sys.path.insert(0, root)
++        from phasea_v2.estimator import Coverage, file_hash, item_token_counts, prompt_fold_weights, VERSION
++    with open(args.config, encoding="utf-8") as handle:
++        cfg = yaml.safe_load(handle)
++    if v2 and cfg["name"].startswith("pg_"):
++        if args.finite_diff:
++            ap.error("PG model runs are descriptive and do not run finite differences")
++        # The byte-identical upstream social source has 85 examples; Fig. 5 does not use this set.
++        cfg["tau_sets"]["OOD_social"]["n"] = 85
+     name = cfg["name"] + ("_smoke" if args.smoke else "")
+     out_dir = args.out or os.path.join(root, "results", name)
+-    os.makedirs(out_dir, exist_ok=True)
+     data_root = cfg.get("data_root", "")
+ 
+     device = args.device or ("cuda" if torch.cuda.is_available() and not args.smoke else "cpu")
+@@ -294,7 +320,8 @@
+     dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[cfg.get("dtype", "bfloat16")]
+     if args.smoke:
+         dtype = torch.float32
+-    crit = yaml.safe_load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "configs", "criteria.yaml")))
++    with open(Path(root) / "configs/criteria.yaml", encoding="utf-8") as handle:
++        crit = yaml.safe_load(handle)
+     if args.finite_diff:
+         assert cfg["param_mode"] == "lora_B"
+         cfg["dtype"] = crit["gate1"]["fd_dtype"]
+@@ -303,6 +330,9 @@
+         cfg["microbatch"] = min(cfg.get("microbatch", 4), 2)
+         name = cfg["name"] + "_fd" + ("_smoke" if args.smoke else "")
+         out_dir = args.out or os.path.join(root, "results", name)
++    if v2:
++        os.mkdir(out_dir)
++    else:
+         os.makedirs(out_dir, exist_ok=True)
+     dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[cfg.get("dtype", "bfloat16")]
+     if args.smoke:
+@@ -359,12 +389,17 @@
+     # --- 資料 ---
+     max_len = cfg.get("max_len", 512)
+     loss_mask = cfg.get("loss_mask", "all")
+-    train_msgs = select_records(cfg["train"], data_root, exact=not args.smoke)
+-    tau_data = {k: select_records(v, data_root, exact=not args.smoke) for k, v in cfg["tau_sets"].items()}
++    coverage = Coverage() if v2 else None
++    train_msgs = select_records(cfg["train"], data_root, exact=not args.smoke,
++                                coverage=coverage.train if v2 else None)
++    tau_data = {k: select_records(v, data_root, exact=not args.smoke,
++                                  coverage=coverage.tau.setdefault(k, {}) if v2 else None) for k, v in cfg["tau_sets"].items()}
+     contexts = cfg["contexts"]            # list of {name, system, prefix | prefix_file}
+     for c in contexts:
+         if c.get("prefix_file"):
+             c["prefix"] = load_prompts(os.path.join(data_root, c["prefix_file"]))[c.get("prefix_index", 0)]
++            if v2:
++                coverage.context_prompt_hashes[c["name"]] = file_hash(Path(data_root) / c["prefix_file"])
+     base_sys = cfg.get("baseline_system_prompt", None)
+ 
+     # --- 防禦：每個防禦 = 一組 (prefix 列表 | None) + 可選 PPS ---
+@@ -382,9 +417,11 @@
+ 
+     def tau_items(tset, ctx):
+         msgs = [apply_context(m, system=ctx.get("system", base_sys), prefix=ctx.get("prefix")) for m in tau_data[tset]]
+-        items = tokenize_items(tok, msgs, max_len, "response")
++        items = tokenize_items(tok, msgs, max_len, "response", exact=v2)
+         if not args.smoke and len(items) != len(msgs):
+             raise ValueError(f"{tset}/{ctx['name']} retained {len(items)} of {len(msgs)} frozen responses")
++        if v2:
++            coverage.tau[tset].setdefault("contexts", {})[ctx["name"]] = item_token_counts(items)
+         return items
+ 
+     def def_items(d, sl):
+@@ -399,6 +436,22 @@
+     tau_cache = {"_ctxs": contexts}
+     t0 = time.time()
+     fold_slices = [slice(i * n_train // n_folds, (i + 1) * n_train // n_folds) for i in range(n_folds)]
++    prompt_folds = {}
++    if v2:
++        for d in defenses:
++            by_fold, counts = [], []
++            for sl in fold_slices:
++                blocks = [tokenize_items(tok, [apply_context(m, system=base_sys, prefix=pf) for m in train_msgs[sl]],
++                                         max_len, loss_mask, exact=True) for pf in d["prefixes"]]
++                if any(len(block) != len(train_msgs[sl]) for block in blocks):
++                    raise ValueError(f"{d['name']} lost a frozen training record")
++                by_fold.append(blocks)
++                counts.append([item_token_counts(block) for block in blocks])
++            weights = prompt_fold_weights([[sum(counts) for counts in fold] for fold in counts])
++            prompt_folds[d["name"]] = (by_fold, weights)
++            prompt_file = d["meta"].get("prompt_file")
++            coverage.defenses[d["name"]] = {"prompt_file_sha256": file_hash(Path(data_root) / prompt_file) if prompt_file else None,
++                                             "loss_tokens_by_fold_prompt": counts}
+     for seed in seeds:
+         if mode == "lora_B":
+             for _, lb in lora_mods:
+@@ -431,29 +484,44 @@
+         # 2) 防禦訓練梯度
+         for d in defenses:
+             for fi, sl in enumerate(fold_slices):
+-                items = def_items(d, sl)
+                 cm = PPSHook(model, *d["pps"], smoke=args.smoke) if d["kind"] == "pps" else nullctx()
+-                with cm:
+-                    gl, loss = collect_grad(model, params, items, micro, pad_id, device)
++                extra = {}
++                if v2:
++                    blocks, weights = prompt_folds[d["name"]]
++                    fold_weight = math.fsum(weights[fi])
++                    counts = [sum(c) for c in coverage.defenses[d["name"]]["loss_tokens_by_fold_prompt"][fi]]
++                    prompt_blocks = [(items, n, w / fold_weight) for items, n, w in zip(blocks[fi], counts, weights[fi], strict=True)]
++                    with cm:
++                        gl, loss = collect_grad(model, params, None, micro, pad_id, device, prompt_blocks=prompt_blocks)
++                    n_items, n_tokens = sum(map(len, blocks[fi])), sum(counts)
++                    extra["train_fold_weight"] = fold_weight
++                else:
++                    items = def_items(d, sl)
++                    with cm:
++                        gl, loss = collect_grad(model, params, items, micro, pad_id, device)
++                    n_items, n_tokens = len(items), token_count(items)
+                 for key, gt in iter_tau():
+                     for g, (dot, na, nb) in group_stats(gl, gt, group_slices).items():
+                         rows.append(dict(seed=seed, fold=fi, defense=d["name"], kind=d["kind"], tau_set=key[0], ctx=key[1],
+                                          group=g, dot=dot, gL_norm=math.sqrt(na), gT_norm=math.sqrt(nb),
+                                          cos=dot / (math.sqrt(na) * math.sqrt(nb) + 1e-30),
+-                                         train_loss=loss, tau_nll=tau_nll[key], n_train_items=len(items),
++                                         train_loss=loss, tau_nll=tau_nll[key], n_train_items=n_items,
+                                          n_train_sequences=len(train_msgs[sl]), n_prefixes=len(d["prefixes"]),
+-                                         n_train_tokens=token_count(items), n_tau_items=tau_counts[key][0], n_tau_tokens=tau_counts[key][1]))
++                                         n_train_tokens=n_tokens, n_tau_items=tau_counts[key][0], n_tau_tokens=tau_counts[key][1], **extra))
+                     del gt
+                 if args.finite_diff:
+                     assert not stream, "有限差分需快取 τ 梯度（LoRA 模式）"
+                     fd_apply(rows, gl, gtau, tau_nll, tau_cache, model, params, micro, pad_id, device, tau_items,
+-                             fd_state, crit["gate1"], args.fd_target, d["name"], seed, fi)
++                             fd_state, crit["gate1"], args.fd_target, d["name"], seed, fi, exact_origin=v2)
+                 del gl
+                 print(f"[seed {seed}] defense {d['name']} fold {fi} loss={loss:.4f} ({time.time()-t0:.0f}s)", flush=True)
+         del gtau
+     raw_path = os.path.join(out_dir, "lambda_raw.json")
++    receipt = dict(config=cfg, model=model_id, rows=rows, job_id=os.environ.get("SLURM_JOB_ID"))
++    if v2:
++        receipt.update(estimator=VERSION, coverage=coverage.to_dict())
+     with open(raw_path + ".pending", "w") as stream:
+-        json.dump(dict(config=cfg, model=model_id, rows=rows, job_id=os.environ.get("SLURM_JOB_ID")), stream, indent=1)
++        json.dump(receipt, stream, indent=1)
+     os.replace(raw_path + ".pending", raw_path)
+     write_summary(rows, os.path.join(out_dir, "lambda_summary.csv"))
+     print(f"[done] {len(rows)} rows -> {out_dir}", flush=True)
+@@ -471,13 +539,15 @@
+ 
+ 
+ def fd_apply(rows, gl, gtau, tau_nll, tau_cache, model, params, micro, pad_id, device, tau_items, st, g1, fd_target,
+-             dname, seed, fold):
++             dname, seed, fold, *, exact_origin=False):
+     """對剛加入 rows 的列補上有限差分：eta 由 'none' 防禦校準，使預測 Δτ = fd_target（nats）。
+     以 B -= eta*gL 做一步（中央差分：另做 +eta 反向，取 (nll(-)-nll(+))/2 以消除二階項）。"""
+     target = fd_target if fd_target is not None else g1["fd_target_dtau"]
+     mine = [r for r in rows if r["seed"] == seed and r["fold"] == fold and r["defense"] == dname and "dtau_true" not in r]
+     if dname == "none" or ("eta", seed) not in st:
+         ref = [r for r in mine if r["ctx"] == g1["fd_ctx"]][0]
++        if exact_origin and not (math.isfinite(ref["dot"]) and ref["dot"] > 0):
++            raise ValueError("UNTESTABLE: none-arm Λ is nonpositive or nonfinite; FD step cannot be calibrated")
+         assert ref["dot"] > 0, "none 防禦的 Λ <= 0，無法校準 eta；請檢查資料／實作"
+         st[("eta", seed)] = target / ref["dot"]
+     eta = st[("eta", seed)]
+@@ -486,7 +556,10 @@
+     max_step = g1.get("fd_max_step")
+     if max_step:
+         gn = mine[0]["gL_norm"]
+-        eta = min(eta, max_step / gn)
++        if exact_origin and (len({r["group"] for r in mine}) != 1 or not math.isfinite(gn)):
++            raise ValueError("UNTESTABLE: FD requires the finite norm of the full model direction")
++        if gn or not exact_origin:
++            eta = min(eta, max_step / gn)
+     for key in gtau:
+         if key[1] != g1["fd_ctx"]:
+             continue
+@@ -496,14 +569,27 @@
+             tau_cache[key] = tau_items(ts, ctx)
+         items = tau_cache[key]
+         nll0 = tau_nll[key]
+-        for p, g in zip(params, gl):
+-            p.data.add_(g, alpha=-eta)
+-        nll_minus = nll_nograd(model, items, micro, pad_id, device)
+-        for p, g in zip(params, gl):
+-            p.data.add_(g, alpha=2 * eta)
+-        nll_plus = nll_nograd(model, items, micro, pad_id, device)
+-        for p, g in zip(params, gl):
+-            p.data.add_(g, alpha=-eta)           # 還原
++        if exact_origin:
++            # Every parameter here is a freshly initialized LoRA B. Restore exactly.
++            try:
++                for p, g in zip(params, gl, strict=True):
++                    p.data.copy_(g).mul_(-eta)
++                nll_minus = nll_nograd(model, items, micro, pad_id, device)
++                for p, g in zip(params, gl, strict=True):
++                    p.data.copy_(g).mul_(eta)
++                nll_plus = nll_nograd(model, items, micro, pad_id, device)
++            finally:
++                for p in params:
++                    p.data.zero_()
++        else:
++            for p, g in zip(params, gl):
++                p.data.add_(g, alpha=-eta)
++            nll_minus = nll_nograd(model, items, micro, pad_id, device)
++            for p, g in zip(params, gl):
++                p.data.add_(g, alpha=2 * eta)
++            nll_plus = nll_nograd(model, items, micro, pad_id, device)
++            for p, g in zip(params, gl):
++                p.data.add_(g, alpha=-eta)
+         for r in mine:
+             if (r["tau_set"], r["ctx"]) == key:
+                 r["eta"] = eta
+@@ -532,9 +618,16 @@
+         by_seed = {}
+         for row in rs:
+             by_seed.setdefault(row["seed"], []).append(row)
+-        seed_dots = [sum(row["n_train_tokens"] * row["dot"] for row in folds) / sum(row["n_train_tokens"] for row in folds)
+-                     if all("n_train_tokens" in row for row in folds) else st.mean(row["dot"] for row in folds)
+-                     for folds in by_seed.values()]
++        seed_dots = []
++        for folds in by_seed.values():
++            if "train_fold_weight" in folds[0]:
++                from phasea_v2.estimator import combine_fold_dots
++                seed_dots.append(combine_fold_dots(folds))
++            elif all("n_train_tokens" in row for row in folds):
++                seed_dots.append(sum(row["n_train_tokens"] * row["dot"] for row in folds)
++                                 / sum(row["n_train_tokens"] for row in folds))
++            else:
++                seed_dots.append(st.mean(row["dot"] for row in folds))
+         out.append(dict(defense=k[0], tau_set=k[1], group=k[2], ctx=k[3], n=len(rs),
+                         lam=st.mean(seed_dots),
+                         lam_sd=st.pstdev([x["dot"] for x in rs]) if len(rs) > 1 else 0.0,
+--- a/killtests/inoculation-lambda/scripts/aggregate.py
++++ b/killtests/inoculation-lambda/scripts/aggregate.py
+@@ -46,7 +46,7 @@
+ FD_TRAITS = ("evil", "sycophantic", "hallucinating", "pirate", "spanish", "allcaps", "optimistic")
+ 
+ 
+-def gate1_inputs(rdir, config, origin_job=None):
++def gate1_inputs(rdir, config, origin_job=None, *, v2=False):
+     """Resolve and validate the seven complete, same-job FD inputs."""
+     values = []
+     jobs = set()
+@@ -61,6 +61,12 @@
+         folder = name + "_fd"
+         with open(os.path.join(rdir, folder, "lambda_raw.json")) as stream:
+             data = json.load(stream)
++        if v2:
++            from phasea_v2.estimator import VERSION, validate_gate1_coverage
++
++            if data.get("estimator") != VERSION:
++                raise ValueError(f"{folder} lacks the registered equal-prompt estimator receipt")
++            validate_gate1_coverage(data["coverage"], expected, data["rows"])
+         job = data["job_id"]
+         jobs.add(job)
+         recorded = data["config"]
+@@ -89,6 +95,12 @@
+             actual.add(key)
+         if actual != keys:
+             raise ValueError(f"{folder} does not have the registered defense/seed/trait coverage")
++        if v2:
++            contexts = {ctx["name"] for ctx in expected["contexts"]}
++            all_keys = {(*k[:4], ctx, k[-1]) for k in keys for ctx in contexts}
++            actual_rows = [tuple(row[field] for field in ("seed", "fold", "defense", "tau_set", "ctx", "group")) for row in data["rows"]]
++            if len(actual_rows) != len(all_keys) or set(actual_rows) != all_keys:
++                raise ValueError(f"{folder} lacks the complete defense-by-context matrix")
+         values.append((folder, data["rows"]))
+     if len(jobs) != 1:
+         raise ValueError("formal FD inputs combine more than one job")
+@@ -98,15 +110,16 @@
+ # ----------------------------------------------------------------------------
+ # phase a
+ # ----------------------------------------------------------------------------
+-def gate1(rdir, crit, include_smoke):
++def gate1(rdir, crit, include_smoke, *, v2=False, origin_job=None):
+     g = crit["gate1"]
+     if include_smoke:
+         files = sorted(glob.glob(os.path.join(rdir, "*_fd_smoke", "lambda_raw.json")))
+         bundles = [(os.path.basename(os.path.dirname(f)), json.load(open(f))["rows"]) for f in files]
+     else:
+-        origin_job = os.environ.get("SLURM_JOB_ID") if os.environ.get("SLURM_JOB_NAME") == "lam_gate1_fd" else None
++        if not v2 and os.environ.get("SLURM_JOB_NAME") == "lam_gate1_fd":
++            origin_job = os.environ.get("SLURM_JOB_ID")
+         try:
+-            bundles = gate1_inputs(rdir, g, origin_job)
++            bundles = gate1_inputs(rdir, g, origin_job, v2=v2)
+         except (OSError, ValueError, KeyError, TypeError) as exc:
+             return dict(status="UNTESTABLE", reason=str(exc), n=0)
+     pred, true, tags = [], [], []
+@@ -228,8 +241,23 @@
+ def phase_a(args, crit):
+     rdir = os.path.join(ROOT, args.results_dir)
+     ref = json.load(open(os.path.join(ROOT, "configs", "reference.json")))
+-    g1 = gate1(rdir, crit, args.include_smoke)
+-    refs = {"grant": ref_grant(rdir, ref), "pg_chunks": ref_pg(rdir, ref)}
++    origin_job = None
++    if args.phase_a_v2:
++        try:
++            with open(os.path.join(rdir, "run_v2.json"), encoding="utf-8") as manifest:
++                origin_job = json.load(manifest)["gate_job"]
++            if not isinstance(origin_job, str) or not origin_job:
++                raise ValueError("missing original Gate 1 job ID")
++        except (OSError, ValueError, KeyError, TypeError) as exc:
++            g1 = dict(status="UNTESTABLE", reason=f"invalid run receipt: {exc}", n=0)
++        else:
++            g1 = gate1(rdir, crit, args.include_smoke, v2=True, origin_job=origin_job)
++    else:
++        g1 = gate1(rdir, crit, args.include_smoke)
++    ref_root = os.path.join(rdir, args.reference_group) if args.phase_a_v2 else rdir
++    refs = {"grant": {}, "pg_chunks": {}}
++    if not args.phase_a_v2 or g1["status"] == "PASS":
++        refs = {"grant": ref_grant(ref_root, ref), "pg_chunks": ref_pg(ref_root, ref)}
+     cut = crit["reference"]
+     def lab(r):
+         if r is None or (isinstance(r, float) and math.isnan(r)):
+@@ -238,10 +266,19 @@
+     flat = []
+     for k, v in refs["grant"].items():
+         flat.append((f"grant/{k}", v.get("rho")))
+-    flat.append(("pg/A_ratio_pooled", refs["pg_chunks"]["A_ratio_pooled_bottom_top"]["rho"]))
++    if refs["pg_chunks"]:
++        flat.append(("pg/A_ratio_pooled", refs["pg_chunks"]["A_ratio_pooled_bottom_top"]["rho"]))
+     res = dict(criteria_version=crit["version"], gate1=g1, reference_only=refs)
+     output_name = "aggregate_phaseA_smoke.json" if args.include_smoke else "aggregate_phaseA.json"
+-    json.dump(res, open(os.path.join(rdir, output_name), "w"), indent=1, default=str)
++    if args.phase_a_v2:
++        from phasea_v2.estimator import VERSION
++
++        res["estimator"] = VERSION
++        res["reference_group"] = args.reference_group
++        res["origin_gate_job"] = origin_job
++        output_name = f"aggregate_phaseA_v2_{args.reference_group}.json"
++    with open(os.path.join(rdir, output_name), "x" if args.phase_a_v2 else "w", encoding="utf-8") as report:
++        json.dump(res, report, indent=1, default=str)
+     print("=" * 70)
+     print(f"[criteria {crit['version']}] 閘門 1（有限差分 Pearson ≥ {crit['gate1']['pearson_min']}）：{g1['status']}"
+           + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if "pearson_pooled" in g1 else ""))
+@@ -256,7 +293,8 @@
+     print("參考（對照論文已報數字；不停損、不入判準）：")
+     for k, r in flat:
+         print(f"  {k:48s} Spearman = {('%.3f' % r) if r is not None and not math.isnan(r) else 'n/a':>7s}  [{lab(r)}]")
+-    print(f"  pg 方向一致 {refs['pg_chunks']['direction_agreement']}  深度 ρ 中位 {refs['pg_chunks']['within_cell_depth_rho_median']}")
++    if refs["pg_chunks"]:
++        print(f"  pg 方向一致 {refs['pg_chunks']['direction_agreement']}  深度 ρ 中位 {refs['pg_chunks']['within_cell_depth_rho_median']}")
+     print("=" * 70)
+     print(f"RESULT_GATE1={g1['status']}")
+     sys.exit(0 if g1["status"] == "PASS" or (args.include_smoke and g1["status"] == "NOT_RUN") else 1)
+@@ -343,15 +381,14 @@
+         base = dict(delta_ci=(lo, hi), beats_baseline=bool(lo > 0), n_boot=len(d), baseline=c["baseline"])
+     flagged = sorted((t, k) for t, arms in tasks.items() for k, a in arms.items() if not a["id_ok"])
+     rho_no_flag, _ = pooled_rho({t: {k: a for k, a in arms.items() if a["id_ok"]} for t, arms in tasks.items()})
+-    res = dict(criteria_version=crit["version"], status=status, pooled_rho=rho, ci=ci, per_task_rho=per_task,
++    res = dict(criteria_version=crit["version"], scope="historical_descriptive", historical_status=status, pooled_rho=rho, ci=ci, per_task_rho=per_task,
+                tasks_positive=tasks_pos, drop_family=drop, baseline=base, id_match_flagged=flagged,
+                pooled_rho_excluding_flagged=rho_no_flag, n_arms={t: len(a) for t, a in tasks.items()})
+-    outp = os.path.join(os.path.dirname(args.table), "aggregate_phaseB.json")
++    outp = os.path.join(os.path.dirname(args.table), "aggregate_phaseB_historical.json")
+     json.dump(res, open(outp, "w"), indent=1, default=str)
+     print(json.dumps(res, indent=1, default=str))
+-    print(f"RESULT_PRIMARY={status}")
+-    if status == "GRAY":
+-        print("灰區：僅准一次事先定好的加碼 = 加 1 個 seed 與 6 個 arm（見 PREREG.md），之後以同一腳本重判，不得再加碼。")
++    print(f"HISTORICAL_DESCRIPTIVE_PHASEB={status}")
++    print("現行 Phase B 請使用 scripts/phaseb_extras.py。")
+ 
+ 
+ def main():
+@@ -360,7 +397,17 @@
+     ap.add_argument("--results-dir", default="results")
+     ap.add_argument("--include-smoke", action="store_true")
+     ap.add_argument("--table", default=None)
++    ap.add_argument("--phase-a-v2", action="store_true")
++    ap.add_argument("--reference-group", choices=["gate", "grant", "pg"], default="gate")
+     args = ap.parse_args()
++    if args.phase_a_v2:
++        if args.phase != "a" or args.include_smoke or args.results_dir == "results":
++            ap.error("--phase-a-v2 requires an isolated Phase A results directory")
++        if not os.path.isfile(os.path.join(args.results_dir, "run_v2.json")):
++            ap.error("--phase-a-v2 requires an isolated run created by the versioned launcher")
++        sys.path.insert(0, ROOT)
++    elif args.reference_group != "gate":
++        ap.error("--reference-group requires --phase-a-v2")
+     crit = load_criteria()
+     (phase_a if args.phase == "a" else phase_b)(args, crit)
+ 

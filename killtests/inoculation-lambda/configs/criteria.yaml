@@ -49,16 +49,36 @@ primary:                  # 主判準（訓練階段；僅算有防禦的 13 個
   baseline_delta_ci_level: 0.90    # 贏過基線：共同有定義的 arm 上配對 bootstrap，Δρ 的 90% CI 不含 0 且 > 0
   id_match: {target_frac_of_undefended: 0.90, tol_pp: 5}   # 匹配 ID：目標 = 無防禦最終 ID 值的 90% ±5pp，達不到者標記列出
 
-phase_b_extras:           # 2026-11-14 代理落差稽核後、結果前定案（L1–L3）；由 scripts/phaseb_extras.py 讀取，不改 primary 的判定邏輯
-  ceiling_min: 0.75       # L1：C < 0.75 時，主判準 FAIL 改記「未能測試（信度上限不足）」；PASS／灰區照原規則
+phase_b_extras:           # Phase B 依報告 60 §2 與通用條文 G 判定，Phase A 不讀本節
+  decision_version: "2026-11-14-phenomenon-signal-headroom"
+  expected_tasks: 3
+  ceiling_min: 0.75       # L1：C 無法估計或低於門檻，記「未能測試」
   ceiling_leak_seeds: [0, 1]        # r_L：漏出 seed 0 對 seed 1，Spearman-Brown 校正到 2 個 seed
   ceiling_lambda_seeds: [0, 1, 2]   # r_Λ：LoRA 初始化 seed 兩兩 Spearman 平均，Spearman-Brown 校正到 3 個 seed
+  lambda_consistency: {rel_tol: 1.0e-6, abs_tol: 1.0e-8}
   ceiling_task_weights: equal       # C_task 以 Fisher z 等權合併
   horizon_s5_min: 0.8     # L2：S5 >= 0.8 記「短地平線成立」；S5 不擋主判準
   checkpoint_fracs: [0.0125, 0.025, 0.05]   # Phase B 每個 arm 的 seed 0 另存這些步比例與最終的 LoRA
   probe_max_excluded_arms: 3        # L3 比值版：Λ_ID <= 0 的 arm 排除；超過 3 個 → 未能測試
   probe_gpu_hour_cap: 5   # L3 探針預算上限（GPU 小時），不加碼
   probe_gray_extra: false # L3：灰區也記「未通過」，不加碼
+  phenomenon:
+    leak_range_min_pp: 20.0
+    min_tasks_with_range: 2
+  signal:
+    rho_min: 0.35
+    ci_lower_gt: 0.0
+    min_tasks_positive: 2
+    drop_family_gt: 0.0
+    rho_fail_below: 0.20
+    ci_upper_fail_below: 0.35
+    ci_level: 0.975       # 原始 Λ 與 L3 為兩條擇一路徑（報告 60 通用條文 G5）
+  headroom:
+    predictors: [grant_cosine, wichers_elicitation, tan_loss_drop, phm_persona_distance]
+    min_covered_arms_per_task: 10
+    min_arms_for_rho: 4
+    pass_gap_min: 0.20
+    fail_gap_max: 0.10
 
 reference:                # 對照兩篇論文已報數字（零訓練階段；僅參考，不停損、不入判準）
   rho_supportive: 0.6

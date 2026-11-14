@@ -7,3 +7,5 @@ logs/*.out
 logs/*.log
 results/*_smoke/
 results/*/lambda_raw.json
+results/grant_*_fd/lambda_summary.csv
+results/phasea_v2/

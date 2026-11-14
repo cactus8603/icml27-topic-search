@@ -43,19 +43,75 @@ def read_summary(path):
         return list(csv.DictReader(f))
 
 
+FD_TRAITS = ("evil", "sycophantic", "hallucinating", "pirate", "spanish", "allcaps", "optimistic")
+
+
+def gate1_inputs(rdir, config, origin_job=None):
+    """Resolve and validate the seven complete, same-job FD inputs."""
+    values = []
+    jobs = set()
+    for trait in FD_TRAITS:
+        name = f"grant_{trait}_qwen7b"
+        with open(os.path.join(ROOT, "configs", name + ".yaml")) as stream:
+            expected = yaml.safe_load(stream)
+        expected["dtype"] = config["fd_dtype"]
+        expected["n_folds"] = 1
+        expected["lora"]["seeds"] = expected["lora"]["seeds"][:config["fd_n_lora_seeds"]]
+        expected["microbatch"] = min(expected.get("microbatch", 4), 2)
+        folder = name + "_fd"
+        with open(os.path.join(rdir, folder, "lambda_raw.json")) as stream:
+            data = json.load(stream)
+        job = data["job_id"]
+        jobs.add(job)
+        recorded = data["config"]
+        for context, planned in zip(recorded["contexts"], expected["contexts"]):
+            if planned.get("prefix_file"):
+                context.pop("prefix", None)
+        if not job or (origin_job and job != origin_job) or recorded != expected or data["model"] != expected["model"]:
+            raise ValueError(f"{folder} does not match the registered FD job and configuration")
+        keys = {(seed, 0, defense["name"], tau, config["fd_ctx"], group["name"])
+                for seed in expected["lora"]["seeds"] for defense in expected["defenses"]
+                for tau in expected["tau_sets"] for group in expected["groups"]}
+        actual = set()
+        for row in data["rows"]:
+            if row["ctx"] != config["fd_ctx"]:
+                if "dtau_pred" in row:
+                    raise ValueError(f"unexpected finite difference context in {folder}")
+                continue
+            key = tuple(row[field] for field in ("seed", "fold", "defense", "tau_set", "ctx", "group"))
+            if key in actual or not all(np.isfinite(row[f]) for f in ("dtau_pred", "dtau_true", "dtau_central")):
+                raise ValueError(f"duplicate or invalid finite difference row in {folder}")
+            if (row["n_train_sequences"] != expected["train"]["n"]
+                    or row["n_train_items"] != expected["train"]["n"] * row["n_prefixes"]
+                    or row["n_tau_items"] != expected["tau_sets"][row["tau_set"]]["n"]
+                    or row["n_train_tokens"] <= 0 or row["n_tau_tokens"] <= 0):
+                raise ValueError(f"incomplete retained training or evaluation coverage in {folder}")
+            actual.add(key)
+        if actual != keys:
+            raise ValueError(f"{folder} does not have the registered defense/seed/trait coverage")
+        values.append((folder, data["rows"]))
+    if len(jobs) != 1:
+        raise ValueError("formal FD inputs combine more than one job")
+    return values
+
+
 # ----------------------------------------------------------------------------
 # phase a
 # ----------------------------------------------------------------------------
 def gate1(rdir, crit, include_smoke):
     g = crit["gate1"]
-    files = sorted(glob.glob(os.path.join(rdir, "*_fd", "lambda_raw.json")))
     if include_smoke:
-        files += sorted(glob.glob(os.path.join(rdir, "*_fd_smoke", "lambda_raw.json")))
+        files = sorted(glob.glob(os.path.join(rdir, "*_fd_smoke", "lambda_raw.json")))
+        bundles = [(os.path.basename(os.path.dirname(f)), json.load(open(f))["rows"]) for f in files]
+    else:
+        origin_job = os.environ.get("SLURM_JOB_ID") if os.environ.get("SLURM_JOB_NAME") == "lam_gate1_fd" else None
+        try:
+            bundles = gate1_inputs(rdir, g, origin_job)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            return dict(status="UNTESTABLE", reason=str(exc), n=0)
     pred, true, tags = [], [], []
     per_cfg = {}
-    for f in files:
-        rows = json.load(open(f))["rows"]
-        cfgname = os.path.basename(os.path.dirname(f))
+    for cfgname, rows in bundles:
         for r in rows:
             if "dtau_pred" not in r:
                 continue
@@ -65,6 +121,8 @@ def gate1(rdir, crit, include_smoke):
             per_cfg[cfgname][0].append(r["dtau_pred"]); per_cfg[cfgname][1].append(t)
     if len(pred) < 3:
         return dict(status="NOT_RUN", n=len(pred))
+    if not np.isfinite(pred).all() or not np.isfinite(true).all() or not np.ptp(pred) or not np.ptp(true):
+        return dict(status="UNTESTABLE", reason="nonfinite or constant finite differences", n=len(pred))
     pooled = float(np.corrcoef(pred, true)[0, 1])
     pc = {k: float(np.corrcoef(v[0], v[1])[0, 1]) if len(v[0]) > 2 else float("nan") for k, v in per_cfg.items()}
     slope = float(np.polyfit(pred, true, 1)[0])
@@ -182,11 +240,14 @@ def phase_a(args, crit):
         flat.append((f"grant/{k}", v.get("rho")))
     flat.append(("pg/A_ratio_pooled", refs["pg_chunks"]["A_ratio_pooled_bottom_top"]["rho"]))
     res = dict(criteria_version=crit["version"], gate1=g1, reference_only=refs)
-    json.dump(res, open(os.path.join(rdir, "aggregate_phaseA.json"), "w"), indent=1, default=str)
+    output_name = "aggregate_phaseA_smoke.json" if args.include_smoke else "aggregate_phaseA.json"
+    json.dump(res, open(os.path.join(rdir, output_name), "w"), indent=1, default=str)
     print("=" * 70)
     print(f"[criteria {crit['version']}] 閘門 1（有限差分 Pearson ≥ {crit['gate1']['pearson_min']}）：{g1['status']}"
-          + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if g1["status"] != "NOT_RUN" else ""))
-    if g1["status"] != "NOT_RUN":
+          + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if "pearson_pooled" in g1 else ""))
+    if "reason" in g1:
+        print(g1["reason"])
+    if "descriptive" in g1:
         d = g1["descriptive"]
         print("閘門 1 逐 trait（只描述）：min |預測Δτ| 全體 = %.3g" % d["min_abs_pred_dtau_all"])
         for k, v in sorted(d["per_trait"].items()):
@@ -198,7 +259,7 @@ def phase_a(args, crit):
     print(f"  pg 方向一致 {refs['pg_chunks']['direction_agreement']}  深度 ρ 中位 {refs['pg_chunks']['within_cell_depth_rho_median']}")
     print("=" * 70)
     print(f"RESULT_GATE1={g1['status']}")
-    sys.exit(0 if g1["status"] in ("PASS", "NOT_RUN") else 1)
+    sys.exit(0 if g1["status"] == "PASS" or (args.include_smoke and g1["status"] == "NOT_RUN") else 1)
 
 
 # ----------------------------------------------------------------------------

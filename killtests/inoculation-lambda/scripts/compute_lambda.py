@@ -49,7 +49,7 @@ def to_messages(rec):
     raise ValueError(f"unsupported record keys: {list(rec)}")
 
 
-def select_records(spec, base_dir):
+def select_records(spec, base_dir, exact=False):
     """spec: {file, n, offset, shuffle_seed, transform}. 先（可選）以固定種子洗牌，再切 [offset, offset+n)。"""
     path = spec["file"]
     if not os.path.isabs(path):
@@ -59,6 +59,8 @@ def select_records(spec, base_dir):
         random.Random(spec["shuffle_seed"]).shuffle(recs)
     off, n = spec.get("offset", 0), spec.get("n", len(recs))
     recs = recs[off:off + n]
+    if exact and len(recs) != n:
+        raise ValueError(f"{path} contains {len(recs)} records for registered slice [{off}, {off+n})")
     msgs = [to_messages(r) for r in recs]
     if spec.get("transform") == "upper_assistant":      # allcaps 特質：助理回應轉大寫（Grant 資料管線同法）
         for m in msgs:
@@ -231,6 +233,10 @@ def collect_grad(model, params, items, micro, pad_id, device):
     return acc, tot / n_tok
 
 
+def token_count(items):
+    return sum(t != -100 for _, labels in items for t in labels[1:])
+
+
 def group_stats(ga, gb, group_slices):
     """各組的 <ga,gb>、|ga|^2、|gb|^2。"""
     res = {}
@@ -353,8 +359,8 @@ def main():
     # --- 資料 ---
     max_len = cfg.get("max_len", 512)
     loss_mask = cfg.get("loss_mask", "all")
-    train_msgs = select_records(cfg["train"], data_root)
-    tau_data = {k: select_records(v, data_root) for k, v in cfg["tau_sets"].items()}
+    train_msgs = select_records(cfg["train"], data_root, exact=not args.smoke)
+    tau_data = {k: select_records(v, data_root, exact=not args.smoke) for k, v in cfg["tau_sets"].items()}
     contexts = cfg["contexts"]            # list of {name, system, prefix | prefix_file}
     for c in contexts:
         if c.get("prefix_file"):
@@ -376,7 +382,10 @@ def main():
 
     def tau_items(tset, ctx):
         msgs = [apply_context(m, system=ctx.get("system", base_sys), prefix=ctx.get("prefix")) for m in tau_data[tset]]
-        return tokenize_items(tok, msgs, max_len, "response")      # τ 一律只算回應 token
+        items = tokenize_items(tok, msgs, max_len, "response")
+        if not args.smoke and len(items) != len(msgs):
+            raise ValueError(f"{tset}/{ctx['name']} retained {len(items)} of {len(msgs)} frozen responses")
+        return items
 
     def def_items(d, sl):
         msgs = []
@@ -396,12 +405,13 @@ def main():
                 lb.reset_A(seed * 100003 + id_hash(lb, lora_mods))
         # 1) τ 梯度：每個 (tau_set, context)。stream_tau=true（大模型全參數層段）時不快取，逐一算、用完即丟。
         stream = cfg.get("stream_tau", False)
-        gtau, tau_nll = {}, {}
+        gtau, tau_nll, tau_counts = {}, {}, {}
 
         def compute_tau(ts, ctx):
             items = tau_items(ts, ctx)
             g, nll = collect_grad(model, params, items, micro, pad_id, device)
             tau_nll[(ts, ctx["name"])] = nll
+            tau_counts[(ts, ctx["name"])] = (len(items), token_count(items))
             print(f"[seed {seed}] tau {ts}/{ctx['name']} n={len(items)} nll={nll:.4f} ({time.time()-t0:.0f}s)", flush=True)
             return g
 
@@ -430,7 +440,9 @@ def main():
                         rows.append(dict(seed=seed, fold=fi, defense=d["name"], kind=d["kind"], tau_set=key[0], ctx=key[1],
                                          group=g, dot=dot, gL_norm=math.sqrt(na), gT_norm=math.sqrt(nb),
                                          cos=dot / (math.sqrt(na) * math.sqrt(nb) + 1e-30),
-                                         train_loss=loss, tau_nll=tau_nll[key], n_train_items=len(items)))
+                                         train_loss=loss, tau_nll=tau_nll[key], n_train_items=len(items),
+                                         n_train_sequences=len(train_msgs[sl]), n_prefixes=len(d["prefixes"]),
+                                         n_train_tokens=token_count(items), n_tau_items=tau_counts[key][0], n_tau_tokens=tau_counts[key][1]))
                     del gt
                 if args.finite_diff:
                     assert not stream, "有限差分需快取 τ 梯度（LoRA 模式）"
@@ -439,7 +451,10 @@ def main():
                 del gl
                 print(f"[seed {seed}] defense {d['name']} fold {fi} loss={loss:.4f} ({time.time()-t0:.0f}s)", flush=True)
         del gtau
-    json.dump(dict(config=cfg, model=model_id, rows=rows), open(os.path.join(out_dir, "lambda_raw.json"), "w"), indent=1)
+    raw_path = os.path.join(out_dir, "lambda_raw.json")
+    with open(raw_path + ".pending", "w") as stream:
+        json.dump(dict(config=cfg, model=model_id, rows=rows, job_id=os.environ.get("SLURM_JOB_ID")), stream, indent=1)
+    os.replace(raw_path + ".pending", raw_path)
     write_summary(rows, os.path.join(out_dir, "lambda_summary.csv"))
     print(f"[done] {len(rows)} rows -> {out_dir}", flush=True)
 
@@ -506,7 +521,7 @@ def id_hash(lb, mods):
 
 
 def write_summary(rows, path):
-    """對 (seed, fold) 取平均；ctx 各自一列，另加 ctx=MEAN。"""
+    """按 token 數合併各 seed 的 fold 內積，再等權平均 seed。"""
     import statistics as st
     keyf = lambda r: (r["defense"], r["tau_set"], r["group"], r["ctx"])
     agg = {}
@@ -514,8 +529,14 @@ def write_summary(rows, path):
         agg.setdefault(keyf(r), []).append(r)
     out = []
     for k, rs in agg.items():
+        by_seed = {}
+        for row in rs:
+            by_seed.setdefault(row["seed"], []).append(row)
+        seed_dots = [sum(row["n_train_tokens"] * row["dot"] for row in folds) / sum(row["n_train_tokens"] for row in folds)
+                     if all("n_train_tokens" in row for row in folds) else st.mean(row["dot"] for row in folds)
+                     for folds in by_seed.values()]
         out.append(dict(defense=k[0], tau_set=k[1], group=k[2], ctx=k[3], n=len(rs),
-                        lam=st.mean(x["dot"] for x in rs),
+                        lam=st.mean(seed_dots),
                         lam_sd=st.pstdev([x["dot"] for x in rs]) if len(rs) > 1 else 0.0,
                         cos=st.mean(x["cos"] for x in rs),
                         gL_norm=st.mean(x["gL_norm"] for x in rs), gT_norm=st.mean(x["gT_norm"] for x in rs),
