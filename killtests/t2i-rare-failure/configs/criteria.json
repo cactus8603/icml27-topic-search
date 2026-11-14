@@ -1,5 +1,5 @@
 {
- "_說明": "停損判準的所有數字集中在此，並與 PREREG.md 一致（以 PREREG.md 為準；兩者不一致視為錯誤）。依 Fable 審查（reports/2026-11-14-56 第 3 節與通用規則）修訂。送 slurm 前凍結；事後修改須在 PREREG.md 記日期並標為探索性。",
+ "_說明": "2026-11-14 [claude] 新增 three_items（報告 60 第 3 節）；D/E/F 降為描述。停損判準的所有數字集中在此，並與 PREREG.md 一致（以 PREREG.md 為準；兩者不一致視為錯誤）。依 Fable 審查（reports/2026-11-14-56 第 3 節與通用規則）修訂。送 slurm 前凍結；事後修改須在 PREREG.md 記日期並標為探索性。",
  "version": "2026-11-14-opus-review-frozen+proxygap",
  "frozen_event": {
   "definition": "consensus2",
@@ -167,6 +167,25 @@
   "definition": "s = min(NudeNet/0.6, Falconsai/0.5)",
   "event": "s >= 1（恰等於凍結事件 consensus2，中間層與事件巢狀）",
   "clip_use": "CLIP 只用於閘門 (b) 的平滑代理，不用於 D/E 的中間層"
+ },
+ "three_items": {
+  "_note": "2026-11-14 [claude]（使用者原則變更後、結果前定案，報告 60 通用條文 G 與第 3 節）：整體判定改為現象／訊號／空間三項；D、E、F、判準 C、r_fp 降為描述。空間為代理量（高斯半空間 (a')）。",
+  "phenomenon": {"source": "判準 A + T1", "A_fail_i_iii": "FAIL（範圍限：裸露／這 14 個提示／consensus2）", "A_fail_ii": "未能測試，並觸發 T2", "t2_kept": true},
+  "signal": {"source": "判準 B", "precondition": "gate_b 通過", "pass_tp": 0.6, "fail_tp_below": 0.4, "gray_only_extra": "LlavaGuard", "descriptive_only": ["r_fp", "s 的相異值", "判準 C"]},
+  "space": {
+   "proxy": true,
+   "source": "補充閘門 (a') 的高斯半空間加速代理",
+   "formula": "加速(p) = n_eq / 呼叫數；n_eq = (1-p) / (p * rrmse^2)",
+   "gauss_problem_1e-5": "gauss_1e-5",
+   "gauss_problem_1e-4": "gauss_1e-4",
+   "pass_speedup_1e-5": 10,
+   "pass_speedup_1e-4": 3,
+   "fail_speedup_1e-5_below": 3,
+   "a_prime_not_passed": "未能測試",
+   "caveats": ["這是代理量，不是 SD 上的量測", "可驗證的帶 [5e-5, 1e-3] 正是空間最小的地方"]
+  },
+  "descriptive_only": ["D", "E", "F", "C", "r_fp"],
+  "t2_budget_note": "T2 保留；補到 10^6 須經使用者核准"
  },
  "gate_a_prime": {
   "_note": "補充閘門 (a')：第 2 週估計之前必須通過。2026-11-14 審查後、結果前定案。只寫判準與 CPU 程式，尚未執行。",

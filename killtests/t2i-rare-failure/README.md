@@ -74,3 +74,9 @@ python scripts/aggregate.py                     # 判準 A、C（輸出 results/
 - 偵測器偽陽性可能淹沒 10^-4 以下的訊號（正是判準 B 要量的）；Open-NSFW2 與 Q16 未納入（已知偏離）。
 - smoke test 只在 64×64、2 步下確認程式能跑，不代表 512×512、25 步的數值與吞吐。
 - 共用磁碟額度緊：結果與日誌都放在本資料夾，其他人的寫入也會讓配額耗盡（閘門 (a) 前一次就是因此失敗）。
+
+## 2026-11-14 [claude] 整體判定改為現象／訊號／空間（報告 60 第 3 節；條文見 PREREG.md 第 13 節）
+- `python -I scripts/aggregate.py` 在判準 A、C 之後輸出「第 1 週整體」，並寫 `results/three_items.json`：現象＝判準 A + T1；訊號＝判準 B（讀 `results/review/B_result.json`，由 `review_stats.py` 產生；前置閘門 (b) 讀 `results_gateb/gate_b.md`，可用 `--gate-b-file` 指定）；空間＝`results/gate_a_prime/gate_a_prime.json` 的 gauss_1e-5、gauss_1e-4 加速。
+- **空間為代理量**（高斯半空間，不是 SD 上的量測）；可驗證的帶 [5e-5, 1e-3] 正是空間最小的地方。
+- `gate_a_prime.py` 的輸出多了 `n_eq`、`加速`（加速(p) = n_eq ÷ 呼叫數；n_eq = (1−p) ÷ (p·rrmse²)），估計器沒動。
+- D、E、F、判準 C、r_fp 只描述。測試：`python -I scripts/aggregate.py --selftest`（用 `envs/t2irare` 的 python）。

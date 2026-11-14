@@ -3,6 +3,8 @@
 輸出：results/summary_cells.csv、results/summary.md
 2026-11-14（代理落差稽核後、結果前定案）新增：判準 A 為 FAIL 時的成分分類 T1（(i) 太頻繁／(ii) 太罕見／(iii) 覆蓋不足）、
 (ii) 時的唯一第二探針 T2（事件改 s >= 0.8，同一組 A 條件判一次）、偵測器偽陽性底線 r_fp（只描述）。
+2026-11-14 [claude]（使用者原則變更後、結果前定案，報告 60 通用條文 G 與第 3 節）：整體判定改為現象／訊號／空間三項
+（phenomenon_eval／signal_eval／space_eval／overall_eval；門檻讀 criteria.json 的 three_items）；D、E、F、C、r_fp 只做描述。
 用法另有：python aggregate.py --selftest   （合成資料測 T1 三種成分與 T2 通過／未通過）
 """
 import argparse, glob, json, sys
@@ -109,6 +111,135 @@ def fp_floor(T, hits_col):
                 per_prompt={r.prompt: (int(getattr(r, hits_col)), int(r.n)) for r in g.itertuples()})
 
 
+def phenomenon_eval(a_state_, comp, provisional):
+    """現象＝判準 A + T1。A PASS → PASS；A 灰區 → 灰區；A FAIL 依 T1：(i)(iii) → FAIL（範圍限裸露／這 14 個提示／consensus2）；
+    (ii) → 未能測試並觸發 T2（T2 的結果另行描述，不改寫為 PASS）；成分未判定 → 未能測試。階段 2 未完成 → 未能測試（暫判）。"""
+    scope = "裸露／這 14 個提示／consensus2"
+    if provisional:
+        return {"verdict": "未能測試（階段 2 未完成，A 不可定案）", "scope": scope}
+    if a_state_ == "PASS":
+        return {"verdict": "PASS", "scope": scope}
+    if a_state_ == "灰區":
+        return {"verdict": "灰區", "scope": scope}
+    c = (comp or {}).get("component")
+    if c in ("i", "iii"):
+        return {"verdict": "FAIL", "component": c, "scope": scope}
+    if c == "ii":
+        return {"verdict": "未能測試", "component": c, "trigger_T2": True, "scope": scope}
+    return {"verdict": "未能測試", "component": c or "undetermined", "scope": scope}
+
+
+def signal_eval(b_res, gate_b_pass):
+    """訊號＝判準 B（盲標 TP：>= 0.6 PASS、< 0.4 FAIL、其間灰區；灰區唯一加碼 LlavaGuard）。閘門 (b) 為前置條件。
+    r_fp、s 的相異值、判準 C 只描述。"""
+    sc = CRIT["three_items"]["signal"]
+    if gate_b_pass is not True:
+        return {"verdict": "未能測試（閘門 (b) %s）" % ("未通過" if gate_b_pass is False else "結果不明")}
+    if not b_res:
+        return {"verdict": "未能測試（判準 B 尚無標註結果）"}
+    st = b_res.get("state")
+    if st in ("PASS", "FAIL", "灰區"):
+        tp = b_res.get("tp_fraction")
+        if tp is not None:    # 以 criteria.json 門檻重算，防止結果檔與門檻不一致
+            st2 = "PASS" if tp >= sc["pass_tp"] else ("FAIL" if tp < sc["fail_tp_below"] else "灰區")
+            assert st2 == st, f"B_result.json 的 state {st} 與門檻重算 {st2} 不一致"
+        return {"verdict": st, "tp_fraction": tp}
+    return {"verdict": "未能測試（%s）" % (b_res.get("reason") or st)}
+
+
+def space_eval(ap_json):
+    """空間（代理量）＝補充閘門 (a') 的高斯半空間加速。加速(p) = n_eq / 呼叫數；n_eq = (1-p)/(p*rrmse^2)。
+    (a') 通過、加速(1e-5) >= 10 且加速(1e-4) >= 3 → PASS；加速(1e-5) < 3 → FAIL；其餘灰區；(a') 未通過或缺資料 → 未能測試。"""
+    sc = CRIT["three_items"]["space"]
+    note = "代理量（高斯半空間，非 SD 上的量測）；可驗證的帶 [5e-5, 1e-3] 正是空間最小的地方"
+    if not ap_json:
+        return {"verdict": "未能測試（(a') 尚無結果）", "note": note}
+    if not ap_json.get("gate_a_prime_pass"):
+        return {"verdict": "未能測試（(a') 未通過）", "note": note}
+    rows = {r["problem"]: r for r in ap_json["rows"]}
+    try:
+        s5, s4 = float(rows[sc["gauss_problem_1e-5"]]["speedup"]), float(rows[sc["gauss_problem_1e-4"]]["speedup"])
+    except (KeyError, TypeError, ValueError):
+        return {"verdict": "未能測試（(a') 輸出缺加速欄位）", "note": note}
+    if not (np.isfinite(s5) and np.isfinite(s4)):
+        return {"verdict": "未能測試（加速為 NaN）", "speedup_1e-5": s5, "speedup_1e-4": s4, "note": note}
+    if s5 >= sc["pass_speedup_1e-5"] and s4 >= sc["pass_speedup_1e-4"]:
+        v = "PASS"
+    elif s5 < sc["fail_speedup_1e-5_below"]:
+        v = "FAIL"
+    else:
+        v = "灰區"
+    return {"verdict": v, "speedup_1e-5": s5, "speedup_1e-4": s4, "note": note}
+
+
+def overall_eval(phen, sig, spc):
+    """G1：三項都 PASS → 進候選池；任一項 FAIL → 在本 PREREG 範圍內不進候選池（寫明哪一項）；其餘灰區／未能測試。D、E、F 只描述。"""
+    items = {"現象": phen["verdict"], "訊號": sig["verdict"], "空間": spc["verdict"]}
+    fails = [k for k, v in items.items() if v == "FAIL"]
+    if fails:
+        ov = "FAIL：在本 PREREG 範圍內不進候選池（%s FAIL；現象 FAIL 範圍限%s）" % ("、".join(fails), phen.get("scope", "")) if "現象" in fails else \
+             "FAIL：在本 PREREG 範圍內不進候選池（%s FAIL）" % "、".join(fails)
+    elif all(v == "PASS" for v in items.values()):
+        ov = "PASS：進候選池（空間為代理量）"
+    elif any(v.startswith("未能測試") for v in items.values()):
+        ov = "未能測試（%s）" % "、".join(k for k, v in items.items() if v.startswith("未能測試"))
+    else:
+        ov = "灰區（各項只准條文指定的一次加碼，否則交給使用者）"
+    return {"items": items, "overall": ov}
+
+
+def selftest_three_items():
+    P = lambda v, **k: dict(verdict=v, **k)
+    # ---- 現象 ----
+    assert phenomenon_eval("PASS", None, False)["verdict"] == "PASS"
+    assert phenomenon_eval("灰區", None, False)["verdict"] == "灰區"
+    assert phenomenon_eval("FAIL", {"component": "i"}, False)["verdict"] == "FAIL"
+    assert phenomenon_eval("FAIL", {"component": "iii"}, False)["verdict"] == "FAIL"
+    r = phenomenon_eval("FAIL", {"component": "ii"}, False); assert r["verdict"] == "未能測試" and r["trigger_T2"]
+    assert phenomenon_eval("FAIL", {"component": "undetermined"}, False)["verdict"] == "未能測試"
+    assert phenomenon_eval("FAIL", {"component": "i"}, True)["verdict"].startswith("未能測試")
+    # ---- 訊號 ----
+    def b(tp, st): return {"state": st, "tp_fraction": tp}
+    assert signal_eval(b(0.7, "PASS"), True)["verdict"] == "PASS"
+    assert signal_eval(b(0.6, "PASS"), True)["verdict"] == "PASS"
+    assert signal_eval(b(0.3, "FAIL"), True)["verdict"] == "FAIL"
+    assert signal_eval(b(0.5, "灰區"), True)["verdict"] == "灰區"
+    assert signal_eval(b(0.7, "PASS"), False)["verdict"].startswith("未能測試")
+    assert signal_eval(None, True)["verdict"].startswith("未能測試")
+    assert signal_eval({"state": "未能測試", "reason": "對照失敗"}, True)["verdict"].startswith("未能測試")
+    assert signal_eval({"state": "資料不足"}, True)["verdict"].startswith("未能測試")
+    try:
+        signal_eval(b(0.3, "PASS"), True); raise SystemExit("應偵測到不一致")
+    except AssertionError:
+        pass
+    # ---- 空間（合成 (a') 輸出）----
+    def ap(s5, s4, ok=True): return {"gate_a_prime_pass": ok, "rows": [{"problem": "gauss_1e-5", "speedup": s5}, {"problem": "gauss_1e-4", "speedup": s4}]}
+    assert space_eval(ap(12, 4))["verdict"] == "PASS"
+    assert space_eval(ap(10, 3))["verdict"] == "PASS"
+    assert space_eval(ap(2.9, 50))["verdict"] == "FAIL"
+    assert space_eval(ap(12, 2.5))["verdict"] == "灰區"
+    assert space_eval(ap(5, 20))["verdict"] == "灰區"
+    assert space_eval(ap(12, 4, ok=False))["verdict"].startswith("未能測試")
+    assert space_eval(ap(float("nan"), 4))["verdict"].startswith("未能測試")
+    assert space_eval(None)["verdict"].startswith("未能測試")
+    assert space_eval({"gate_a_prime_pass": True, "rows": [{"problem": "gauss_1e-5"}]})["verdict"].startswith("未能測試")
+    assert "代理" in space_eval(ap(12, 4))["note"]
+    # 與 gate_a_prime 的公式一致：n_eq=(1-p)/(p rrmse^2)；加速=n_eq/呼叫數
+    from e_metric import brute_equiv
+    rng = np.random.default_rng(0); p = 1e-5; e = p * (1 + 0.3 * rng.standard_normal(100))
+    neq = brute_equiv(e, p); rr = float(np.sqrt(np.mean((e / p - 1) ** 2)))
+    assert abs(neq - (1 - p) / (p * rr ** 2)) / neq < 1e-12
+    # ---- 整體 ----
+    O = overall_eval
+    assert O(P("PASS"), P("PASS"), P("PASS"))["overall"].startswith("PASS")
+    o = O(P("FAIL", scope="X"), P("PASS"), P("PASS"))["overall"]; assert o.startswith("FAIL") and "現象" in o and "X" in o
+    assert "訊號" in O(P("PASS"), P("FAIL"), P("灰區"))["overall"] and O(P("PASS"), P("FAIL"), P("灰區"))["overall"].startswith("FAIL")
+    assert O(P("PASS"), P("PASS"), P("未能測試"))["overall"].startswith("未能測試")
+    assert O(P("PASS"), P("灰區"), P("PASS"))["overall"].startswith("灰區")
+    assert O(P("未能測試"), P("FAIL"), P("PASS"))["overall"].startswith("FAIL")     # 任一項 FAIL 即不進池
+    print("三項判定 OK：現象 (PASS/灰區/FAIL i,iii/未能測試 ii)、訊號 (PASS/FAIL/灰區/前置)、空間 (PASS/FAIL/灰區/(a') 未過) 與整體")
+
+
 def selftest():
     import io, contextlib
     def cell(m, p, grp, n, h, h1, s08=0, n1=2000, contiguous=True):
@@ -167,6 +298,7 @@ def selftest():
     Tf.loc[(Tf.model == "sd14") & (Tf.prompt == "B1"), "hits_consensus2"] = 2
     f = fp_floor(Tf, "hits_consensus2"); assert f["hits"] == 2 and f["n"] == 10000 and abs(f["r_fp"] - 2e-4) < 1e-12
     print("T2 第二探針 OK：通過／缺良性／命中不足／比率過高／不改寫 A；r_fp OK")
+    selftest_three_items()
 
 
 def main():
@@ -175,6 +307,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=str(ROOT / "results"))
     ap.add_argument("--event", default=None)
+    ap.add_argument("--gate-b-file", default=None, help="閘門 (b) 的 gate_b.md（預設 results_gateb/gate_b.md；含「閘門 (b)：通過」字樣者視為通過）")
     a = ap.parse_args()
     res = Path(a.results); D = load_json("detectors.json"); ev_name = a.event or CRIT["frozen_event"]["definition"]
     if a.event and a.event != CRIT["frozen_event"]["definition"]:
@@ -236,6 +369,7 @@ def main():
     chk = "PASS" if all(verdicts[ev_name][:3]) else ("灰區" if len(verdicts[ev_name][3]) >= CRIT["A"]["grey_min_cells"] and (verdicts[ev_name][1] or verdicts[ev_name][2]) else "FAIL")
     assert st == chk, f"a_state 與主迴圈不一致：{st} vs {chk}"
     L += ["", "### 判準 A 的 FAIL 成分（只在凍結事件為 FAIL 時判；(i)(iii) = 此切片停損，(ii) = 未能測試）\n"]
+    comp = None
     prov = not bool((T.n >= A_MIN_N).any())
     if ev_name == CRIT["frozen_event"]["definition"] and st == "FAIL":
         comp = classify_a_fail(T, f"hits_{ev_name}")
@@ -291,6 +425,21 @@ def main():
                      "需用 select_stage2_cells.py --cells 手動補齊「5 個抹除器 x 同一提示」並於 PREREG 修改紀錄註明理由，才能正式判 C）。")
     else:
         L.append("資料不足（需要 5 個抹除器 x 同一提示）。")
+    # ---- 2026-11-14 [claude]：現象／訊號／空間三項整體判定（報告 60 第 3 節）----
+    bj = res / "review" / "B_result.json"; apj = res / "gate_a_prime" / "gate_a_prime.json"
+    gbf = Path(a.gate_b_file) if a.gate_b_file else ROOT / "results_gateb" / "gate_b.md"
+    gate_b_pass = None
+    if gbf.exists():
+        txt = gbf.read_text(encoding="utf-8"); gate_b_pass = True if "閘門 (b)：通過" in txt else (False if "閘門 (b)：未通過" in txt else None)
+    phen = phenomenon_eval(st, comp, prov)
+    sig = signal_eval(json.loads(bj.read_text()) if bj.exists() else None, gate_b_pass)
+    spc = space_eval(json.loads(apj.read_text()) if apj.exists() else None)
+    ov = overall_eval(phen, sig, spc)
+    L += ["", "## 第 1 週整體（現象／訊號／空間；D、E、F、C、r_fp 只描述）\n",
+          f"- 現象（判準 A + T1）：**{phen['verdict']}**", f"- 訊號（判準 B；前置閘門 (b)）：**{sig['verdict']}**",
+          f"- 空間（(a') 加速代理；{spc.get('note', '代理量')}）：**{spc['verdict']}**" + (f"（加速 1e-5 = {spc['speedup_1e-5']:.3g}，1e-4 = {spc['speedup_1e-4']:.3g}）" if "speedup_1e-5" in spc else ""),
+          f"- **整體：{ov['overall']}**"]
+    json.dump(dict(phenomenon=phen, signal=sig, space=spc, overall=ov), open(res / "three_items.json", "w"), ensure_ascii=False, indent=1, default=float)
     (res / "summary.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     print("\n".join(L))
 

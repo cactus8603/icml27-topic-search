@@ -4,6 +4,9 @@
 真值 = 1-(1-Phi_bar(t))^3（解析）。每個問題 100 次重複。通過 = 全部問題 |mean(est)/p - 1| < 10% 且無 NaN。
 另回報（不進判定）：相對 RMSE、CV、均值標準誤與 z、覆蓋率（replicate / own_variance 兩種區間）。
 禁止：用此處量到的偏差係數校正對 SD 的估計值。
+2026-11-14 [claude]（報告 60 第 3 節，結果前定案）：輸出新增加速欄位（只改輸出，不改估計器）：
+  n_eq = (1-p)/(p*rrmse^2)（暴力抽樣等效張數）；加速(p) = n_eq / 呼叫數（呼叫數 = 每次估計的平均模型呼叫數，含被拒提議）。
+  判準 B 的空間項（代理量）用 gauss_1e-5、gauss_1e-4 兩列的加速；此為代理，見 PREREG 第 13 節。
 用法：python gate_a_prime.py [--procs 8] [--reps 100] [--out results/gate_a_prime]   結束碼 0 = 通過
 """
 import argparse, json, sys, time
@@ -15,7 +18,7 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import ROOT, load_json
 from estimators import subset_simulation_v2
-from e_metric import rrmse, coverage
+from e_metric import rrmse, coverage, brute_equiv
 
 G = load_json("criteria.json")["gate_a_prime"]
 _W = None
@@ -62,7 +65,7 @@ def main():
     out = {"config": vars(a), "criteria": G, "rows": [], "smoke": a.smoke}
     lines = ["# 補充閘門 (a')：subset_simulation_v2（階段間調步長、mcmc_steps=%d）\n" % a.mcmc_steps,
              f"d={a.d}，N={a.N}，重複 {a.reps}，門檻 |偏差| < {G['max_abs_rel_bias']:.0%}（含 NaN 即失敗）。{'**smoke 測試，非正式結果**' if a.smoke else ''}\n",
-             "| 問題 | p 真值 | 均值/真值 | 偏差 | 均值SE | z | rRMSE | CV | 覆蓋(replicate) | 覆蓋(own_var) | 呼叫數 | 通過 |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+             "| 問題 | p 真值 | 均值/真值 | 偏差 | 均值SE | z | rRMSE | CV | 覆蓋(replicate) | 覆蓋(own_var) | 呼叫數 | n_eq | 加速 | 通過 |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     ok_all = True
     for n, p, t, kind, kk in probs:
         rr = sorted([r for r in res if r[0] == n], key=lambda r: r[1])
@@ -71,10 +74,11 @@ def main():
         cv = float(np.std(e, ddof=1) / m) if m > 0 else float("inf")
         ok = bool(abs(bias) < G["max_abs_rel_bias"]) and not np.isnan(e).any(); ok_all &= ok
         cov = coverage(e, p, d2)
+        n_eq = brute_equiv(e, p); speed = n_eq / float(c.mean()) if np.isfinite(n_eq) else float("nan")   # 加速(p) = n_eq / 呼叫數
         out["rows"].append(dict(problem=n, p=p, t=t, mean_ratio=m / p, bias=bias, se=se, z=bias / se if se > 0 else float("nan"),
-                                rrmse=rrmse(e, p), cv=cv, coverage=cov, calls_mean=float(c.mean()), ok=ok, ests=e.tolist()))
+                                rrmse=rrmse(e, p), cv=cv, coverage=cov, calls_mean=float(c.mean()), n_eq=n_eq, speedup=speed, ok=ok, ests=e.tolist()))
         lines.append(f"| {n} | {p:.0e} | {m/p:.3f} | {bias:+.1%} | {se:.1%} | {bias/se:+.1f} | {rrmse(e,p):.2f} | {cv:.2f} | "
-                     f"{cov.get('replicate', float('nan')):.2f} | {cov.get('own_variance', float('nan')):.2f} | {c.mean():.0f} | {'通過' if ok else '失敗'} |")
+                     f"{cov.get('replicate', float('nan')):.2f} | {cov.get('own_variance', float('nan')):.2f} | {c.mean():.0f} | {n_eq:.3g} | {speed:.3g} | {'通過' if ok else '失敗'} |")
         print(lines[-1], flush=True)
     out["gate_a_prime_pass"] = bool(ok_all); out["seconds"] = round(time.time() - t0, 1)
     lines.append(f"\n**閘門 (a')：{'通過' if ok_all else '未通過'}**。不得以此處偏差係數校正 SD 估計值。")
