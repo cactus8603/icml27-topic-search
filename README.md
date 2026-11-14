@@ -4,26 +4,102 @@
 
 ## 目前題目
 
-| 題目 | 進度 | 現象要確認什麼 | 訊號與改善空間要量什麼 |
-|---|---|---|---|
-| [多條件檢索的單調證據聚合](codex/reports/2026-11-15-topic-status-codex.md#多條件檢索) | **GO**，新排名試驗已送出 | 完整、基準、半真描述是否排錯 | 完整描述能否穩定勝過半真描述，以及調整基準分數能否改善固定候選圖的排名 |
-| [條件擴散的兩個時鐘](codex/reports/2026-11-15-topic-status-codex.md#條件擴散的兩個時鐘) | 第 2 週正式評估已送出 | 條件模型是否先進入樣本偏差期 | 用負控制辨別 CFG 是否提早或放大偏差，以精確分數量差距 |
-| [Inoculation 防禦漏出預測 Λ](codex/reports/2026-11-15-topic-status-codex.md#inoculation-防禦漏出預測-λ) | 數值檢查後，待訓練驗證 | 不同防禦設定下的漏出是否有可重現差異 | 初始梯度內積能否排序漏出，現有預測量距信度上限多遠 |
-| [多保真度資料歸因](codex/reports/2026-11-15-topic-status-codex.md#多保真度資料歸因) | 階段 0 訊號待釐清，新查詢已送出 | 廉價歸因能否預測重訓後的效果 | 少量精確歸因能否補回廉價方法的差距，同軌跡與跨種子各量一次 |
-| [Neural Chameleons 防禦](codex/reports/2026-11-15-topic-status-codex.md#neural-chameleons-防禦) | 待核對作者基準重現 | 觸發條件是否降低單層監測器的檢出率 | 跨概念的訊號是否能補回多層集成漏掉的案例 |
-| [RL 稀疏決策蒸餾](codex/reports/2026-11-15-topic-status-codex.md#rl-稀疏決策蒸餾) | 待建立可比配對 | RL 能否提高單次答對率，同時降低多次取樣的覆蓋率 | 少量 token 決策能否改善 pass@1／pass@64，及其相對權重混合的空間 |
-| [文生圖罕見失敗機率估計](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) | 待驗證篩選器與 CPU 代理 | 固定條件下是否有可量測的罕見失敗 | 篩選器陽性有多少是真陽性，以及尾端估計在同誤差下能省多少抽樣 |
-| [大型平行解碼提交集合](codex/reports/2026-11-15-topic-status-codex.md#大型平行解碼提交集合) | 先導完成，第二輪已送出 | 同輪提交多個 token 時是否出現可觀測的交互作用 | 等成本比較聯合探測與兩兩探測的排序，以及同候選池的可改善上限 |
-| [強驗證器與少量金標](codex/reports/2026-11-15-topic-status-codex.md#強驗證器與稀疏金標) | 先導完成，第二輪已送出 | 強弱驗證器是否有大量共同誤收 | 強判決能補多少資訊，維持相同風險時能否省下金標費用 |
-| [Attention gate × optimizer](codex/reports/2026-11-15-topic-status-codex.md#attention-gate--optimizer) | 先導完成，第二輪壓力校準已送出 | 更新是否造成可重現的單步損傷 | 注意力寫入能否預測損傷，同一 checkpoint 有多少可回收空間 |
+前七題沿用 Claude 的前期工作，Codex 依交接紀錄跟進。後三題由 Codex 發展具體實驗、實作先導並送出第二輪。作業進度核對至 05:20（台北）。[Claude 交接](reports/2026-11-14-61-claude-handoff-to-codex.md) · [Codex 三題深查](codex/reports/2026-11-14-rebuttal-topic-deepcheck.md)
 
-[逐題進度、結果與下一步](codex/reports/2026-11-15-topic-status-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
+| 題目 | 前期分工 | 目前接手 | 下一步 |
+|---|---|---|---|
+| [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 補固定索引及 reranker，已列 GO | 用新查詢和固定候選圖評估校準後的排名（`26450`） |
+| [條件擴散的兩個時鐘](#條件擴散的兩個時鐘) | Claude 做第一週訓練與評估 | Codex 在交接前已接手，第二週正式評估執行中 | 完成正式階層評估（`26383`），依三項判準複核 |
+| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成 Phase A v2 | 準備 Phase B 的重現與跨種子信度小試 |
+| [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 補判準、重跑便宜方法並彙總 | 做固定 12 個新查詢的精確診斷及 CPU 評分（`26448`／`26449`） |
+| [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 固定權重版本重抽並分析 | 核對作者的樣本、層索引與池化，再評估多層集成剩餘錯誤 |
+| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 重判配對 A，整理配對 B 重現條件 | 核對 A 的截斷，分開凍結 B 的原作設定與短預算配對 |
+| [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 補分階段驗證及證據檢查 | 用 CPU 做尾端模擬，查既有篩選分數同分的原因 |
+| [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 執行第二輪等推論成本比較，兩題試跑已完成 | 完成訓練候選收集和鎖定測試，再做 CPU 評分（`26441`–`26443`） |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結等暖機預算的第二輪 | 用新 GSM／AIME 題跑兩個驗證器，再比較成本和風險（`26444`／`26445`） |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 凍結第二輪壓力校準 | 找到能產生足夠損傷、仍維持正常訓練品質的最低壓力（`26446`） |
+
+[逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
+
+## 各題的現象、訊號與比較上限
+
+各題的上限可能是已知真值、事後選擇的最佳表現、經驗前緣或局部代理。下列說明各自成立的條件，量測值與判讀放在逐題報告。
+
+### 多條件檢索
+
+- **現象**看多條件圖片檢索能否把完整、基準、半真三種描述排對。
+- **訊號**看完整描述能否勝過半真描述，再檢查基準描述的分數偏高或偏低。
+- **現有方法**比較 CS-CLIP、CORE-EMBED-2B、SigLIP2、CLIC 的固定索引分數，另以 CORE-RERANKER-2B 作跨編碼比較。
+- **上限**固定每列的完整與半真分數時，事後調整基準分數的最高三句排序率等於完整勝半真的比例。新查詢的全候選池 mAP 另行量測。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#多條件檢索) · [新排名預登記](killtests/compositional-retrieval/PREREG_prospective_rank.md)
+
+### 條件擴散的兩個時鐘
+
+- **現象**看不同訓練樣本得到的條件模型，是否在測試損失最低之前就開始反映各自的樣本偏差。
+- **訊號**用每類樣本數正控制和單類別負控制，區分條件樣本變少與 CFG 提早或放大偏差的作用。
+- **現有方法**比較同一模型的無引導與 CFG 分數，並用配對控制對齊資料與隨機種子。
+- **上限參考**由 belief propagation 算出階層合成資料的精確分數，量現有 CFG 對訓練和留出樣本的誤差差距。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#條件擴散的兩個時鐘) · [預登記](killtests/biased-gen-cfg/PREREG.md)
+
+### Inoculation 防禦漏出預測 Λ
+
+- **現象**看不同防禦設定下的特質漏出差異，能否在重訓與不同種子間穩定重現。
+- **訊號**看訓練開始前的梯度內積 Λ 能否排序訓練後漏出，並檢查移除任一防禦家族後相關是否仍在。
+- **現有方法**比較 Grant 梯度餘弦、Wichers 誘發強度、Tan 損失降幅與 PHM persona 距離。
+- **上限**用 Λ 和漏出在不同種子間的信度估計可達相關，與最高的既有預測量比較。覆蓋不足時依預登記另作判讀。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#inoculation-防禦漏出預測-λ) · [Phase B 預登記](killtests/inoculation-lambda/PREREG.md)
+
+### 多保真度資料歸因
+
+- **現象**看便宜的歸因分數在多大程度上能預測移除資料後的實際重訓結果。
+- **訊號**量便宜分數在已知精確方向之外，能否跟上精確歸因的反應。
+- **現有方法**比較梯度內積、TracIn、TRAK、EK-FAC 和相同精確方向預算的 Spell 式延伸。
+- **上限參考**是同一訓練軌跡的完整精確歸因，以實際移除重訓的排序驗證。跨種子要另量。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#多保真度資料歸因) · [新查詢協定](killtests/multifidelity-attribution/exact_probe/PROTOCOL.md)
+
+### Neural Chameleons 防禦
+
+- **現象**先重現作者的單層監測器，再檢查固定觸發條件下的檢出率落差。
+- **訊號**檢查跨概念的留一正控制，或穩健監測器能否比多層集成找回漏檢。
+- **現有方法**同一公開 layer-12 checkpoint 上比較作者單層探測器、八層集成 ENS8 與穩健監測器。
+- **上限參考**是 ENS8 在乾淨條件下的檢出率。閾值由乾淨負例設定，固定後量觸發條件下的檢出率落差。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#neural-chameleons-防禦) · [預登記](killtests/chameleon-defense/PREREG.md)
+
+### RL 稀疏決策蒸餾
+
+- **現象**看同預算、截斷率相近時，RL 模型的單次答對率和 base 模型的多次取樣覆蓋率是否各有優勢。
+- **訊號**測少量 token 決策替換能否保留 RL 的單次增益，同時改善多次取樣成果。
+- **現有方法**以 base、同引擎的 RL 和 WiSE-FT 權重內插為對照，另量回應層級混合。
+- **空間參考**是在相同 pass@1 下，稀疏替換或回應混合可達的 pass@64，與 WiSE-FT 實測前緣比較。估計只涵蓋可以內插的共同範圍。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#rl-稀疏決策蒸餾) · [預登記](killtests/rl-sparse-distill/PREREG.md)
+
+### 文生圖罕見失敗
+
+- **現象**看固定模型、提示與事件定義下，失敗率能否被穩定量到。
+- **訊號**用盲標確認稀有陽性有多少是真的，並檢查篩選器的正負控制。
+- **現有方法**以直接 Monte Carlo 抽樣為基準，和 subset simulation 等尾端估計方法比較。
+- **上限參考**用已知機率的高斯半空間，估計達到同樣相對誤差時能省多少抽樣。真實生成的加速幅度仍待量測。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) · [預登記](killtests/t2i-rare-failure/PREREG.md)
+
+### 大型平行解碼提交集合
+
+- **現象**固定同一解碼狀態與提交數，檢查單點加總與整組探測是否對同一 token 給出落在信心門檻兩側的分數。
+- **訊號**在留出題量聯合探測是否比等次數的兩兩探測更常排對候選。
+- **現有方法**沿用原 confidence 選擇、單點加總和等額 forward 的已擬合兩兩探測作對照。
+- **上限**固定同一狀態和候選池，事後選能答對的候選。可回收空間以兩兩方法答錯、池內至少有一個答對的測試題計算。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#大型平行解碼提交集合) · [第二輪預登記](codex/experiments/large-commit-sets/round2/PREREG.md)
+
+### 強驗證器與少量金標
+
+- **現象**量強驗證器誤收錯解的比例，以及多少也是弱驗證器共同誤收。
+- **訊號**在弱判決、資料集與作答模型已知時，檢查加入強判決還能補多少預測資訊。
+- **現有方法**在相同暖機預算下，比較只買專家金標與混買強判決、金標的政策。
+- **上限參考**用完整暖機金標訓練有無強判決的兩類政策，在同一鎖定測試集比較等風險的部署成本。這個參考受固定政策類別限制。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#強驗證器與稀疏金標) · [第二輪預登記](codex/experiments/fallible-verifier/round2/PREREG.md)
+
+### Attention gate × optimizer
+
+- **現象**看競爭力較強的 optimizer 在壓力下，是否出現可重現的單步驗證損失上升。
+- **訊號**在 QK、激活、梯度和更新幅度等診斷已知時，量 attention 寫入變化能否改善對損傷的預測。
+- **現有方法**比較 StableAdamW、Muon、AdamW 加 sandwich RMSNorm 的配對正常學習率分支。局部介入另和同量縮步、正交調整比較。
+- **上限**同一 checkpoint 回退整步至更新前損失，界定這一步最多能回收的損傷。持續訓練的時間收益仍待量測。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#attention-gate--optimizer) · [第二輪預登記](codex/experiments/gate-optimizer/round2/PREREG.md)
 
 ## 硬體與執行
 
 目前有 GPU 的實驗各以 **1 張 H200** 送出，部分評估與先導重播可用 CPU。逐題硬體表列出實際量到的 **GPU 峰值 VRAM**、Slurm 申請的 **主機 RAM**、執行時間與磁碟用量，也標出尚未跑完的階段。框架預留的 VRAM 會計入取樣峰值，各配置的最低可用卡型仍需實測。
 
-[逐題硬體、VRAM 與磁碟](codex/HARDWARE.md)
+[逐題硬體、VRAM 與磁碟](codex/HARDWARE.md) · [24 GB 與 H200 安排](codex/HARDWARE.md#下一步用-24-gb-還是-h200)
 
 ## 實驗與歸檔
 
