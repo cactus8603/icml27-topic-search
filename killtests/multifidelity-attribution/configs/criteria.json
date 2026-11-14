@@ -1,5 +1,5 @@
 {
-  "_comment": "所有門檻集中在此（與 PREREG.md 一致）。改動須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：M2 跨種子<0 先 FAIL、M3 加碼後灰區記 FAIL、S6 加碼改為增加查詢至 400、S2 跨種子 seed 5。",
+  "_comment": "報告 60 §4 的現象、訊號、空間是正式判準。PREREG.md 記錄版本與所有修改。stage1 與原停損門檻僅供描述。",
   "gates": {
     "mlp": {"fd_rel_err_max": 1e-4, "loo_pearson_min": 0.95},
     "cifar_magic_lds_min": 0.88,
@@ -8,9 +8,12 @@
     "export_fidelity_max_abs_logit_diff": 5e-3
   },
   "stage0": {
-    "best_cheap_lds_stop_at_or_above": 0.8,
-    "kappa_res_over_kappa_stop_below": 0.5,
-    "hybrid_gain_stop_below": 0.04
+    "phenomenon_best_cheap_lds_max_exclusive": 0.80,
+    "signal": {"mean_pass_min": 0.20, "ci_boundary": 0.10},
+    "headroom": {"mean_pass_min": 0.10, "ci_boundary": 0.05},
+    "negative_control": {"seed": 20261114, "gain_max": 0.01, "rho_abs_max": 0.05},
+    "crossseed": {"train_seed": 5, "retrain_count": 100, "headroom_pass_min": 0.05},
+    "descriptive_legacy": {"kappa_ratio_threshold": 0.50, "gain_threshold": 0.04, "synthetic_lds_tolerance": 0.005}
   },
   "stage1": {
     "gain_pass": 0.08,

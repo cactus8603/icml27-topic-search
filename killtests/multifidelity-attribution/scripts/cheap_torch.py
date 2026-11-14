@@ -2,7 +2,8 @@
 輸出 {cheap}/{method}.npy，形狀 n×k，元素約定與 Y 相同：近似 dloss_q/dw_i（負值＝該訓練樣本對查詢有幫助）。
 方法：grad_dot（最終點梯度內積）、tracin（5 個檢查點，以 lr 加權）、trak1（單模型）、trak5（集成）、
 ekfac_*（kronfluence，三種 damping）。UGN：Bergson 的 gnh-unroll 只支援 LM 的 nn.Linear/Conv1D，不能用於 CIFAR（見 README）。"""
-import argparse, json, os, sys, time
+import argparse, hashlib, json, os, sys, time
+from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
@@ -102,10 +103,31 @@ def to_t(x):
     return torch.tensor(x).permute(0, 3, 1, 2).contiguous()
 
 
+def reference_logits(model_path, checkpoint, queries, high_precision_path):
+    if high_precision_path is None:
+        return checkpoint["ref_logits"], {"mode": "original_jax_export"}
+    with model_path.open("rb") as stream:
+        model_digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    with np.load(high_precision_path) as reference:
+        if str(reference["checkpoint_sha256"].item()) != model_digest:
+            raise ValueError("high-precision reference checkpoint does not match the model export")
+        if not np.array_equal(reference["query_indices"], queries):
+            raise ValueError("high-precision reference query order does not match the evaluation queries")
+        if not np.array_equal(reference["saved"], checkpoint["ref_logits"]):
+            raise ValueError("high-precision reference's saved logits do not match the original export")
+        logits = reference["highest"]
+        if logits.shape != checkpoint["ref_logits"].shape or not np.isfinite(logits).all():
+            raise ValueError("invalid high-precision reference logits")
+    return logits, {"mode": "jax_highest_inference_on_original_weights", "path": str(high_precision_path),
+                    "checkpoint_sha256": model_digest}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cfg", required=True)
     ap.add_argument("--methods", nargs="*", default=["grad_dot", "tracin", "trak", "ekfac"])
+    ap.add_argument("--high-precision-reference", type=Path,
+                    help="Paired JAX precision diagnostic for the same frozen checkpoint and queries")
     a = ap.parse_args()
     cfg = json.load(open(a.cfg)); P = cfg_paths(cfg)
     W, k, bs = cfg["width"], cfg["k_total"], cfg["grad_batch"]
@@ -116,12 +138,17 @@ def main():
     n = Xtr.shape[0]
     timing = {}
     mp = lambda s, e=None: f"{P['models']}/model_s{s}" + (f"_ep{e}" if e else "") + ".npz"
-    main_m, z = load_model(W, mp(cfg["train_seed"]))
+    model_path = Path(mp(cfg["train_seed"]))
+    main_m, z = load_model(W, model_path)
+    expected, reference = reference_logits(model_path, z, qi[:64], a.high_precision_reference)
     # --- 匯出保真度閘門：torch 前向 vs JAX 對照 logits
     with torch.no_grad():
-        diff = (main_m(Xq[:64]).cpu().numpy() - z["ref_logits"]).__abs__().max()
+        observed = main_m(Xq[:64]).cpu().numpy()
+    diff = np.abs(observed - expected).max()
+    original_diff = np.abs(observed - z["ref_logits"]).max()
     print(f"export fidelity: max|logit diff|={diff:.2e}", flush=True)
-    json.dump({"max_abs_logit_diff": float(diff), "pass": bool(diff < FID_MAX)}, open(f"{P['res']}/export_fidelity.json", "w"))
+    json.dump({"max_abs_logit_diff": float(diff), "pass": bool(diff < FID_MAX), "reference": reference,
+               "original_max_abs_logit_diff": float(original_diff)}, open(f"{P['res']}/export_fidelity.json", "w"))
     assert diff < FID_MAX, "匯出保真度不足：JAX 與 PyTorch 前向不一致，停止"
 
     def save(name, S, t0):
@@ -160,16 +187,23 @@ def main():
                 with torch.no_grad():
                     pc[i:i + G.shape[0]] = F.softmax(m(Xtr[i:i + G.shape[0]]), 1).gather(1, Ytr[i:i + G.shape[0], None])[:, 0]
             Phiq = (g.flat("mg", Xq, Yq).to(torch.bfloat16) @ R).float()
+            with torch.no_grad():
+                probabilities = F.softmax(m(Xq).float(), dim=1)
+                query_error = probabilities.scatter(1, Yq[:, None], 0).sum(1)
             XtX = (Phi.T.double() @ Phi.double()); lam = cfg["trak_lam_rel"] * XtX.trace() / d
             inv = torch.linalg.inv(XtX + lam * torch.eye(d, dtype=torch.float64, device=dev))
             tau = ((Phiq.double() @ inv) @ Phi.T.double()).float() * (1 - pc)[None]  # k×n，正值＝增加正確類邊際
-            taus.append((tau / tau.abs().mean()).cpu().numpy())
+            tau_loss = -query_error[:, None] * tau  # d query CE / d margin = -(1 - p_y)
+            scale = tau_loss.abs().mean()
+            if not torch.isfinite(scale) or scale <= 0:
+                raise RuntimeError(f"TRAK seed {s} has no finite nonzero query-loss scores")
+            taus.append((tau_loss / scale).cpu().numpy())
             del R, Phi
             torch.cuda.empty_cache() if dev == "cuda" else None
             print(f"trak model {s} done", flush=True)
             if mi == 0:
-                save("trak1", -taus[0].T, t0)
-        save("trak5", -np.mean(taus, 0).T, t0)
+                save("trak1", taus[0].T, t0)
+        save("trak5", np.mean(taus, 0).T, t0)
     if "ekfac" in a.methods:
         from kronfluence.analyzer import Analyzer, prepare_model
         from kronfluence.arguments import FactorArguments, ScoreArguments

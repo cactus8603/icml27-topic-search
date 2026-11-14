@@ -1,0 +1,46 @@
+{
+  "checkpoint_sha256": "373d0e652f29f0d79f18d4c3e20c6b779b37b315a0f24ec8f833660144e1d594",
+  "same_saved_inputs": 64,
+  "errors": {
+    "jax_saved__jax_default": {
+      "max": 1.9073486328125e-06,
+      "median": 5.960464477539063e-08
+    },
+    "jax_saved__jax_highest": {
+      "max": 0.024794578552246094,
+      "median": 0.0027637481689453125
+    },
+    "jax_saved__torch_full": {
+      "max": 0.024796485900878906,
+      "median": 0.00276339054107666
+    },
+    "jax_saved__torch_tf32": {
+      "max": 0.024298667907714844,
+      "median": 0.002948284149169922
+    },
+    "jax_default__jax_highest": {
+      "max": 0.024794578552246094,
+      "median": 0.0027638673782348633
+    },
+    "jax_default__torch_full": {
+      "max": 0.024796485900878906,
+      "median": 0.002763509750366211
+    },
+    "jax_default__torch_tf32": {
+      "max": 0.024298667907714844,
+      "median": 0.002948284149169922
+    },
+    "jax_highest__torch_full": {
+      "max": 5.7220458984375e-06,
+      "median": 9.5367431640625e-07
+    },
+    "jax_highest__torch_tf32": {
+      "max": 0.005494832992553711,
+      "median": 0.000887453556060791
+    },
+    "torch_full__torch_tf32": {
+      "max": 0.0054950714111328125,
+      "median": 0.0008890628814697266
+    }
+  }
+}

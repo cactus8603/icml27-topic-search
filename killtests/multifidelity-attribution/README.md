@@ -1,11 +1,11 @@
 # 多保真度資料歸因 — 停損實驗（回報 45）
 
-準備日期 2026-11-14。**狀態：程式與 slurm 腳本已寫好、CPU smoke test 完成（見第 9 節）；尚未送出任何 GPU 工作。** 判準以 `PREREG.md`（依回報 56 第 4 節）為準；`configs/criteria.json` 與它一致，`scripts/aggregate.py` 只讀該檔，改門檻只改這一處。
+準備日期 2026-11-14。排程見 `../SUBMITTED.log`。正式判準在 `PREREG.md` §5 與 `configs/criteria.json`，依報告 60 第 4 節。
 
 ## 1. 目的與對應回報
-回報 45：便宜歸因分數當 control variate、少量精確 metagradient 校正殘差、加逐查詢可靠度。本實驗只做**第 1 週停損**：CIFAR-10 ResNet-9 上便宜方法離精確 Y 還有多少空間（最佳便宜 LDS ≥ 0.8 就停），以及殘差能量比例 κ_res 與 Y 本身 κ 的比較。
+回報 45：便宜歸因分數當 control variate、少量精確 metagradient 校正殘差、加逐查詢可靠度。階段 0 在 CIFAR-10 ResNet-9 上評估現象、訊號與空間，三項皆通過才補跨種子空間測量。
 - 回報 45 原判準：「CIFAR k=100～200、B ≤ 0.2k 時混合法比 Spell 和最佳便宜方法都高至少 0.08 ……；κ_res 不小於 κ 的一半」；「直接停：CIFAR 上最佳便宜方法已有 0.8 以上」。
-- 回報 56 改寫為階段 0（k=50、M=200：≥0.8 停；κ_res/κ<0.5 停；增益<0.04 停）→ 通過才階段 1（k=200，PASS＝逐查詢配對 bootstrap 兩個差 ≥0.08 且 CI 下界 >0.03，另有可靠度路線與跨種子條件）。**以新版為準**，全文在 PREREG §5–6。
+- 階段 0 的三項正式指標是最佳便宜方法的同軌跡 LDS、固定補空間的平均餘弦與完整精確 Y 的 LDS 參考差。κ_res、混合增益、第二探針及原階段 1 都是描述性指標，見 PREREG §5–6。
 - GPT-2/WikiText（原判準 2）不在第 1 週內，只附可選重現腳本（第 7 節）。
 
 ## 2. 外部程式（`/work/ChihChungHsu/cactus8603/icml/ext/`，皆 `git clone --depth 1`；沒有執行任何安裝腳本）
@@ -48,7 +48,7 @@ logs/     slurm 輸出
 | 階段 1：Y 再 150 查詢、跨種子 100 重訓（seed 5）、（灰區：Y 再 200 查詢，20 個 chunk） | s1_* | 8–25／3–5／**10–33**（由每 chunk 0.5–1.7 h 估；2026-11-14 由「+200 重訓 4–10」改為增加查詢，成本較高，累計最壞可能超過 80，需 bench 後重估並回報） | <0.1 GB |
 全題上限 80 GPU 小時、80 GB（PREREG §7）。
 
-## 6. 送出指令（寫出來，**未執行**）
+## 6. 執行指令
 ```bash
 cd /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/multifidelity-attribution
 # 閘門 G1/G2（CPU，已過）：JAX_PLATFORMS=cpu ../../../icml/envs/attrib-jax/bin/python scripts/gate_mlp.py ; envs/attrib-torch 的 python scripts/gate_hybrid.py
@@ -59,10 +59,10 @@ J3=$(sbatch --parsable scripts/s0_retrain.sbatch)    # 與訓練無依賴
 J4=$(sbatch --parsable scripts/s0_exact.sbatch)
 # 全部完成後（CPU，數秒）：
 /work/ChihChungHsu/cactus8603/icml/envs/attrib-torch/bin/python scripts/aggregate.py --cfg configs/stage0.json --stage 0
-# 只有結論為 CONTINUE 才送：
-sbatch scripts/s1_exact.sbatch; sbatch scripts/s1_crossseed.sbatch
-.../attrib-torch/bin/python scripts/aggregate.py --cfg configs/stage0.json --stage 1
-# 灰區唯一加碼（增加查詢到 k=400，不增加重訓）：sbatch scripts/s1_addon.sbatch；之後 aggregate --stage 1 --addon（加碼後仍灰區記 FAIL）
+# 三項皆通過時才補跨種子 H_x，沿用階段 0 的 50 個查詢：
+sbatch scripts/s1_crossseed.sbatch
+/work/ChihChungHsu/cactus8603/icml/envs/attrib-torch/bin/python scripts/aggregate.py --cfg configs/stage0.json --stage 0 --crossseed
+# 有歷史階段 1 產物時，--stage 1 或 --stage 1 --addon 只產生描述性輸出。
 ```
 
 ## 7. 可選：Bergson GPT-2 排行榜重現（UGN 0.819／MAGIC 0.931）
@@ -99,5 +99,5 @@ sbatch scripts/s1_exact.sbatch; sbatch scripts/s1_crossseed.sbatch
 - 便宜方法算的是「eval 模式 BN 的最終模型」，Y 是「訓練軌跡」導數，兩者估計對象不同（回報 45 反駁 C），低 LDS 不全是 bug。
 - 階段 0 只有 k=50（B=10），κ 與增益的標準誤大；最佳便宜 7 選 1 有輕微樂觀偏誤。
 - Spell 重現只是「以 G_V 取前 B 個特徵向量」的簡化版（原程式未公開）。
-- 匯出保真度容差 5e-3；若不過先把 `matmul_precision` 改 "highest"。重現閘門（LDS ≥ 0.88）不過時同樣第一步改 "highest" 重跑，並記入 PREREG 修改紀錄（S5）。
+- 匯出保真度容差 5e-3。JAX 與 PyTorch 推論精度不同造成失敗時，先在同一份權重和查詢上算 JAX highest 推論。重試便宜方法時可用 `MF_FIDELITY_REFERENCE` 指向與該 checkpoint 及查詢順序相符的精度診斷 `.npz`。若精確 Y 的重現閘門未通過，依 PREREG 的 S5 處理完整軌跡精度。
 - 額度：階段 0 只需約 1 GB；環境 attrib-jax 4 GB。
