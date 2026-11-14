@@ -1,0 +1,44 @@
+{
+ "criteria_version": "2026-11-14-a",
+ "gate1": {
+  "status": "FAIL",
+  "pearson_pooled": -0.5788961920066056,
+  "per_config": {
+   "grant_allcaps_qwen7b_fd": 0.9999998388108136,
+   "grant_evil_qwen7b_fd": 0.9999999998997009,
+   "grant_hallucinating_qwen7b_fd": 0.9999999858413406,
+   "grant_optimistic_qwen7b_fd": 0.9999956880487266,
+   "grant_pirate_qwen7b_fd": 0.9999999990957774,
+   "grant_spanish_qwen7b_fd": -0.9670091297529023,
+   "grant_sycophantic_qwen7b_fd": 0.9999999921638616
+  },
+  "slope_true_on_pred": -7.581216138036117,
+  "n": 34,
+  "threshold": 0.9
+ },
+ "reference_only": {
+  "grant": {
+   "G1_table13_retained_fraction": {
+    "rho": NaN,
+    "n": 0,
+    "skipped_lambda_none_nonpositive": []
+   }
+  },
+  "pg_chunks": {
+   "A_ratio_pooled_bottom_top": {
+    "rho": NaN,
+    "n_points": 0,
+    "n_cells": 0
+   },
+   "A_rawLambdaOOD_pooled": {
+    "rho": NaN
+   },
+   "direction_agreement": {
+    "k": 0,
+    "n": 0
+   },
+   "within_cell_depth_rho_median": null,
+   "within_cell_depth_rho_note": "\u8ad6\u6587\uff1a49/50 \u689d\u66f2\u7dda\u659c\u7387\u5c0d\u6df1\u5ea6\u70ba\u8ca0\u79e9\u76f8\u95dc\uff1b\u6b64\u8655\u671f\u671b\u70ba\u8ca0"
+  }
+ }
+}

@@ -87,3 +87,4 @@
 ## 修訂紀錄
 - 2026-11-14：初稿（依 Fable 審查）。
 - 2026-11-14（Opus 審查，機械修正，非判準變更）：`slurm/a1_gate1_fd.sbatch` 時間上限 4h → 6h（推估 1.5–3h，原上限不足 2 倍餘裕；逾時會讓 a2/a3 的 afterok 相依全取消）。審查意見見 `REVIEW.md`。
+- 2026-11-14（閘門 1 於 GPU FAIL 後的程式修正，job 26261：pooled r=-0.579、n=34、斜率 -7.58；門檻 0.9 未動）。原因：有限差分的步長 eta 由 none 防禦校準到預測 Δτ=0.01 nats，對低 cos 的 trait（spanish none cos=0.16、optimistic 0.10，Λ 僅 0.14／0.07）得到很大的 eta（0.073／0.141），步長 eta·‖gL‖ 達 0.14–0.25（其餘 trait 僅 0.003–0.01）；spanish 的 pps_eps2 梯度範數為 none 的 14 倍（25.6 vs 1.89），步長 1.85，落入強非線性區（預測 -0.032，實測中央差分 +0.833），單點即把 pooled r 拉成負值。其餘 5 個 trait（evil、sycophantic、allcaps、pirate、hallucinating）預測與實測相符到 1–3 位有效數字，Λ 的實作與符號慣例無誤。修正：`compute_lambda.py` 的 `fd_apply` 加步長上限 `eta ← min(eta, fd_max_step/‖gL‖)`，`criteria.yaml` 新增 `gate1.fd_max_step: 0.01`（線性區信賴半徑，不是判準門檻；其餘 trait 的步長本來 ≤0.011 不受影響）。判定仍用全部 7 個 trait。

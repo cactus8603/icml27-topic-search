@@ -466,6 +466,12 @@ def fd_apply(rows, gl, gtau, tau_nll, tau_cache, model, params, micro, pad_id, d
         assert ref["dot"] > 0, "none 防禦的 Λ <= 0，無法校準 eta；請檢查資料／實作"
         st[("eta", seed)] = target / ref["dot"]
     eta = st[("eta", seed)]
+    # 2026-11-14 修正：限制步長 eta*||gL|| <= fd_max_step（信賴半徑），避免低 cos 的 trait（spanish/optimistic）
+    # 因 eta 被校準得很大、或 PPS 梯度範數大 10 倍，使一步落入非線性區（見 PREREG 修改紀錄）。
+    max_step = g1.get("fd_max_step")
+    if max_step:
+        gn = mine[0]["gL_norm"]
+        eta = min(eta, max_step / gn)
     for key in gtau:
         if key[1] != g1["fd_ctx"]:
             continue

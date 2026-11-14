@@ -19,6 +19,7 @@ gate1:                    # 閘門 1：有限差分（排最前；失敗 = 程�
   fd_ctx: none            # 只在 "none" 非誘發情境量測
   fd_dtype: float32       # 有限差分一律 fp32，避免 bf16 雜訊
   fd_n_lora_seeds: 1
+  fd_max_step: 0.01       # 2026-11-14 程式修正：步長上限 eta*||gL|| <= 0.01（線性區）；不是門檻，pearson_min 不變
   use_central: true       # 以中央差分 (nll(+eta)-nll(-eta))/2 為實測值（消除二階項）
 
 gate2:                    # 閘門 2：重現（需訓練階段的結果；本階段不實作判讀，只保留門檻）
