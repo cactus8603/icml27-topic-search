@@ -6,4 +6,5 @@ __pycache__/
 logs/*.out
 results/*/Y_*.npy
 results/stage0/export_fidelity.json
+results/stage0/retrain_query_losses_k50_M200.npy
 *.log
