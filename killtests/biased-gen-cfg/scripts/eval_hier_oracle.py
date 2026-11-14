@@ -28,6 +28,8 @@ ap.add_argument("--runs", nargs="+", required=True, help="train_hier_cond.py 的
 ap.add_argument("--out", required=True)
 ap.add_argument("--test-block", type=int, default=7)
 ap.add_argument("--n-eval", type=int, default=1000)
+ap.add_argument("--block-size", type=int, default=5000, help="資料區塊大小（固定 5000，不再取 metas[0]['n']）")
+ap.add_argument("--class-filter", type=int, default=None, help="每個區塊只取根 == 此值的前 n-eval 筆（正控制，搭配 --n-eval 700）")
 ap.add_argument("--t-grid", default="10,25,50,75,100,150,200,300")
 ap.add_argument("--guidance", default="1,3")
 ap.add_argument("--epochs", default=None, help="逗號分隔；預設取所有 run 共有的 checkpoint")
@@ -38,7 +40,16 @@ args = ap.parse_args()
 dev = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
 metas = [json.load(open(os.path.join(r, "meta.json"))) for r in args.runs]
 q, depth, roots, leaves, M = H.load_hier(args.data)
-n_train = metas[0]["n"]
+n_train = args.block_size
+# run 類型（由 meta 判斷；同一次評估內必須同型）：normal / const（K=1 常數條件，條件輸入給 0、條件 oracle = 無條件 BP）/ uncond_only（pdrop=1.0，只輸出 null 分支）
+def run_type(m):
+    if m.get("const_label") is not None: return "const"
+    if m.get("pdrop") == 1.0: return "uncond_only"
+    return "normal"
+types = {run_type(m) for m in metas}
+assert len(types) == 1, f"同一次評估的 run 類型必須一致：{types}"
+RUN_TYPE = types.pop()
+CONST_LABEL = metas[0].get("const_label")
 picks = [m["pick"] for m in metas]
 assert args.test_block not in picks, "測試區塊與訓練區塊重疊"
 assert len(set(picks)) == len(picks), "run 的資料區塊必須互不相交"
@@ -46,11 +57,18 @@ ne = args.n_eval
 T = [int(x) for x in args.t_grid.split(",")]
 W = [float(x) for x in args.guidance.split(",") if float(x) != 0]
 branches = ["cond", "uncond"] + [f"cfg{w:g}" for w in W]
+if RUN_TYPE == "uncond_only":
+    branches = ["uncond"]
 ab = H.make_alpha_bars(metas[0]["t_final"], dev, torch.float64)
 Mt = torch.from_numpy(M).to(dev)
 
 def block(p):
-    return leaves[p * n_train:p * n_train + ne].to(dev), roots[p * n_train:p * n_train + ne].to(dev)
+    lv, rt = leaves[p * n_train:(p + 1) * n_train], roots[p * n_train:(p + 1) * n_train]
+    if args.class_filter is not None:
+        keep = (rt == args.class_filter).nonzero().squeeze(1)[:ne]
+        lv, rt = lv[keep], rt[keep]
+    assert len(lv) >= ne, f"區塊 {p} 只有 {len(lv)} 筆可用，少於 n-eval={ne}"
+    return lv[:ne].to(dev), rt[:ne].to(dev)
 sets = [block(p) for p in picks] + [block(args.test_block)]   # 最後一個是 test
 S = len(sets)
 
@@ -64,6 +82,8 @@ for (x0, c) in sets:
         xt = H.noise_batch(oh, torch.full((ne,), t, device=dev), ab, gen)
         pc, pu, _ = H.oracle_cond_uncond(Mt, depth, xt, float(ab[t - 1]), roots=c)
         xts.append(xt.float())
+        if RUN_TYPE == "const":
+            pc = pu      # K=1：條件不帶資訊，條件 oracle = 無條件 BP
         d = {"cond": pc, "uncond": pu}
         for w in W:
             d[f"cfg{w:g}"] = H.cfg_combine(pc, pu, w)
@@ -77,6 +97,7 @@ for s in range(S):
     for ti in range(len(T)):
         for bi, b in enumerate(["cond", "uncond"]):
             ce_bp[s, ti, bi] = ce_of(ORA[s][ti][b], TOK[s])
+RIN = [torch.full_like(c, CONST_LABEL) if RUN_TYPE == "const" else c for c in RT]   # 模型的條件輸入
 
 ck_sets = [set(int(os.path.basename(f)[2:-3]) for f in glob.glob(os.path.join(r, "ep*.pt"))) for r in args.runs]
 epochs = sorted(set.intersection(*ck_sets)) if args.epochs is None else [int(x) for x in args.epochs.split(",")]
@@ -123,7 +144,7 @@ for ei, e in enumerate(epochs):
         for s in range(S):
             for ti, t in enumerate(T):
                 null = torch.full((ne,), q, device=dev)
-                pc = predict(mod, XT[s][ti], t, RT[s]); pu = predict(mod, XT[s][ti], t, null)
+                pc = predict(mod, XT[s][ti], t, RIN[s]); pu = predict(mod, XT[s][ti], t, null)
                 d = {"cond": pc, "uncond": pu}
                 for w in W:
                     d[f"cfg{w:g}"] = H.cfg_combine(pc, pu, w)
@@ -131,7 +152,7 @@ for ei, e in enumerate(epochs):
                 for bi, b in enumerate(branches):
                     o = ORA[s][ti][b]
                     mse[j, ei, ti, s, bi] = ((d[b] - o) ** 2).mean().item()
-                    if b in ("cond", "uncond"):
+                    if b in ("cond", "uncond") and b in branches:
                         kl[j, ei, ti, s, bi] = (o * (torch.log(o.clamp_min(1e-12)) - torch.log(d[b].clamp_min(1e-12)))).sum(-1).mean().item()
                         ce[j, ei, ti, s, bi] = ce_of(d[b], TOK[s])
     for pi, (i, j) in enumerate(pairs):

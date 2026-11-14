@@ -95,7 +95,11 @@ $BIASGEN_ENV/bin/python scripts/aggregate_week1.py
 | hier_eval（×1） | 3 模型 × 71 checkpoint；BP 在 float64 | 0.3–1 h | 1.5 h |
 | 合計 | | 約 8–20 GPU h（53 號估 (a) 5–10、(b) 10–20） | |
 
-第 2 週追加（不在本包）：pick 3–5 三個 run（4.5–9 h）、正控制（n=833 無條件，便宜）、負控制（n=70000 × 至少 2 個，每個 35000 epochs×137 步/epoch，**很貴，約數十 GPU 小時，需單獨估算**——這是目前最大的成本風險）、(d) CIFAR。
+第 2 週追加（判準見 `DECISIONS_fable.md` 條文 3–6；程式與 sbatch 已備好、未送出）：K=6 補 pick 3–5 三個 run（4.5–9 h，`w2_hier_train_k6.sbatch`）、
+K=1 常數條件負控制 × N 個（每個 1.5–3 h，6 個約 9–18 h；`w2_hier_train_k1.sbatch`）、類別 0 專用無條件模型 × N 個（每 epoch 約 10 步、每步 batch 85，約 1.5–3 h，未實測；`w2_hier_train_u833.sbatch`）、
+6 個 run 一起重評（`w2_hier_eval.sbatch`，含 `aggregate_week2.py`）、(d) CIFAR（不在本包）。N 由第 1 週 3 個階層 run 的實測平均 GPU 小時 h 決定：h ≤ 2.0 → N=6；h > 2.0 → N=4（標「低檢定力」）。
+**已刪除 n=70000 負控制。** 送 (d) 前若「已用 GPU 小時 + 依 (d) 實測吞吐推估」> 115 GPU 小時，先停下來回報使用者。
+訓練用 `train_hier_cond_w2.py`（新增 `--const-label`、`--class-only`；預設值下與 `train_hier_cond.py` 逐位元相同），第 1 週訓練檔未動。
 
 ## 預估磁碟（本題上限 80 GB，含 env、checkpoint、結果）
 
@@ -125,8 +129,8 @@ checkpoint 放 `results/ckpt/`（`.gitignore` 排除）。只保留判準需要�
 2. 所有 GPU 小時與 `--time` 都是推估；hier 訓練不能續跑，逾時代價高。
 3. 單一網格解析度：epoch 邊界問題（最低點落在網格頭尾時 t\* 被截斷）。
 4. 3 個 run 只能做管線檢查；(c) 主指標在 R=3 時 bootstrap 幾乎沒有意義，aggregate 已標為探索性。
-5. 週 2 的負控制（n=70000）成本未估清楚。
-6. CelebA 的 sample-split 距離使用 `1−cos(ε_A, ε_B)`（輸入來自 A 的訓練集）；階層資料用 x0-hat 空間的 `1−cos`。兩者尺度不同，不可互比。
+5. 週 2 的負控制已改為 K=1（成本約等於一般 n=5000 run）；batch 85 的吞吐與 1.10 回升門檻都沒有實測依據。
+6. CelebA 的 sample-split 距離使用 `1−cos(ε_A, ε_B)`（輸入來自 A 的訓練集）；階層資料主指標也改用 ε 空間 `1−cos`（條文 1，逐 t 正規化並套用 `configs/t_mask_hier.json`；x0-hat `pair_cos` 只留存不判定）。(a) 用原始平均、階層資料用逐 t 正規化，尺度不同，不可互比。
 7. 磁碟：/work 群組額度吃緊時，checkpoint 寫入失敗請停下回報，不要重試。
 8. 53 號「(a) 失敗代表 pipeline 有問題」與 56 號「記為未能測試」一致；但若 n=1024 本身在我們的 6 模型設定下不重現原作 U 形，無法區分是 pipeline 問題還是原作現象不穩，需審查者決定。
 

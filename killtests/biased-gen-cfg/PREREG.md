@@ -130,3 +130,7 @@
     條文 5：(a) 描述性模型層級 bootstrap、bootstrap 依 m_i·m_j 加權並回報跳過次數、(a) 失敗診斷順序；條文 6：預算與第 2 週順序、第 1 週 3 個 run 僅探索性。
   - 程式：新增 `scripts/make_t_mask.py`、`scripts/test_aggregate_week1.py`；`eval_hier_oracle.py` 新增 `pair_cos_eps` 與 `git_hash`（保留 `pair_cos`）；
     `aggregate_week1.py` 與 `configs/criteria_week1.json` 依條文 1、2、5 改寫。條文 3、4 的程式與 sbatch（修改 5–8）於第 2 週開始前完成。
+  - 修改 5–8（第 2 週用，同日、同樣審查後結果前定案）：新增 `scripts/train_hier_cond_w2.py`（`--const-label`、`--class-only`，meta 寫入 `block_size`、`n_c`、`steps_per_epoch`；預設行為與 `train_hier_cond.py` 逐位元相同，已用 CPU 小跑驗證；
+    因第 1 週訓練 job 排隊中，未改 `train_hier_cond.py`）；`eval_hier_oracle.py` 區塊大小固定 `--block-size 5000`、新增 `--class-filter`／const-label（條件輸入 0、條件 oracle 為無條件 BP）／pdrop=1.0（只輸出 uncond 分支），
+    混型評估會報錯，預設輸出與修改前逐位元相同；新增 `scripts/aggregate_week2.py`、`configs/criteria_week2.json`、`scripts/test_aggregate_week2.py`；
+    新增 `w2_hier_train_k6/k1/u833.sbatch`、`w2_hier_eval.sbatch`（未送出）；README 第 2 週成本改為 K=1 × N 與類別 0 專用 × N，刪除 n=70000。
