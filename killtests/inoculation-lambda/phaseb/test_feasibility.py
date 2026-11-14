@@ -3,11 +3,13 @@
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+from subprocess import CompletedProcess
 import unittest
 from unittest.mock import mock_open, patch
 
 from phaseb.feasibility import (
-    AUTHOR_ARM, AUTHOR_EVAL, FAMILIES, ICC_ARMS, ICC_SEEDS, icc_1_1, reliability, reproduction, reviewed_receipt,
+    AUTHOR_ARM, AUTHOR_EVAL, FAMILIES, ICC_ARMS, ICC_SEEDS, icc_1_1, inspect_author_runtime,
+    reliability, reproduction, reviewed_receipt,
 )
 
 
@@ -38,6 +40,19 @@ def reliability_scores(cell):
 
 
 class FeasibilityTests(unittest.TestCase):
+    def test_author_runtime_requires_correct_python_and_package_versions(self):
+        interpreter = Path("/author/env/bin/python")
+        cases = (
+            ('{"python":[3,10,19],"packages":{"peft":"0.15.1"}}', True),
+            ('{"python":[3,12,3],"packages":{"peft":"0.15.1"}}', False),
+            ('{"python":[3,10,19],"packages":{"peft":null}}', False),
+        )
+        for payload, expected in cases:
+            with self.subTest(payload=payload), patch("phaseb.feasibility.subprocess.run",
+                    return_value=CompletedProcess([], 0, stdout=payload)) as run:
+                self.assertEqual(inspect_author_runtime(interpreter, {"peft": "0.15.1"})[2], expected)
+                self.assertEqual(run.call_args.args[0][:2], [str(interpreter), "-I"])
+
     def test_receipt_uses_exact_reviewed_bytes(self):
         payload = b'{"schema":1}'
         with patch.object(Path, "open", mock_open(read_data=payload)):

@@ -24,7 +24,9 @@ python=/work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/python
   --binding "$inputs_sha256" --preview
 ```
 
-預覽只輸出包有 `preview_config` 的報告。正式輸出配置時先以作者釘選環境執行並移除 `--preview`，把 JSON 存於共用實驗資料夾。訓練須設 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`。在完整評估途徑核實前先用預檢及預覽。
+預覽只輸出包有 `preview_config` 的報告。正式輸出配置時，保留上方的規劃工具 Python，加上 `--author-python /path/to/author-env/bin/python` 並移除 `--preview`。工具會在該環境核對 Python 3.10 與作者需求檔的版本。將 JSON 存於共用實驗資料夾，使用同一作者環境訓練，並設定 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`。評估途徑核實前使用預檢及預覽。
+
+可向作者索取三份逐題逐樣本的評分來源，Base 位於 `$OUT/analyses/traits_base_eval.spanish/trait_eval_spanish_extract.csv`，none／IP 位於 `$OUT/evals/<run_hash>/trait_eval_spanish_extract.csv`。需一併保存訓練與評估設定，核對各臂對應及評審版本。引用作者的原始分數可核實表列參考；本地重現仍需本次訓練與評分的憑證。 [作者基準與訓練評估流程](https://github.com/satchel-goodfire/shifting_the_gradient/tree/6964328411bf0ae49de47fa1bdfcfe8f94a75cce/grad_shift/paper)
 
 已獨立核對來源時，以預檢的 `inputs_sha256` 作 `--binding`。JSON 欄位為 `schema: 1`、`stage: "grant_spanish_table13"`、`inputs_sha256`、預檢中的 `author_evaluation` 值（放在 `evaluation`），以及 `runs`。其中 `runs.base`、`runs.none`、`runs.ip` 各提供 `author_run`、原評估檔的 `artifact_sha256` 和 `scores_0_100` 的 20×10 數字矩陣。Base 的 `author_run` 為 `null`。每列按同一固定題序，每欄按原始樣本序。獨立審查應核對原評估檔、執行版本、模型和各臂身分，並記錄通過核對的憑證檔 SHA-256。
 

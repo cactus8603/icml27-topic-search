@@ -2,13 +2,13 @@
 
 import argparse
 from hashlib import file_digest, sha256
-from importlib.metadata import PackageNotFoundError, version
 import json
 import math
 from pathlib import Path
 import re
 from statistics import fmean
 import subprocess
+import sys
 
 import yaml
 
@@ -37,6 +37,19 @@ ICC_SEEDS = (0, 1, 2)
 FAMILIES = ("no_system", "irrelevant", "negated", "domain_adjacent",
             "keyword_sharing", "structure_matched")
 MAX_RECEIPT_BYTES = 256 * 1024
+RUNTIME_PROBE = """
+import json
+import sys
+from importlib.metadata import PackageNotFoundError, version
+
+packages = {}
+for package in json.load(sys.stdin):
+    try:
+        packages[package] = version(package)
+    except PackageNotFoundError:
+        packages[package] = None
+print(json.dumps({"python": list(sys.version_info[:3]), "packages": packages}))
+"""
 
 
 def digest(path):
@@ -63,7 +76,23 @@ def line_count(path):
         return sum(bool(line.strip()) for line in stream)
 
 
-def preflight(author_dir, snapshot):
+def inspect_author_runtime(python, requirements):
+    result = subprocess.run(
+        [str(python), "-I", "-c", RUNTIME_PROBE],
+        input=json.dumps(list(requirements)), text=True, capture_output=True, check=True,
+    )
+    runtime = json.loads(result.stdout)
+    if not isinstance(runtime["python"], list) or len(runtime["python"]) != 3:
+        raise ValueError("author interpreter did not report a Python version")
+    installed = {package: {"expected": expected, "found": runtime["packages"][package]}
+                 for package, expected in requirements.items()}
+    matches = runtime["python"][:2] == [3, 10] and all(
+        row["found"] == row["expected"] for row in installed.values()
+    )
+    return runtime["python"], installed, matches
+
+
+def preflight(author_dir, snapshot, author_python):
     if upstream_git(author_dir, "rev-parse", "HEAD") != AUTHOR_REVISION:
         raise ValueError("incorrect author checkout revision")
     if upstream_git(author_dir, "status", "--porcelain", "--untracked-files=normal"):
@@ -74,15 +103,12 @@ def preflight(author_dir, snapshot):
     paths = (AUTHOR_DATASET, AUTHOR_IP, AUTHOR_QUESTIONS, CAPS_ASSET,
              "requirements.txt", "uv.lock")
     files = {name: digest(author_dir / name) for name in paths}
-    installed = {}
+    requirements = {}
     for line in (author_dir / "requirements.txt").read_text().splitlines():
         if line and not line.startswith("#"):
             package, expected = line.split("==", 1)
-            try:
-                found = version(package)
-            except PackageNotFoundError:
-                found = None
-            installed[package] = {"expected": expected, "found": found}
+            requirements[package] = expected
+    python_version, installed, matches = inspect_author_runtime(author_python, requirements)
     author_rows = line_count(author_dir / AUTHOR_DATASET)
     caps_rows = line_count(author_dir / CAPS_ASSET)
     if author_rows != 1000:
@@ -92,8 +118,8 @@ def preflight(author_dir, snapshot):
                   author_rows=author_rows, caps_rows=caps_rows, author_training=AUTHOR_TRAIN,
                   author_evaluation=AUTHOR_EVAL)
     return {"inputs": stable, "inputs_sha256": fingerprint(stable),
-            "environment": installed,
-            "author_environment_matches_pins": all(v["found"] == v["expected"] for v in installed.values()),
+            "environment": installed, "author_python_version": python_version,
+            "author_environment_matches_pins": matches,
             "local_caps_asset_has_5000_rows": caps_rows >= 5000}
 
 
@@ -227,6 +253,8 @@ def main():
     for command in (inputs, recipe):
         command.add_argument("--author-dir", type=Path, default=SHARED / "ext/shifting_the_gradient")
         command.add_argument("--snapshot", type=Path, default=SHARED / "hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots" / MODEL_REVISION)
+        command.add_argument("--author-python", type=Path, default=Path(sys.executable),
+                             help="Interpreter in the isolated author training environment")
     recipe.add_argument("arm", choices=("none", "ip"))
     recipe.add_argument("run_id")
     recipe.add_argument("--binding", required=True)
@@ -239,7 +267,7 @@ def main():
     args = parser.parse_args()
     if args.command in ("preflight", "author-config"):
         author_dir, snapshot = args.author_dir.resolve(), args.snapshot.resolve()
-        result = preflight(author_dir, snapshot)
+        result = preflight(author_dir, snapshot, args.author_python.absolute())
         if args.command == "author-config":
             if result["inputs_sha256"] != args.binding:
                 parser.error("author inputs differ from the independently reviewed binding")
