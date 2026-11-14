@@ -18,8 +18,8 @@ ap.add_argument("--smoke", action="store_true", help="smoke 模式：不強制�
 a = ap.parse_args()
 cfg = json.load(open(a.cfg)); CR = json.load(open(os.path.join(os.path.dirname(__file__), "..", "configs", "criteria.json")))
 P = cfg_paths(cfg); M = cfg["M"]
-QC = CR["queries"]  # 查詢數事先固定於 criteria.json；cfg 必須一致（正式 cfg 才檢查，smoke 不檢查）
-if not a.smoke:
+QC = CR["queries"]  # 查詢數事先固定於 criteria.json；正式 cfg（tag=stage0）必須一致，其他 cfg（smoke、假輸入測試）不檢查
+if cfg["tag"] == "stage0":
     assert (cfg["k_stage0"], cfg["k_stage1"], cfg["k_addon"], cfg["k_total"], cfg["query_seed"]) == \
         (QC["k_stage0"], QC["k_stage1"], QC["k_addon"], QC["k_addon"], QC["query_seed"]), "cfg 的查詢設定與 criteria.json 不一致"
 if a.addon and a.stage != 1:
