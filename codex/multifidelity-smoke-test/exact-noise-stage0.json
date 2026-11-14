@@ -1,0 +1,33 @@
+{
+  "exact_ranges": [
+    [
+      0,
+      10
+    ],
+    [
+      10,
+      20
+    ],
+    [
+      20,
+      30
+    ],
+    [
+      30,
+      40
+    ],
+    [
+      40,
+      50
+    ]
+  ],
+  "retrain_count": 200,
+  "noise_count": 4,
+  "source_sha256": "ceedb8db55432b9e0e23bf3e650a0670d72e01df953c5d3a8541bcefca64efc7",
+  "exact_lds": 0.9544301693369848,
+  "exact_pass": true,
+  "undefined_lds_queries": [],
+  "noise_over_signal": 0.020573614165186882,
+  "noise_pass": true,
+  "undefined_noise_queries": []
+}

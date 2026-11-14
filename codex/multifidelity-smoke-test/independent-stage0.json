@@ -1,0 +1,169 @@
+{
+  "exact_lds": 0.9544301693369848,
+  "cheap_lds": {
+    "grad_dot": 0.018957953374880893,
+    "tracin": 0.023818996967025444,
+    "trak1": 0.11844734095072187,
+    "trak5": 0.14604838835674516,
+    "ekfac_auto": 0.14472911490012616,
+    "ekfac_1e-8": 0.1546973465061165,
+    "ekfac_1e-3": 0.12222042767223938
+  },
+  "best_cheap": "ekfac_1e-8",
+  "best_cheap_stop_gap": -0.6453026534938835,
+  "simplified_spell_lds": 0.22461812438790518,
+  "hybrid_lds": 0.2550280619858007,
+  "gain": 0.03040993759789551,
+  "noise_over_signal": 0.020573614165186882,
+  "kappa": 0.9482724666595459,
+  "kappa_res": 0.9490876197814941,
+  "kappa_res_over_kappa": 1.0008596190974728,
+  "alpha": 1.1869102145567467e-08,
+  "report_59_audit": {
+    "m1": {
+      "seed": 20261114,
+      "gain": -5.692565690071372e-05,
+      "max_gain": 0.01,
+      "pass_gain": true,
+      "spell_lds": 0.22461812438790518,
+      "cheap_permuted_lds": 0.020857543284142258,
+      "hybrid_permuted_lds": 0.22456119873100447
+    },
+    "m2_when_gain_stop": {
+      "synthetic": {
+        "calibrated": true,
+        "lds_c_syn": 0.15774492974910045,
+        "sigma": 5.5,
+        "target_lds": 0.1546973465061165,
+        "hybrid_lds": 0.25796519296923753,
+        "gain": 0.03334706858133235,
+        "noise_family": "one fixed column-scaled iid Gaussian draw"
+      },
+      "oracle_alpha_in_sample_gain": 0.04967427443351263,
+      "oracle_alpha_in_sample_lds": 0.2742923988214178,
+      "classification": "below threshold for the specified synthetic control"
+    },
+    "m3_trigger": true,
+    "m3_pass": false
+  },
+  "report_60_audit": {
+    "phenomenon": "PASS",
+    "signal": "GRAY",
+    "headroom": "PASS",
+    "candidate_gate_diagnostic_only": false,
+    "rho_perp": 0.198599391579628,
+    "rho_perp_ci95": [
+      0.1869144237264991,
+      0.21146779534220694
+    ],
+    "rho_perm": 0.0008280062040284975,
+    "H": 0.7298120449490796,
+    "H_ci95": [
+      0.6190954348111124,
+      0.8059709924346913
+    ],
+    "baseline_lds": 0.22461812438790518,
+    "diagnostic_only": {
+      "n_undefined": 0,
+      "n_perm_undefined": 0,
+      "min_Y_residual_norm": 2.5197878130711615e-05,
+      "min_C_residual_norm": 161.380615234375,
+      "centered_rho_perp": 0.19858546197414398,
+      "column_centered_rho_perm": 0.0007932163450459484,
+      "row_centered_rho_perp": 0.21057243674993514,
+      "row_centered_rho_perm": 8.036247199925129e-05,
+      "removal_residual_lds_exact": 0.7031078979334651,
+      "removal_residual_lds_cheap": 0.14384974481943852
+    }
+  },
+  "descriptive_only": {
+    "equal_query_kappa": 0.4892478287220001,
+    "equal_query_kappa_res": 0.48931384086608887,
+    "equal_query_kappa_res_over_kappa": 1.0001349257783345,
+    "frozen_gain_query_bootstrap": {
+      "gain": 0.03040993759789555,
+      "ci95": [
+        0.01005833821378771,
+        0.04061639196470366
+      ],
+      "gap_to_practical_threshold": -0.00959006240210445,
+      "practical_threshold": 0.04
+    },
+    "crossfit_residual_oracle": {
+      "cheap_selected_on_even_retrain": "ekfac_1e-8",
+      "evaluated_on_odd_retrain": 100,
+      "equal_query_residual_energy": 0.2077849627718589,
+      "cheap_lds": 0.14844343293181567,
+      "crossfit_oracle_spell_lds": 0.2355874877407697,
+      "crossfit_oracle_hybrid_lds": 0.3180968319317303,
+      "frozen_spell_lds": 0.21269724968064727,
+      "heldout_gain_vs_oracle_spell_and_cheap": {
+        "gain": 0.08250934419096055,
+        "ci95": [
+          0.0542695768195782,
+          0.10868208830907815
+        ],
+        "gap_to_practical_threshold": 0.04250934419096055,
+        "practical_threshold": 0.04
+      },
+      "heldout_gain_vs_frozen_spell_and_cheap": {
+        "gain": 0.10539958225108302,
+        "ci95": [
+          0.06264487570897326,
+          0.14180413551483068
+        ],
+        "gap_to_practical_threshold": 0.06539958225108303,
+        "practical_threshold": 0.04
+      },
+      "limitation": "Exact residuals from other training rows inform U; the two row folds use two different subspaces, so this oracle is an empirical diagnostic, not an LDS bound or an implementable fixed-budget method."
+    },
+    "full_exact_reference_gain": {
+      "gain": 0.7298120449490796,
+      "ci95": [
+        0.6223251930806465,
+        0.8065182299260375
+      ],
+      "gap_to_practical_threshold": 0.6898120449490796,
+      "practical_threshold": 0.04
+    },
+    "query_reliability": {
+      "split_half_spearman": 0.11289315726290516,
+      "split_half_spearman_brown": 0.20288229202623406,
+      "full_replay_query_correlation": 0.1307563025210084,
+      "baseline_query_loss_correlation": 0.35020408163265304,
+      "baseline_cheap_score_norm_correlation": 0.3785354141656663
+    },
+    "cgram_shrunk_reference_full_even_odd": [
+      {
+        "k": 50,
+        "cheap": 0.1546973465061165,
+        "cgram_projected_exact": 0.22774698856905093,
+        "cgram_hybrid": 0.25808693409152067,
+        "gv_projected_exact": 0.22461812438790518,
+        "gain_vs_prespecified_baselines": 0.03033994552246974,
+        "difference_vs_same_U_baselines": 0.03033994552246974,
+        "difference_vs_frozen_baselines": 0.03346880970361549
+      },
+      {
+        "k": 25,
+        "cheap": 0.15998027619073796,
+        "cgram_projected_exact": 0.23405865132424922,
+        "cgram_hybrid": 0.27732696108723665,
+        "gv_projected_exact": 0.23308948861541215,
+        "gain_vs_prespecified_baselines": 0.04326830976298743,
+        "difference_vs_same_U_baselines": 0.04326830976298743,
+        "difference_vs_frozen_baselines": 0.04214936565604757
+      },
+      {
+        "k": 25,
+        "cheap": 0.14941441682149498,
+        "cgram_projected_exact": 0.2087311233200857,
+        "cgram_hybrid": 0.25921383640044443,
+        "gv_projected_exact": 0.21375738501142663,
+        "gain_vs_prespecified_baselines": 0.0454564513890178,
+        "difference_vs_same_U_baselines": 0.05048271308035873,
+        "difference_vs_frozen_baselines": 0.04515518305582317
+      }
+    ]
+  }
+}
