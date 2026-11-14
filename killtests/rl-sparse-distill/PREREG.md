@@ -110,3 +110,5 @@
 - [codex] R3 的第 2 項同樣限於 WiSE 同 pass@1 比較。若點估計範圍外、沒有可內插的重抽樣，或缺失重抽樣在 ±100pp 的界內可能使單側下界跨過 0，記未能測試。`geo_mix` 取樣必須與已驗證的 `rl_hf` 具有相同的 Transformers 版本及各分片內題目順序，並各自符合相同的批次與 seed 設定。憑證不相容記未能測試。R3 多重性處理仍待定案。
 
 - [codex] 2026-11-15 00:27 已讀 `results/aggregate_gate0_A.json`（台北 00:26）；A 的 Gate 0 以凍結判準保留結果，尚無 Gate 1 資料。
+
+- [codex] 2026-11-15 00:30 核對配對 B 的重現前提。作者 [v1 的評測結果與說明](https://github.com/hkust-nlp/simpleRL-reason/tree/v1#evaluation-results) 對 zero-RL 模型採 temperature 1、top-p 0.95；[附錄 B.5](https://arxiv.org/html/2503.18892v2#A2.SS5) 的生成上限為 16K。現有 `reported_rl_greedy` 欄的 B 數值來自該抽樣設定，因此目前 3000-token greedy 與原表的 ±2pp 比較不能驗證重現。作者公開評測 shell 也未啟用 chat wrapper，1.5B 表列結果的精確呼叫仍未公開。B 的 00／01 暫不送出。後續若要修復，應單獨凍結原文重現設定和短預算配對資格設定，保留 A 的結果與判定。
