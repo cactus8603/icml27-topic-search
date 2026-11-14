@@ -1,6 +1,7 @@
 """CPU 分析：讀激活快取 → 各閘門的「原始數字」（results/*.json、*.npz）。本腳本不下 PASS/FAIL 判斷，判讀在 aggregate.py。
 子命令：gate1_real | gate2 | monitors | detector | all
-用法：python -I analyze.py all --cache DIR [--results DIR] [--seeds 5]"""
+用法：python -I analyze.py all --cache DIR [--results DIR] [--seeds 5]
+      python -I analyze.py inv --cache DIR --cache-extra DIR2   # 第二探針 INV（只在 ROB=FAIL 時由 04_inv_probe.sbatch 呼叫）"""
 import argparse, glob, json, os, sys, time
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -11,13 +12,18 @@ cfg = load_config()
 
 
 class Cache:
-    def __init__(self, d, merge_extra=False):
+    def __init__(self, d, merge_extra=False, extra_dir=None):
         info = json.load(open(os.path.join(d, "cache_info.json")))
         self.layers = info["layers"]; self.pnames = info["probe_names"]
         A, P, meta = [], [], []
-        for f in sorted(glob.glob(os.path.join(d, "shard_*.npz"))):
-            z = np.load(f); A.append(z["acts"]); P.append(z["probes"])
-            meta += json.load(open(f.replace(".npz", ".meta.json")))
+        dirs = [d] + ([extra_dir] if extra_dir else [])   # 2026-11-14（C3）：harm_test_extra 的激活在另一個快取目錄
+        for dd in dirs:
+            if dd != d:
+                ie = json.load(open(os.path.join(dd, "cache_info.json")))
+                assert ie["layers"] == self.layers and ie["probe_names"] == self.pnames and ie["D"] == info["D"], "extra cache 與主快取的層/探測器不一致"
+            for f in sorted(glob.glob(os.path.join(dd, "shard_*.npz"))):
+                z = np.load(f); A.append(z["acts"]); P.append(z["probes"])
+                meta += json.load(open(f.replace(".npz", ".meta.json")))
         self.acts = np.concatenate(A); self.probes = np.concatenate(P); self.meta = meta
         # 2026-11-14 審查修正：fp16 快取可能溢位成 inf；有非有限值就停（屬閘門 1 程式正確性）
         nf = int((~np.isfinite(self.acts)).sum()) + int((~np.isfinite(self.probes)).sum())
@@ -159,6 +165,87 @@ def monitors_stage(c, rdir, seeds):
     return res
 
 
+# ---------------------- 樣本內正控制 PC-in / PC-loo（2026-11-14，59 號 C1；結果前定案，非探索性） ----------------------
+def pc_split(c, pcfg):
+    """E 概念：每概念正/負例各自以 ex_id（prompt）為單位，seed=split_seed，train_frac 訓練、其餘留出。
+    資料不足（每類 < 4 例、缺 clean 或 T0:own 條件）就 SystemExit：不自行變通，回報使用者。"""
+    rng = np.random.default_rng(pcfg["split_seed"]); sp = {}
+    for concept in cfg["concepts"][pcfg["concepts"]]:
+        d = {}
+        for lab, nm in ((1, "pos"), (0, "neg")):
+            ids = sorted(e for e in ex_list(c, "benign", lab)
+                         if c.meta[c.ix[(e, "clean")]]["concept"] == concept and c.meta[c.ix[(e, "clean")]]["role"] == "E")
+            if len(ids) < 4: raise SystemExit(f"PC 資料不足：概念 {concept} 的 {nm} 只有 {len(ids)} 例（C1 要求 250）→ 停下回報")
+            if lab == 1:
+                miss = [e for e in ids if (e, "T0:" + concept) not in c.ix]
+                if miss: raise SystemExit(f"PC 資料不足：概念 {concept} 有 {len(miss)} 個正例缺 T0:{concept} 條件 → 停下回報")
+            perm = rng.permutation(len(ids)); ntr = int(round(pcfg["train_frac"] * len(ids)))
+            d["tr_" + nm] = [ids[i] for i in sorted(perm[:ntr])]; d["ho_" + nm] = [ids[i] for i in sorted(perm[ntr:])]
+        sp[concept] = d
+    return sp
+
+
+def pos_control_stage(c, rdir, seeds, split=None):
+    pcfg = cfg["thresholds"]["pos_control"]; rc = cfg["robust"]
+    sp = split or pc_split(c, pcfg); Es = list(sp)
+    hb = [e for e in ex_list(c, "benign") if c.meta[c.ix[(e, "clean")]]["role"] == "H"]   # H_b 全部乾淨樣本（正負例都用）
+    hb_rows = [c.ix[(e, "clean")] for e in hb]
+    out = dict(config=dict(pcfg), n_hb_clean=len(hb_rows), seeds=seeds, concepts={})
+    # 每概念每層的訓練正例位移（原始空間）
+    shifts = {}
+    for k in Es:
+        shifts[k] = [(c.acts[[c.ix[(e, "T0:" + k)] for e in sp[k]["tr_pos"]], li].astype(np.float32)
+                      - c.acts[[c.ix[(e, "clean")] for e in sp[k]["tr_pos"]], li].astype(np.float32)) for li in range(len(c.layers))]
+    D = c.acts.shape[-1]
+    for k in Es:
+        t0 = time.time(); s = sp[k]
+        tr = s["tr_pos"] + s["tr_neg"]; ytr = np.array([1] * len(s["tr_pos"]) + [0] * len(s["tr_neg"]))
+        neg_rows = [c.ix[(e, "clean")] for e in s["ho_neg"]] + hb_rows
+        per_in, per_loo, ks = [], [], []
+        for li in range(len(c.layers)):
+            Xtr = c.X(li, [c.ix[(e, "clean")] for e in tr])
+            Xp = np.stack([c.X(li, [c.ix[(e, cd)] for e in s["ho_pos"]]) for cd in ("clean", "T0:" + k)], 1)
+            Xn = c.X(li, neg_rows)
+            dn = np.zeros((0, D), np.float32)
+            if pcfg.get("pool_use_neg_shifts", False):
+                raise SystemExit("pool_use_neg_shifts=true 未實作（C1 字面為只用正例位移）")
+            din = np.concatenate([shifts[j][li] for j in Es]); dlo = np.concatenate([shifts[j][li] for j in Es if j != k])
+            r_in, i_in = M.run_layer(Xtr, ytr, din, dn, Xp, Xn, cfg, list(range(seeds)), families=["ENS", "ROB"])
+            r_lo, i_lo = M.run_layer(Xtr, ytr, dlo, dn, Xp, Xn, cfg, list(range(seeds)), families=["ROB"])
+            per_in.append(r_in); per_loo.append(r_lo); ks.append([i_in["k"], i_lo["k"]])
+        ei = M.ensemble(per_in); el = M.ensemble(per_loo)
+        def tp(pair, j): return [tpr_at_fpr(pair[0][s_, :, j], pair[1][s_], 0.01) for s_ in range(seeds)]
+        r = dict(n_train=len(tr), n_ho_pos=len(s["ho_pos"]), n_ho_neg=len(s["ho_neg"]), n_threshold_neg=len(neg_rows), k_per_layer_in_loo=ks)
+        for nm, pair in (("ens", ei["ENS"]), ("rob_in", ei["ROB"]), ("rob_loo", el["ROB"])):
+            for j, cd in enumerate(("clean", "t0")):
+                v = tp(pair, j); r[f"{nm}_{cd}_tpr"] = float(np.mean(v)); r[f"{nm}_{cd}_per_seed"] = v
+        out["concepts"][k] = r
+        print(f"  [PC] {k} {time.time()-t0:.0f}s", flush=True)
+    json.dump(out, open(os.path.join(rdir, "pos_control.json"), "w"), indent=1)
+    return out
+
+
+# ---------------------- 唯一的第二探針 INV（2026-11-14，59 號 C3） ----------------------
+def inv_stage(c, rdir, seeds):
+    """ROB=FAIL 才會被呼叫（sbatch 以 RESULT.json 把關）。harm_test + harm_test_extra 合併後，INV 對 ENS 判一次，雙尾 97.5% CI。"""
+    pc = cfg["thresholds"]["second_probe_inv"]; bs = dict(cfg["bootstrap"], ci=pc["ci"])
+    per, infos, pconds = run_monitors(c, "harm_train", "harm_test", "harm", list(range(seeds)), families=["ENS", "INV"])
+    ens = M.ensemble(per); S = seeds
+    prim = [i for i, cd in enumerate(pconds) if cd.startswith("T0:")]; ci = pconds.index("clean")
+    d, lo, hi, _ = cluster_bootstrap_delta(ens["INV"][0][:, :, prim], ens["ENS"][0][:, :, prim], ens["INV"][1], ens["ENS"][1], bs["B"], bs["seed"], 0.01, bs["ci"])
+    out = dict(n_pos=int(ens["ENS"][0].shape[1]), n_neg=int(ens["ENS"][1].shape[1]), ci_level=bs["ci"],
+               delta_inv_vs_ens=dict(point=d, lo=lo, hi=hi))
+    for f in ("ENS", "INV"):
+        P, N = ens[f]
+        out[f] = dict(tpr_primary_mean=float(np.mean([np.mean([tpr_at_fpr(P[s, :, j], N[s], 0.01) for s in range(S)]) for j in prim])),
+                      tpr_clean=float(np.mean([tpr_at_fpr(P[s, :, ci], N[s], 0.01) for s in range(S)])))
+        nxs = np.mean([i["negx"][f] for i in infos], 0)
+        out[f]["fpr_neg_triggered"] = {cd: float(np.mean([(nxs[s, :, e] > thr_at_fpr(N[s], 0.01)).mean() for s in range(S)])) for e, cd in enumerate(infos[0]["negconds"])}
+    out["clean_tax_ens_minus_inv"] = out["ENS"]["tpr_clean"] - out["INV"]["tpr_clean"]
+    json.dump(out, open(os.path.join(rdir, "monitors_inv.json"), "w"), indent=1)
+    return out
+
+
 # ---------------------- 偵測器 ----------------------
 def detector_stage(c, rdir):
     dc = cfg["detector"]; tmpl = cfg["template_split"]
@@ -234,17 +321,23 @@ def detector_stage(c, rdir):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=["gate1_real", "gate2", "monitors", "detector", "all"])
+    ap.add_argument("stage", choices=["gate1_real", "gate2", "monitors", "detector", "pos_control", "inv", "all"])
     ap.add_argument("--cache", required=True); ap.add_argument("--results", default=os.path.join(EXP, "results"))
     ap.add_argument("--seeds", type=int, default=cfg["probe"]["n_seeds"])
+    ap.add_argument("--cache-extra", default=None, help="harm_test_extra 的激活快取目錄（灰區加碼或 INV 探針用）")
     ap.add_argument("--merge-extra", action="store_true", help="灰區加碼：把 harm_test_extra 併入 harm_test")
     a = ap.parse_args(); os.makedirs(a.results, exist_ok=True)
-    c = Cache(a.cache, a.merge_extra); print("cache rows", len(c.meta), flush=True)
-    st = [a.stage] if a.stage != "all" else ["gate1_real", "gate2", "monitors", "detector"]
+    c = Cache(a.cache, a.merge_extra or a.stage == "inv", a.cache_extra); print("cache rows", len(c.meta), flush=True)
+    st = [a.stage] if a.stage != "all" else ["gate1_real", "gate2", "monitors", "detector", "pos_control"]
+    if a.stage == "all": pc_split(c, cfg["thresholds"]["pos_control"])   # 先檢查 PC 資料切分可行；不可行就在主分析之前停下
     if "gate1_real" in st or "gate2" in st:
         g2 = gate2(c); json.dump(g2, open(os.path.join(a.results, "gate2_repro.json"), "w"), indent=1)
     if "monitors" in st: monitors_stage(c, a.results, a.seeds)
     if "detector" in st: detector_stage(c, a.results)
+    if "pos_control" in st: pos_control_stage(c, a.results, a.seeds)
+    if "inv" in st:
+        assert a.cache_extra, "inv 需要 --cache-extra"
+        inv_stage(c, a.results, a.seeds)
 
 
 if __name__ == "__main__":

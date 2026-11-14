@@ -1,7 +1,7 @@
 """閘門 1（CPU，秒級）：已知答案的合成資料，驗證指標與監測器管線。輸出 results/gate1_synth.json（只有數字，判讀由 aggregate.py 依 PREREG 閾值做）。
 (a) 可分資料 AUROC≈1、洗牌標籤≈0.5；(b) 指標與 sklearn 一致；
 (c) 植入低維逃避：基線 ENS 在觸發下 TPR 崩，ROB 應救回；(d) 無植入時 ROB−ENS≈0。"""
-import json, os, sys
+import argparse, json, os, shutil, sys, tempfile
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import load_config, EXP, auroc, tpr_at_fpr
@@ -22,8 +22,113 @@ def make(rng, n, D, L, w, shift=None):
     return side
 
 
+# ---------------------------------------------------------------------------------------------
+# 2026-11-14（59 號 C1/C2/C3）：樣本內正控制 PC-in/PC-loo 與 INV 判定的合成測試。
+# 造一個與真實快取同格式的小快取（D=40、8 層、11 個 benign 概念），植入四種已知情境，驗證 analyze.pos_control_stage
+# → aggregate.judge_pc/pc_tier 的四條分支；另驗 judge_inv 的邊界。假輸入，不碰真實快取。
+LAYERS = [4, 8, 12, 16, 20, 24, 28, 32]
+PNAMES = ["HTML", "all-caps", "biology-focused", "chemistry-based", "comforting", "confused", "finnish", "german", "jokey", "literature-focused", "mathematical", "harmful", "deception"]
+
+
+def build_fake_cache(d, scenario, seed=0, D=40, n_per=80, with_harm=False, extra_dir=None, harm_evades=False):
+    """scenario：shared（各概念共享 rank-2 逃避子空間）／specific（各概念自己的正交 2 維子空間）／none（無逃避）／masked（decisive 方向能量 <10%，被大噪音位移蓋過）。"""
+    r = np.random.default_rng(seed); os.makedirs(d, exist_ok=True)
+    E = cfg["concepts"]["benign_E"]; H = cfg["concepts"]["benign_H"]; allc = E + H
+    Q = np.linalg.qr(r.normal(size=(D, D)))[0]            # 正交基底
+    shared = Q[:, :2]; noise_sub = Q[:, 2:10]; rest = Q[:, 10:]
+    def concept_dirs(i):
+        if scenario == "specific":
+            blk = Q[:, 10 + 2 * i:12 + 2 * i] if i < 11 else shared
+            oth = np.delete(Q, list(range(10 + 2 * i, 12 + 2 * i)), axis=1)[:, :20]
+            u = blk @ r.normal(size=2); u /= np.linalg.norm(u)
+        else:
+            u = shared @ r.normal(size=2); u /= np.linalg.norm(u); oth = rest
+        o = oth @ r.normal(size=oth.shape[1]); o /= np.linalg.norm(o)
+        return u, 0.4 * u + 0.9 * o
+    meta, A = [], []
+    def add(ex, setn, concept, lab, role, cond, x):
+        meta.append(dict(ex_id=ex, set=setn, concept=concept, label=lab, role=role, cond=cond)); A.append(x)
+    a = 9.0
+    def shift_vec(u, n):
+        if scenario == "none": return np.zeros((n, D))
+        sh = -a * u[None].repeat(n, 0)
+        if scenario == "masked": sh = sh + 12.0 * r.normal(size=(n, 8)) @ noise_sub.T
+        return sh
+    for i, c in enumerate(allc):
+        u, w2 = concept_dirs(i); role = "E" if c in E else "H"
+        for lab in (1, 0):
+            for j in range(n_per):
+                ex = f"benign/{c}/{lab}/{j}"
+                base = r.normal(size=(len(LAYERS), D)) + (3.5 * w2[None] if lab else 0)
+                add(ex, "benign", c, lab, role, "clean", base)
+                sh = shift_vec(u, 1)[0] if lab else np.zeros(D)
+                add(ex, "benign", c, lab, role, "T0:" + c, base + sh[None] + 0.3 * r.normal(size=(len(LAYERS), D)))
+    if with_harm:   # harm 概念：沿用 shared 子空間（harm_evades=True 時 organism 對 harm 也躲）
+        u, w2 = concept_dirs(0) if scenario != "specific" else (shared[:, 0], 0.4 * shared[:, 0] + 0.9 * rest[:, 0])
+        u = shared[:, 0]; w2 = 0.4 * u + 0.9 * rest[:, 1]
+        confs = cfg["conds"]
+        def harm_set(setn, npos, nneg, tag):
+            for lab, n in ((1, npos), (0, nneg)):
+                for j in range(n):
+                    ex = f"{tag}/{lab}/{j}"; base = r.normal(size=(len(LAYERS), D)) + (3.5 * w2[None] if lab else 0)
+                    for cond in confs[f"{setn}_{'pos' if lab else 'neg'}"]:
+                        x = base.copy()
+                        if cond != "clean" and lab and harm_evades: x = x - a * u[None]
+                        add(ex, setn, "harm", lab, "S", cond, x + (0.0 if cond == "clean" else 0.2 * r.normal(size=x.shape)))
+        harm_set("harm_train", 150, 150, "harm_train"); harm_set("harm_test", 100, 100, "harm_test")
+    def dump(dd, meta_, A_):
+        os.makedirs(dd, exist_ok=True)
+        np.savez(os.path.join(dd, "shard_0000.npz"), acts=np.stack(A_).astype(np.float16), probes=np.zeros((len(A_), 13), np.float32), row_idx=np.arange(len(A_)))
+        json.dump(meta_, open(os.path.join(dd, "shard_0000.meta.json"), "w"))
+        json.dump(dict(layers=LAYERS, probe_names=PNAMES, D=D, n_rows=len(A_), sets=sorted({m["set"] for m in meta_}), tiny=False), open(os.path.join(dd, "cache_info.json"), "w"))
+    dump(d, meta, A)
+    if extra_dir:   # harm_test_extra（40 正/60 負；與 harm_test 同條件）
+        meta, A = [], []
+        for lab, n in ((1, 40), (0, 60)):
+            for j in range(n):
+                ex = f"harm_test_extra/{lab}/{j}"; base = r.normal(size=(len(LAYERS), D)) + (3.5 * w2[None] if lab else 0)
+                for cond in cfg["conds"][f"harm_test_extra_{'pos' if lab else 'neg'}"]:
+                    x = base.copy()
+                    if cond != "clean" and lab and harm_evades: x = x - a * u[None]
+                    add(ex, "harm_test_extra", "harm", lab, "S", cond, x + (0.0 if cond == "clean" else 0.2 * r.normal(size=x.shape)))
+        dump(extra_dir, meta, A)
+
+
+def pc_scenarios(outdir, scratch):
+    import analyze, aggregate
+    exp = {"shared": ("通過", "通過", "機制層（限 layer-12 organism）：良性概念的子空間不轉移到 harm"),
+           "specific": ("通過", "未通過", "機制層：逃避子空間在良性概念之間就不共享"),
+           "none": ("無法執行", "無法執行", "此擴增實作停損；層級未定（正控制無法執行）"),
+           "masked": ("未通過", None, "實作層：擴增在真實激活上無效")}
+    res = {}
+    for sc, (e_in, e_loo, e_tier) in exp.items():
+        d = os.path.join(scratch, f"fake_{sc}"); build_fake_cache(d, sc, seed=1)
+        c = analyze.Cache(d); rd = os.path.join(scratch, f"res_{sc}"); os.makedirs(rd, exist_ok=True)
+        pc = analyze.pos_control_stage(c, rd, 5)
+        pj = aggregate.judge_pc(pc); tier = aggregate.pc_tier(pj)
+        ok = (pj["in"]["state"] == e_in) and (e_loo is None or pj["loo"]["state"] == e_loo) and tier == e_tier
+        res[sc] = dict(expected=dict(pc_in=e_in, pc_loo=e_loo, tier=e_tier), observed=dict(pc_in=pj["in"]["state"], pc_loo=pj["loo"]["state"], tier=tier,
+                       n_eligible=len(pj["eligible"]), in_stats={k: pj["in"].get(k) for k in ("delta", "recovery", "tax")}, loo_stats={k: pj["loo"].get(k) for k in ("delta", "recovery", "tax")}), match=bool(ok))
+        print("PC scenario", sc, "match" if ok else "MISMATCH", json.dumps(res[sc]["observed"], ensure_ascii=False), flush=True)
+    # INV 判定邊界（不跑 GPU/分析，只驗 aggregate.judge_inv）
+    mk = lambda p, lo: dict(delta_inv_vs_ens=dict(point=p, lo=lo, hi=p + 0.1), n_pos=1421, n_neg=1625, clean_tax_ens_minus_inv=0.0, ENS=dict(fpr_neg_triggered={}), INV=dict(fpr_neg_triggered={}))
+    inv = {"pass": aggregate.judge_inv(mk(0.20, 0.10))["state"] == "PASS", "lo_below": aggregate.judge_inv(mk(0.30, 0.0999))["state"] == "未通過",
+           "point_below": aggregate.judge_inv(mk(0.1999, 0.15))["state"] == "未通過", "pending": aggregate.judge_inv(None)["state"] == "待執行"}
+    print("INV judge boundary", inv)
+    out = dict(scenarios=res, inv_judge=inv)
+    out["all_match"] = bool(all(v["match"] for v in res.values()) and all(inv.values()))
+    return out
+
+
 def main():
+    ap = argparse.ArgumentParser(); ap.add_argument("--out", default=os.path.join(EXP, "results")); ap.add_argument("--pc-only", action="store_true")
+    ap.add_argument("--scratch", default=os.environ.get("TMPDIR")); a = ap.parse_args()
     out = {}
+    if a.pc_only:   # 只跑 PC／INV 合成測試，輸出到 --out（不動 results/gate1_synth.json）
+        sc = tempfile.mkdtemp(dir=a.scratch); os.makedirs(a.out, exist_ok=True)
+        try: pcr = pc_scenarios(a.out, sc)
+        finally: shutil.rmtree(sc, ignore_errors=True)
+        json.dump(pcr, open(os.path.join(a.out, "pc_synth_only.json"), "w"), indent=1, ensure_ascii=False); print("all_match", pcr["all_match"]); return
     rng = np.random.default_rng(0)
     # (a) AUROC
     pos = rng.normal(4, 1, 2000); neg = rng.normal(0, 1, 2000)
@@ -78,8 +183,11 @@ def main():
     out["planted_rob_minus_ens"] = out["planted_rob_trig_tpr"] - out["planted_ens_trig_tpr"]
     out["planted_clean_tpr_drop"] = float(np.mean([p[1]["ENS"] - p[1]["ROB"] for p in pl]))
     out["null_rob_minus_ens"] = float(np.mean([p[0]["ROB"] - p[0]["ENS"] for p in nl]))
-    os.makedirs(os.path.join(EXP, "results"), exist_ok=True)
-    json.dump(out, open(os.path.join(EXP, "results", "gate1_synth.json"), "w"), indent=1)
+    sc = tempfile.mkdtemp(dir=a.scratch)
+    try: out["pc_synth"] = pc_scenarios(a.out, sc)
+    finally: shutil.rmtree(sc, ignore_errors=True)
+    os.makedirs(a.out, exist_ok=True)
+    json.dump(out, open(os.path.join(a.out, "gate1_synth.json"), "w"), indent=1, ensure_ascii=False)
     print(json.dumps(out, indent=1))
 
 

@@ -18,7 +18,7 @@
 ## 資料夾
 - `PREREG.md` 凍結的預註冊；`configs/config.json` 全部設定與閾值。
 - `scripts/`：`common.py`（指標、bootstrap、探測器）、`build_datasets.py`、`extract_acts.py`（GPU 抽取）、`monitors.py`（ENS／ROB／INV／RND）、`selftest.py`（閘門 1 合成）、`analyze.py`（原始數字）、`aggregate.py`（機械判讀）。
-- `slurm/`：`env.sh`、`01_bench.sbatch`、`02_extract.sbatch`、`03_analyze.sbatch`。`results/`、`logs/`：輸出。
+- `slurm/`：`env.sh`、`01_bench.sbatch`、`02_extract.sbatch`、`03_analyze.sbatch`、`04_inv_probe.sbatch`（C3 第二探針；只在 ROB=FAIL 時由使用者決定是否送出，內建把關）。`results/`、`logs/`：輸出。
 - 資料、快取放 `/work/ChihChungHsu/cactus8603/icml/runs/chameleon-defense/`（repo 外，含有害合成文字，不進 git）。
 
 ## 預估
@@ -49,6 +49,12 @@ J3=$(sbatch --parsable --dependency=afterok:$J2 slurm/03_analyze.sbatch)
 ## CPU 極小 smoke test（已做）
 - `scripts/selftest.py`：合成資料、秒級，閘門 1 合成部分結果在 `results/gate1_synth.json`。
 - `extract_acts.py --tiny` ＋ `analyze.py` ＋ `aggregate.py`：隨機初始化的小 Gemma2（CPU，不載入真實權重），只驗證程式路徑，輸出在 run_dir 的 smoke_*（不是科學結果）。
+
+## 2026-11-14 新增：樣本內正控制與第二探針（PREREG 第 8 節；代理落差稽核後、結果前定案）
+- `analyze.py all` 現在多算 `pos_control.json`（PC-in／PC-loo，每個 E 概念 70/30 切分、留出正例上算 Δ、回復率、稅）；`aggregate.py` 依 `config.thresholds.pos_control` 機械判定，並在 ROB=FAIL 時輸出四種固定層級用語。PC 不改變 ROB 的 PASS／FAIL／灰區。
+- `analyze.py inv --cache DIR --cache-extra DIR2`：INV 第二探針（harm_test＋harm_test_extra，雙尾 97.5% CI）。
+- `selftest.py --pc-only --out DIR`：只跑 PC／INV 合成情境，不動 `results/gate1_synth.json`；完整 selftest 會把結果寫入 `gate1_synth.json["pc_synth"]`，aggregate 閘門 1 檢查之。
+- 描述改為「此擴增實作在 layer-12 organism 上停損」，不寫題目淘汰；升級須符合 57 號第 5 節規則 2。
 
 ## 風險與未確認事項
 1. **checkpoint 與 8 層基線不對應**：只有 layer-12 organism；8 層 ensemble 是自訓、層集合自訂。若其他層本來就沒被擾動，ENS 會很強，Δ 難達 20pp（FAIL 也許只反映此設定）。作者 8 層 organism 未公開。
