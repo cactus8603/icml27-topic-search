@@ -5,7 +5,3 @@
 [codex] killtests/biased-gen-cfg/ 2026-11-14 23:16 2026-11-15 00:15
 [codex] killtests/inoculation-lambda/ 2026-11-14 23:16 2026-11-15 00:15
 [codex] criteria.md 2026-11-14 23:16 2026-11-15 00:15
-
-[claude] killtests/chameleon-defense/ 2026-11-14 23:45 2026-11-15 02:00
-[claude] killtests/multifidelity-attribution/ 2026-11-14 23:45 2026-11-15 02:00
-[claude] killtests/compositional-retrieval/ 2026-11-14 23:45 2026-11-15 02:00
