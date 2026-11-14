@@ -1,0 +1,29 @@
+{
+  "source": {
+    "parquet": "/work/ChihChungHsu/cactus8603/icml/data/openwebtext/plain_text/train-00000-of-00080.parquet",
+    "parquet_sha256": "caed9f4b7053d7cd4d1a13ce9ec9224d84a3bba1f11579193562a7e31ebe656e",
+    "tokenizer": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--gpt2-large/snapshots/32b71b12589c2f8d625668d2335a01cac3249519/tokenizer.json",
+    "tokenizer_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "split_salt": "gate-optimizer-docs-v1",
+    "token_limits": {"train": 16000000, "dev": 100000, "probe": 300000, "test": 100000}
+  },
+  "model": {"vocab": 50257, "width": 384, "depth": 8, "heads": 6, "kv_heads": 3, "mlp": 1024, "sequence": 256},
+  "training": {
+    "micro_batch": 8, "accumulation": 2, "tune_steps": 160, "tune_warmup": 20,
+    "shared_steps": 100, "branch_steps": 400, "branch_warmup": 20, "stress_multiple": 3.0,
+    "dev_seed": 812, "test_seeds": [416, 732, 925], "eval_batches": 5, "eval_every": 50,
+    "probe_every": 20, "probe_batch": 2, "probe_positions": 64, "intervention_every": 40,
+    "grad_clip": 1.0, "weight_decay": 0.1, "adam_betas": [0.9, 0.95],
+    "arms": [
+      {"name": "adam", "optimizer": "adam", "rate_grid": [0.00075, 0.0015, 0.003]},
+      {"name": "gate", "optimizer": "adam", "gate": true, "rate_grid": [0.00075, 0.0015, 0.003]},
+      {"name": "stableadam", "optimizer": "stableadam", "rate_grid": [0.00075, 0.0015, 0.003]},
+      {"name": "muon", "optimizer": "muon", "rate_grid": [0.001, 0.002, 0.004]},
+      {"name": "sandwich", "optimizer": "adam", "sandwich": true, "rate_grid": [0.00075, 0.0015, 0.003]}
+    ]
+  },
+  "criteria": {
+    "damage_nll": 0.05, "min_damage_events": 4, "auroc_margin": 0.03,
+    "signal_ridge": 0.1, "min_scored_signal_seeds": 2, "min_nominal_gap_nll": 0.02
+  }
+}
