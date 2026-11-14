@@ -55,3 +55,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 06:14 submit 26479 t2i-rare-failure 已凍結的核對無誤之純 CPU 高斯與多峰 (a′) 加速代理，合成測試通過，無 GPU 4f1be75
 [codex] 2026-11-15 06:16 submit 26480 fallible-verifier 26444 在程序前置檢查失敗；修復並複核 sacct 路徑，沿用原等預算設定 e85c237
 [codex] 2026-11-15 06:16 submit 26481 fallible-verifier 依賴 26480 成功後執行凍結的 CPU 等預算及等風險判讀 e85c237
+[codex] 2026-11-15 06:21 cancel 26481 fallible-verifier 26480 已在推論初始化失敗，移除無法滿足的 CPU 相依 e85c237

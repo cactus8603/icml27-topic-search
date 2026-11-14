@@ -55,6 +55,8 @@ export TMPDIR="$shared/tmp" HF_HOME="$shared/hf_home"
 export XDG_CACHE_HOME="$shared/tmp/fv2-cache-$SLURM_JOB_ID"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VLLM_NO_USAGE_STATS=1
+# The compute node has no nvcc for FlashInfer's sampler JIT.
+export VLLM_USE_FLASHINFER_SAMPLER=0
 export FV2_PREVIOUS_JOB_ID="$prior_job"
 
 {
