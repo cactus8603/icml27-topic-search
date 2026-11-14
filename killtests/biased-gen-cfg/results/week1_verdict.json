@@ -1,0 +1,233 @@
+{
+ "criteria_file": "/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/biased-gen-cfg/configs/criteria_week1.json",
+ "gates": {
+  "G1_bp_unit_tests": "PASS",
+  "G2_celeba_reproduction": "PASS",
+  "G3_hier_oracle_curves": "PASS",
+  "G3b_hier_cond_interior_min": "PASS"
+ },
+ "info": {
+  "celeba": {
+   "bias_min_epoch": [
+    665.0,
+    550.0,
+    665.0,
+    731.0,
+    550.0,
+    731.0
+   ],
+   "test_loss_min_epoch": [
+    1069.0,
+    1175.0,
+    1175.0,
+    1292.0,
+    1421.0,
+    1292.0
+   ],
+   "model_valid": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "bias_internal_min": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "bias_invalid_reason": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "test_loss_min_edge": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "right_censored_models": [],
+   "log_ratio_per_valid_model": [
+    0.474691870369191,
+    0.7591051483517427,
+    0.5692363859224052,
+    0.5695332245927687,
+    0.949197849870584,
+    0.5695332245927687
+   ],
+   "log_ratio_mean": 0.6485496172832433,
+   "sem": 0.07109059259524397,
+   "threshold": 0.14218118519048795,
+   "n_models": 6,
+   "n_valid_models": 6,
+   "n_invalid_models": 0,
+   "test_loss_min_at_grid_end": false,
+   "log_ratio_is_lower_bound_if_censored": true,
+   "curves_finite": true,
+   "missing_similarity_times": [],
+   "model_bootstrap_descriptive": {
+    "mean_ci95": [
+     0.506242190143785,
+     0.7907872652715495
+    ],
+    "n_used": 2000,
+    "n_skipped": 0,
+    "used_in_verdict": false
+   }
+  },
+  "hier": {
+   "n_runs": 3,
+   "n_pairs": 3,
+   "t_mask_keep": [
+    50,
+    75,
+    100,
+    150,
+    200,
+    300
+   ],
+   "t_mask_g_t": {
+    "10": 2.6849767580995335e-90,
+    "25": 7.942690084308885e-10,
+    "50": 0.010061841429853238,
+    "75": 0.02860493927805136,
+    "100": 0.026957111399866125,
+    "150": 0.017372723314175557,
+    "200": 0.014666427479195533,
+    "300": 0.013168596976528753
+   },
+   "distance_space": "eps",
+   "b_gate": {
+    "cond_interior_pairs": 2,
+    "required": 2,
+    "per_pair": [
+     {
+      "pair": [
+       0,
+       1
+      ],
+      "interior": true,
+      "reason": null
+     },
+     {
+      "pair": [
+       0,
+       2
+      ],
+      "interior": false,
+      "reason": "first"
+     },
+     {
+      "pair": [
+       1,
+       2
+      ],
+      "interior": true,
+      "reason": null
+     }
+    ]
+   },
+   "tstar_per_branch_mean_over_pairs": {
+    "cond": 219.66666666666666,
+    "uncond": 727.3333333333334,
+    "cfg1": 164.33333333333334,
+    "cfg3": 239.66666666666666
+   },
+   "main_metric_log_tstar_ratio": {
+    "mean": 0.13937218665225803,
+    "ci95": [
+     -0.09362078637730356,
+     0.3723651596818196
+    ],
+    "per_pair": [
+     0.3723651596818196,
+     null,
+     -0.09362078637730356
+    ],
+    "numerator": "cfg3",
+    "denominator": "cond",
+    "n_valid_pairs": 2,
+    "n_invalid_pairs": 1,
+    "max_invalid_allowed": 1,
+    "bootstrap_skipped": 655,
+    "bootstrap_weight": "mi_mj"
+   },
+   "invalid_pairs": [
+    {
+     "pair": [
+      0,
+      1
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      2
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      1,
+      2
+     ],
+     "valid": true,
+     "reason": {}
+    }
+   ],
+   "c_status": "可判讀",
+   "c_pass_criteria_met": false,
+   "c_fail_band_met": false,
+   "status_note": "第 1 週只有 3 個 run：此主指標僅為探索性，不得用來調整第 2 週任何設定（條文 6）",
+   "test_loss_min_epoch": 1292.0,
+   "test_loss_min_edge": null,
+   "normalized_magnitude_at_loss_min": {
+    "cond": 1.0774985363574583,
+    "uncond": 1.0648373321121436,
+    "cfg1": 1.262643225061103,
+    "cfg3": 1.2809631824627496
+   },
+   "tstar_edge_per_pair": {
+    "cond": [
+     null,
+     "first",
+     null
+    ],
+    "uncond": [
+     null,
+     "first",
+     null
+    ],
+    "cfg1": [
+     null,
+     "first",
+     null
+    ],
+    "cfg3": [
+     null,
+     "first",
+     null
+    ]
+   },
+   "main_metric_censored": true,
+   "git_hash_of_eval": "b9b5e36149d911af26d28500003d03db7203549f"
+  }
+ },
+ "overall": "WEEK1: PASS（管線與重現閘門通過；主假設檢定留到第 2 週 (c)(d)）"
+}

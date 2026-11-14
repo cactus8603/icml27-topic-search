@@ -59,13 +59,10 @@
   "gray": "僅 (c) 過 -> 加跑 n_c=100 的 6 個模型一次後再判",
   "internal_min": "平滑後 argmin 不在網格第一格或最後一格，且 argmin 之後平滑曲線最大值 >= 1.10 × 最低值"
  },
- "reachability": {
-  "_comment": "條文 7（2026-11-14，代理落差稽核後、結果前定案，非探索性；第 1 週 3 個 run 的 H∞ 只算探索性，不得用來調整第 2 週任何設定）。γ=p_c-p_u；曲線與 t* 沿用條文 1、2；有效對=cond 與 γ 都有內部最低點；H∞=有效對 log[t*_γ/t*(w=0)] 等權平均；只用點估計判定；bootstrap CI 只描述。",
+ "asymptotic_onset": {
+  "_comment": "條文 7，依 PREREG §8 修訂。γ=p_c-p_u；曲線與 t* 沿用條文 1、2；有效對=cond 與 γ 都有內部最低點；H∞=有效對 log[t*_γ/t*(w=0)] 等權平均。點估計、區間與達標標記僅描述 w→∞。",
   "enabled_if_npz_has": "pair_cos_gamma",
-  "exploratory_in_week1": true,
-  "reachable_max_log_ratio": -0.2231435513142097,
-  "states": {"reachable": "可達", "unreachable": "構造不可達", "unknown": "可達性未知"},
-  "unknown_if": "無效對數 > floor(P/3)（與 (c) 同一個 max_invalid_pair_divisor）",
+  "reference_log_ratio": -0.2231435513142097,
   "ci": "m_i*m_j 加權 bootstrap 95%，2000 次，seed 0，只描述",
   "n_boot": 2000, "bootstrap_seed": 0
  },

@@ -23,6 +23,7 @@ import torch.nn.functional as F
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hier_cond as H
+from schedule import WEEK2_T_GRID, week2_epochs
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--data", required=True)
@@ -32,13 +33,28 @@ ap.add_argument("--test-block", type=int, default=7)
 ap.add_argument("--n-eval", type=int, default=1000)
 ap.add_argument("--block-size", type=int, default=5000, help="資料區塊大小（固定 5000，不再取 metas[0]['n']）")
 ap.add_argument("--class-filter", type=int, default=None, help="每個區塊只取根 == 此值的前 n-eval 筆（正控制，搭配 --n-eval 700）")
-ap.add_argument("--t-grid", default="10,25,50,75,100,150,200,300")
+ap.add_argument("--t-grid", default=",".join(map(str, WEEK2_T_GRID)))
 ap.add_argument("--guidance", default="1,3")
 ap.add_argument("--epochs", default=None, help="逗號分隔；預設取所有 run 共有的 checkpoint")
+ap.add_argument("--require-full-week2", action="store_true", help="正式第 2 週：每個 run 必須備齊凍結 checkpoint 與 8 個 t")
 ap.add_argument("--seed", type=int, default=123)
 ap.add_argument("--device", default=None)
 ap.add_argument("--gamma", action="store_true", help="條文 7：另存 pair_cos_gamma（γ=p_c-p_u 的跨模型 1-cos）；既有輸出不變")
 args = ap.parse_args()
+
+T = [int(x) for x in args.t_grid.split(",")]
+ck_sets = [set(int(os.path.basename(f)[2:-3]) for f in glob.glob(os.path.join(r, "ep*.pt"))) for r in args.runs]
+if args.require_full_week2:
+    epochs = week2_epochs()
+    if args.epochs is not None or tuple(T) != WEEK2_T_GRID:
+        ap.error("正式第 2 週須使用凍結的 checkpoint 排程與完整 8 個 t")
+    missing = {r: sorted(set(epochs) - present) for r, present in zip(args.runs, ck_sets) if not set(epochs).issubset(present)}
+    if missing:
+        ap.error(f"第 2 週缺少必要 checkpoint：{missing}")
+else:
+    epochs = sorted(set.intersection(*ck_sets)) if args.epochs is None else [int(x) for x in args.epochs.split(",")]
+assert epochs, "找不到所有 run 共有的 checkpoint"
+print("epochs", epochs, flush=True)
 
 dev = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
 metas = [json.load(open(os.path.join(r, "meta.json"))) for r in args.runs]
@@ -58,7 +74,6 @@ assert args.test_block not in picks, "測試區塊與訓練區塊重疊"
 assert len(set(picks)) == len(picks), "run 的資料區塊必須互不相交"
 assert not (args.gamma and RUN_TYPE != "normal"), "--gamma 只支援一般（K=6 條件）run"
 ne = args.n_eval
-T = [int(x) for x in args.t_grid.split(",")]
 W = [float(x) for x in args.guidance.split(",") if float(x) != 0]
 branches = ["cond", "uncond"] + [f"cfg{w:g}" for w in W]
 if RUN_TYPE == "uncond_only":
@@ -103,10 +118,6 @@ for s in range(S):
             ce_bp[s, ti, bi] = ce_of(ORA[s][ti][b], TOK[s])
 RIN = [torch.full_like(c, CONST_LABEL) if RUN_TYPE == "const" else c for c in RT]   # 模型的條件輸入
 
-ck_sets = [set(int(os.path.basename(f)[2:-3]) for f in glob.glob(os.path.join(r, "ep*.pt"))) for r in args.runs]
-epochs = sorted(set.intersection(*ck_sets)) if args.epochs is None else [int(x) for x in args.epochs.split(",")]
-assert epochs, "找不到所有 run 共有的 checkpoint"
-print("epochs", epochs, flush=True)
 R = len(args.runs)
 shape_m = (R, len(epochs), len(T), S, len(branches))
 mse = np.zeros(shape_m); kl = np.full(shape_m, np.nan); ce = np.full(shape_m, np.nan)

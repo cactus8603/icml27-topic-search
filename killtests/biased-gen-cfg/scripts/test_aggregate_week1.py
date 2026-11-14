@@ -98,30 +98,30 @@ check("P=3 exploratory note", "探索性" in v["info"]["hier"]["status_note"])
 # ---- 逐 t 正規化：x0-hat pair_cos 為 NaN 不影響（上面皆通過即證明）；bootstrap 回報跳過次數
 check("bootstrap skipped reported", "bootstrap_skipped" in m)
 
-# ---- 條文 7：H∞（w→∞ 極限可達性；第 1 週探索性）
+# ---- 條文 7：H∞（w→∞ 極限；第 1 週探索性）
 CS = lambda p, b: ("v", 500 if b == "cfg3" else 1000)
-v = H(6, CS, "g_none"); check("沒有 pair_cos_gamma -> reachability 為 None、其他輸出不變", v["info"]["hier"]["reachability_H_inf"] is None and v["info"]["hier"]["c_pass_criteria_met"] is True)
-v = H(6, CS, "g_reach", lambda p: ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("H∞：γ 提早一半 -> 可達", r_["state"] == "可達" and r_["h_inf"] < -0.2231 and r_["n_invalid"] == 0 and r_["ci95"] is not None, f"H={r_['h_inf']:.3f}")
+v = H(6, CS, "g_none"); check("沒有 pair_cos_gamma -> 沒有極限診斷，有限 w 可判", v["info"]["hier"]["asymptotic_onset"] is None and v["info"]["hier"]["c_pass_criteria_met"] is True)
+v = H(6, CS, "g_reach", lambda p: ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("H∞：γ 提早一半 -> 極限提前達標", r_["state"] == "極限提前達標" and r_["h_inf"] < -0.2231 and r_["n_invalid"] == 0 and r_["ci95"] is not None, f"H={r_['h_inf']:.3f}")
 check("(c) 判定不受 γ 影響", v["info"]["hier"]["c_pass_criteria_met"] is True)
-v = H(6, CS, "g_unr", lambda p: ("v", 950)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("H∞：γ 幾乎不提早 -> 構造不可達（且 (c) 仍 PASS 不被改寫）", r_["state"] == "構造不可達" and r_["h_inf"] > -0.2231 and v["info"]["hier"]["c_pass_criteria_met"] is True, f"H={r_['h_inf']:.3f}")
-r3 = H(3, CS, "g_expl", lambda p: ("v", 500))["info"]["hier"]["reachability_H_inf"]
+v = H(6, CS, "g_unr", lambda p: ("v", 950)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("H∞：極限提前未達標，有限 w 仍可 PASS", r_["state"] == "極限提前未達標" and r_["h_inf"] > -0.2231 and v["info"]["hier"]["c_pass_criteria_met"] is True, f"H={r_['h_inf']:.3f}")
+r3 = H(3, CS, "g_expl", lambda p: ("v", 500))["info"]["hier"]["asymptotic_onset"]
 check("3 個 run（第 1 週）標示探索性；6 個 run 不標", r3["exploratory"] is True and "探索性" in r3["note"] and r_["exploratory"] is False)
-v = H(6, CS, "g_unk", lambda p: ("down", 0) if p < 6 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("無效對 6/15 > 5 -> 可達性未知", r_["state"] == "可達性未知" and r_["n_invalid"] == 6 and r_["max_invalid"] == 5, str(r_["state"]))
-v = H(6, CS, "g_unk5", lambda p: ("down", 0) if p < 5 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("無效對 5/15 = ⌊P/3⌋ -> 仍可判", r_["state"] == "可達" and r_["n_invalid"] == 5)
-v = H(3, CS, "g_p3a", lambda p: ("down", 0) if p == 0 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("P=3：1 個無效 -> 可判", r_["state"] == "可達" and r_["n_invalid"] == 1)
-v = H(3, CS, "g_p3b", lambda p: ("down", 0) if p < 2 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("P=3：2 個無效 -> 可達性未知", r_["state"] == "可達性未知")
-v = H(6, lambda p, b: ("up", 0) if (b == "cond" and p == 0) else CS(p, b), "g_condinv", lambda p: ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+v = H(6, CS, "g_unk", lambda p: ("down", 0) if p < 6 else ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("無效對 6/15 > 5 -> 極限曲線未能判讀", r_["state"] == "極限曲線未能判讀" and r_["n_invalid"] == 6 and r_["max_invalid"] == 5, str(r_["state"]))
+v = H(6, CS, "g_unk5", lambda p: ("down", 0) if p < 5 else ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("無效對 5/15 = ⌊P/3⌋ -> 極限仍可描述", r_["state"] == "極限提前達標" and r_["n_invalid"] == 5)
+v = H(3, CS, "g_p3a", lambda p: ("down", 0) if p == 0 else ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("P=3：1 個無效 -> 極限仍可描述", r_["state"] == "極限提前達標" and r_["n_invalid"] == 1)
+v = H(3, CS, "g_p3b", lambda p: ("down", 0) if p < 2 else ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("P=3：2 個無效 -> 極限曲線未能判讀", r_["state"] == "極限曲線未能判讀")
+v = H(6, lambda p, b: ("up", 0) if (b == "cond" and p == 0) else CS(p, b), "g_condinv", lambda p: ("v", 500)); r_ = v["info"]["hier"]["asymptotic_onset"]
 check("cond 無內部最低點的對也算無效，原因記錄", r_["n_invalid"] == 1 and r_["invalid_pairs"][0]["reason"] == {"cond": "first"})
-# 邊界：H∞ 恰好 = log 0.8 -> 可達（<=）
+# 極限診斷的參考線
 import math
-v = H(6, CS, "g_edge", lambda p: ("v", 1000 * 0.8)); r_ = v["info"]["hier"]["reachability_H_inf"]
-check("H∞ 恰為 log(0.8)（網格內）判可達或構造不可達依點估計；門檻值 = log(0.8)", abs(r_["threshold"] - math.log(0.8)) < 1e-12, f"H={r_['h_inf']:.4f} -> {r_['state']}")
+v = H(6, CS, "g_edge", lambda p: ("v", 1000 * 0.8)); r_ = v["info"]["hier"]["asymptotic_onset"]
+check("H∞ 參考線 = log(0.8)", abs(r_["threshold"] - math.log(0.8)) < 1e-12, f"H={r_['h_inf']:.4f}，{r_['state']}")
 
 # ---- (a) CelebA
 EC = np.array(ckpt_schedule(10, 5000)); EN = len(EC); TC = [50, 100, 150]

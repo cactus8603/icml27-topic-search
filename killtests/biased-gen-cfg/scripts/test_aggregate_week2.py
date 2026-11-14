@@ -36,18 +36,30 @@ def mk(name, picks, tmap, kinds=None, branches=("cond", "uncond", "cfg1", "cfg3"
         R = len(picks); B = len(branches); gc, gf, jit = gaps
         mse = np.ones((R, E, 8, R + 1, B)); ce = np.ones((R, E, 8, R + 1, B))
         for j in range(R):   # 只有 e† 處有間隙；其他 epoch 間隙為 0（若誤用會得到分母 0）
-            mse[j, e_dag, :, j, branches.index("cond")] += gc * (1 + jit * (picks[j] - 2.5))
-            if "cfg3" in branches: mse[j, e_dag, :, j, branches.index("cfg3")] += gf * (1 + jit * (picks[j] - 2.5))
+            scale = 0.05 * (1 + jit * (picks[j] - 2.5))
+            mse[j, e_dag, :, j, branches.index("cond")] -= gc * scale
+            if "cfg3" in branches:
+                mse[j, e_dag, :, j, branches.index("cfg3")] -= gf * scale
         ce[...] = 1 + 0.1 * np.abs(np.arange(E) - e_dag)[None, :, None, None, None]
         extra.update(mse_oracle=mse, ce=ce)
     np.savez(path, epochs=EPH, t_grid=np.array(TG), branches=np.array(branches), picks=np.array(picks), pairs=np.array(pairs), pair_cos_eps=pc, git_hash="t", **extra)
     return path
 
+W1 = os.path.join(a.tmp, "w1.json")
+with open(W1, "w") as fh:
+    json.dump({"overall": "WEEK1: PASS（合成 fixture）", "gates": {"G2_celeba_reproduction": "PASS"}}, fh)
+
+
 def agg(**kw):
-    cmd = [sys.executable, os.path.join(HERE, "aggregate_week2.py"), "--out", os.path.join(a.tmp, "v.json")]
-    for k, v in kw.items(): cmd += ["--" + k.replace("_", ""), str(v)] if k != "h" else ["--h", str(v)]
-    r = subprocess.run(cmd, capture_output=True, text=True); assert r.returncode == 0, r.stderr[-1500:]
-    return json.load(open(os.path.join(a.tmp, "v.json")))["sections"]
+    kw.setdefault("week1_verdict", W1)
+    outfile = os.path.join(a.tmp, "v.json")
+    cmd = [sys.executable, os.path.join(HERE, "aggregate_week2.py"), "--out", outfile]
+    for k, v in kw.items():
+        cmd += ["--" + k.replace("_", "-"), str(v)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-1500:]
+    with open(outfile) as fh:
+        return json.load(fh)["sections"]
 
 fails = []
 def check(n, c, x=""):
@@ -69,8 +81,8 @@ check("neg ctrl fail + delta~0 -> no PASS", s["negative_control"]["passed"] is F
 # 情境 3：負控制未過但 Δ 夠大
 k1c = mk("k1_mid", P4, {"cond": 1000, "cfg3": 820}, branches=("cond", "cfg3"))   # m1≈-0.2（超出 ±0.0953）
 s = agg(k6=k6, k1=k1c)
-d = s["c_main"].get("delta")
-check("neg ctrl fail + large delta -> PASS via delta", d and d["pass"] and s["c_main"]["status"].startswith("PASS（以 Δ"), str(d))
+d = s["report60"]["signal"]["S_a"]
+check("neg ctrl fail + large delta -> PASS via delta", d["state"] == "PASS" and d["metric"] == "matched_delta", d)
 # 情境 4：K=1 無效對 > floor(6/3)=2
 k1d = mk("k1_inv", P4, {"cond": 1000, "cfg3": 1000}, kinds={"cfg3": lambda p: "down" if p < 3 else "v"}, branches=("cond", "cfg3"))
 s = agg(k6=k6, k1=k1d)
@@ -94,71 +106,159 @@ check("pos ctrl wrong direction -> 無分辨力", s["status"].startswith("控制
 s = agg(k6c0=mk("pc_c", P4, {"cond": 400}, branches=("cond",)), u833c0=mk("pc_u833", P4, {"uncond": 300}, kinds={"uncond": lambda p: "down" if p < 3 else "v"}, branches=("uncond",)),
         k1c0=mk("pc_u5000", P4, {"cond": 1000}, branches=("cond",)))["positive_control"]
 check("pos ctrl invalid>floor(P/3) -> 未能測試", s["status"].startswith("未能測試"))
+disjoint = []
+for group, branch, onset, start in (("c", "cond", 350, 0), ("u833", "uncond", 300, 5), ("u5000", "cond", 1000, 10)):
+    kinds = {branch: lambda p, start=start: "down" if start <= p < start + 5 else "v"}
+    disjoint.append(mk("disjoint_" + group, P6, {branch: onset}, kinds=kinds, branches=(branch,)))
+s = agg(k6c0=disjoint[0], u833c0=disjoint[1], k1c0=disjoint[2])["positive_control"]
+check("正控制各用自身的 10/15 有效對，共用 bootstrap 區塊",
+      s["status"] == "通過" and set(s["n_valid_pairs"].values()) == {10} and s["bootstrap_skipped"] > 0)
 
-# ================= 2026-11-14 條文 6–9（可達性、第二探針、層級用語、停點）=================
-LAST = E - 1; ti = lambda S_: S_["tier"]
-def agg2(**kw):
-    cmd = [sys.executable, os.path.join(HERE, "aggregate_week2.py"), "--out", os.path.join(a.tmp, "v2.json")]
-    for k, v in kw.items(): cmd += ["--" + k.replace("_", "-"), str(v)]
-    r = subprocess.run(cmd, capture_output=True, text=True); assert r.returncode == 0, r.stderr[-1500:]
-    return json.load(open(os.path.join(a.tmp, "v2.json")))
-K1OK = mk("k1_ok2", P4, {"cond": 1000, "cfg3": 1000}, branches=("cond", "cfg3"), gaps=(1.0, 1.5, 0.0), e_dag=LAST)   # m1≈0（負控制通過）、Γ1 = 1.5
-def k6f(gt, gk="v", gaps=(1.0, 10.0, 0.02), e=LAST, name="k6f"):   # (c) FAIL 帶：cfg3 與 cond 同 t*
-    return mk(name, P6, {"cond": 1000, "uncond": 1000, "cfg1": 1000, "cfg3": 1000}, gamma_t=gt, gamma_kind=gk, gaps=gaps, e_dag=e)
-# A 可達 + 探針 PASS
-V = agg2(k6=k6f(500), k1=K1OK); S_ = V["sections"]
-check("(c) FAIL 帶且觸發探針", S_["c_main"]["status"] == "FAIL 帶" and S_["second_probe"]["state"] == "PASS", f"G6={S_['second_probe'].get('gamma6'):.2f} G1={S_['second_probe'].get('gamma1'):.2f} ci={S_['second_probe'].get('diff_ci95')}")
-check("條文 7：γ 提早一半 -> 可達", S_["reachability"]["state"] == "可達" and S_["reachability"]["h_inf"] < -0.2231, f"H={S_['reachability']['h_inf']:.3f} ci={S_['reachability']['ci95']}")
-t = S_["tier"]; check("條文 9 列 1：可達+PASS", "w=3 被否證（實作／劑量層）" in t["text"] and "放大子主張有支持" in t["text"] and "此實作停損" in t["stop"] and "56 號" in t["stop"] and not t["may_propose_elimination"], t["text"])
-check("停點 1 文字", "不自動送 (d)" in S_["stop_point_1"])
-# B 構造不可達 + PASS
-S_ = agg2(k6=k6f(950, name="k6f_b"), k1=K1OK)["sections"]
-check("條文 9 列 2：構造不可達+PASS", S_["reachability"]["state"] == "構造不可達" and "對所有 w 被否證（機制層，限本文法與 n/K）" in S_["tier"]["text"] and "放大子主張有支持" in S_["tier"]["text"], S_["tier"]["text"])
-# C 可達性未知（γ 無效對 > floor(15/3)）+ PASS
-S_ = agg2(k6=k6f(500, gk=lambda p: "down" if p < 6 else "v", name="k6f_c"), k1=K1OK)["sections"]
-check("條文 9 列 3：可達性未知（任一）", S_["reachability"]["state"] == "可達性未知" and "起點子預測「未能測試」" in S_["tier"]["text"] and "放大結果照記" in S_["tier"]["text"] and not S_["tier"]["may_propose_elimination"], S_["tier"]["text"])
-check("無效對恰為 floor(P/3)=5 仍可判", agg2(k6=k6f(500, gk=lambda p: "down" if p < 5 else "v", name="k6f_c5"), k1=K1OK)["sections"]["reachability"]["state"] == "可達")
-# D 探針未通過：Γ6 < 4（Γ6=3）
-S_ = agg2(k6=k6f(500, gaps=(1.0, 3.0, 0.02), name="k6f_d"), k1=K1OK)["sections"]
-check("條文 9 列 4：可達+未通過 -> 兩個子主張都未獲支持，可提請淘汰，閘門 4 缺 -> 無可區隔", S_["second_probe"]["state"] == "未通過" and "兩個子主張都未獲支持" in S_["tier"]["text"] and S_["tier"]["may_propose_elimination"] and "無可區隔的切入點" in S_["tier"]["elimination_reason"], str(S_["tier"]))
-# D2 Γ6 >= 4 但與 K=1 無差別 -> 未通過
-K1same = mk("k1_same", P4, {"cond": 1000, "cfg3": 1000}, branches=("cond", "cfg3"), gaps=(1.0, 10.0, 0.02), e_dag=LAST)
-S_ = agg2(k6=k6f(950, name="k6f_d2"), k1=K1same)["sections"]
-check("Γ6=10=Γ1：CI 含 0 -> 未通過", S_["second_probe"]["state"] == "未通過" and S_["second_probe"]["gamma6"] >= 4 and S_["second_probe"]["diff_ci95"][0] <= 0, str(S_["second_probe"].get("diff_ci95")))
-# D3 閘門 4 通過時淘汰理由不含「無可區隔」
-V = agg2(k6=k6f(500, gaps=(1.0, 3.0, 0.02), name="k6f_d3"), k1=K1OK, **pcs(350, 300, 1000)); S_ = V["sections"]
-check("閘門 4 通過 -> 淘汰理由不寫無可區隔", S_["positive_control"]["status"] == "通過" and S_["tier"]["may_propose_elimination"] and "無可區隔" not in S_["tier"]["elimination_reason"])
-# E 未能測試：e† 落在第一格 / 分母 <= 0 / K=1 缺
-S_ = agg2(k6=k6f(500, e=0, name="k6f_e0"), k1=mk("k1_e0", P4, {"cond": 1000, "cfg3": 1000}, branches=("cond", "cfg3"), gaps=(1.0, 1.5, 0.0), e_dag=0))["sections"]
-check("e† 落在第一格 -> 未能測試；層級『放大子主張未測』", S_["second_probe"]["state"] == "未能測試" and "第一格" in S_["second_probe"]["reason"] and "放大子主張未測" in S_["tier"]["text"], S_["tier"]["text"])
-S_ = agg2(k6=k6f(500, gaps=(-1.0, 10.0, 0.0), name="k6f_neg"), k1=K1OK)["sections"]
-check("點估計分母 <= 0 -> 未能測試", S_["second_probe"]["state"] == "未能測試", str(S_["second_probe"].get("reason")))
-S_ = agg2(k6=k6f(500, name="k6f_nok1"))["sections"]
-check("缺 K=1 -> (c) 不判 FAIL 帶，探針未觸發（不是 PASS）", S_["second_probe"]["state"] == "未觸發" and "負控制未能測試" in S_["c_main"]["status"])
-check("max_invalid = floor(P/3)：P=15->5, P=6->2, P=3->1", all(P_ // 3 == v for P_, v in ((15, 5), (6, 2), (3, 1))))
-# e† 只用 K=6 的 CE：K=1 的 CE 最低點不同也不影響（K=1 用同一個 e†）
-K1other = mk("k1_other", P4, {"cond": 1000, "cfg3": 1000}, branches=("cond", "cfg3"), gaps=(1.0, 1.5, 0.0), e_dag=LAST)
-z = dict(np.load(K1other)); z["ce"] = np.ones_like(z["ce"]) * (1 + 0.1 * np.abs(np.arange(E) - 3))[None, :, None, None, None]; np.savez(K1other, **z)
-check("K=1 的 CE 曲線不影響 e†", agg2(k6=k6f(500, name="k6f_f"), k1=K1other)["sections"]["second_probe"]["state"] == "PASS")
-# F (c) PASS 但構造不可達 -> 加註「與上界矛盾」；探針不觸發
-V = agg2(k6=mk("k6_pass_unreach", P6, {"cond": 1000, "uncond": 1000, "cfg1": 800, "cfg3": 500}, gamma_t=950), k1=K1OK); S_ = V["sections"]
-check("(c) PASS + 構造不可達 -> 與上界矛盾、列入人工審查", S_["c_main"]["status"] == "PASS" and "與上界矛盾" in S_["c_main"]["note"] and V.get("manual_review") and S_["second_probe"]["state"] == "未觸發" and "不適用" in S_["tier"]["note"], str(V.get("manual_review")))
-check("可達性只描述：PASS 不被改寫", S_["c_main"]["pass"] is True)
-# G 停點 2
-V = agg2(k6=k6f(500, name="k6f_g"), k1=K1OK, gpu_used=70, gpu_projected_d=50)
-check("停點 2：70+50 > 115 -> 停下回報", "先停下回報" in V["sections"]["stop_point_2"]["action"])
-V = agg2(k6=k6f(500, name="k6f_g2"), k1=K1OK, gpu_used=70, gpu_projected_d=45)
-check("停點 2：70+45 = 115 -> 未超過", "未超過" in V["sections"]["stop_point_2"]["action"])
-# H K=6 npz 沒有 γ -> 可達性未知（不 crash）
-S_ = agg2(k6=mk("k6_nogamma", P6, {"cond": 1000, "uncond": 1000, "cfg1": 1000, "cfg3": 1000}, gaps=(1.0, 10.0, 0.02), e_dag=LAST), k1=K1OK)["sections"]
-check("缺 γ -> 可達性未知、層級用語仍可輸出", S_["reachability"]["state"] == "可達性未知" and "未能測試" in S_["tier"]["text"])
-# t 遮罩與全 t 網格：全 t 版只描述
-S_ = agg2(k6=k6f(500, name="k6f_t"), k1=K1OK)["sections"]["second_probe"]
-check("全 t 網格版 Γ 只描述且存在", S_["gamma6_all_t_descriptive"] is not None and S_["t_used"] == [50, 75, 100, 150, 200, 300])
+# 報告 60：現象、兩條訊號路徑、G3、入池與 CIFAR 預算。
+LAST = E - 1
+K1OK = mk("k1_ok2", P4, {"cond": 1000, "cfg3": 1000}, branches=("cond", "cfg3"), gaps=(1.0, 1.5, 0.0), e_dag=LAST)
 
+
+def k6f(name, *, cfg_t=1000, gt=500, gk="v", gaps=(1.0, 10.0, 0.02), e=LAST, kinds=None):
+    return mk(name, P6, {"cond": 1000, "uncond": 1000, "cfg1": 1000, "cfg3": cfg_t}, kinds=kinds,
+              gamma_t=gt, gamma_kind=gk, gaps=gaps, e_dag=e)
+
+
+def k1f(name, *, cfg_t=1000, gaps=(1.0, 1.5, 0.0), e=LAST, kinds=None):
+    return mk(name, P4, {"cond": 1000, "cfg3": cfg_t}, kinds=kinds,
+              branches=("cond", "cfg3"), gaps=gaps, e_dag=e)
+
+
+AMP = k6f("amp")
+sections = agg(k6=AMP, k1=K1OK)
+formal = sections["report60"]
+probe = sections["second_probe"]
+check("S-b PASS 即使 (c) 落在舊 FAIL 帶", sections["c_main"]["use"] == "descriptive_only"
+      and sections["c_main"]["status"] == "FAIL 帶" and formal["signal"]["passed_routes"] == ["S_b"])
+check("Γ6=10，Γ1=1.5，使用 97.5% 區間", np.isclose(probe["gamma6"], 10.0)
+      and np.isclose(probe["gamma1"], 1.5) and probe["diff_ci_level"] == 0.975)
+check("空間用 raw CFG3 G3，正值代表自身訓練誤差更低", formal["headroom"]["measure"] == "CFG3 membership gap proxy"
+      and np.isclose(formal["headroom"]["g3"], 0.5) and formal["headroom"]["state"] == "PASS")
+check("三軸 PASS 進候選池", formal["candidate_pool"]["state"] == "PASS")
+check("H∞ 提前達標仍為描述", sections["asymptotic_onset"]["state"] == "極限提前達標" and "停損" not in sections["tier"]["text"])
+check("預算缺失時先確認", "先確認" in formal["cifar_d"]["action"])
+check("70+50 > 115 先停下回報", "先停下回報" in agg(k6=AMP, k1=K1OK, gpu_used=70, gpu_projected_d=50)["report60"]["cifar_d"]["action"])
+check("70+45 = 115 仍須先入池", "使用者決定入池後可做" in agg(k6=AMP, k1=K1OK, gpu_used=70, gpu_projected_d=45)["report60"]["cifar_d"]["action"])
+
+for name, gamma_t, gamma_kind, state in (
+    ("late_limit", 950, "v", "極限提前未達標"),
+    ("bad_limit", 500, lambda p: "down" if p < 6 else "v", "極限曲線未能判讀"),
+    ("five_invalid", 500, lambda p: "down" if p < 5 else "v", "極限提前達標"),
+    ("missing_limit", None, "v", "極限曲線未能判讀"),
+):
+    data = agg(k6=k6f(name, gt=gamma_t, gk=gamma_kind), k1=K1OK)
+    check(name + " does not change pool outcome", data["asymptotic_onset"]["state"] == state
+          and data["report60"]["candidate_pool"]["state"] == "PASS")
+
+onset_only = agg(k6=k6f("onset_only", cfg_t=500, gaps=(1, 3, 0)), k1=K1OK)["report60"]
+check("S-a 獨立通過，同時固定計算 Γ", onset_only["signal"]["passed_routes"] == ["S_a"]
+      and onset_only["signal"]["S_a"]["ci_level"] == 0.975
+      and np.isclose(onset_only["signal"]["S_b"]["gamma6"], 3))
+check("S-a PASS 時，S-b 未能測試也可通過訊號", agg(k6=k6f("pass_untested", cfg_t=500, gaps=(-1, 10, 0)),
+      k1=K1OK)["report60"]["signal"]["passed_routes"] == ["S_a"])
+overlap = agg(k6=k6f("overlap"), k1=k1f("near_gamma", gaps=(1, 9, 0)))["report60"]["signal"]
+check("S-b PASS 優先於重疊的聯合弱訊號門檻", overlap["passed_routes"] == ["S_b"] and overlap["S_a"]["m6_equivalent"]
+      and overlap["S_b"]["diff_ci"][1] <= 0.2231)
+
+weak = k6f("weak_signal", gaps=(2.0, 3.0, 0.0))
+formal = agg(k6=weak, k1=K1OK, gpu_used=1, gpu_projected_d=1)["report60"]
+check("兩條路徑均有效且符合弱區間 -> 訊號 FAIL", formal["signal"]["state"] == "FAIL"
+      and formal["candidate_pool"]["failed_axes"] == ["signal"] and "暫不做" in formal["cifar_d"]["action"])
+formal = agg(k6=weak, k1=K1OK, **pcs(350, 300, 1000))["report60"]
+check("沒有 S-a 或 S-b PASS、只有 n/K 通過 -> 灰區", formal["signal"]["state"] == "灰區"
+      and formal["candidate_pool"]["state"] == "灰區")
+formal = agg(k6=weak, k1=k1f("non_null_delta", cfg_t=500))["report60"]
+check("K=1 非真空，原 m6 等價但 Δ 不等價 -> 灰區", formal["signal"]["state"] == "灰區"
+      and formal["signal"]["S_a"]["m6_equivalent"] and not formal["signal"]["S_a"]["onset_equivalent"])
+
+bad_mask = {"cfg3": lambda p: "down" if p in (0, 1) else "v"}
+other_mask = {"cfg3": lambda p: "down" if p in (2, 3) else "v"}
+few_pairs = agg(k6=k6f("pairs_k6", gaps=(2, 3, 0), kinds=bad_mask), k1=k1f("pairs_k1", cfg_t=500, kinds=other_mask))["report60"]["signal"]
+check("兩組各有足夠有效對，但共同有效對不足 -> 單列原因", few_pairs["S_a"]["delta"]["n_common_valid_pairs"] == 2
+      and few_pairs["S_a"]["delta"]["required_valid_pairs"] == 4 and few_pairs["S_a"]["reason"] == "共同有效配對不足"
+      and few_pairs["state"] == "未能測試")
+
+first = agg(k6=k6f("first_cp", e=0), k1=K1OK)["report60"]
+check("e† 落在第一格 -> S-b 與 G3 均未能測試", all("第一格" in r["reason"] for r in (first["signal"]["S_b"], first["headroom"])))
+neg_g = agg(k6=k6f("negative_denominator", gaps=(-1, 10, 0)), k1=K1OK)["report60"]
+check("Γ 分母非正 -> S-b 未能測試，G3 仍可判", neg_g["signal"]["S_b"]["state"] == "未能測試" and neg_g["headroom"]["state"] == "PASS")
+missing = agg(k6=AMP)["report60"]
+check("K=1 缺失照報 Γ6 和 G3，訊號未能測試", np.isclose(missing["signal"]["S_b"]["gamma6"], 10)
+      and missing["signal"]["state"] == "未能測試" and missing["headroom"]["state"] == "PASS")
+check("缺 Week1 結果，現象未能測試", agg(k6=AMP, k1=K1OK, week1_verdict=os.path.join(a.tmp, "absent.json"))["report60"]["phenomenon"]["state"] == "未能測試")
+w1bad = os.path.join(a.tmp, "w1bad.json")
+with open(w1bad, "w") as fh:
+    json.dump({"overall": "WEEK1: 未能測試（探索性階層未過）", "gates": {"G2_celeba_reproduction": "PASS"}}, fh)
+check("第 1 週 G2 PASS、探索性整體未能測試，現象可由第 2 週通過",
+      agg(k6=AMP, k1=K1OK, week1_verdict=w1bad)["report60"]["phenomenon"]["state"] == "PASS")
+with open(w1bad, "w") as fh:
+    json.dump({"overall": "WEEK1: 未能測試", "gates": {"G2_celeba_reproduction": "未能測試"}}, fh)
+check("第 1 週 G2 未能測試，現象未能測試",
+      agg(k6=AMP, k1=K1OK, week1_verdict=w1bad)["report60"]["phenomenon"]["state"] == "未能測試")
+short = mk("short_panel", P4, {"cond": 1000, "cfg3": 500}, branches=("cond", "cfg3"))
+check("4-run 6-pair panel 不能通過 6-run 15-pair (b) 閘門", agg(k6=short, k1=K1OK)["report60"]["phenomenon"]["state"] == "未能測試")
+perm = mk("perm_panel", [5, 3, 4, 1, 0, 2], {"cond": 1000, "cfg3": 500}, branches=("cond", "cfg3"))
+perm_delta = agg(k6=perm, k1=k1c)["report60"]
+check("同一組 pick 換序仍有效，配對 Δ 依 pick ID 對齊", perm_delta["phenomenon"]["state"] == "PASS"
+      and perm_delta["signal"]["S_a"]["state"] == "PASS" and np.isclose(perm_delta["signal"]["S_a"]["mean"], d["mean"]))
+limited = k6f("few_cond_onsets", kinds={"cond": lambda p: "down" if p < 6 else "v"})
+check("(b) 9/15 未能測試", agg(k6=limited, k1=K1OK)["report60"]["phenomenon"]["state"] == "未能測試")
+limited = k6f("ten_cond_onsets", kinds={"cond": lambda p: "down" if p < 5 else "v"})
+check("(b) 10/15 通過", agg(k6=limited, k1=K1OK)["report60"]["phenomenon"]["state"] == "PASS")
+
+for label, axis, drop in (("terminal", 1, LAST), ("interior", 1, 25), ("unmasked_t", 2, 0), ("retained_t", 2, 2)):
+    with np.load(AMP) as f:
+        z = dict(f)
+    grid = "epochs" if axis == 1 else "t_grid"
+    z[grid] = np.delete(z[grid], drop)
+    for key in ("pair_cos_eps", "pair_cos_gamma", "mse_oracle", "ce"):
+        z[key] = np.delete(z[key], drop, axis=axis)
+    path = os.path.join(a.tmp, "incomplete_" + label + ".npz")
+    np.savez(path, **z)
+    incomplete = agg(k6=path, k1=K1OK)["report60"]
+    check("不完整網格禁止正式判讀 " + label, all(incomplete[k]["state"] == "未能測試"
+          for k in ("phenomenon", "signal", "headroom", "candidate_pool")))
+
+# 在載入資料或提交 CUDA 計算前，正式 evaluator 要點名少哪份 checkpoint。
+run_dir = os.path.join(a.tmp, "fake_run")
+os.makedirs(run_dir, exist_ok=True)
+for epoch in EPH:
+    if epoch != EPH[25] and epoch != EPH[-1]:
+        open(os.path.join(run_dir, f"ep{epoch}.pt"), "wb").close()
+cmd = [sys.executable, os.path.join(HERE, "eval_hier_oracle.py"), "--require-full-week2", "--runs", run_dir,
+       "--data", os.path.join(a.tmp, "intentionally_absent.npy"), "--out", os.path.join(a.tmp, "no_output.npz")]
+evaluation = subprocess.run(cmd, text=True, capture_output=True)
+check("正式 evaluator 逐 run 預檢並回報缺少的中段及末段 checkpoint", evaluation.returncode != 0
+      and f"[{EPH[25]}, {EPH[-1]}]" in evaluation.stderr and "缺少必要 checkpoint" in evaluation.stderr)
+
+q = agg(k6=k6f("low_headroom", gaps=(1, 0.5, 0)), k1=K1OK)["report60"]
+check("G3 95% 上界低於 .05 -> 空間 FAIL", q["headroom"]["state"] == "FAIL" and "headroom" in q["candidate_pool"]["failed_axes"])
+q = agg(k6=k6f("gray_headroom", gaps=(1, 1.5, 0)), k1=K1OK)["report60"]
+check("G3=.075 -> 空間灰區", q["headroom"]["state"] == "灰區")
+
+K1other = k1f("k1_other")
+with np.load(K1other) as f:
+    z = dict(f)
+z["ce"] = np.ones_like(z["ce"]) * (1 + 0.1 * np.abs(np.arange(E) - 3))[None, :, None, None, None]
+np.savez(K1other, **z)
+probe = agg(k6=AMP, k1=K1other)["second_probe"]
+check("e† 只使用 K=6 CE；全 t Γ 仍輸出作描述", probe["state"] == "PASS" and probe["e_dagger"] == EPH[LAST]
+      and probe["gamma6_all_t_descriptive"] is not None and probe["t_used"] == [50, 75, 100, 150, 200, 300])
 
 # reach.probe_amplification 的跳過規則（直接測函式）
 import reach
+mse_own = np.array([[0., 0.], [8., 8.], [8., 8.], [8., 8.], [8., 8.], [8., 8.]])
+mse_test = np.array([[1., 1.], [10., 10.], [10., 10.], [10., 10.], [10., 10.], [10., 10.]])
+gap = reach.membership_gap(mse_own, mse_test, 2000, 0, .95, .10, .05)
+check("G3 是原始誤差總和之比，非 run 比值平均", np.isclose(gap["g3"], 11 / 51) and not np.isclose(gap["g3"], .20 + .8 / 6))
+check("G3 負誤差不具物理意義", reach.membership_gap(-mse_test, mse_test, 2000, 0, .95, .10, .05)["state"] == "未能測試")
+
+
 def terms(c0, nrun=6, nt=6, cfg=10.0):
     c = np.ones((nrun, nt)); c[0] = c0; g = np.full((nrun, nt), cfg); return g, c
 g6, c6 = terms(-2.0); g1, c1 = terms(1.0, cfg=1.5)
@@ -173,11 +273,21 @@ check("點估計分母 <= 0 -> 未能測試", o["state"] == "未能測試" and o
 g6, c6 = terms(1.0); g1b, c1b = terms(1.0, cfg=-1.0)
 o = reach.probe_amplification(g6, c6, list(range(6)), g1b[:4], c1b[:4], list(range(4)), 4.0, 2000, 0, 0.05)
 check("Γ1 <= 0（log 無定義）-> 未能測試", o["state"] == "未能測試")
-# 條文 9 表（直接測 tier_text 全 3x3 組合）
-for rs in ("可達", "構造不可達", "可達性未知"):
-    for ps in ("PASS", "未通過", "未能測試"):
-        tt = reach.tier_text(rs, ps, True)
-        okk = (tt["may_propose_elimination"] == (rs != "可達性未知" and ps == "未通過")) and ((tt["stop"] is not None) == (rs != "可達性未知" and ps == "PASS"))
-        check(f"tier_text({rs},{ps})", okk, tt["text"])
+g6, c6 = terms(1.0); c6[0, 0] = np.nan
+o = reach.probe_amplification(g6, c6, list(range(6)), g1[:4], c1[:4], list(range(4)), 4.0, 2000, 0, 0.05)
+check("分母含非有限值時回報未能測試", o["state"] == "未能測試" and o["denominators"]["k6"] is None)
+
+# 實際 cosine 反例：w=3 的兩分支在中段抵銷，極限與 w=0 的最低點相同。
+epochs = np.array([100, 110, 121, 133, 146, 160, 176, 193, 212])
+cond_y = np.array([6, 6, 6, 6, 6, 0.2, 0.2, 9, 10])
+gamma_y = np.array([2, -2, -2, -2, 2, 0.1, 0.1, 3, 4])
+
+def onset(x, y):
+    distance = 1 - x / np.hypot(x, y)
+    distance /= distance.mean()
+    smooth = np.array([distance[max(i - 1, 0):i + 2].mean() for i in range(len(epochs))])
+    return int(epochs[smooth.argmin()])
+
+check("有限 w=3 的最低點可早於 w→∞", onset(2, cond_y) == onset(1, gamma_y) == 160 and onset(5, cond_y + 3 * gamma_y) == 121)
 
 print("\nALL PASS" if not fails else f"\nFAILED: {fails}"); sys.exit(1 if fails else 0)

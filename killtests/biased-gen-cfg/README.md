@@ -4,7 +4,7 @@
 `reports/2026-11-14-56-killtest-criteria-review.md` 第 1 節（判準審查，**以此為準**）。凍結判準見 `PREREG.md`；數字集中在 `configs/criteria_week1.json`。
 原作：arXiv 2603.03469，程式 github.com/davide-beltrame/biased-generalization（clone 於 `/work/ChihChungHsu/cactus8603/icml/ext/biased-generalization`，含 `wdmdm` 子模組；未改動）。
 
-狀態：程式與腳本已備好，**尚未送出任何 sbatch**，未使用 GPU。CelebA 資料尚未下載（見「待執行的下載步驟」）。
+最新評估與後續判讀見 `../../codex/2026-11-14-two-clocks-week1-codex.md`。作業編號見 `../SUBMITTED.log`。
 
 ## 目的
 
@@ -51,17 +51,18 @@ $E install numpy scipy numba matplotlib natsort tqdm pillow pyarrow huggingface_
 ```
 `HF_HOME=/work/ChihChungHsu/cactus8603/icml/hf_home`。原作的 pytorch-fid、seaborn、PyWavelets 第 1 週用不到，未安裝（原作 `scripts/utils.py` 會 import seaborn，所以本實驗不用它的 utils，只用 `modules.embeddings`、`modules.noise_schedules` 與 BP 檢查用的 numba 模組）。
 
-## 待執行的下載步驟（尚未做；/work 群組額度吃緊，等額度恢復再執行）
+## 資料準備與核對
 
-1. CelebA（約 0.9 GB 下載進 HF_HOME，輸出 `CelebA32.pt` 約 75 MB；轉完可刪 `hf_home` 內該資料集快取）：
+1. CelebA（HF 快取約 1.39 GB，輸出 `CelebA32.pt` 約 75 MB）：
    ```bash
    source configs/week1.env
    $BIASGEN_ENV/bin/python scripts/prep_celeba.py --out-dir $CELEBA_DATA_ROOT
    ```
-   **已完成（2026-11-14）**，輸出 `icml/data/celeba32/CelebA32.pt`，(18432,1,32,32) float32、0–1。HF `nielsr/CelebA-faces` 的 image.path 全為 None，
-   因此腳本已改為不依賴檔名（只檢查總列數 202,599，並寫 `CelebA32.meta.json`）。**限制：列順序是否等於原作 natsorted(img_align_celeba) 未驗證**，
-   像素是否位元一致也未確認。原作只用連續區塊與最後 2048 張，不依賴特定編號，所以 (a) 是「另一組不相交樣本」的統計重現，不是位元重現。見 PREREG §8。
-2. 階層資料（CPU，約數分鐘，40000 筆）：`bash scripts/gen_hier_data.sh`（`WORKERS` 可調）。文法 M 與原作 1M 樣本檔相同（seed 0）。
+   現用 `icml/data/celeba32/CelebA32.pt` 的 18,432 張張量逐張與 HF 快取重轉結果完全相同。
+   已確認 HF 影像順序與原作自然檔名順序不同。全庫影像的 CRC32 與位元組長度（含重複次數）相符，前 3 列也與定位到的原始 JPEG 逐位元相符。
+   六塊訓練資料和測試保留集之間沒有相同 JPEG 簽章。本次 (a) 使用不同的影像切分做統計重現。版本與核對方法見 PREREG §8。
+2. 階層資料已生成（40000 筆），正式訓練 26280 已讀入並產生 checkpoint。原始葉節點為 `(16, 40000)` 的 `int8`，訓練讀入後形狀為 `(40000, 16)`。
+   重建可用 `bash scripts/gen_hier_data.sh`（`WORKERS` 可調）；文法 M 與原作 1M 樣本檔相同（seed 0）。
 3. 先跑 `python scripts/test_bp.py`（CPU，數秒；已跑過，全過）。
 
 ## 送出指令（寫出來，**不要在審查前執行**）
@@ -95,9 +96,9 @@ $BIASGEN_ENV/bin/python scripts/aggregate_week1.py
 | hier_eval（×1） | 3 模型 × 71 checkpoint；BP 在 float64 | 0.3–1 h | 1.5 h |
 | 合計 | | 約 8–20 GPU h（53 號估 (a) 5–10、(b) 10–20） | |
 
-第 2 週追加（判準見 `DECISIONS_fable.md` 條文 3–6；程式與 sbatch 已備好、未送出）：K=6 補 pick 3–5 三個 run（4.5–9 h，`w2_hier_train_k6.sbatch`）、
+第 2 週追加（判準見 `PREREG.md` 第 8 節；程式與 sbatch 已備好、未送出）：K=6 補 pick 3–5 三個 run（4.5–9 h，`w2_hier_train_k6.sbatch`）、
 K=1 常數條件負控制 × N 個（每個 1.5–3 h，6 個約 9–18 h；`w2_hier_train_k1.sbatch`）、類別 0 專用無條件模型 × N 個（每 epoch 約 10 步、每步 batch 85，約 1.5–3 h，未實測；`w2_hier_train_u833.sbatch`）、
-6 個 run 一起重評（`w2_hier_eval.sbatch`，含 `aggregate_week2.py`）、(d) CIFAR（不在本包）。N 由第 1 週 3 個階層 run 的實測平均 GPU 小時 h 決定：h ≤ 2.0 → N=6；h > 2.0 → N=4（標「低檢定力」）。
+6 個 run 一起重評（`w2_hier_eval.sbatch`，含 `aggregate_week2.py`）。N 由第 1 週 3 個階層 run 的實測平均 GPU 小時 h 決定（h ≤ 2.0 時 N=6，h > 2.0 時 N=4 並標「低檢定力」）。使用者決定入池後再安排 (d) CIFAR，仍須檢查總 GPU 時數預算。
 **已刪除 n=70000 負控制。** 送 (d) 前若「已用 GPU 小時 + 依 (d) 實測吞吐推估」> 115 GPU 小時，先停下來回報使用者。
 訓練用 `train_hier_cond_w2.py`（新增 `--const-label`、`--class-only`；預設值下與 `train_hier_cond.py` 逐位元相同），第 1 週訓練檔未動。
 
@@ -125,7 +126,7 @@ checkpoint 放 `results/ckpt/`（`.gitignore` 排除）。只保留判準需要�
 
 ## 已知風險與未確認事項
 
-1. CelebA 來源差異（見上）與 `nielsr/CelebA-faces` 的切分是否與原作 `img_align_celeba` 完全一致未確認。
+1. CelebA 使用 HF 列順序切分，與原作 `img_align_celeba` 按自然檔名切出的樣本不同。判讀 (a) 時須保留這項差異。
 2. 所有 GPU 小時與 `--time` 都是推估；hier 訓練不能續跑，逾時代價高。
 3. 單一網格解析度：epoch 邊界問題（最低點落在網格頭尾時 t\* 被截斷）。
 4. 3 個 run 只能做管線檢查；(c) 主指標在 R=3 時 bootstrap 幾乎沒有意義，aggregate 已標為探索性。
