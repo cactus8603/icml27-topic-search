@@ -7,7 +7,7 @@
  "n_boot": 2000,
  "bootstrap_seed": 0,
  "bootstrap_weight": "mi_mj",
- "max_invalid_pair_fraction": 0.3333,
+ "max_invalid_pair_divisor": 3,
  "main_branches": {"numerator": "cfg3", "denominator": "cond"},
  "c": {"min_early_fraction": 0.2, "fail_band": 0.1, "b_gate_min_cond_interior": {"15": 10}},
  "negative_control": {
@@ -27,6 +27,30 @@
   "abs_Lc_minus_Lu833_max": 0.2231,
   "u833": {"pdrop": 1.0, "batch": 85, "class_only": 0},
   "u5000": "K=1 模型的條件分支（const-label 0），不另訓；不得用 K=6 無條件分支"
+ },
+ "reachability": {
+  "_comment": "條文 7（正式）。K=6 的 6 個 run 一起重評（eval_hier_oracle.py --gamma）；K=1 與正控制不需要 γ 曲線。可達性不改變 (c) 的 PASS；判為「構造不可達」而 (c) 仍 PASS 時，PASS 照記但加註「與上界矛盾」並列入人工審查。",
+  "reachable_max_log_ratio": -0.2231435513142097,
+  "n_boot": 2000, "bootstrap_seed": 0, "ci": "只描述", "decision_uses": "point_estimate_only"
+ },
+ "second_probe_gap_amplification": {
+  "_comment": "條文 8：唯一的第二探針（oracle 偏差間隙放大比；0 GPU，只用已存的 mse_oracle）。只在 (c) 落在 FAIL 帶時做一次；不得改 e† 或門檻；PASS 不等於題目 PASS。",
+  "trigger": "c_main.status 為 FAIL 帶（含 FAIL 帶（看 m6））",
+  "e_dagger": "K=6 的 6 個 run 在測試輸入上 cond 分支 CE（ce[:,:,:,-1,cond]，對 run 與全部 t 網格平均）經 3 點平滑後的最低點 epoch；落在最後一格照用；落在第一格 -> 探針記未能測試；K=1 用同一個 e†",
+  "t_set": "t_mask",
+  "t_set_note": "Σ_t 取 configs/t_mask_hier.json 保留的 t（與條文 1 同一份凍結遮罩）；全 t 網格版只描述（gamma_all_t），不進判定",
+  "gap": "g~_b(j,t) = [mse_oracle(自身訓練輸入) - mse_oracle(測試輸入)] / mse_oracle(測試輸入, cond)，皆取在 e†",
+  "ratio": "Γ = Σ_j Σ_t g~_cfg3 / Σ_j Σ_t g~_cond；完全共享 Γ=1，完全類別特定 Γ=16",
+  "gamma6_runs": "K=6 全部 run（配對差只用共同 pick）", "gamma1_runs": "K=1 run，只取與 K=6 相同的 pick",
+  "n_boot": 2000, "bootstrap_seed": 0, "bootstrap_unit": "區塊（pick）配對重抽",
+  "skip_denominator_le_zero": true, "max_skipped_fraction": 0.05,
+  "untestable_if": "點估計分母 <= 0，或 Γ1 <= 0（log 無定義），或跳過比例 > 5%",
+  "pass": {"gamma6_min": 4.0, "log_gamma6_minus_log_gamma1_ci95_lower_gt": 0.0},
+  "otherwise": "未通過（沒有灰區、不加碼）"
+ },
+ "stop_points": {
+  "_comment": "條文 6。停點 1：(c) 落在 FAIL 帶時不自動送 (d)。停點 2：送 (d) 前 已用 GPU 小時 + (d) 推估 > 115 先停下回報。",
+  "stop1_on_c_fail_band": true, "gpu_hours_cap": 115
  },
  "budget": {"total_gpu_hours_cap": 115, "stop_and_report_if_projected_exceeds": true, "week2_order": ["K=6 pick 3-5", "K=1 負控制", "類別 0 專用模型 u833", "6 個 run 一起重評", "(d)"]}
 }

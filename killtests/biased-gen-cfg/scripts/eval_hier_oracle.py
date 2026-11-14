@@ -11,6 +11,8 @@
      pair_cos_eps（ε 空間 1-cos，DECISIONS_fable 條文 1.1：每個分支先得 p_b（CFG 為 (1+w)p_c - w p_u），再轉
      ε_b=(x_t-sqrt(abar)p_b)/sqrt(1-abar)；float64；逐樣本整段序列展平；以 0.5*||a_hat-b_hat||^2 計算）
   另存 git_hash（含是否有未提交修改）。
+  --gamma（DECISIONS_fable 條文 7，2026-11-14）：額外輸出 pair_cos_gamma [pairs,E,T,3,1]：γ = p_c - p_u（x0-hat 空間，與 ε_c-ε_u 只差一個負常數，cos 不變），
+     兩模型的 γ 逐樣本整段序列展平後算 1-cos（算式同 pair_cos_eps，float64，0.5*||a_hat-b_hat||^2）。只加欄位，既有輸出逐位元不變；只支援 normal run（K=1 與正控制不需要）。
 偏差間隙 gap = mse_oracle(自身訓練輸入) - mse_oracle(測試輸入)；pair 版本 = pair_cos(S_i) - pair_cos(S_test)。
 """
 import argparse, glob, json, os, subprocess, sys
@@ -35,6 +37,7 @@ ap.add_argument("--guidance", default="1,3")
 ap.add_argument("--epochs", default=None, help="逗號分隔；預設取所有 run 共有的 checkpoint")
 ap.add_argument("--seed", type=int, default=123)
 ap.add_argument("--device", default=None)
+ap.add_argument("--gamma", action="store_true", help="條文 7：另存 pair_cos_gamma（γ=p_c-p_u 的跨模型 1-cos）；既有輸出不變")
 args = ap.parse_args()
 
 dev = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -53,6 +56,7 @@ CONST_LABEL = metas[0].get("const_label")
 picks = [m["pick"] for m in metas]
 assert args.test_block not in picks, "測試區塊與訓練區塊重疊"
 assert len(set(picks)) == len(picks), "run 的資料區塊必須互不相交"
+assert not (args.gamma and RUN_TYPE != "normal"), "--gamma 只支援一般（K=6 條件）run"
 ne = args.n_eval
 T = [int(x) for x in args.t_grid.split(",")]
 W = [float(x) for x in args.guidance.split(",") if float(x) != 0]
@@ -110,6 +114,7 @@ pairs = [(i, j) for i in range(R) for j in range(i + 1, R)]
 pair_mse = np.zeros((len(pairs), len(epochs), len(T), 3, len(branches)))
 pair_cos = np.zeros_like(pair_mse)
 pair_cos_eps = np.zeros_like(pair_mse)
+pair_cos_gamma = np.zeros(pair_mse.shape[:-1] + (1,)) if args.gamma else None
 ABAR = [float(ab[t - 1]) for t in T]
 
 def eps_of(xt, p, abar):
@@ -166,10 +171,18 @@ for ei, e in enumerate(epochs):
                     xt64 = XT[s][ti]
                     pair_cos_eps[pi, ei, ti, k, bi] = one_minus_cos_eps(
                         eps_of(xt64, a.double(), ABAR[ti]), eps_of(xt64, bb.double(), ABAR[ti])).mean().item()
+    if args.gamma:   # 條文 7：與既有迴圈分開，不碰既有陣列、不消耗任何亂數
+        for pi, (i, j) in enumerate(pairs):
+            for k, s in enumerate((i, j, S - 1)):
+                for ti in range(len(T)):
+                    gi = preds[(i, s, ti)]["cond"] - preds[(i, s, ti)]["uncond"]
+                    gj = preds[(j, s, ti)]["cond"] - preds[(j, s, ti)]["uncond"]
+                    pair_cos_gamma[pi, ei, ti, k, 0] = one_minus_cos_eps(gi, gj).mean().item()
     print(f"epoch {e} done", flush=True)
 
 os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+extra = dict(pair_cos_gamma=pair_cos_gamma) if args.gamma else {}
 np.savez(args.out, epochs=np.array(epochs), t_grid=np.array(T), branches=np.array(branches),
          picks=np.array(picks), pairs=np.array(pairs), mse_oracle=mse, kl_oracle=kl, ce=ce, ce_bp=ce_bp,
-         pair_mse=pair_mse, pair_cos=pair_cos, pair_cos_eps=pair_cos_eps, git_hash=git_hash(), test_block=args.test_block, n_eval=ne, guidance=np.array(W))
+         pair_mse=pair_mse, pair_cos=pair_cos, pair_cos_eps=pair_cos_eps, git_hash=git_hash(), test_block=args.test_block, n_eval=ne, guidance=np.array(W), **extra)
 print("saved", args.out)

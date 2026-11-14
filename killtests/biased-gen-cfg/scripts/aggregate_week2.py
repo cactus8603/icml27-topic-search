@@ -7,17 +7,23 @@
   --u833c0  類別 0 專用無條件模型（pdrop=1.0，batch 85）同上評估，取 uncond 分支 -> t*_u833
   --k1c0    K=1 模型在類別 0 前 700 筆的評估，取 cond 分支 -> t*_u5000
   --h       第 1 週 3 個階層 run 的實測平均 GPU 小時（決定 N；只用於一致性檢查與標示低檢定力）
+  --gpu-used / --gpu-projected-d   條文 6 停點 2：已用 GPU 小時與依 (d) 實測吞吐推估的用量；合計 > 115 -> 輸出「先停下回報」
+2026-11-14 新增（代理落差稽核後、結果前定案）：條文 7 可達性 H∞（--k6 的 npz 須含 pair_cos_gamma）、條文 8 第二探針（(c) FAIL 帶才觸發）、條文 9 層級用語、條文 6 停點。
 各輸出段缺檔時該段記「未能測試（缺檔）」。輸出 results/week2_verdict.json。
 """
 import argparse, json, os
+import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
+sys.path.insert(0, HERE)
+import reach
 ap = argparse.ArgumentParser()
 ap.add_argument("--criteria", default=os.path.join(ROOT, "configs", "criteria_week2.json"))
 for k in ("k6", "k1", "k6c0", "u833c0", "k1c0"):
     ap.add_argument("--" + k, default=None)
 ap.add_argument("--h", type=float, default=None)
+ap.add_argument("--gpu-used", type=float, default=None); ap.add_argument("--gpu-projected-d", type=float, default=None)
 ap.add_argument("--out", default=os.path.join(ROOT, "results", "week2_verdict.json"))
 args = ap.parse_args()
 crit = json.load(open(args.criteria))
@@ -69,6 +75,8 @@ class Run:
             with np.errstate(all="ignore"):
                 self.curve[b] = (y / np.where(bad, np.nan, m)).mean(axis=2)
         self.git = str(d["git_hash"]) if "git_hash" in d.files else None
+        self.tgrid = tg; self.mse = d["mse_oracle"] if "mse_oracle" in d.files else None; self.ce = d["ce"] if "ce" in d.files else None; self.t_idx = idx
+        self.gamma = reach.gamma_curves(d["pair_cos_gamma"], idx) if "pair_cos_gamma" in d.files else None
 
     def ts(self, b, p): return tstar(self.ep, self.curve[b][p])
     def inter(self, b, p): return interior_info(self.ep, self.curve[b][p])
@@ -79,7 +87,7 @@ def weights(rng, R, pairs):
     return m, m[pairs[:, 0]] * m[pairs[:, 1]]
 
 
-def max_invalid(P): return int(np.floor(P * crit["max_invalid_pair_fraction"] + 1e-9))
+def max_invalid(P): return P // crit["max_invalid_pair_divisor"]   # ⌊P/3⌋（2026-11-14 修正：原 floor(P*0.3333) 在 P=15 給 4，應為 5；與 PREREG／條文 2 及 aggregate_week1 一致）
 
 
 def main_metric(run, label):
@@ -240,6 +248,58 @@ if all(need(k) for k in ("k6c0", "u833c0", "k1c0")):
             S["positive_control"] = d
 else:
     S["positive_control"] = {"status": "未能測試（缺 --k6c0/--u833c0/--k1c0）"}
+
+# ---------------- 條文 7：可達性（w→∞ 極限）；K=6 的 npz 須含 pair_cos_gamma ----------------
+rcr = crit["reachability"]; RS = None
+if r6 is not None and r6.gamma is not None:
+    RS = reach.h_inf(r6.ep, np.stack([r6.curve["cond"][p] for p in range(r6.P)]), r6.gamma, r6.pairs, r6.R, lambda e_, y: tstar(e_, y), lambda e_, y: interior_info(e_, y),
+                     max_invalid(r6.P), rcr["reachable_max_log_ratio"], rcr["n_boot"], rcr["bootstrap_seed"])
+    S["reachability"] = RS
+else:
+    S["reachability"] = {"state": "可達性未知", "note": "K=6 npz 缺 pair_cos_gamma（須以 eval_hier_oracle.py --gamma 重評）或缺 --k6"}
+c_main = S.get("c_main", {}); cst = str(c_main.get("status", ""))
+c_fail_band = cst.startswith("FAIL 帶")
+if cst.startswith("PASS") and S["reachability"]["state"] == "構造不可達":
+    c_main["note"] = "與上界矛盾：(c) PASS 照記，但條文 7 判為構造不可達；列入人工審查"
+    verdict.setdefault("manual_review", []).append("(c) PASS 與可達性上界（構造不可達）矛盾")
+
+# ---------------- 條文 8：唯一的第二探針（oracle 偏差間隙放大比；(c) FAIL 帶才觸發；0 GPU） ----------------
+pb = crit["second_probe_gap_amplification"]
+if not c_fail_band:
+    S["second_probe"] = {"state": "未觸發", "note": "(c) 未落在 FAIL 帶"}
+elif r6 is None or r1 is None or r6.mse is None or r1.mse is None or r6.ce is None:
+    S["second_probe"] = {"state": "未能測試", "reason": "缺 --k6 或 --k1，或 npz 缺 mse_oracle／ce"}
+else:
+    ce6 = r6.ce[:, :, :, -1, r6.br.index("cond")].mean(axis=(0, 2)); ys = smooth(ce6, K)
+    ei = int(np.argmin(ys)) if np.all(np.isfinite(ys)) else None
+    if ei is None: S["second_probe"] = {"state": "未能測試", "reason": "K=6 測試輸入 CE 曲線含非有限值"}
+    elif ei == 0: S["second_probe"] = {"state": "未能測試", "reason": "e† 落在第一格", "e_dagger": int(r6.ep[0])}
+    elif int(r6.ep[ei]) not in [int(x) for x in r1.ep]: S["second_probe"] = {"state": "未能測試", "reason": "K=1 沒有 e† 對應的 checkpoint", "e_dagger": int(r6.ep[ei])}
+    else:
+        e1 = [int(x) for x in r1.ep].index(int(r6.ep[ei])); bc6, bf6 = r6.br.index("cond"), r6.br.index("cfg3"); bc1, bf1 = r1.br.index("cond"), r1.br.index("cfg3")
+        tsel6, tsel1 = list(r6.t_idx), list(r1.t_idx)   # 凍結的 t 遮罩（條文 1）
+        g6, c6 = reach.gap_terms(r6.mse, ei, tsel6, bc6, bf6); g1, c1 = reach.gap_terms(r1.mse, e1, tsel1, bc1, bf1)
+        out = reach.probe_amplification(g6, c6, r6.picks, g1, c1, r1.picks, pb["pass"]["gamma6_min"], pb["n_boot"], pb["bootstrap_seed"], pb["max_skipped_fraction"])
+        # 描述：全 t 網格版（不進判定）
+        a6, a_c6 = reach.gap_terms(r6.mse, ei, list(range(len(r6.tgrid))), bc6, bf6); a1, a_c1 = reach.gap_terms(r1.mse, e1, list(range(len(r1.tgrid))), bc1, bf1)
+        out["gamma6_all_t_descriptive"] = reach.gamma_ratio(a6, a_c6)[0]; out["gamma1_all_t_descriptive"] = reach.gamma_ratio(a1, a_c1, [r1.picks.index(p) for p in out["common_picks"]])[0]
+        out.update(e_dagger=int(r6.ep[ei]), e_dagger_is_last_grid=bool(ei == len(r6.ep) - 1), t_used=KEEP, note="探針 PASS 不等於題目 PASS")
+        S["second_probe"] = out
+
+# ---------------- 條文 9：(c) 落在 FAIL 帶時的層級用語 ----------------
+if c_fail_band:
+    probe_state = S["second_probe"]["state"]
+    g4ok = S["positive_control"].get("status") == "通過" if isinstance(S.get("positive_control"), dict) else False
+    S["tier"] = {"reachability": S["reachability"]["state"], "second_probe": probe_state, "gate4_passed": g4ok, **reach.tier_text(S["reachability"]["state"], probe_state, g4ok)}
+    S["stop_point_1"] = "(c) 落在 FAIL 帶：不自動送 (d)。已做條文 8 第二探針（0 GPU）；連同條文 7 與閘門 4 的結果回報使用者，由使用者決定要不要送 (d)。"
+else:
+    S["tier"] = {"note": "(c) 未落在 FAIL 帶；不適用條文 9 層級用語"}
+
+# ---------------- 條文 6 停點 2 ----------------
+if args.gpu_used is not None and args.gpu_projected_d is not None:
+    tot = args.gpu_used + args.gpu_projected_d
+    S["stop_point_2"] = {"gpu_used": args.gpu_used, "gpu_projected_d": args.gpu_projected_d, "total": tot, "cap": crit["stop_points"]["gpu_hours_cap"],
+                         "action": "先停下回報使用者，不自行刪減" if tot > crit["stop_points"]["gpu_hours_cap"] else "未超過上限"}
 
 verdict["git_hash_k6"] = r6.git if r6 else None
 os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)

@@ -8,6 +8,8 @@ import argparse, json, os
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+import sys; sys.path.insert(0, HERE)
+import reach
 ROOT = os.path.join(HERE, "..")
 ap = argparse.ArgumentParser()
 ap.add_argument("--criteria", default=os.path.join(ROOT, "configs", "criteria_week1.json"))
@@ -175,6 +177,15 @@ if os.path.exists(args.hier):
     def interior_pb(b, p):
         return interior_info(ep, curves[ib[b]][p], k, RISE)
     base, hi = ch["main_numerator_branch"], ch["main_denominator_branch"]
+    # ---- 條文 7：可達性上界 H∞（w→∞ 極限）。第 1 週只算探索性，不進任何閘門與判定 ----
+    reach_info = None
+    if crit["reachability"]["enabled_if_npz_has"] in h.files:
+        rc_ = crit["reachability"]
+        gcur = reach.gamma_curves(h["pair_cos_gamma"], mask_idx)
+        reach_info = reach.h_inf(ep, curves[ib["cond"]], gcur, pairs, R, lambda e_, y: tstar(e_, y, k), lambda e_, y: interior_info(e_, y, k, RISE),
+                                 P // ch["max_invalid_pair_divisor"], rc_["reachable_max_log_ratio"], rc_["n_boot"], rc_["bootstrap_seed"])
+        reach_info["exploratory"] = bool(rc_["exploratory_in_week1"] and R < ch["min_runs_main"])
+        reach_info["note"] = "第 1 週探索性（3 個 run）；不得用來調整第 2 週任何設定（條文 6）" if reach_info["exploratory"] else "樣本數足夠，可作可達性正式判讀（條文 7）"
 
     # ---- (b) 閘門：cond 主曲線有內部最低點的對數 ----
     cond_int = [interior_pb(hi, p) for p in range(P)]
@@ -233,6 +244,7 @@ if os.path.exists(args.hier):
         "test_loss_min_epoch": e_loss, "test_loss_min_edge": at_edge(ep, e_loss), "normalized_magnitude_at_loss_min": mag,
         "tstar_edge_per_pair": tstar_edges,
         "main_metric_censored": bool(n_invalid > 0),
+        "reachability_H_inf": reach_info,
         "git_hash_of_eval": str(h["git_hash"]) if "git_hash" in h.files else None,
     }
 else:

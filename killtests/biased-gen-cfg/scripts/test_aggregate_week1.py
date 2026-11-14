@@ -23,7 +23,7 @@ def mk_curve(kind, tstar):
     if kind == "up": return np.linspace(1, 2, E)          # 最低點在第一格
     return vcurve(tstar, kind)
 
-def hier_npz(path, R, spec):
+def hier_npz(path, R, spec, gspec=None):
     """spec(p, branch) -> (kind, tstar)"""
     pairs = [(i, j) for i in range(R) for j in range(i + 1, R)]; P = len(pairs)
     br = ["cond", "uncond", "cfg1", "cfg3"]
@@ -34,10 +34,16 @@ def hier_npz(path, R, spec):
             cv = mk_curve(kind, ts)
             noise = 1 + 0.003 * rng0.standard_normal((E, 8, 3))
             pc[p, :, :, :, b] = cv[:, None, None] * SCALE[None, :, None] * noise
+    extra = {}
+    if gspec is not None:   # 條文 7：pair_cos_gamma [P,E,T,3,1]
+        pg = np.zeros((P, E, 8, 3, 1))
+        for p in range(P):
+            kind, ts = gspec(p); pg[p, :, :, :, 0] = mk_curve(kind, ts)[:, None, None] * SCALE[None, :, None] * (1 + 0.003 * rng0.standard_normal((E, 8, 3)))
+        extra["pair_cos_gamma"] = pg
     np.savez(path, epochs=EPH, t_grid=np.array(TG), branches=np.array(br), picks=np.arange(R), pairs=np.array(pairs),
              mse_oracle=np.ones((R, E, 8, 4, 4)), kl_oracle=np.ones((R, E, 8, 4, 4)), ce=np.ones((R, E, 8, 4, 4)), ce_bp=np.ones((4, 8, 2)),
              pair_mse=np.ones((P, E, 8, 3, 4)), pair_cos=np.full((P, E, 8, 3, 4), np.nan),   # x0-hat pair_cos 故意放 NaN：aggregate 不得使用
-             pair_cos_eps=pc, git_hash="test", guidance=np.array([1., 3.]))
+             pair_cos_eps=pc, git_hash="test", guidance=np.array([1., 3.]), **extra)
 
 def run(args):
     r = subprocess.run([sys.executable, os.path.join(HERE, "aggregate_week1.py"), "--out", os.path.join(a.tmp, "v.json")] + args,
@@ -51,8 +57,8 @@ def check(name, cond, extra=""):
     print(("OK   " if cond else "FAIL ") + name, extra)
     if not cond: fails.append(name)
 
-def H(R, spec, name):
-    pth = os.path.join(a.tmp, name + ".npz"); hier_npz(pth, R, spec); return run(NOBP + ["--hier", pth])
+def H(R, spec, name, gspec=None):
+    pth = os.path.join(a.tmp, name + ".npz"); hier_npz(pth, R, spec, gspec); return run(NOBP + ["--hier", pth])
 
 # ---- (c) PASS：cfg3 比 cond 早約 50%（15 對）
 v = H(6, lambda p, b: ("v", 500 if b == "cfg3" else 1000), "pass6")
@@ -91,6 +97,31 @@ v = H(3, lambda p, b: ("v", 500 if b == "cfg3" else 1000), "pass3")
 check("P=3 exploratory note", "探索性" in v["info"]["hier"]["status_note"])
 # ---- 逐 t 正規化：x0-hat pair_cos 為 NaN 不影響（上面皆通過即證明）；bootstrap 回報跳過次數
 check("bootstrap skipped reported", "bootstrap_skipped" in m)
+
+# ---- 條文 7：H∞（w→∞ 極限可達性；第 1 週探索性）
+CS = lambda p, b: ("v", 500 if b == "cfg3" else 1000)
+v = H(6, CS, "g_none"); check("沒有 pair_cos_gamma -> reachability 為 None、其他輸出不變", v["info"]["hier"]["reachability_H_inf"] is None and v["info"]["hier"]["c_pass_criteria_met"] is True)
+v = H(6, CS, "g_reach", lambda p: ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("H∞：γ 提早一半 -> 可達", r_["state"] == "可達" and r_["h_inf"] < -0.2231 and r_["n_invalid"] == 0 and r_["ci95"] is not None, f"H={r_['h_inf']:.3f}")
+check("(c) 判定不受 γ 影響", v["info"]["hier"]["c_pass_criteria_met"] is True)
+v = H(6, CS, "g_unr", lambda p: ("v", 950)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("H∞：γ 幾乎不提早 -> 構造不可達（且 (c) 仍 PASS 不被改寫）", r_["state"] == "構造不可達" and r_["h_inf"] > -0.2231 and v["info"]["hier"]["c_pass_criteria_met"] is True, f"H={r_['h_inf']:.3f}")
+r3 = H(3, CS, "g_expl", lambda p: ("v", 500))["info"]["hier"]["reachability_H_inf"]
+check("3 個 run（第 1 週）標示探索性；6 個 run 不標", r3["exploratory"] is True and "探索性" in r3["note"] and r_["exploratory"] is False)
+v = H(6, CS, "g_unk", lambda p: ("down", 0) if p < 6 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("無效對 6/15 > 5 -> 可達性未知", r_["state"] == "可達性未知" and r_["n_invalid"] == 6 and r_["max_invalid"] == 5, str(r_["state"]))
+v = H(6, CS, "g_unk5", lambda p: ("down", 0) if p < 5 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("無效對 5/15 = ⌊P/3⌋ -> 仍可判", r_["state"] == "可達" and r_["n_invalid"] == 5)
+v = H(3, CS, "g_p3a", lambda p: ("down", 0) if p == 0 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("P=3：1 個無效 -> 可判", r_["state"] == "可達" and r_["n_invalid"] == 1)
+v = H(3, CS, "g_p3b", lambda p: ("down", 0) if p < 2 else ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("P=3：2 個無效 -> 可達性未知", r_["state"] == "可達性未知")
+v = H(6, lambda p, b: ("up", 0) if (b == "cond" and p == 0) else CS(p, b), "g_condinv", lambda p: ("v", 500)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("cond 無內部最低點的對也算無效，原因記錄", r_["n_invalid"] == 1 and r_["invalid_pairs"][0]["reason"] == {"cond": "first"})
+# 邊界：H∞ 恰好 = log 0.8 -> 可達（<=）
+import math
+v = H(6, CS, "g_edge", lambda p: ("v", 1000 * 0.8)); r_ = v["info"]["hier"]["reachability_H_inf"]
+check("H∞ 恰為 log(0.8)（網格內）判可達或構造不可達依點估計；門檻值 = log(0.8)", abs(r_["threshold"] - math.log(0.8)) < 1e-12, f"H={r_['h_inf']:.4f} -> {r_['state']}")
 
 # ---- (a) CelebA
 EC = np.array(ckpt_schedule(10, 5000)); EN = len(EC); TC = [50, 100, 150]
