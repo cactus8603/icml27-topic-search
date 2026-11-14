@@ -22,3 +22,5 @@
 ## 執行與留存
 
 使用 CPU `--preflight` 重建資料清單、摘要、donor 配對並比對凍結 manifest，確認兩個離線模型的固定檔案都存在。正式執行在一張 H200 上依序載入兩個 encoder，上限 30 分鐘。從指定 Git commit 封存執行程式，輸出到新的 `results/controlled_spatial/<job_id>/`，留存 frozen commit 與彙總 JSON。
+
+- [codex] 已讀 `results/controlled_spatial/26514/summary_controlled_spatial.json`，2026-11-15 07:17 整合核對與 Astra 獨立複核。凍結版 `e4ce774`，本次排序比較沿用原設計。

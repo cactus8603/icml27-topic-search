@@ -18,3 +18,5 @@ sbatch --parsable codex/experiments/two-clocks-prefix/run.sbatch FULL_COMMIT_SHA
 ```
 
 預檢核對凍結檔、資料雜湊及六個原訓練收據，不讀權重或原主結果的數值。
+
+- [codex] 已讀 `icml/runs/two-clocks-prefix/26513/results.json`，2026-11-15 07:20。凍結版 `f292d94`，Astra 獨立複核與整合核對。

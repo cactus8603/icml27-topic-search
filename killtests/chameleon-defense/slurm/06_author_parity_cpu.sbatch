@@ -1,6 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=cham-author-parity
-#SBATCH --partition=defq
+#SBATCH --partition=h200q
+#SBATCH --qos=h200q_1g
+#SBATCH --gres=none
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16

@@ -12,3 +12,5 @@
 bash codex/experiments/rl-template/run.sbatch FULL_COMMIT_SHA --check-only
 sbatch --parsable codex/experiments/rl-template/run.sbatch FULL_COMMIT_SHA
 ```
+
+- [codex] 已讀 `icml/runs/rsd-template/26515.json`，2026-11-15 07:23。凍結版 `743bda8`，Astra 獨立複核與整合核對。

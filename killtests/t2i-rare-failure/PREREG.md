@@ -216,3 +216,5 @@
 逐提示只保存相異分數數、最大同分組、相對第一臂變動的第 95 百分位、原四門檻的命中與翻轉數，以及來源和版本。相異值主要在第二臂回復，支持最後 logits 算術是成因。第二臂改善小而第三臂回復，則需再做對照以區分編碼、特徵正規化及尺度指數的影響。兩者都不回復時再查資料或模型分數分布。每提示 500 張用於機制診斷，原 10,000 張的閘門沿用原登記。
 
 不存影像、分數逐列或提示內容，不使用其他偵測器。單張 H200 最多 30 分鐘。輸出每個 Slurm 工作一份小型 JSON，留在 `icml/runs/t2irare/clip-precision/`。[配對實作](scripts/clip_precision_probe.py) · [作業入口](slurm/clip_precision_probe.sbatch)
+
+- [codex] 已讀 `icml/runs/t2irare/clip-precision/26503.json`，2026-11-15 07:05。獨立複核與整合核對。原 Gate B 門檻及既有判讀沿用。

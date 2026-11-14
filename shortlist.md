@@ -10,18 +10,18 @@
 
 | 題目 | 三項複查 | 下一個有辨識力的實驗 |
 |---|---|---|
-| 多條件檢索的單調證據聚合（`compositional-retrieval`） | **GO。** 適用於原同圖三句排序判準。[凍結判準](killtests/compositional-retrieval/PREREG_headroom.md) · [正式補量](killtests/compositional-retrieval/results/headroom/26393/verdict_headroom.json) | Anchor 校準未達固定候選庫的排名門檻。`26514` 改測獨立影像的正反關係配對勝率，另列 CORE 全句對照。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#多條件檢索) · [正反關係協定](killtests/compositional-retrieval/PREREG_controlled_spatial.md) |
+| 多條件檢索的單調證據聚合（`compositional-retrieval`） | **GO。** 適用於原同圖三句排序判準。[凍結判準](killtests/compositional-retrieval/PREREG_headroom.md) · [正式補量](killtests/compositional-retrieval/results/headroom/26393/verdict_headroom.json) | 兩個新試驗均未支持這版 anchor 的排序增益。若仍研究跨影像排名，需另設能區分關係的訊號。[兩輪結果](codex/reports/2026-11-15-topic-status-codex.md#多條件檢索) |
 
 ## 仍待判定的交接題目
 
 | 題目 | 現象／訊號／空間 | 最值得先釐清的因素 |
 |---|---|---|
-| 兩個時鐘 | 正式評估完成。現象與放大訊號通過，提前時機未確立，G3 改善空間灰區。 | `26513` 查每類樣本數正控制的第一格觸底。依預登記暫緩 CIFAR，等使用者決定是否入池。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#兩個時鐘) · [早期診斷](codex/experiments/two-clocks-prefix/PROTOCOL.md) |
+| 兩個時鐘 | 正式現象與放大訊號通過，提前時機未確立，G3 空間灰區。 | `26513` 支持首格觸底對評估網格敏感。下一步用三組同一早期網格對照，CIFAR 暫緩。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#兩個時鐘) · [早期診斷](codex/experiments/two-clocks-prefix/PROTOCOL.md) |
 | Λ | 限步長且等權的 v2 數值閘門通過。訓練後的現象、訊號、空間待測。 | 已有 Phase B 數字憑證工具。先補原作環境、評審證據與語料，再測無防禦／IP 重現及五個 arm、三個 seed 的信度。[Phase B 預檢](killtests/inoculation-lambda/phaseb/README.md) |
-| 多保真度歸因 | 第 0 階段現象與同軌跡空間通過，訊號灰區。新查詢診斷指出十方向覆蓋偏低。 | 先驗證代表性更好的精確方向。跨種子正式補量仍受原門檻約束。[新查詢診斷](codex/reports/2026-11-15-topic-status-codex.md#多保真度資料歸因) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
-| Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | CPU `26505` 配對核對作者的樣本、層索引與池化。[診斷](killtests/chameleon-defense/AUTHOR_PARITY.md) |
-| RL 稀疏蒸餾 | 配對 A 的重現與截斷門檻未過，B 的原作重現亦未通過。 | 短預算交叉未能測試。若續查，先用獨立資料對照 raw abel 與 chat-wrapped abel。[配對 B](killtests/rl-sparse-distill/PREREG_pair_b.md) · [重現複核](codex/reports/2026-11-15-topic-status-codex.md#rl-稀疏決策蒸餾) |
-| 文生圖罕見失敗 | CPU 加速代理通過。CLIP 篩選未過，正式現象與訊號仍待測。 | `26503` 比較同圖三種精度的同分與翻轉。大批生成需要可信的篩選。[CPU 與配對診斷](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) |
+| 多保真度歸因 | 第 0 階段現象與同軌跡空間通過，訊號灰區。新查詢診斷指出十方向覆蓋偏低。 | `26517` 以新查詢、遮罩比較等預算方向選擇。[覆蓋試驗](codex/experiments/multifidelity-direction-coverage/PROTOCOL.md) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
+| Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | CPU 配對結果指出精度與快取差異小。完整評估仍缺作者原探測器、metadata 與權重對應。[診斷](killtests/chameleon-defense/AUTHOR_PARITY.md) |
+| RL 稀疏蒸餾 | 配對 A、B 的重現閘門未過，短預算交叉未能測試。 | `26515` 的新題上 chat 包裝答對率低於 raw abel，未支持它能修復原重現落差。[模板診斷](codex/experiments/rl-template/PROTOCOL.md) |
+| 文生圖罕見失敗 | CPU 加速代理通過。CLIP 篩選未過，正式現象與訊號仍待測。 | `26516` 重驗新種子的完整代理篩選。[新種子重驗](codex/experiments/t2i-gate-b-precision/PREREG.md) |
 
 ## 第一梯：建議現在就跑停損（依優先順序）
 

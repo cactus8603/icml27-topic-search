@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 06:58（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 07:23（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -8,16 +8,16 @@
 
 | 題目 | 下一步 | H200 已實測峰值 VRAM | 24 GB 估算與設備安排 |
 |---|---|---|---|
-| 多條件檢索 | `26514` 獨立正反關係影像配對 | 新排名 `26450` **5.38 GiB、1 分 53 秒**；前一輪多模型補量 **6.0 GiB**。新配對待量。 | **優先試 24 GB。** CS-CLIP 與 CORE 2B 逐一載入，圖像 batch 8、文字 batch 32。配對資料檢查與彙整可用 CPU，新輸入約 63 MiB。[正反關係協定](../killtests/compositional-retrieval/PREREG_controlled_spatial.md) |
-| 兩個時鐘 | `26513` 查每類樣本數控制第一格觸底 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。階層訓練 **1.8–2.7 GiB**。 | **一般階層評估優先試 24 GB 顯存，主機 RAM 另計。** 此次早期重播留 H200，以相同硬體檢查 18 份權重。最後彙整可用 CPU。CIFAR 依預登記暫緩。[早期診斷](experiments/two-clocks-prefix/PROTOCOL.md) |
+| 多條件檢索 | 固定候選庫與獨立正反關係配對均完成 | 新排名 `26450` **5.38 GiB、1 分 53 秒**；正反關係 `26514` **6.89 GiB、1 分 24 秒**。 | **優先試 24 GB。** CS-CLIP 與 CORE 2B 逐一載入，圖像 batch 8、文字 batch 32。配對資料檢查與彙整可用 CPU，輸入約 63 MiB。[正反關係協定](../killtests/compositional-retrieval/PREREG_controlled_spatial.md) |
+| 兩個時鐘 | 早期網格回播完成，準備三組同網格對照 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。早期回播 `26513` **1.83 GiB、11 分 45 秒**，系統 RAM 約 **16.55 GiB**。 | **一般階層評估優先試 24 GB 顯存，主機 RAM 另計。** 早期權重回播留 H200，以相同硬體逐份核對。CIFAR 依預登記暫緩。[早期診斷](experiments/two-clocks-prefix/PROTOCOL.md) |
 | Inoculation 防禦漏出預測 Λ | Phase B 無防禦／IP 重現與 LoRA 信度試驗 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。Phase B 待量。 | **Phase B 先留 H200。** 7B BF16 權重約 14 GB，訓練須再加活化、梯度與 optimizer 狀態。Phase B 的訓練配置尚未凍結，24 GB 容量待量。協定檢查與合成測試可用 CPU。[Phase B 預登記](../killtests/inoculation-lambda/PREREG.md#3-phase-b-現象訊號與空間閘門-13-皆過才判) · [Phase A v2](../killtests/inoculation-lambda/phasea_v2/README.md) |
-| 多保真度資料歸因 | 新方向選擇可先做離線分析，精確重播與評分已完成 | `26448` 每六查詢 **126.44 GiB、約 7 分 20 秒**，含 JAX 預留；CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** 24 GB 需另量未預留的實際工作峰值。原 TRAK 投影矩陣本身約 42 GB。[精確探針協定](../killtests/multifidelity-attribution/exact_probe/PROTOCOL.md) |
+| 多保真度資料歸因 | `26517` 比較新遮罩方向挑選 | `26448` 每六查詢 **126.44 GiB、約 7 分 20 秒**，含 JAX 預留；CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** 24 GB 需另量未預留的實際工作峰值。原 TRAK 投影矩陣本身約 42 GB。[方向覆蓋協定](experiments/multifidelity-direction-coverage/PROTOCOL.md) |
 | Neural Chameleons 防禦 | 核對作者基準，分析既有快取，必要時完整重抽 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
-| RL 稀疏決策蒸餾 | 配對 B 16K 重現完成，短預算資格暫緩 | B 正確性 `26499` **12.73 GiB、32 秒**。B 16K `26500` 約 **127 GiB**，兩臂分別 **10 分 28 秒／3 分 46 秒**，含預留。 | **單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。CPU 做重判。[配對 B 預登記](../killtests/rl-sparse-distill/PREREG_pair_b.md) |
-| 文生圖罕見失敗 | CLIP 三精度配對診斷 `26503` | CPU `26479` **2 分 55 秒**。舊篩選 `26289` **36.1 GiB**；原 batch 32／64 方案 **52.9 GiB**。精度診斷待量。 | **現有 batch 32 診斷與大量生成留 H200。** 24 GB 可另驗 SD v1.4 縮批，須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[預登記](../killtests/t2i-rare-failure/PREREG.md) |
+| RL 稀疏決策蒸餾 | `26515` 新題模板對照，短預算資格暫緩 | B 正確性 `26499` **12.73 GiB、32 秒**。B 16K `26500` 約 **127 GiB**，兩臂分別 **10 分 28 秒／3 分 46 秒**，含預留。 | **單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。CPU 做重判。[獨立模板診斷](experiments/rl-template/PROTOCOL.md) |
+| 文生圖罕見失敗 | `26516` 以 FP32 logits 重驗代理門檻 | 三精度 `26503` **37.77 GiB、4 分 47 秒**。舊篩選 `26289` **36.1 GiB**；原 batch 32／64 方案 **52.9 GiB**。 | **現有 batch 32 留 H200。** 24 GB 可另驗 SD v1.4 縮批，須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) |
 | 大型平行解碼提交集合 | 等成本試驗完成，若續做先試較便宜的候選選擇器 | LLaDA-8B 第二輪 `26441`／`26442` **16.29／16.23 GiB、21 分 52 秒／45 分 3 秒**。 | **優先試 24 GB。** Forward batch 1，關閉 KV cache，仍用 256-token 解碼。速度比較兩臂使用同卡型。CPU 可彙總。[第二輪說明](experiments/large-commit-sets/round2/README.md) |
 | 不完美驗證器 | 先修判決／金標量測品質，再測正式等風險 | Qwen3-0.6B 和 32B AWQ 依序 `26484` **110.44 GiB、5 分 45 秒**，含 vLLM 預留；CPU 評分 `26485` 1 秒。 | **整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18 GiB，現行 0.78 顯存比例在 24 GiB 約給 18.72 GiB，剩餘空間還需容納 KV cache 和運行資源。[執行入口](experiments/fallible-verifier/round2/run.sbatch) |
-| Attention gate × optimizer | 4× 壓力、12 個保留 seed 的驗證 `26502` | 同模型第二輪校準 `26446` **3.72 GiB、11 分 51 秒**。驗證待量。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。驗證共約 32,400 步，比校準的 20,400 步多，需另核對吞吐與時限。[獨立驗證](experiments/gate-optimizer/round2/PREREG_validation.md) |
+| Attention gate × optimizer | `26521` 四段 48 個全新 seed、`26522` CPU 彙總 | 第二輪校準 `26446` **3.72 GiB、11 分 51 秒**；獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量與前次 12 seed 接近，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
 
 已送出的工作依原 Slurm 佇列執行。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
 
