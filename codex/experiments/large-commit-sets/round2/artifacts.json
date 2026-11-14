@@ -1,0 +1,17 @@
+{
+  "support_sha256": {
+    "generation_config.json": "00b3d1ffda2ca0a45633deb52ca4413dda046e7c94e9b05b73ed4a565b0677b3",
+    "model.safetensors.index.json": "28b4ec27206e42e7ade630450e6ce618bd197acf34d35120e8e86d2bb910a408",
+    "special_tokens_map.json": "e9f1f0f6fa133da3169ae69b1969c51cced047a900050893d7a0711c6bd063aa",
+    "tokenizer.json": "071eb20fe7bd601550b1b7838ff696d6c93b88f51257f753303d3df23163c381",
+    "tokenizer_config.json": "b9a6102c39a4f42f47f0d63fc6cee58a2381199d90f2a4f39b3f6871f32b4119"
+  },
+  "lfs_sha256": {
+    "model-00001-of-00006.safetensors": "ff6699df9635a267fb4ac801ea8012d39b21bb22ed290d5a57128521b889c230",
+    "model-00002-of-00006.safetensors": "b8ddf571b47f57ce654913877f3625d2c7b9a4c3f81cb6f41f6c3055473b0281",
+    "model-00003-of-00006.safetensors": "8347db2fd61a3b5bad2970c2f83ecb84b93632e276a41ca169dcc5efae15462c",
+    "model-00004-of-00006.safetensors": "93d8706872e7432d5cd40c9a61f9f9d270c101828cef2adaf27c67743d3dcf1a",
+    "model-00005-of-00006.safetensors": "ff5f765eb7ec8bfdbe3b962a9e920d71de43d55e04eb4844710c0efcc8855092",
+    "model-00006-of-00006.safetensors": "f25d4cc57b24a79a840d49c3b25d9a22dd5caf3a9766f591e4625377901194e2"
+  }
+}

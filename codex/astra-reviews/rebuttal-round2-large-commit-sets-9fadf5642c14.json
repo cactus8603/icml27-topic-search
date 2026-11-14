@@ -1,0 +1,53 @@
+{
+  "topic": "large-commit-sets",
+  "phase": "prelaunch",
+  "model": "gpt-6-astra",
+  "response_id": "resp_039be2da2ce6f7e7016af8ba34f57c87d28bb9171b0034976a",
+  "manifest_sha256": "9fadf5642c14be6fac892510c435b8c8dc66cb47757b041935a620cf0ed5ebb2",
+  "files": {
+    "codex/experiments/large-commit-sets/judge.py": "094e7eb29ee53b0a4fe1bd1595d6ebfe273bf9199845c379931e78edba860382",
+    "codex/experiments/large-commit-sets/pilot.py": "96bada733a524401283ea66096b1420afad88fb037ed32e329f5f9d8dcc8290d",
+    "codex/experiments/large-commit-sets/read_parquet.py": "d3752c9adbde1bdd5352318d0fc9bb5efa7553ad9d36cc63d1c0faab5004d130",
+    "codex/experiments/large-commit-sets/round2/.gitignore": "c9b95a9c717b48d3dbbe7639138f821d825b6b6aedbee028dbe26ad93f4d78a3",
+    "codex/experiments/large-commit-sets/round2/PREREG.md": "f6e2d939e9d395ad45c28cbc45b3557379261385cbecb5fb55b850297b7b95ef",
+    "codex/experiments/large-commit-sets/round2/README.md": "85a12399ca0707a155f6f20cc58dd4c8f01cb9105c0a71c8c6d4eaeda89fc83d",
+    "codex/experiments/large-commit-sets/round2/artifacts.json": "7346dc3ede01faaff30859423ac826ea9bf63eb00daedff99fd806f7a7e747fb",
+    "codex/experiments/large-commit-sets/round2/collect.py": "3ab08805e1e676ca1df3636716700615a9a8ebae3b3429e852bdeaf8d588cf09",
+    "codex/experiments/large-commit-sets/round2/collect.sbatch": "c7d40a45e86ed028461cd04e408669695ba1dbece719436f86ca06a91fa81a75",
+    "codex/experiments/large-commit-sets/round2/config.json": "840cc90304818efa4aac6c2d9c1e4f53ffa2b4886355058eb5e7f89e3cc8a58b",
+    "codex/experiments/large-commit-sets/round2/design.py": "a068c5b347b8ad07235fd3587b6f131c8c4e4457a740ff21ced04343f5959b8d",
+    "codex/experiments/large-commit-sets/round2/paths.sh": "66eacea3af68a53d12c998116506d00bd200fc53f8a75a2a477c04f190489319",
+    "codex/experiments/large-commit-sets/round2/score.py": "c284fbf0f7b6964fc526dc6581f76f48344fc5e8190865342a904728b17b9471",
+    "codex/experiments/large-commit-sets/round2/score.sbatch": "a5e7a4a8656be43d82203c732c62df58261c40e0e2de919501b5c4d7752c5dba",
+    "codex/experiments/large-commit-sets/round2/test_round2.py": "c339757c12fe95319d04b8205b88381b2946f06362fa5ecd35cfc45fe1fc5b91",
+    "codex/experiments/large-commit-sets/thresholds.json": "35976007941c0e0abc5f9fbeb9c6e98c9647051cd3900f501515a9b6a0f249ce"
+  },
+  "usage": {
+    "input_tokens": 23984,
+    "input_tokens_details": {
+      "cache_write_tokens": 23981,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 23981
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 3577,
+    "output_tokens_details": {
+      "reasoning_tokens": 2503
+    },
+    "total_tokens": 27561
+  },
+  "review": {
+    "status": "PASS",
+    "blocking": [],
+    "notes": [
+      "執行時間仍須由凍結後的 GPU smoke 確認，不能僅由 H200 型號保證。依 collect.py 的計數，未合格題需 32 次 forward；第 2 輪介入約需 141–144 次，第 10 輪約需 125–128 次。若全部題目在第 2 輪合格，train 約需 6.9 萬次、test 約需 14.4 萬次 forward；2h／3h 上限分別要求平均每次約低於 104／75 毫秒，且尚未扣除權重驗證、載入及其他開銷。Smoke 應檢查時間與顯存並保留餘裕；兩題只能提供工程初估，不能保證長題尾端成本。CPU scorer 的小型迴歸與分批 bootstrap 看來符合所配資源。",
+      "round2/score.py 的 evaluate() 有一項非阻斷性描述輸出問題：訓練分歧題不足而未擬合時，無 anchor 的題目仍會向所有 learned arms 的 timings／nfes 加值，最後可能輸出僅涵蓋回退題的 learned-arm 平均成本。主要判準已正確停用，但建議成本輸出也只遍歷 evaluated，未擬合的策略改為 null 或省略，避免誤讀分母。",
+      "現象判準辨識的是 singleton 加總無法解釋的閾值跨越，不單獨證明三階以上交互作用；固定競爭 token 的殘差診斷有助於排除純粹由最佳替代 token 換位造成的解釋。Joint 對 Doubleton 的結果是兩個鎖定、等 forward 預算特徵方案的條件式預測比較，不是將 Joint 加入 Doubleton 後的巢狀增量檢定，也不是一般性的因果機制證明。",
+      "同池 oracle gap 是已實際續跑候選中的可救回上限，不是可部署選擇器已能取得的增益。PREREG.md 已適當將它與全題準確率差、重組秒數分開；後續報告應維持此區分，不把等 forward 數宣稱成實測端到端延遲相等。",
+      "本審查僅依提供文字進行靜態檢查，未執行單元測試、核算所報 manifest SHA-256，或驗證實體 parquet／checkpoint。來源追溯已有凍結 commit、設定與資料雜湊、權重驗證及完整樣本 ID 檢查；可再於摘要記錄兩份輸入 JSONL 的 SHA-256，並核對檔名 job ID 與 metadata.job_id，強化產物鏈結。"
+    ],
+    "review": "未發現足以阻擋所述預先凍結流程的主要正確性或決策有效性問題。資料切分與去重不依賴答案結果，排除第一輪測試題及其規格化重複，smoke 亦與擬合集隔離。凍結入口實際檢查工作樹與指定 commit，並從 Git 解出程式執行；模型程式、支援檔與權重均有驗證。候選取自同一介入前狀態，probe targets 保持遮罩，Joint 與 Doubleton 的唯一揭露輸入數配平，三條候選續跑完成後才使用金標。\n\nCPU scorer 僅用 train 擬合，檢查完整且有序的鎖定題號、候選數、配額、首個合格 anchor、探測計畫與 forward 總數；中斷的 partial 不會被正常流程提升為完整產物。訊號採題內平均與題級配對 bootstrap，改善空間保留全部測試題作分母；覆蓋或訓練分歧不足時不會被誤判為低於門檻。supported、below_floor 與 inconclusive 的區分符合預登記。第三臂與第一輪規則僅作既定描述用途，推進條件亦已限定於此模型、候選池、訓練政策與預算。可依凍結後 smoke → train → test → CPU scorer 的順序進行，無須在凍結前取得本輪研究結果。"
+  }
+}
