@@ -17,3 +17,6 @@ multifid s0_cheap=26302 (afterok:26301)
 multifid s0_retrain=26303 (array 0-7)
 multifid s0_exact=26304 (array 0-4)
 multifid s0_qchunk=26305 (afterok:26304_0; diagnostic)
+retrieval probe2=26314 commit 9505c42
+multifid stage0 train=26324 cheap=26325 retrain=26326 exact=26327 commit 8151894
+2026-11-14 22:xx cancelled 26301-26305 (duplicate mf stage0 submitted pre-freeze by agent); held 26286 26294 26295 pending proxy-gap audit decisions; inoc a1 26261 FAILED gate1 (r=-0.579, slope -7.58) -> 未能測試 (code)
