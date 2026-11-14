@@ -46,3 +46,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 03:48 submit 26441 large-commit-sets 第二輪 480 題訓練候選，依賴試跑 26440 c979eba
 [codex] 2026-11-15 03:48 submit 26442 large-commit-sets 第二輪 1000 題鎖定測試，依賴收集作業 26441 c979eba
 [codex] 2026-11-15 03:48 submit 26443 large-commit-sets 第二輪 CPU 擬合與三門檻機械判讀，依賴 26441 與 26442 c979eba
+[codex] 2026-11-15 03:55 submit 26444 fallible-verifier 第二輪等暖機預算，Astra 通過，0.6B／官方 32B AWQ 新題判決，接平行解碼 26443 5d3ec1d
+[codex] 2026-11-15 03:55 submit 26445 fallible-verifier 第二輪 CPU 等預算、風險與完整資訊空間判讀，依賴 26444 5d3ec1d
+[codex] 2026-11-15 03:55 submit 26446 gate-optimizer 第二輪 Astra 通過，3／4／6 倍小規模校準，接驗證器 26445 9e4f302

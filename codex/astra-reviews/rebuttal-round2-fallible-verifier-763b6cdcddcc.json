@@ -1,0 +1,53 @@
+{
+  "topic": "fallible-verifier",
+  "phase": "prelaunch",
+  "model": "gpt-6-astra",
+  "response_id": "resp_09682041b99e96d8016af8bb14f94087d2ad5fd0c0765b912c",
+  "manifest_sha256": "763b6cdcddccd06134673c92ae8c07a2237f638aa517ec5bd70ecb365af5fedd",
+  "files": {
+    "codex/experiments/fallible-verifier/config.json": "c98aa283aa25be14ad5d0b87257845ce279b62934c4d01ce33048d13418758f3",
+    "codex/experiments/fallible-verifier/data.py": "113fb4ed60b1b8c4ccf2c1f9bb93f12918fd48c7236809762417024074cc953f",
+    "codex/experiments/fallible-verifier/policy.py": "59250bd3d77bf7a2dba8a9ab4fabe744be73fb3386a76f08d51896dd78ace1f1",
+    "codex/experiments/fallible-verifier/replay.py": "9b4fdd8a35f2ec38e82f9b6a86ab014608a6a86f7b8b9eda422624296ee2b8a8",
+    "codex/experiments/fallible-verifier/round2/.gitignore": "f370ad043ec0c98a166fd98646c3b94280ed78bc996223b6cca2ba936f7c6781",
+    "codex/experiments/fallible-verifier/round2/PREREG.md": "ceb57397a6513940712185d24fda4e31813348ef8adc7a66e41bd3a000483f3c",
+    "codex/experiments/fallible-verifier/round2/README.md": "30d9d8d75445c9504660d96437fd6c4fc624cae0d234f104a8196cc73ef89830",
+    "codex/experiments/fallible-verifier/round2/analysis.py": "8e61777fd861ace20e1c92775d654fb0140473e49b8aae276b02d08b2d5abc08",
+    "codex/experiments/fallible-verifier/round2/analyze.sbatch": "7a28ae4585210b6a8b13f2654661d2b10fb540203f6cd2e49d47669b9bbec497",
+    "codex/experiments/fallible-verifier/round2/config.json": "af1a0d29acf727bb92b3ca440f7e5a779fc81be151cf6dd394312b0faca75c73",
+    "codex/experiments/fallible-verifier/round2/judge.py": "b9bc90ef2ef88fc51a6c7cedf00a152d22ec8e07d9802289918f2daede7ae26a",
+    "codex/experiments/fallible-verifier/round2/protocol.py": "9e73312ee5e6be3890229ff357eb91791faee9e090c631ce6c598877f784f8e7",
+    "codex/experiments/fallible-verifier/round2/run.sbatch": "8f853bfd661a3c9cc275fbc644f58b6e202a336ed8d0eb8682d9d84b843d2c76"
+  },
+  "usage": {
+    "input_tokens": 21819,
+    "input_tokens_details": {
+      "cache_write_tokens": 21816,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 21816
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 3157,
+    "output_tokens_details": {
+      "reasoning_tokens": 1853
+    },
+    "total_tokens": 24976
+  },
+  "review": {
+    "status": "BLOCK",
+    "blocking": [
+      "排程未實作指定的前置相依。codex/experiments/fallible-verifier/round2/README.md 的正式提交命令是 `sbatch run.sbatch \"$freeze\"`，run.sbatch 也沒有 decoding 終端工作的 dependency；目前只有分析等待本輪推論成功，GPU 工作仍可能立即開始。最小修正：提交入口要求並驗證上一主題終端工作的整數 job ID，對 run.sbatch 加上 `--dependency=\"afterany:$prior_job\"`（若要求前序成功才開始，則明訂使用 afterok），再讓 analyze.sbatch 以 afterok 等待本輪推論。將完整鏈式提交命令納入凍結文件。",
+      "未知 gold 的單側識別界被用來判定相反方向，可能把「無法證實」誤報為「現象不足／風險超標」。codex/experiments/fallible-verifier/round2/analysis.py 的 classification() 對 strong_fa_unknown_lower、shared_fa_unknown_lower 使用其區間上端低於門檻來輸出 below_floor；但下界低不代表真實現象低。risk_status() 同樣對 *_upper 的區間下端高於限制輸出 above_limit；保守上界高不代表真實風險必然超標。85% 覆蓋門檻不能消除這個問題。最小修正：支持現象仍使用識別下界，支持風險合格仍使用識別上界；反向判定則分別使用識別上界與識別下界的適當信賴端點，否則輸出 inconclusive。同步更新 PREREG.md，加入合成測試，確保同一組已觀察資料在未知標籤可使真值跨門檻時不會被判成明確否定。"
+    ],
+    "notes": [
+      "選題與切分邏輯合理：protocol.py 依固定分片雜湊、題文正規化、候選存在性及固定種子選取，兩個 solver 的同題候選不跨訓練／測試。正式讀取作答與參考答案後，也沒有依結果重新篩選題目。精確排除不能排除改寫題或模型訓練污染，已適當揭露。",
+      "預算與資訊比較有清楚分界。N=600 時控制臂買 81 筆 gold，cascade 買 210 筆強 verdict 加 60 筆 gold，均為 810 價格單位；失敗查詢仍計費，弱判決失敗回退 gold。全暖機資訊是額外資源診斷，不是等額部署收益；0.1 是宣告的價格假設，不能解讀成人審實測效率。",
+      "執行量最多為兩模型合計約 492 萬輸入 token、23 萬生成 token。45 分鐘若按此上限平均，需要約每秒 1,820 輸入 token 與 85 生成 token，且還須容納資料校驗、載入與初始化。單張 H200 執行官方 32B AWQ、兩模型依序分開載入，配置具合理可行性，但沒有吞吐與環境相容性資料可保證時限。使用非研究資料的 GPU smoke 應確認 AWQ 核心、離線檔案、記憶體與代表性長度吞吐；這是工程前提，不需要在凍結前讀取本輪研究結果。CPU 分析約 50 次小型 LP 與 2,000 次題群重抽，1 CPU／4 GiB／10 分鐘看來合理。",
+      "凍結檢查、模型及資料雜湊、輸出不覆寫、verdict 完整 ID 集合、輸入 manifest 雜湊與長度耗盡判失敗等已有實作。建議 summary.json 再記錄 gold、weak、strong、prompts 四個實際輸入檔的 SHA-256，以及明確的作業鏈來源，提升搬移輸出後的可追溯性；目前 summary 主要記錄 commit 與設定雜湊。",
+      "條件增量訊號比較共享免費分層先驗，只有同格有兩種強判決時才加入修正，且明示限於可解析 gold 族群。題群 bootstrap 條件於固定暖機資料與 16 個種子的平均政策，不涵蓋重新抽取暖機或重擬合的不確定性；七項校正僅屬同一政策對的判準族，不是所有診斷與比較的整體保證。這些是可接受的預登記 pilot 限制。"
+    ],
+    "review": "目前不建議按所列命令提交。主要研究設計已區分 fallible-verifier 現象、免費特徵條件下的額外訊號，以及額外訓練資訊下可達的部署省費空間；也沒有將資源診斷直接宣稱為因果效果或普遍策略保證。需先修正前序排程鏈及未知 gold 下的反向判定邏輯，否則分別會違反指定執行順序與造成不成立的否定結論。本次僅作靜態審查，未執行程式或獨立驗算所提供的 manifest SHA-256；不要求任何本輪實驗結果作為凍結前條件。"
+  }
+}
