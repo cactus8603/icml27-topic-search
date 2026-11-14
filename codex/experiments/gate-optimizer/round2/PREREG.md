@@ -20,3 +20,7 @@
 ## 執行
 
 一張 H200，Slurm 上限兩小時，程式限時 6,500 秒（包含資料準備）。共 12 個配對 prefix ×（100 + 4×400）步，約 20,400 步、8,356 萬訓練 tokens，另加測量。凍結後可先以 `bash calibrate.sbatch FULL_COMMIT_SHA --check-only` 驗證工作區和兩輪依賴，再按 [協調規則](../../../../COORDINATION.md) 開作業。執行唯讀快照與 corpus 只寫共用 icml/tmp，結果寫父層 `results/round2-<job-id>/`。CPU 合成測試輸出可用父層已忽略的 `.smoke`。本配置沒有直接執行獨立驗證的入口。
+
+## 修改紀錄
+
+- [codex] 已讀 `results/round2-26446/calibration.json`，2026-11-15 06:23 獨立複核、06:28 整合複核。沿用既有獨立驗證計畫。
