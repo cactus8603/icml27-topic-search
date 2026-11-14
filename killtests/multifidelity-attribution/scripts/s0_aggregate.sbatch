@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mf-stage0-aggregate
-#SBATCH --partition=defq
+#SBATCH --partition=h200q
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

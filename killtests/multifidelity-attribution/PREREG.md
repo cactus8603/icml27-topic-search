@@ -85,3 +85,5 @@ CIFAR-10 ResNet-9 上，便宜歸因方法離精確 metagradient 還有沒有足
   (4) `s0_bench.sbatch` 加 torch（cu124）CUDA 檢查與 42 GB bf16 TRAK 投影矩陣配置測試；`exact_y.py --bench` 先暖機再以差分計時（舊版把 JIT 編譯與段重算攤進 20 步，外推高估）。
   (5) `check_qchunk.py` 改為從包含 [qstart,qend) 的已存區塊切片（舊版找 `Y_0_2.npy`，README 的 `--qend 2` 用法必定失敗）。
   (6) 新增 `scripts/check_resnet_fd.py`（非判準）：ResNet9 含 BN/增強的 metagradient 對有限差分，float64 CPU 最大相對誤差 1.8e-8。
+
+- [codex] 2026-11-15 00:24 開始讀取工作 26326 的全部重訓與噪音控制，以及 26327 的五個精確歸因區塊，用已凍結版本 29d1d5a 核對第 0 階段重現與噪音閘門。七種便宜方法與正式三項判讀仍待完成。
