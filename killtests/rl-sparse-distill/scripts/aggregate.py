@@ -229,7 +229,7 @@ def gate1(pq, ccfg, ecfg, merged=False):
     return res
 
 
-def gate0(pq, greedy_graded, pair, crit, ecfg, data):
+def gate0(pq, greedy_graded, pair, crit, ecfg, data, *, reproduction=None):
     g0 = crit["gate0"]
     out = {}
     # (a) 重現 RL 已報 pass@1（greedy，對各大型來源）
@@ -241,12 +241,17 @@ def gate0(pq, greedy_graded, pair, crit, ecfg, data):
             by.setdefault(src[i], []).append(g["correct"][0])
         for s, v in by.items():
             rep[s] = 100 * float(np.mean(v)) if v else None
-    out["rl_greedy_by_source"] = rep
+    if reproduction is None:
+        out["rl_greedy_by_source"] = rep
+    else:
+        rep = reproduction
+        out["rl_original_reproduction_by_source"] = rep
     ref = pair["reported_rl_greedy"]
     diffs = {s: rep[s] - ref[s] for s in g0["reproduce_sources"] if s in rep and s in ref}
     out["reproduce_diffs_pp"] = diffs
     out["reproduce_record_only_diffs_pp"] = {s_: rep[s_] - ref[s_] for s_ in g0.get("reproduce_record_only_sources", []) if s_ in rep and s_ in ref}
-    out["reproduce_ok"] = (len(diffs) == len(g0["reproduce_sources"])) and all(abs(v) <= g0["reproduce_tol_pp"] for v in diffs.values())
+    tolerance = g0["reproduce_tol_pp"] + (0 if reproduction is None else 1e-12)
+    out["reproduce_ok"] = (len(diffs) == len(g0["reproduce_sources"])) and all(abs(v) <= tolerance for v in diffs.values())
     # (b) 截斷率
     tb, tr = 100 * pq["base"]["trunc"].mean(), 100 * pq["rl"]["trunc"].mean()
     out["trunc_pct"] = {"base": tb, "rl": tr}

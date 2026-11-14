@@ -5,10 +5,12 @@ results/**/*.tmp
 results/**/.grade.lock
 results/**/.graded_verify_stage.json
 results/probe_*/
+results/A/
+results/pair_b/
 pylib/
 slurm/logs/
 logs/*.log
 __pycache__/
 *.safetensors
 *.pt
-# 保留：results/**/graded.json（小）、results/**/meta_*.json、results/aggregate.json、data/eval.jsonl（1453 題，小）
+# 配對 A/B 執行產物留本機；正式進度使用文件與獨立彙總。
