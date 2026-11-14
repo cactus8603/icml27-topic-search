@@ -42,3 +42,5 @@ sbatch --dependency="afterok:${short%%;*}" --gres=none --cpus-per-task=16 --mem=
 ```
 
 作業輸出根目錄為 `results/pair_b/<run-id>/`，原作重現彙總為 `reproduction.json`，最終短預算結果為 `pair_b_gate0.json`。保留原始檔與憑證後，才另行挑選小型彙總進版本控制。每次新跑次用新 ID。
+
+- [codex] 2026-11-15 06:33。預檢 26492 已寫出完整來源與完成標記，Slurm 仍回報 exit 1，並自動取消其相依作業。預檢以 `exec /bin/true` 完成，並使用新 run ID 重送。模型、資料、門檻及計分固定。

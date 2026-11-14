@@ -45,7 +45,7 @@ if [[ $stage == prepare ]]; then
     "$python" -BI "$source/scripts/pair_b.py" check "$shared"
     "$python" -BI "$source/scripts/pair_b.py" prepare "$shared" "$run" "$commit" "$job"
     printf '%s\n' "$commit" > "$run/prepared"
-    exit
+    exec /bin/true
 fi
 
 [[ $(<"$run/prepared") == "$commit" ]]
