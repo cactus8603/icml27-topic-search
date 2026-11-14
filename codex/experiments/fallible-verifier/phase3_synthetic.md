@@ -26,3 +26,5 @@ CPU 檢查驗證合成提示、固定模型的 config 和 tokenizer SHA-256、�
 freeze=$(git rev-parse --verify HEAD)
 sbatch codex/experiments/fallible-verifier/phase3_synthetic.sbatch "$freeze"
 ```
+
+- [codex] 已讀 `results/phase3-synthetic/26511/weak.json` 與 `strong.json`，2026-11-15 07:08 整合核對、07:11 獨立複核。凍結版 `c682f29`。
