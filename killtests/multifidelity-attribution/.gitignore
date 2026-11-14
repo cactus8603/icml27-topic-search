@@ -5,4 +5,5 @@
 __pycache__/
 logs/*.out
 results/*/Y_*.npy
+results/stage0/export_fidelity.json
 *.log
