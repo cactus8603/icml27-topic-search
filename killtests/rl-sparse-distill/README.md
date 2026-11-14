@@ -93,3 +93,8 @@ T1（rl=base 等於 base 取樣）、T2（全部替換等於 RL greedy）、T3�
 - 既有 cond 不變的證據：以 `git HEAD` 的舊版 `gen_replace.py` 與新版比對 base／rl（含 temperature 0）／rl_replace（壓縮與不壓縮）／all_replace，輸出（文字、結束旗標、token 數、替換數）全部逐字相同（Qwen3-0.6B 與加雜訊副本，CPU）。
 - smoke 新增 T6（兩模型相同時 geo_mix == base 取樣、替換數 0）、T7a（λ=1、temperature 0 == RL greedy）、T7b（λ=0 == base 取樣）、T8（λ=1 時與獨立參考迴圈逐字相同且不一致位置數相同）。GPU 版 `00_correctness_gpu.sbatch` 會一併跑。
 - 刪除的說法：「rl_replace 是學生上限」只對 pass@1 近似成立，對 pass@64 不成立。
+
+## 2026-11-14 [claude] 判定方式改為現象／訊號／空間（報告 60 通用條文 G 與第 5 節；條文見 PREREG.md 文末）
+- `aggregate.py` 輸出 `phenomenon`、`signal`、`space`、`r3`、`overall_three_items`；`overall` 欄位改為三項合成（G1）。原 `gate1` 的 verdict、對 WiSE 的比較、R1 FAIL 條件只做描述。
+- 現象＝閘門 0(c)（A、B 任一合格）；訊號＝量 1（pass@64 − rl_hf ≥ 2pp）＋量 2（pass@1 回收率 ≥ 0.5）；空間＝H_a 或 H_b（m=2，單側 α=0.00625，≥ 2pp）；R3 為空間的第三個上限候選（訊號 PASS 且空間 FAIL 時觸發，預算 25 GPU 小時）。
+- 驗證：`python -I scripts/aggregate.py --selftest`（用 `envs/vllm033` 的 python）涵蓋現象、訊號、空間各自的 PASS／FAIL／灰區、H_b 單獨通過、合併後未能測試、R3 觸發與通過／未通過，以及整體規則。

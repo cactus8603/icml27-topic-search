@@ -3,6 +3,8 @@
 結果目錄約定：results/<pair>/<cond>/graded.json，cond ∈
   base, rl（取樣 n=128, test）、rl_greedy, base_greedy（split all, n=1）、rl_replace、wise_0.15 ...（WiSE-FT 各 λ）
 判準的所有數字只從 criteria.json 讀；改門檻不必改此檔。
+2026-11-14 [claude]（使用者原則變更後、結果前定案，報告 60 通用條文 G 與第 5 節）：整體判定改為現象／訊號／空間三項
+（phenomenon_eval／signal_eval／space_eval／r3_status／overall_eval）；gate1 的 verdict 與 R1 FAIL 條件、rl_replace 對 WiSE 的比較只做描述。
 2026-11-14（代理落差稽核後、結果前定案）：R1 (ii) 的 FAIL 需排除 +2pp；R2 回應層級混合曲線（只描述）；R3 geo_mix 第二探針（probe2）。
 """
 import argparse, json, math, os, sys
@@ -182,7 +184,8 @@ def gate1(pq, ccfg, ecfg, merged=False):
         res["mix_curve_descriptive"] = {"compare_cond": mc["compare_cond"] if mc["compare_cond"] in pq else "rl",
                                         "points": [{"pi": pi, "p1": 100 * a, "pk": 100 * b, "chord_pk": c, "above_chord_pp": 100 * b - c}
                                                    for pi, a, b, c in zip(pis, p1c, pkc, chord)]}
-    # 三態
+    res["descriptive_only"] = True   # 2026-11-14 [claude]：不再決定整體判定（見 phenomenon_eval 等）
+    # 三態（描述用）
     passed = (res["rr_minus_rl_pp"] >= ccfg["replace_minus_rl_min_pp"] and res["rr_minus_rl_lo_pp"] > 0 and not missing
               and res["wise_margin_pp"] > ccfg["wise_margin_min_pp"] and res["wise_margin_lo_pp"] > 0)
     gmin = ccfg["gray_zone"]["point_diff_min_pp"]
@@ -246,17 +249,143 @@ def gate0(pq, greedy_graded, pair, crit, ecfg, data):
     return out
 
 
-def probe2_status(summary, PQ, crit, pc):
-    """R3 觸發：合格配對的 (i) 成立而 (ii) FAIL；只做一個配對，A 符合就做 A，否則做 B。"""
+def mix_pq(c_rl, c_base, n, k, pi):
+    """R2 混合在單一 π 的逐題 (p1_q, pass@k_q)；mix_curve 的逐題版（bootstrap 用）。"""
+    c_rl, c_base = np.asarray(c_rl, float), np.asarray(c_base, float)
+    def hyp(c):
+        H = np.ones((len(c), k + 1))
+        for m in range(k):
+            H[:, m + 1] = H[:, m] * np.maximum(n - c - m, 0.0) / (n - m)
+        return H
+    Hr, Hb = hyp(c_rl), hyp(c_base)
+    allfail = np.zeros(len(c_rl))
+    for m in range(k + 1):
+        w = math.comb(k, m) * (pi ** m) * ((1 - pi) ** (k - m))
+        if w > 0:
+            allfail += w * Hr[:, m] * Hb[:, k - m]
+    return pi * c_rl / n + (1 - pi) * c_base / n, 1.0 - allfail
+
+
+# ---------------- 報告 60 第 5 節：現象／訊號／空間 ----------------
+def phenomenon_eval(summary, crit):
+    """現象＝閘門 0(c)。任一組合格 → PASS（主配對＝順序上第一個合格者）；
+    每個有資料的組都 (a)(b) 過、且皆不符 (c) → FAIL；其餘（含 (a)(b) 失敗、缺資料）→ 未能測試。"""
+    order = crit["phenomenon"]["pair_order"]
+    g0 = {p: summary[p]["gate0"] for p in order if p in summary}
+    for p in order:
+        if g0.get(p, {}).get("verdict") == "配對合格":
+            return {"verdict": "PASS", "primary_pair": p, "scope": crit["phenomenon"]["scope"]}
+    ab_ok = [bool(g.get("reproduce_ok") and g.get("trunc_ok")) for g in g0.values() if "reproduce_ok" in g]
+    if len(ab_ok) == len(order) and all(ab_ok):
+        return {"verdict": "FAIL", "primary_pair": None, "scope": crit["phenomenon"]["scope"],
+                "note": "(a)(b) 都過但 A、B 皆不符 (c)；範圍限 %s；配對 C 是否另開由使用者決定" % crit["phenomenon"]["scope"]}
+    return {"verdict": "未能測試", "primary_pair": None, "note": "至少一組 (a)(b) 未過或缺資料，且沒有合格配對（修復期 3 個工作天）"}
+
+
+def signal_eval(pq, crit, merged=False):
+    """訊號：量 1 = rl_replace pass@64 − rl_hf ≥ 2pp 且單側 1.25 百分位 > 0；
+    量 2 = pass@1 回收率 (rr−base)/(rl_hf−base) ≥ 0.5。PASS＝兩者；FAIL＝量 1 差 < 1pp；其餘灰區。"""
+    sc, ecfg = crit["signal"], crit["eval"]
+    rr, rlh, base = pq["rl_replace"], pq[sc["q1_cond"]], pq["base"]
+    idx = boot_idx(len(rr["pk"]), ecfg["bootstrap_B"], ecfg["bootstrap_seed"])
+    d = rr["pk"] - rlh["pk"]
+    q1_pt, q1_lo = 100 * d.mean(), 100 * np.quantile(d[idx].mean(1), sc["q1_ci_one_sided_alpha"])
+    q1 = bool(q1_pt >= sc["q1_rr_minus_rlhf_pk_min_pp"] and q1_lo > 0)
+    den = rlh["p1"].mean() - base["p1"].mean()
+    rec = float((rr["p1"].mean() - base["p1"].mean()) / den) if den != 0 else float("nan")
+    q2 = bool(rec >= sc["q2_recovery_min"])
+    if q1 and q2:
+        v = "PASS"
+    elif q1_pt < sc["fail_q1_below_pp"]:
+        v = "FAIL"
+    else:
+        v = "灰區（加碼後仍灰區：交使用者）" if merged else "灰區"
+    return {"verdict": v, "q1_rr_minus_rlhf_pk_pp": q1_pt, "q1_lo_pp": q1_lo, "q1_ok": q1,
+            "q2_recovery_p1": rec, "q2_ok": q2, "alpha_one_sided": sc["q1_ci_one_sided_alpha"]}
+
+
+def space_eval(pq, crit, merged=False):
+    """空間：H_a（rl_replace 對 WiSE 前緣）、H_b（R2 混合在 π* 對前緣），擇一（m=2，單側 α=0.00625）。"""
+    sc, ecfg, g1 = crit["space"], crit["eval"], crit["gate1"]
+    miss = [c for c in ["base", "rl_replace", sc["mix_cond"]] + sc["endpoint_conds"] + ["wise_%s" % l for l in g1["wise_lambdas"]] if c not in pq]
+    if miss:
+        return {"verdict": "未能測試（缺 %s）" % sorted(set(miss))}
+    base, rr = pq["base"], pq["rl_replace"]
+    idx = boot_idx(len(rr["pk"]), ecfg["bootstrap_B"], ecfg["bootstrap_seed"])
+    a = sc["ci_one_sided_alpha"]
+    mid = [("%s" % l, pq["wise_%s" % l]) for l in g1["wise_lambdas"]]
+    def frontier_gap(target):
+        """λ=1 端點用 rl 與 rl_hf 各算一次，取點估計較小者。"""
+        best = None
+        for ec in sc["endpoint_conds"]:
+            pts = [("0", base)] + mid + [("1", pq[ec])]
+            m, bm = wise_margin_boot(target, pts, idx)
+            if best is None or m < best[0]:
+                best = (m, bm, ec)
+        m, bm, ec = best
+        return {"pt_pp": 100 * m, "lo_pp": 100 * float(np.quantile(bm, a)), "upper_pp": 100 * float(np.quantile(bm, 1 - a)), "endpoint": ec}
+    Ha = frontier_gap(rr)
+    # H_b：π*（mix pass@1 最接近 rl_replace pass@1；同距取小）
+    nS, kS = g1["mix_curve"]["n"], g1["mix_curve"]["k"]
+    c_rl, c_b = np.round(pq[sc["mix_cond"]]["p1"] * nS), np.round(base["p1"] * nS)
+    step = sc["mix_pi_step"]
+    pis = [round(i * step, 10) for i in range(int(round(1 / step)) + 1)]
+    p1c, _ = mix_curve(c_rl, c_b, nS, kS, pis)
+    dist = np.abs(p1c - rr["p1"].mean())
+    pi_star = pis[int(np.argmin(dist + 1e-12 * np.arange(len(pis))))]   # 同距取較小 π
+    mp1, mpk = mix_pq(c_rl, c_b, nS, kS, pi_star)
+    Hb = frontier_gap({"p1": mp1, "pk": mpk})
+    Hb["pi_star"] = pi_star
+    paths = {"H_a": Ha, "H_b": Hb}
+    ok = [n for n, h in paths.items() if h["pt_pp"] >= sc["pass_min_pp"] and h["lo_pp"] > 0]
+    fail = all(h["pt_pp"] <= 0 and h["upper_pp"] < sc["fail_exclude_pp"] for h in paths.values())
+    if ok:
+        v = "PASS"
+    elif fail:
+        v = "FAIL"
+    elif merged:
+        v = "未能測試（檢定力不足）"
+    else:
+        v = "灰區"
+    return {"verdict": v, "paths_passing": ok, "H_a": Ha, "H_b": Hb, "alpha_one_sided": a, "m_paths": sc["m_paths"]}
+
+
+def r3_status(primary, sig, spc, PQ, crit):
+    """R3＝空間的第三個上限候選。觸發：主配對訊號 PASS 而空間 FAIL。"""
     pcfg = crit["probe2"]
-    for p in pcfg["pair_order"]:
-        s = summary.get(p)
-        if s and s["gate0"].get("verdict") == "配對合格" and s["gate1"].get("i_pass") and s["gate1"].get("ii_fail"):
-            pq = PQ[p]
-            if pcfg["cond"] in pq and all(c in pq for c in ("base", "rl", "rl_hf")):
-                return {"triggered": True, "pair": p, "result": probe2_eval(pq, crit["gate1"], pcfg, crit["eval"])}
-            return {"triggered": True, "pair": p, "result": {"verdict": "待執行（觸發；缺 %s 取樣結果，見 slurm/06_geo_mix.sbatch）" % pcfg["cond"]}}
-    return {"triggered": False, "result": {"verdict": "未觸發"}}
+    if not (primary and sig.get("verdict") == "PASS" and spc.get("verdict") == "FAIL"):
+        return {"triggered": False, "result": {"verdict": "未觸發"}}
+    pq = PQ[primary]
+    if pcfg["cond"] in pq and all(c in pq for c in ("base", "rl", "rl_hf")):
+        return {"triggered": True, "pair": primary, "result": probe2_eval(pq, crit["gate1"], pcfg, crit["eval"])}
+    return {"triggered": True, "pair": primary, "result": {"verdict": "待執行（觸發；缺 %s 取樣結果，見 slurm/06_geo_mix.sbatch）" % pcfg["cond"]}}
+
+
+def overall_eval(phen, sig, spc, r3):
+    """G1：三項都 PASS → 進候選池；任一 FAIL → 不進池（寫明哪一項）；其餘灰區／未能測試／待執行。"""
+    space_v = spc.get("verdict", "未評估")
+    space_note = None
+    if r3.get("triggered"):
+        rv = r3["result"]["verdict"]
+        if rv == "通過":
+            space_v, space_note = "PASS", "經 R3（λ=0.5 幾何混合）通過"
+        elif rv.startswith("未通過"):
+            space_v, space_note = "FAIL", "R3 未通過"
+        else:
+            space_v, space_note = "待執行 R3", "訊號 PASS 而空間 FAIL，須先做 R3"
+    items = {"現象": phen.get("verdict", "未評估"), "訊號": sig.get("verdict", "未評估"), "空間": space_v}
+    fails = [k for k, v in items.items() if v == "FAIL"]
+    if fails:
+        ov = "FAIL：在本 PREREG 範圍內不進候選池（%s FAIL；範圍限 1.5B、3000 token、本批配對）" % "、".join(fails)
+    elif all(v == "PASS" for v in items.values()):
+        ov = "PASS：進候選池"
+    elif any(v.startswith("待執行") for v in items.values()):
+        ov = "待 R3（其餘項目未 FAIL）"
+    elif any(v.startswith("未能測試") for v in items.values()):
+        ov = "未能測試（%s）" % "、".join(k for k, v in items.items() if v.startswith("未能測試"))
+    else:
+        ov = "灰區（只准條文指定的一次 dev 400 加碼，否則交給使用者）"
+    return {"items": items, "space_note": space_note, "overall": ov}
 
 
 def main():
@@ -304,26 +433,27 @@ def main():
         else:
             s["gate1"] = {"verdict": "未執行（缺 rl_replace、rl_hf 或 base/rl）"}
         summary[p] = s
-    # 整體：至少一個「配對合格」且判準 1 PASS 才 PASS；有灰區無 PASS → 灰區；合格配對全 FAIL → FAIL；無合格配對 → 未能測試
-    qual = [p for p, s in summary.items() if s["gate0"].get("verdict") == "配對合格"]
-    v1 = {p: summary[p]["gate1"].get("verdict") for p in qual}
-    if not qual:
-        overall = "未能測試（沒有合格配對：換配對，見 pairs.json reserve）"
-    elif any(v == "PASS" for v in v1.values()):
-        overall = "PASS"
-    elif any(v == "灰區" for v in v1.values()):
-        overall = "灰區（只准一次事先定好的加碼）"
-    elif all(v == "FAIL" for v in v1.values()):
-        overall = "FAIL（停 λ=1 端點路線，不做蒸餾；不等於題目淘汰：若 (i) 成立而 (ii) FAIL 須先做 R3 探針）"
-    else:
-        overall = "未完成（合格配對尚缺判準 1 結果）"
+    # 報告 60 第 5 節：現象／訊號／空間（gate1 的 verdict 與 summary[p]["overall_legacy"] 只做描述）
+    phen = phenomenon_eval(summary, crit)
+    prim = phen.get("primary_pair")
+    sig = spc = {"verdict": "未評估（現象未 PASS）"}
+    if prim:
+        pq = PQ[prim]
+        need_s = ("base", "rl_replace", crit["signal"]["q1_cond"])
+        sig = signal_eval(pq, crit) if all(c in pq for c in need_s) else {"verdict": "未能測試（缺 %s）" % [c for c in need_s if c not in pq]}
+        spc = space_eval(pq, crit)
+    r3 = r3_status(prim, sig, spc, PQ, crit)
+    summary["phenomenon"], summary["signal"], summary["space"], summary["r3"] = phen, sig, spc, r3
+    ov = overall_eval(phen, sig, spc, r3)
+    summary["overall_three_items"] = ov
+    overall = ov["overall"]
     summary["overall"] = overall
-    summary["probe2"] = probe2_status(summary, PQ, crit, pc)
+    summary["probe2"] = r3     # 相容舊鍵名
     os.makedirs(a.results, exist_ok=True)
     with open(os.path.join(a.results, "aggregate.json"), "w") as f:
         json.dump(summary, f, indent=1, ensure_ascii=False, default=float)
     print(json.dumps(summary, indent=1, ensure_ascii=False, default=float))
-    print("\n== OVERALL:", overall)
+    print("\n== 現象／訊號／空間：", ov["items"], "\n== OVERALL:", overall)
 
 
 def selftest():
@@ -422,19 +552,96 @@ def selftest_2026_11_14(crit):
     assert no3["verdict"].startswith("未通過") and not no3["cond3_ok"] and no3["cond2_ok"], no3
     no1 = probe2_eval(with_geo(base_pq, "0.6", 0.0, pk_over=base_pq["rl_hf"]["pk"] + 0.01), g1c, pcfg, ecfg)  # pass@64 只比 rl_hf 高 1pp
     assert no1["verdict"].startswith("未通過") and not no1["cond1_ok"], no1
-    # 觸發與配對選擇
-    summ = {"A": {"gate0": {"verdict": "配對合格"}, "gate1": {"i_pass": True, "ii_fail": True}},
-            "B": {"gate0": {"verdict": "配對合格"}, "gate1": {"i_pass": True, "ii_fail": True}}}
-    pqs = {"A": with_geo(base_pq, "0.6", 0.05), "B": base_pq}
-    tr = probe2_status(summ, pqs, crit, None)
+    # 觸發：訊號 PASS 而空間 FAIL（主配對）
+    PQs = {"A": with_geo(base_pq, "0.6", 0.05)}
+    crit_ = crit
+    tr = r3_status("A", {"verdict": "PASS"}, {"verdict": "FAIL"}, PQs, crit_)
     assert tr["triggered"] and tr["pair"] == "A" and tr["result"]["verdict"] == "通過"
-    summ["A"]["gate1"] = {"i_pass": True, "ii_fail": False}                    # A 不符合 → 做 B（尚無 geo_mix → 待執行）
-    tr = probe2_status(summ, pqs, crit, None)
-    assert tr["triggered"] and tr["pair"] == "B" and tr["result"]["verdict"].startswith("待執行")
-    summ["B"]["gate1"] = {"i_pass": False, "ii_fail": True}                    # (i) 不成立 → 不觸發
-    summ["A"]["gate0"] = {"verdict": "配對不合格"}
-    assert not probe2_status(summ, pqs, crit, None)["triggered"]
-    print("R3 probe2 OK：通過／cond2 失敗／cond3 失敗／cond1 失敗／觸發與配對選擇")
+    assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, tr)["overall"].startswith("PASS")   # R3 通過 → 空間 PASS
+    tr_no = r3_status("A", {"verdict": "PASS"}, {"verdict": "FAIL"}, {"A": base_pq}, crit_)   # 尚無 geo_mix
+    assert tr_no["triggered"] and tr_no["result"]["verdict"].startswith("待執行")
+    assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, tr_no)["overall"].startswith("待 R3")
+    fail_r3 = {"triggered": True, "result": {"verdict": "未通過（x）"}}
+    assert overall_eval({"verdict": "PASS"}, {"verdict": "PASS"}, {"verdict": "FAIL"}, fail_r3)["overall"].startswith("FAIL")
+    for sg, sp in [("灰區", "FAIL"), ("FAIL", "FAIL"), ("PASS", "PASS"), ("PASS", "灰區")]:
+        assert not r3_status("A", {"verdict": sg}, {"verdict": sp}, PQs, crit_)["triggered"]
+    assert not r3_status(None, {"verdict": "PASS"}, {"verdict": "FAIL"}, PQs, crit_)["triggered"]
+    print("R3 probe2 OK：通過／cond2 失敗／cond3 失敗／cond1 失敗／觸發條件（訊號 PASS 且空間 FAIL）")
+    selftest_three_items(crit)
+
+
+def selftest_three_items(crit):
+    """報告 60 第 5 節：現象／訊號／空間各自的 PASS、FAIL、灰區（合成資料）與整體規則。"""
+    rng = np.random.default_rng(7)
+    ecfg = dict(crit["eval"]); ecfg["bootstrap_B"] = 2000
+    crit = dict(crit); crit["eval"] = ecfg
+    n = crit["gate1"]["mix_curve"]["n"]; kk = crit["gate1"]["mix_curve"]["k"]
+    # ---- 現象 ----
+    g_ok = {"reproduce_ok": True, "trunc_ok": True, "verdict": "配對合格"}
+    g_unq = {"reproduce_ok": True, "trunc_ok": True, "verdict": "配對不合格（換配對，不算題目死）"}
+    g_bad = {"reproduce_ok": False, "trunc_ok": True, "verdict": "未能測試（x）"}
+    S = lambda a, b: {"A": {"gate0": a}, "B": {"gate0": b}}
+    assert phenomenon_eval(S(g_unq, g_ok), crit) == {"verdict": "PASS", "primary_pair": "B", "scope": "1.5B, 3000 token"}
+    assert phenomenon_eval(S(g_ok, g_unq), crit)["primary_pair"] == "A"
+    assert phenomenon_eval(S(g_unq, g_unq), crit)["verdict"] == "FAIL"
+    assert phenomenon_eval(S(g_unq, g_bad), crit)["verdict"] == "未能測試"
+    assert phenomenon_eval({"A": {"gate0": g_unq}}, crit)["verdict"] == "未能測試"      # B 缺資料
+    # ---- 合成逐題資料（與計數一致）----
+    def mkq(c, pen=0.0):
+        c = np.asarray(c, float)
+        return {"p1": c / n, "pk": np.clip(pass_at_k_vec(c, n, kk) - pen, 0, 1), "trunc": np.zeros(len(c)), "ntok": np.full(len(c), 1000), "repl": np.full(len(c), 40)}
+    def world(Q, noise_sd, shift, rr_node="0.6", wise_pen=0.0):
+        a = rng.uniform(0.02, 0.30, Q); r = np.clip(a + rng.uniform(0.0, 0.5, Q), 0, 1)
+        pq = {"base": mkq(np.round(a * n)), "rl": mkq(np.round(r * n))}
+        pq["rl_hf"] = dict(pq["rl"])
+        for l in crit["gate1"]["wise_lambdas"]:
+            pq["wise_%s" % l] = mkq(np.round((a + l * (r - a)) * n), pen=wise_pen)
+        node = pq["wise_%s" % rr_node]
+        nz = rng.normal(0, noise_sd, Q); nz -= nz.mean()
+        pq["rl_replace"] = {**node, "pk": node["pk"] + shift + nz}
+        return pq
+    # ---- 訊號 ----
+    pqs = world(1000, 0.02, 0.0)
+    def with_rr(pq, rec, delta, noise=0.0):
+        q = dict(pq); b, r = pq["base"], pq["rl_hf"]
+        nz = rng.normal(0, noise, len(b["p1"])); nz -= nz.mean()
+        q["rl_replace"] = {**pq["rl_replace"], "p1": b["p1"] + rec * (r["p1"] - b["p1"]), "pk": r["pk"] + delta + nz}
+        return q
+    sp = signal_eval(with_rr(pqs, 0.8, 0.04, 0.02), crit)
+    assert sp["verdict"] == "PASS" and sp["q1_ok"] and sp["q2_ok"], sp
+    sf = signal_eval(with_rr(pqs, 0.8, 0.002, 0.02), crit)                       # 量 1 < 1pp
+    assert sf["verdict"] == "FAIL", sf
+    sg1 = signal_eval(with_rr(pqs, 0.8, 0.015, 0.02), crit)                      # 1pp <= 差 < 2pp
+    assert sg1["verdict"] == "灰區" and not sg1["q1_ok"], sg1
+    sg2 = signal_eval(with_rr(pqs, 0.3, 0.04, 0.02), crit)                       # 量 1 成立、回收率不足
+    assert sg2["verdict"] == "灰區" and sg2["q1_ok"] and not sg2["q2_ok"], sg2
+    sg3 = signal_eval(with_rr(world(60, 0.02, 0.0), 0.8, 0.025, 0.30), crit)     # 差 >= 2pp 但下界 <= 0
+    assert sg3["verdict"] == "灰區" and not sg3["q1_ok"], sg3
+    assert signal_eval(with_rr(pqs, 0.8, 0.015, 0.02), crit, merged=True)["verdict"].startswith("灰區（加碼後")
+    print("訊號 OK：PASS／FAIL／灰區（差在 1–2pp、回收率不足、下界不過）")
+    # ---- 空間 ----
+    sp_pass = space_eval(world(1000, 0.05, +0.03), crit)                          # H_a 通過
+    assert sp_pass["verdict"] == "PASS" and "H_a" in sp_pass["paths_passing"], sp_pass
+    sp_hb = space_eval(world(1000, 0.05, 0.0, wise_pen=0.05), crit)               # WiSE 被壓低 5pp：H_a≈0、H_b>2
+    assert sp_hb["verdict"] == "PASS" and sp_hb["paths_passing"] == ["H_b"] and sp_hb["H_a"]["pt_pp"] < 2.0, sp_hb
+    sp_fail = space_eval(world(1000, 0.05, -0.03), crit)                          # H_a < 0；H_b≈0
+    assert sp_fail["verdict"] == "FAIL", sp_fail
+    sp_gray = space_eval(world(60, 0.30, -0.005), crit)                           # 檢定力不足
+    assert sp_gray["verdict"] == "灰區", sp_gray
+    assert space_eval(world(60, 0.30, -0.005), crit, merged=True)["verdict"].startswith("未能測試（檢定力不足）")
+    assert space_eval({"base": pqs["base"]}, crit)["verdict"].startswith("未能測試")
+    # π* 選取：同距取較小
+    p1c = np.array([0.1, 0.2, 0.3]); pis_ = [0.0, 0.5, 1.0]; tgt = 0.25
+    assert pis_[int(np.argmin(np.abs(p1c - tgt) + 1e-12 * np.arange(3)))] == 0.5
+    print("空間 OK：PASS(H_a)／PASS(僅 H_b)／FAIL／灰區／合併後未能測試；α=%.5f" % sp_pass["alpha_one_sided"])
+    # ---- 整體 ----
+    P, F, G = {"verdict": "PASS"}, {"verdict": "FAIL"}, {"verdict": "灰區"}
+    nt = {"triggered": False, "result": {"verdict": "未觸發"}}
+    assert overall_eval(P, P, P, nt)["overall"].startswith("PASS")
+    assert overall_eval(P, F, P, nt)["overall"].startswith("FAIL") and "訊號" in overall_eval(P, F, P, nt)["overall"]
+    assert overall_eval(P, P, G, nt)["overall"].startswith("灰區")
+    assert overall_eval({"verdict": "未能測試"}, {"verdict": "未評估"}, {"verdict": "未評估"}, nt)["overall"].startswith("未能測試")
+    print("整體 OK")
 
 
 if __name__ == "__main__":

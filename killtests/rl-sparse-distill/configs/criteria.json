@@ -1,5 +1,5 @@
 {
-  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。2026-11-14 審查後、結果前定案：alpha 0.0125、reproduce_sources、rl_compare_cond（非探索性）。2026-11-14 代理落差稽核後、結果前定案：fail_ii_upper_pct、fail_ii_exclude_pp、mix_curve、probe2（非探索性）。",
+  "_note": "所有門檻集中在此檔，aggregate.py 只讀這裡。Fable 重審後的版本（reports/2026-11-14-56）。事後修改須在 PREREG.md 記日期並標為探索性。2026-11-14 [claude] 使用者原則變更後、結果前定案：新增 phenomenon／signal／space／r3／overall（報告 60 通用條文 G 與第 5 節）；gate1 的 PASS/FAIL 降為描述。2026-11-14 審查後、結果前定案：alpha 0.0125、reproduce_sources、rl_compare_cond（非探索性）。2026-11-14 代理落差稽核後、結果前定案：fail_ii_upper_pct、fail_ii_exclude_pp、mix_curve、probe2（非探索性）。",
   "eval": {"n_samples": 128, "k_main": 64, "test_questions_min": 1000, "bootstrap_B": 10000, "bootstrap_seed": 20261114},
   "gate0": {
     "reproduce_tol_pp": 2.0,
@@ -34,6 +34,44 @@
     "gpu_hour_cap": 25,
     "total_gpu_hour_cap_unchanged": 120,
     "report_if_projected_exceeds_total": true
+  },
+  "phenomenon": {
+    "_note": "2026-11-14 [claude]（使用者原則變更後、結果前定案，報告 60 通用條文 G 與第 5 節）：現象＝閘門 0(c)。以 A、B 兩組判定：任一組合格即 PASS；(a)(b) 都過但兩組皆不符合 (c) 即 FAIL（範圍限 1.5B、3000 token；配對 C 另開由使用者決定）；其餘（含 (a)(b) 失敗）記未能測試。",
+    "scope": "1.5B, 3000 token",
+    "pair_order": ["A", "B"]
+  },
+  "signal": {
+    "q1_rr_minus_rlhf_pk_min_pp": 2.0,
+    "q1_ci_one_sided_alpha": 0.0125,
+    "q1_cond": "rl_hf",
+    "q2_recovery_min": 0.5,
+    "q2_definition": "(rl_replace p1 - base p1) / (rl_hf p1 - base p1)",
+    "fail_q1_below_pp": 1.0,
+    "_note": "PASS＝量 1 與量 2 都成立；FAIL＝量 1 的差點估計 < 1pp；其餘灰區（走 dev 400 加碼，一次）。主配對＝A 合格就用 A，否則 B（與 probe2 的配對選擇規則相同）。"
+  },
+  "space": {
+    "m_paths": 2,
+    "ci_one_sided_alpha": 0.00625,
+    "pass_min_pp": 2.0,
+    "fail_upper_pct": 99.375,
+    "fail_exclude_pp": 2.0,
+    "endpoint_conds": ["rl", "rl_hf"],
+    "endpoint_rule": "lambda=1 端點用 vLLM 版 rl 與 rl_hf 各算一次，取差值較小者（點估計）及其 bootstrap",
+    "mix_cond": "rl_hf",
+    "mix_pi_step": 0.05,
+    "pi_star_rule": "mix pass@1 最接近 rl_replace pass@1 的 π（格點 0..1 間隔 0.05）；距離相同取較小 π；π* 以點估計固定，bootstrap 中不重選",
+    "H_b_frontier_x": "WiSE 前緣取在 π* 混合自身的 pass@1 處",
+    "gray_action": "只准一次：加跑 dev 400 題後合併重算；仍分不出記未能測試（檢定力不足）",
+    "_note": "PASS＝H_a 或 H_b 點估計 >= 2.0pp 且單側下界（0.625 百分位）> 0；FAIL＝H_a、H_b 點估計都 <= 0 且 99.375 百分位都 < 2.0pp；其餘灰區。"
+  },
+  "r3": {
+    "_note": "R3（probe2 設定不變）改為空間的第三個上限候選。觸發：主配對的訊號 PASS 而空間 FAIL。probe2 通過 → 空間記 PASS；未通過 → 空間 FAIL。預算 25 GPU 小時（probe2.gpu_hour_cap）。",
+    "trigger": "signal PASS and space FAIL",
+    "role": "space_third_upper_bound_candidate"
+  },
+  "overall": {
+    "rule": "G1：現象、訊號、空間三項都 PASS → 進候選池；任一項 FAIL → 在本 PREREG 範圍內不進候選池（寫明哪一項）；其餘灰區。未能測試不等於 FAIL。",
+    "descriptive_only": ["gate1.verdict", "gate1.wise_margin_*", "gate1.rr_minus_rl_*", "R1 FAIL 條件", "第 2 週學生門檻", "recovery_p1(vLLM rl)"]
   },
   "correctness_gates": {"exact_match_required": true, "wrb_reference_match_required": true}
 }
