@@ -9,12 +9,43 @@
 #SBATCH --time=01:00:00
 set -euo pipefail
 
+verify_previous_job() {
+  local job=$1 attempts=$2 state attempt
+  local sacct=/cm/local/apps/slurm/current/bin/sacct
+  local SLURM_CONF=${SLURM_CONF:-/cm/shared/apps/slurm/etc/slurm/slurm.conf}
+  export SLURM_CONF
+  if [[ ! -x "$sacct" ]]; then
+    printf 'Slurm accounting executable is unavailable: %s\n' "$sacct" >&2
+    return 1
+  fi
+  if [[ ! "$job" =~ ^[1-9][0-9]*$ || "$job" == "${SLURM_JOB_ID:-}" ]]; then
+    printf 'Invalid prerequisite job ID: %s\n' "$job" >&2
+    return 1
+  fi
+  for ((attempt = 1; attempt <= attempts; attempt++)); do
+    state=$("$sacct" -X -n -P -j "$job" --format=JobIDRaw,State |
+      awk -F '|' -v job="$job" '$1 == job {split($2, words, /[ +]/); print words[1]}') || state=
+    case "$state" in
+      COMPLETED|FAILED|CANCELLED|TIMEOUT|NODE_FAIL|OUT_OF_MEMORY|PREEMPTED|BOOT_FAIL|DEADLINE|REVOKED)
+        printf '%s\n' "$state"
+        return 0 ;;
+      *) if ((attempt < attempts)); then sleep 5; fi ;;
+    esac
+  done
+  printf 'Previous job %s is not verified terminal: %s\n' "$job" "$state" >&2
+  return 1
+}
+
+if [[ ${1:-} == --check-prior ]]; then
+  verify_previous_job "${2:?Pass the prerequisite terminal job ID}" 1
+  exit
+fi
+
 root=/work/ChihChungHsu/cactus8603
 shared="$root/icml"
 topic="$root/icml27-topic-search/codex/experiments/fallible-verifier/round2"
 freeze=${1:?Pass reviewed freeze commit}
 prior_job=${2:?Pass the prerequisite terminal job ID}
-[[ "$prior_job" =~ ^[1-9][0-9]*$ && "$prior_job" != "$SLURM_JOB_ID" ]]
 run="$topic/results/$SLURM_JOB_ID"
 python="$shared/envs/vllm033/bin/python"
 weak="$shared/models/Qwen3-0.6B"
@@ -27,19 +58,7 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VLLM_NO_USAGE_STATS=1
 export FV2_PREVIOUS_JOB_ID="$prior_job"
 
 {
-  for attempt in 1 2 3 4 5 6; do
-    previous_state=$(sacct -X -n -P -j "$prior_job" --format=JobIDRaw,State |
-      awk -F '|' -v job="$prior_job" '$1 == job {split($2, words, /[ +]/); print words[1]}') || previous_state=
-    case "$previous_state" in
-      COMPLETED|FAILED|CANCELLED|TIMEOUT|NODE_FAIL|OUT_OF_MEMORY|PREEMPTED|BOOT_FAIL|DEADLINE|REVOKED)
-        break ;;
-      *) if [[ "$attempt" == 6 ]]; then
-           printf '[codex] Previous job %s is not verified terminal: %s\n' "$prior_job" "$previous_state" >&2
-           exit 1
-         fi
-         sleep 5 ;;
-    esac
-  done
+  previous_state=$(verify_previous_job "$prior_job" 6)
   export FV2_PREVIOUS_JOB_STATE="$previous_state"
   "$python" -B "$topic/protocol.py" --freeze "$freeze" --run-dir "$run" \
     --prior-dir "$shared/tmp/codex-fallible-verifier-08f42e1" \

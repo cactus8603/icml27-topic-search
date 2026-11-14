@@ -16,6 +16,7 @@ shared=/work/ChihChungHsu/cactus8603/icml
 freeze=REVIEWED_FULL_COMMIT
 prior_job=PRIOR_TOPIC_TERMINAL_JOB_ID
 [[ "$prior_job" =~ ^[1-9][0-9]*$ ]] || exit 2
+# 前置工作已知結束時，可在登入節點執行 bash run.sbatch --check-prior "$prior_job"。
 job=$(sbatch --parsable --dependency="afterany:$prior_job" run.sbatch "$freeze" "$prior_job")
 job=${job%%;*}
 [[ "$job" =~ ^[1-9][0-9]*$ ]] || exit 2
