@@ -1,0 +1,1684 @@
+{
+  "source": "What’s Up With Vision-Language Models? Controlled Images B official release",
+  "release": {
+    "controlled_clevr_dataset.json": {
+      "bytes": 86532,
+      "sha256": "2c0df1ab59d13d71442752b4b3c7353114d712a785b0850ec22e11c2b0c474c9"
+    },
+    "controlled_clevr.tar.gz": {
+      "bytes": 65817200,
+      "sha256": "df8b23af7dc73c4bf98937777b7a5d85aab42598eace82fa7adad5802df2c493"
+    }
+  },
+  "model_config_sha256": "862591c60c5609f16727d902993df0cba9cab96ded72611d69d263a02fe4ad1d",
+  "overlap_screen": {
+    "prior_inputs": {
+      "COCO_val2017": {
+        "count": 5000,
+        "content_digest": "e6f13dd1bb5a187a54430034484c35abf72e017757389c41cc8220d67a6b89cd"
+      },
+      "Half-Truths": {
+        "coco_qwen": {
+          "count": 509,
+          "file_sha256": "3f114f34790777eb59777e58c617621c602e50f3320138e92b415793f2f843a2"
+        },
+        "coco_mistral": {
+          "count": 454,
+          "file_sha256": "105a88e0097b58a23064cc949a62ed2bed399b29ae705111d3e25a4fe91f6620"
+        },
+        "cc3m_qwen": {
+          "count": 474,
+          "file_sha256": "35f395a33ad4c2ef77942fab55923e3888785c4d9dbad8c7a6ff716677443cf3"
+        }
+      }
+    },
+    "external_hashes": "SHA-256, 63-bit DCT pHash without DC, 64-bit horizontal dHash",
+    "external_max_hamming_in_each_near_hash": 6,
+    "internal_hash": "SHA-256",
+    "excluded_groups": []
+  },
+  "weight": 0.125,
+  "bootstrap_seed": 2026111512,
+  "bootstrap_draws": 10000,
+  "shuffle_seed": 2026111511,
+  "groups": [
+    {
+      "objects": [
+        "book",
+        "can"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "candle"
+      ],
+      "image_hashes": [
+        "bc3af4adef11b51bcd70c3eecb407cde1f02d0dbec19321a634b2857248e14cf",
+        "1ff33264460524a30b84bbef9f7ea4146df598cd9f155cad33878b4271e7c8f6",
+        "170288e6bc0a1cc776bcfaa18095dfa46820ef3ac746d867b1b746a77720208c",
+        "84eb8bb275d53ea2eb21014b090e18756485d4f2511708510a28a54dd9142c79"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "headphones"
+      ],
+      "image_hashes": [
+        "23db72e1d2d649dda3291bffbd480e682023f6790930db7331e2a6dc80188677",
+        "2ff65571b34114d375093cb2469a1f2c53104b02c95c1adce0d2a874d64e91d2",
+        "583069442dfce9f2833fa6aebc45479cb8298f0358e48d6aad4c181493c011aa",
+        "9f3b2c93cba407b1edb9f7373c8be7ed674018d4f1615033c6716c6081b3ddd0"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "cap"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "scissors"
+      ],
+      "image_hashes": [
+        "f8ba7df617ac0eb4925725fcb97e651a7788a079b1de8e8f678da7e1474079ab",
+        "715d6fecdafe9ba37bd3a55611e7e4ae439a940678914d8cd2a322c0b246b654",
+        "279bf97b87634cf63adfb5d6d04d054bf914730260179f792b19fda9f6e0676b",
+        "75d89054220ddc65fbe5781926f94d6b53ff584ec54b73cfdce05abb1133e6b4"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "cup"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "cap"
+      ],
+      "image_hashes": [
+        "0f1a76ed072600016caf50674bcfa8b56933d66f35cab9b7a838a964ff8fba73",
+        "57f5a20ddcf94c6188e8f943abe854c25863b409f0d142f3cefb28d81bde22bc",
+        "fd9b17c84f0503b52503b96dd72082f2c03d70d54cd7d60c4e974ffd612aff69",
+        "e5186b611cada662838c2debf6eb1329eedf06d6e55e5d6ee316580ef523434e"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "knife"
+      ],
+      "image_hashes": [
+        "14f0627cf1f12feca994fa37573fdea18d23168017f6511624b5593830fab3f8",
+        "24b29223bde1eecd9922ca7779d2b8afcdc0f66b67b0bcd84b87f642e06bb605",
+        "605c8a27ed607f3184c86794b79e04525f64d2d2ad7005635c067861f97e356f",
+        "ac904f0b6616c6706ab7b986750312e518fcfbc750c432576b20d9a84fc7ffb4"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "headphones"
+      ],
+      "image_hashes": [
+        "4701c0ef8d54bacd78c192c71b4feedab3ba29e4210aae1ae38fce379f4a1185",
+        "124fd35c7d881929ada5729eebe9f473c49d920bdd2cf6a4e458b09890cfadac",
+        "31bf619681007446572ca39c622a94fc10dd189c3950ae4ee28169735c696a0e",
+        "4b63d1e32aa5a4862f49fcaffc0a1d8bc4437e3c4d18b087719751b339660212"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "remote"
+      ],
+      "image_hashes": [
+        "a379cdcbc9ce15c6d0ae018e330729e882242728734888ec499210f2c51f8ea1",
+        "e9e30eb48be546a0140940d18e4a0a4792e41133d4cb002a5bb0fd843b0f11d0",
+        "2b394da899e9bf89b17ce0b4973fb06b7caf5192b11dcf87492dafbe108fe69f",
+        "038338965572d2f789ba3e6dff3f43d07d193af186c3fa9e919c192654050de4"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "remote"
+      ],
+      "image_hashes": [
+        "903c626adbc6fc60d8b98cf5629822cd954a288606dbe32e3352db20b4f41f58",
+        "cee34fe61a6620b122f48c0670182cbe1aa99f3b928058e5ae23c6764f8b07f5",
+        "bf06db140b064dc3a3d5e5eca6e41a8450e79ea789a80f0c1541773a97cbcefe",
+        "b85120d4ccd93d644f8a741fcfd86f4f36c855abf7c3956f2d86fde9a66f0455"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "can",
+        "spoon"
+      ],
+      "image_hashes": [
+        "31dd17332578522815411c2334e7e2ef10ba4342650deda2d9bb6ad5b2a2c5bc",
+        "daa85faaf4e22e65850d27aba404d2ed3a15be1eff3da3175d4916a9244f5571",
+        "9537ce64c0d7ebd50ad5bd4e87a60244c7dba2e5bd50517dda1eeee2c3b0e779",
+        "7b8e8bfb003227cacfaf0a3ddf173bff9536a5ee333f926ab589b99c853461dd"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "candle"
+      ],
+      "image_hashes": [
+        "fc2cd10ab682c774eaba89e25e1891aa83ec3ab7e1910d3673df1e931c3d5adc",
+        "1a52a6db0db591982107ddb2f528dc37ded44dc728510088cb8b5950fb1ef143",
+        "446d00ffc5ab89701ecd7c3574f3df4ff37708bb738f960fe92e1a8c659b9389",
+        "5b64302ff68938e1cf8583682317ded1ea2b04b90e03fc5cc3d6a5d5e02526e4"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "knife"
+      ],
+      "image_hashes": [
+        "9614ebf569fa2f3cf483a9ec08a0b9e26241eaa2973af41108be4f0a9fd19e03",
+        "167fc6ec43b7a318f1e3d6490145dad5b50f6074a9b00059119a307b3ad0a08d",
+        "ae117d06e24ccad3ff0529152935c8ebb2f0941dd5090a5b388817fc82e44f27",
+        "70cae9e8542f5a865c54332ec82e9f19a38ddcd13efbaff9963ddce24aeb9ccf"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "spoon"
+      ],
+      "image_hashes": [
+        "0864d1228cce47bdadfb6529b7666657235d2c9ea9909c45461de007b1b59fed",
+        "b92b89757baf0d2599c107d178a508fd32248707224e3125fb59265d884aba66",
+        "8a5d3a3b2bd56b8752ac20f625c23d6e5b851de194cdf9cad5cffa7cbd5e54d2",
+        "a1cb418d69bc49509d203348563bc555ea64372a34dd849fa0e26bf6215a065d"
+      ]
+    },
+    {
+      "objects": [
+        "book",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "can",
+        "candle"
+      ],
+      "image_hashes": [
+        "5f27992dd6107c753201a6d2256428e900152443b52728c3523f403e894cd90a",
+        "996d5d3193dadf873131a485d481a33240fda066b7f74e546e40b38eee66fcf6",
+        "bc8d24b03c7f82a66e693fdc570599afdcbd98ab56cc112c7f8b0e6431493fe9",
+        "dc8c0a3605ee71b251cb0f26bf8e7458683954c684ee9f02e85a5f93a933414a"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "book"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "spoon"
+      ],
+      "image_hashes": [
+        "ada1b5e6ba381e420b3dd70b41c6c291b849d426e28fb10a156dea35c657e71c",
+        "d2420878a418e64ee1ae5da4a71a62a3914383603c1caa0a37113a50236e852f",
+        "04d5590dd20963692d8768fbef3da1e137a9d247c0896e0d1b0b73b7c4b8de09",
+        "92587e8bb2804378fc1338c8a3eeef3ba0bdde9bfe69c62aa9ced2760d4d36f1"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "can"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "205e1968b3ec414a55f6c1146ac5e6f7af49627f5b0c22bea332e137ab728ab4",
+        "1a61380b6cc9cd1ce5f6c9deeab806a57c27378b69428490644817cc871e6af7",
+        "f7f0bbdb1b7818d437f1e9db385069f18dfe983c78b90545efa3e13fb0fd47b5",
+        "782a125557d96d60ff0596e429f1b3d0695510d7d7cab8a0ab835f50a8e630a9"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "can",
+        "scissors"
+      ],
+      "image_hashes": [
+        "c6f329c089a7c273e86c72036cf5add9a1be37533e20681fe8275333461bd5f2",
+        "ddcb58931b08a7a9c99dc5fdc308811cb4a0d3468a3c09cc350bc9ebe616ef77",
+        "3f7e1d7ce59901af8d739788b1d9a7271c56a1bfae0379dcb71d6d197b66d029",
+        "d87b9d88b1b3fef223a1dc5cb3c6543ff8cca24ec0b5dc6da2d2e5d2bc5633eb"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "cap"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "tape"
+      ],
+      "image_hashes": [
+        "2e54e9dfcb629a0c33be040bc3725febe5d14d8129b6d4dd8252144a47e15c4e",
+        "0cfc7e7f3b3eeabe4752d52637b32ffba4d5daac5e32ca542cd27c90b47697dd",
+        "f0da044e6eb4f07fc10c9135e10a378e7ddeda63e918dc5887ea5f66d9a4c84c",
+        "4f590861b5c0a7d115a2928311ed6c8014d6984f5c529a67c94189bdd3ed3de8"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "cup"
+      ],
+      "shuffled_donor": [
+        "can",
+        "knife"
+      ],
+      "image_hashes": [
+        "4099e55a1e8e5c30710688daa323e60c79c6df6a0f806625e3d44a7fe37d1b27",
+        "10efc126267ff35e60636f141b82a8bbe4085227011bcb9ac0d517b43bf029d7",
+        "fadb5b92919093579c1a75cb28a4b7c8fca16f7f518101f62423c9b21e823688",
+        "a789ac1650728f7540a5ee7a9661589ba958d62c7db1ee49ffe4e774aa0276f8"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "phone"
+      ],
+      "image_hashes": [
+        "f1e74b3162c27f48cc424f5c9067e77e37aa5524d9c47d315c6961c51f67d44c",
+        "bf4abdfb0ba1b8d4878be2d9f3a94ce5205f454d187cee569b88b5d1b53bd90c",
+        "e0ace9ce0f09a0b9eb987ae39814d6bd09ef9f3bba5b00f222855edde4bcb65d",
+        "3747cc2ff15d24b3dbdf04a887e87fb84133af25450e403cbf9f673ef342d322"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "can"
+      ],
+      "image_hashes": [
+        "466cd670379c39e7419dbfcd4b1780135a63cc8d3f53893587a31d9cac7834c6",
+        "cfc095f9a29b78b9774c00735f55a0ad3877e37f50688d1a46d8e50f3ab2a5c0",
+        "a3a21c2739f7600999758042f47ccc9357bff334559e14cb251d4a51c701e542",
+        "a3ff80ac6b434942ae3ffea31edb2d8ca161cf826d875d209b17a0ef926cede7"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "tape"
+      ],
+      "image_hashes": [
+        "fb6d23005abc25025201015943d45e187eed9755820ecb9041bbce89f10d1165",
+        "d71e116633087d6e876f01d16b461a07a3620c6bf20f785f7b929e9270fff922",
+        "716ea218abce1105025a25f8e6ae7378fd8e2392dfa2ce73833f7a972ec637bf",
+        "c7c97dc3c78056dec7c502245b6d63f2c74e131f330e936b2d0668ace90009d1"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "book",
+        "flower"
+      ],
+      "image_hashes": [
+        "8d01ddafacc5b6b90e26a9f7bb51416c4711832d79ef10d49dccc80146add31d",
+        "bda9e321e14c176f1f105fc4445dd22a1da764d4682a9e3590764759d563b08c",
+        "1a0435153873afd8a2684bc280a0106041125b50441166583a211b1484273c58",
+        "43b32b31b75d7e9e7842c37a0f0305ccaff89a58d48763d2274c9709a9e6d93a"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "headphones"
+      ],
+      "image_hashes": [
+        "bb35afb6c4787064b677c1e9e03e12cd44eb9a7389824e244156a47b229f328d",
+        "b4d5e3e16db6cb921e7dae40856655a8417ed6849c6cf5a1bbeb272bc6faf849",
+        "13f7b3f6649ed90699f8343be2095d35066a18a7c11d0bfcb8a8601309046536",
+        "5680cf2abb14ba13a38a31b88768b378bae9eda8b0b256e235d0e11fbd1f692d"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "fork"
+      ],
+      "image_hashes": [
+        "f2f1410aa6e59c388922c98d5d2a17369cc84f4a07e7da34f39b9221642b6373",
+        "3deb7ba8775bbc6eac8b15869007a861a26171022c024cb33ebbe4faf3515350",
+        "e5e46badb628faa9f807824609ce2318fba97ee7059e754ba29a4c718ea1203c",
+        "6005d7c417ccb52c2e0018c4c243b1f2628af9ff6eef61796b3e9f4865da9c6c"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "can",
+        "tape"
+      ],
+      "image_hashes": [
+        "f86156166abac29e0f5855291dfd790136a9d8527af96e3b06b1b0321ee910ce",
+        "03a5997ad7d20414df8a0d33dac3c932891e883865900f67c23376d54c8ccac2",
+        "3e4eb6786cba19adceb3b716690d3e49e8fb6d500b0424b2a7ce8de49adaa728",
+        "70e49585eba80081a2fbad0c479c19d0b3f8ea97f0332b2ba3a4d01903c494f6"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "knife"
+      ],
+      "image_hashes": [
+        "47e72429b06e05fd6f5f1a1754b43ab021d34514078903a9110c566b5f3f79a9",
+        "c7869433f5e612ffa3f314042d4d1ff074f8443ccf28cce173c25f75b115bd4c",
+        "de5e30efcb2c17039b55ac093031859e51aae69c163ae31e2939dd37a714d848",
+        "a5efa6acaa244b2a2e238939d00be51c8c8e579b65da9542aa15fbc528871795"
+      ]
+    },
+    {
+      "objects": [
+        "bowl",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "book",
+        "spoon"
+      ],
+      "image_hashes": [
+        "32b56b40e8167ef8c6bba90bf741c29105f56a9829595b7cab16feaafd362d21",
+        "48e843235f2162a03ffbeee10b645f7b2caaaba06cbd733437e4f7260e69d9c7",
+        "c85867e92b4d0e3b85213d9df9b596a4ade46853570f11881803f372684eb04e",
+        "cde08ee7a16a3477ff1137d0465546d213af309c2987b215b3305a19535cadcf"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "phone"
+      ],
+      "image_hashes": [
+        "6e8f5105e076896a5f9c11d6996a3e7d00bb7851f9a7510e15734b0956745481",
+        "e2abe17d6530ec62f73c816fc92180b4eb8b22f2103a91c90545ee7f07317ce4",
+        "6cf6b7582431daaf5dd76ec0352b1d9cf821817c95a5e5713f402d94100a1ff5",
+        "9ca7a0fff81f314d7d734e47be778038fa8f1eade7d2fa5f00159117808c8431"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "cap"
+      ],
+      "image_hashes": [
+        "d79f374f78c07195f8c34556d2a945d2c9deb61b986ab5d840cebb008fc1870f",
+        "4721d5ad003a28c7d03af81c06cc537db0d96e45729f7240265dafa91cbe8f89",
+        "3628079b04779b3ddf4c40080f59b737f267958ff8302fbe5e26a34fb7b52691",
+        "d594616cd05815419bb1b4943b8b0e4354fee736aac36eabcf6ed0239ffaa199"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "scissors"
+      ],
+      "image_hashes": [
+        "3be3c6a2fc8e16de57ac9eef31302d395f6c37f9da0e92e9596458f1f024b875",
+        "26f40d3ed11e40a98d46a17142c5011b93d9d5152ab74a40760798051772b23a",
+        "9852ebbbdb0a08371d5e2baed2f58d42bd1efddc447f5c2598682ce0e638cd62",
+        "ddeb18290847e729fd3af41ad627c1ab74ec41d24c8fe99b6b2383c8673abaf9"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "knife"
+      ],
+      "image_hashes": [
+        "75697c6852dad2ae8d4f88c7052b73cb64b2a0f944df8236610763e02a7c8ec9",
+        "071a9ebe258e285c6847f6f6006d1b2002046221a90197219cb7cf2507f2657b",
+        "36a2c56d30b06f58f99fa1f6a9345a3c5799d60b4017a0b43a22210e7cbe8187",
+        "c7d6b9e521f84ff1593ea858e7d72b2b35256be6a3c680b5e459f4c9b56009fd"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "candle"
+      ],
+      "image_hashes": [
+        "d2fe8534e8168b63f9eddf7b39018b9211dfd7f8ddef9abd7480ea992eaf70b5",
+        "7e6237efa307905d2c89ae48765bf10c42b86623ff17f45a8523d26849cb5adf",
+        "d78d4d7d61ca51f95223da34378f6c77b791bd4baf2c898c21537d05819492a3",
+        "4d42b67d21a25189f4221b059207b4b84a161b3cea6eeaee4f311fcfb4d533c0"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "spoon"
+      ],
+      "image_hashes": [
+        "294b3ca3d72c8b77945618795f983661a9e38812590f6086faf5530c4139317a",
+        "d01f98ef91159f7e99e5b2381827e3fac7c631cb83233793e0c3497543bec21b",
+        "eba9c8775b8c798b0897e706c0c379146a82faa912b163e7f4838629a2075d24",
+        "42e160a473570c081ea9f324901ab40e590523cad0f5e12cf79f97fcf45e3c20"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "spoon"
+      ],
+      "image_hashes": [
+        "2de87acd725d9a367dd576dc85ef2b17bfd3bd7ee11ac8b7b6ac202676f276a6",
+        "114bcb16cbf74b8f02253d588c2b38342e4056835d6625cd2d25631397ba76af",
+        "6845816ecbd668a7e45c466baca02c638a3fc45e9efc4811e24a46b64e87b530",
+        "92f402d964081230e97ad1a1d18658a6cdf0dcef3f264dd0270d777daab37800"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "cap"
+      ],
+      "image_hashes": [
+        "402ba61a7e013a0fa43d6a25414984473600179849085da8980ee2bc5f707dcc",
+        "a9e6086ea9a57f9c8b8a5066a84e6e53b0f33392bf05b282f909b7ff6b629313",
+        "aa11ce3cc1d53ec9c53b4f2cf811660e01dd48d5d18da3efb46fa5538a68f9ca",
+        "aebfdb6f6c7938047d94d64304f21ba70601ba6e40c1d4d9c813881fe2dddc6f"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "headphones"
+      ],
+      "image_hashes": [
+        "509736d800299941acca3350b0caffcccab81a21da1580c952eaebb1381c477a",
+        "a4281157f50922959a7d8420031adbc5208dee8c116791e2a69520444f2c323e",
+        "b5a47842c18e71ec74bc1a107a6db280d7dab7afcbecb794b2acc0bebe58f923",
+        "01e83df4545846aacee0073fa1317282ad0a86e54673275c7442fa1b0ca26b0f"
+      ]
+    },
+    {
+      "objects": [
+        "can",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "fork"
+      ],
+      "image_hashes": [
+        "d702c7cd00a6a9c3a01b0e8278cfddbbea712f0a5b5ce2cf6c9b144f3095ab36",
+        "15b0f2f14e17c378f75254e57eb8ba243b48f0e2945db9823b52a2d332712533",
+        "fa3a90f12c160d54a9128221357593a81f09912e4384b1810da7d02f2d349752",
+        "5c9287e925f6d0498785e30eedc49b35ccef37fad747ae76a37c6f1f48019e25"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "can"
+      ],
+      "shuffled_donor": [
+        "book",
+        "candle"
+      ],
+      "image_hashes": [
+        "cd52cd2bf9dac7ec7cf890e0ab7e3489dbb8743438031d33620d53141d943376",
+        "c43c4eb84d1aa92a719ebcc6b7452e8a94f58e22a326b5c95b81e702b61c7eb4",
+        "302266275bb9b17e880e5fe8aa86ed8769f26c98cab848d083e4ff0dfaacaf66",
+        "36899b7805923abfbf684cc973f947d19ec95ba6c04d62c529e5b401433ab792"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "fork"
+      ],
+      "image_hashes": [
+        "22ebcd5d1b6ee418d62a2c40eabf1b528a72a2f8773f3167bb8e5aa603095324",
+        "8b502d2afa4603d650d21a2db07c604bbb702bc61b564bee6fcc366475721b76",
+        "910dd3958266144621f6ea94ef58d25b62343875b7a2f5552fb0528663500907",
+        "47c542b3a49342823cf8735e7eb48354b1814677364eff8f835089a68f2c6260"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "cup"
+      ],
+      "shuffled_donor": [
+        "book",
+        "headphones"
+      ],
+      "image_hashes": [
+        "af6bebbea3358e0954e4cc605012136311798c2eea3ead5b8bd53b9a70852c9c",
+        "311cbba6b025adb84a12cb885f5e7b9c60fcb1283f65c66c0b1f0be203b30f15",
+        "4de31601738c0dc3f6d884eee52757eee93e7a85f5095af2875f4fbad2fb04d3",
+        "97975c681ec964d13e893954d03936b4afa397c2565a7a1d999f439ef47ef83f"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "book",
+        "fork"
+      ],
+      "image_hashes": [
+        "8a05e430bfd5659fb657dc2926e40cc481f4a75c451ecfbb1156bbc86039d2ff",
+        "dcb8f47967123850a0094e2daa2f1f1fa9a670934593d4b4d8e596152d1bc2bf",
+        "c5c4eead2f0e6b65bf994c421cfae61b7cfe508ca12094226af50dd5d8be11af",
+        "fbda510bbfcd93adb0525bdec4588f2b7eb224068b39d0442d036ce79845d4e1"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "cup"
+      ],
+      "image_hashes": [
+        "8bb718a5c55665cd2b53e80683d637ec5d182d42a4bfacf5caee7d752f6973d9",
+        "d50eeabf7037b38903daea2af54f4f7d1f4fb7164edf36b4f361aa1bed9c4af2",
+        "01d1c48e5fc30ec199d6c969f2712c6bde2b9925153c8d5e56fdbb2b095e27e2",
+        "e2f7f0db68c080c35da8209197ad5a34f8fd8f18af7b76e65d82efce99e75404"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "fork"
+      ],
+      "image_hashes": [
+        "156962c12a559594a48e29966fa3c55a4e52f72f71d6b03b7ede1b52438e3104",
+        "f67c08af800b95d05727102a031f8354de3651d6a9ab5611967f1782dbf286db",
+        "0e148c84806627f0d1672c631465451ca3a284ed976a62fd1b1fc4f790259b6d",
+        "2942037409412c01c52d5fddeec6d191711af97b2c6d57b0d8781882618d9b18"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "tape"
+      ],
+      "image_hashes": [
+        "1bffd9006fd07de5f7f30aeafdf47d6b044f8e784dd1e0960ca60e3ac8ea9ebc",
+        "ddb7917318d2f127e44d4a7897a8e3ca4d41961d5a69a38a1a8e8e2a8883173f",
+        "474c10976cfeb0e4e44d36b696028e56aba698c1169f5b604f6ae04220001011",
+        "9ab9398811a1729ef98adc778a51c43463567de80a301639046fe09120caac0a"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "flower"
+      ],
+      "image_hashes": [
+        "48bdeabcc8e20245b1d7aa17785dd3953ca96209d25fb8cd4acf5c5eb6a52bb7",
+        "dbbaa7ee932cd7b1d3c0738d8bdbd2dfd57326924e49461fe8b54b6bdc3864c4",
+        "8331bdb41caf2664fba9fbe3a1445d1e1f372bb3d62b2664f30b60543cf8829e",
+        "1dd86d603be3360845b54dfca41a9ae55ab2ce2ecc32019721fd60e3c76afb6b"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "cup"
+      ],
+      "image_hashes": [
+        "ede3975f916f9759d5185b6d218d97714d2c7a67aa892f6fbc421129869ae41f",
+        "fe73d09db244ba1ef9a3d74930e465a51573f0bbc765958bed47358e6000c4ac",
+        "df7bc3e5696934d311d2687c2ccddf9daf6350570b1f40527a06ff8e3175adea",
+        "cdee0d218aa3921c03d74ed3d9971ec803a1b375827d6e98c184bcffd5926ea6"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "book",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "d5240c211de41c3f2a11fb4134051c8e35a4e9e646c31f16aef112d0bd088ca5",
+        "027ad020fa2473438f54c35b93ae500a22c03b906df61026e877c4a36f468f8a",
+        "6b41feed127b9c96cee8c0698971304ecedccb3f6a6327c522de5c3e71ba73e1",
+        "dda70c00a51b9f30bc103151e7ceb07cb3bf3ab8e6043e5bd09485399c372df2"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "tape"
+      ],
+      "image_hashes": [
+        "adb4fb51f4bfeee851a86d71fe9618b262a6991c1e52af2baf5f2afb9eb2ccea",
+        "0d9163f52bf21d59d515c8261168b000f694346cb169a41e27ece20ddcdb003e",
+        "b7b38b3fbc1d5f2a270650ac0cf0355559d80135061a253b14f462e4364acfa6",
+        "d0f1dcd2859b91231ccfcba28211fe50d089b43ac0f3d54e81a5f1036d0db091"
+      ]
+    },
+    {
+      "objects": [
+        "cap",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "bowl"
+      ],
+      "image_hashes": [
+        "6e8f58eede4297ac7e7ec35220eddfe2676d258b54f2836ac3fed1fc277a9705",
+        "c6dd3bc4ffb09c2bcbf15bac22c120e349684b71ace71529a49294c189a44780",
+        "e0f32905e6a95ed7516590ce83cb6419c5680ab70e0caa07f7e74c704ec2b954",
+        "fb85a781acf287b25d7e64e67731c89dd856a3d446abb29ca283bd711d6f45d1"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "can"
+      ],
+      "shuffled_donor": [
+        "book",
+        "scissors"
+      ],
+      "image_hashes": [
+        "f567a324f1aa5af98fe9d490a43e3d0be24c967f9945d631afb8327bef79d97f",
+        "167694cf4787261c55febd7640ea7d60886446921690842cf020fe65fc6f0537",
+        "aa2f201476fdecd6bcf90720e1fa408c03c0cbcf0c8b5c444f41b4caf8aee6a7",
+        "1c374fded4fa3630a09ee68577c477079a5840d21c41c9d0a1a1ae4064ca8ac9"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "spoon"
+      ],
+      "image_hashes": [
+        "a07db13c88d2a2f5d7504f32676e48d4bed63d315e5b1d18f675496dc7084865",
+        "347c19be71178969227d071748cf85c98a1c83d6836d43a3d65ea1580e13f3b2",
+        "6ef738f118e979c81e24975a421bf8bafe2564bd2f2fd9e8265124ff3749326a",
+        "f85a93573008be01aa83e33a04dc36b2589c92e6491122373e8d716ea0e7567a"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "fork"
+      ],
+      "image_hashes": [
+        "6e48e4a8b924815969f3fd3b8c9a82b3e7a8ab279d8659fa231a093f20cd47e5",
+        "4dff1417d6c1816b9cf043ae870d207e69ac3d30a99dbbd6f9858ac2d4be66c6",
+        "ad7d6239df4050ca5162ee79c016a3585562b4bf832dcb841fe8972e3b2fdf24",
+        "9cf881ba9301a63f529e98fe963f5d75428a5cc3b6747638114b2528102404a8"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "plate"
+      ],
+      "image_hashes": [
+        "4f1886e173198bcf6c7c68595a16f157c1fcc73492bcbc5d4bdf7b84a6f4cbea",
+        "75b71f208f5bf9bd856d7f2eee3320ffe012ac7defa5741fbefc733c3acaa9ab",
+        "f1d2d681f0169132ab937f5c1d318006933dae1c4e1747e914b80d8112463664",
+        "a75335f39d7014131143c97082dfa08222216cfb9314f8de434f042d8e8bb2f2"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "book",
+        "knife"
+      ],
+      "image_hashes": [
+        "f6091232aa09d4fdf9e30c920a881302e1141d9993fccb80f2b975efc07d8bd5",
+        "989d6d3aecd8247042769fd3d8245b2db67492fda68df59de270028f1342d9f3",
+        "9ac9aecf1514fd1c71160a29c6586a684567375081391c71013967d2b4e76c7f",
+        "e359acc9f1b26d3487a60195e7e8ac0b1bfbf7b26837aa16886ea39d96cf9803"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "can"
+      ],
+      "image_hashes": [
+        "14b1e810ed5a0e215fc1d9ae9236f98102df7fd8ed128e61b251bd36249b7b5a",
+        "02e7a40882f480cfac7f9059405d0ab15a3c940ec2d1efdd164b77fb9394dc58",
+        "df537bde33f8b56e5717ab29eee6dcb325e9bd545b92883261f6681426de1da4",
+        "e291c555ca90ace6ccdcba68430d2f75fddf8224ede132ea4aeea35daf590985"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "5ca1e4cfbea205b3e54476eb12eb82f1dc7373c965e5f1262157f6b6ff8e6d73",
+        "bd83bf609146ea572bb66a02025b6a350e1e1160102e1038e27138b25df99617",
+        "e811359890409902755290494e9012de0eeab908e149ca7182500142892c722b",
+        "313517eb2beb3480f576414a34208743fbafa8c2ec12d39e29d2fe14e2c17ee5"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "spoon"
+      ],
+      "image_hashes": [
+        "4a430f216271f1de5253512f3e4ab4146944e0867629f8486cd43d7d9838737d",
+        "fc16476e97e50ebf37ba45c36b4372fbec685a41b60c035a4522a06a1843f419",
+        "e4f7c5e732433c2eadea7e21c15091f7e68260094d8d08a76222bedc764ee9e7",
+        "fab892837b35c2ce04b174e3eeb82d0ec622d83c337863858cbe6b6d7063061f"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "can",
+        "flower"
+      ],
+      "image_hashes": [
+        "4e044d026b57496c742ed1252ec7925ad1d944424388025f981ca272f7b53b32",
+        "80d46c21c7e1eb1c5ed889fa97d4af20be746cbf901a1bc426795a36478c129f",
+        "6a678894442cbfd93b0f57bd2c9babff1aabdd3bf3781dc7707d3f2899c82f4e",
+        "2750c3dfdf814ef5ec25a5f9a1c8759d12aa3816ac2e74419ddaa91afd2e3e2b"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "can",
+        "remote"
+      ],
+      "image_hashes": [
+        "e41305fbd82a1c8baca9a5445b6387e3ca726a3d25c58148b83e7a297d8e8f90",
+        "dcbdbdf81e8ca40be1d65637af0a223b28cb502258471a240305f36d61774b5d",
+        "306e8faa8bdbbf0b0f13beb091608ff597ea34430064173f0ba10cfe46c7379b",
+        "94a1ba942b61f22f78bcfe5823b0b1fa720bb8abd4ed27bf2e78400e7830e3aa"
+      ]
+    },
+    {
+      "objects": [
+        "cup",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "scissors"
+      ],
+      "image_hashes": [
+        "4d19e95b206bfdb3f909ed8a00fd13dc783ee70b618ff95d65364cf6efd109b1",
+        "2dee78320122ae339afff202301c9d119eb722e3dfb65a185715f71456833079",
+        "ce226c70f14d24f61ebd0c97ca5243ad23ada20d38a0043b7f255081ba6fa7d6",
+        "fe75ed02dbc04f9ef53617e0d8074f05d9d775aec1e37f63faa5558f596cc9c0"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "book"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "adb8bf97a53e22fb90bcbc7d9677ab107c811053308fecfe0db22fc3763b041f",
+        "57253d734b0869a37f8d5faa77275b51b02f2ca3b330d8de861630e8d41c28c2",
+        "e393a52e7006d500d3428c0d9420b72f1164aa8a57aa08507834da5f62abd3a5",
+        "8882e1c969b6001b103c48ad8daf7c0d8664520689442cf8f22ecfd72bfe1745"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "bowl"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "flower"
+      ],
+      "image_hashes": [
+        "7dc225092dbcc13e97ac63fa3e553ef4400cbabd9e7a7e6ca1fd38381a98568b",
+        "5bc70cfd0845b913a1fb4610fc0ed3907ce3916ab9e504337e898bd57dd9ca25",
+        "a8d36b324635a632b0802e07bafe222f3f46bd6563007e71469874ea26e83dbc",
+        "e6085477ffb1c53b3eecaff924fb0ad33a0676fc0c956d18db5351dfef66e15e"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "can"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "remote"
+      ],
+      "image_hashes": [
+        "170cd3f6faf250b74eb33f9c3fd35972397db95e0a9c1f062a23c21e41534202",
+        "81d708466c4386ed4f62723e3e4a1946e2fd0385bfd0acfec3baa2f27a4791b3",
+        "9c99f18cb0d2d878bd4989433079d67fb1cca4ceae643408ca16e695b6666665",
+        "0176583bf6e851b0c4b5b90481226dcf6125816ada8875a1a54ffd63fa698094"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "tape"
+      ],
+      "image_hashes": [
+        "73567d97482e2d5bc43fa5a2c24063ab6eec0be48d0532415be2e16b082d8e56",
+        "23e4fa30011a7c0b813839ffc0d723e283a5278e631c47ae6a4132ce7f631b17",
+        "9fa14c75b2cf090a8e021b3229f0be8a17750ad0968aa353cf386ff7290690a8",
+        "73f33e6cbde2a208c9a6a8d351e5079b12ab81efe35bead7717fcef70cbcf136"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "cap"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "book"
+      ],
+      "image_hashes": [
+        "9befa49c9f975df7039edac1c6691cb1607686d07bdfd638c89808c046acce2d",
+        "5485733c3aa0bcb69bc280cb50455a5a7db5a0d169c29d8ac04a27454d41bf9f",
+        "3ee557ed04b6be96a62545b7a88d8eb6ad004149baa13b759f494f6b71853d47",
+        "aed089010223fb5b5bc8df94f9794a88a7e3ea7002e9295961d97016b8c50e50"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "cup"
+      ],
+      "shuffled_donor": [
+        "book",
+        "tape"
+      ],
+      "image_hashes": [
+        "56df9849cfdafaff204fab2eac48b76fa9e1c556a6b60fe209ebc55a51db4abf",
+        "9dc115c020fda6754117ef3d0e9be3c6b76efa566ae041c5e816bee37b6351b4",
+        "4dd7067a44268c703848a2750f946e44571c2b312c9e02ac38033710d5260963",
+        "99aa402d5c8c2b21b040705772c10b049c2dc6b871195cb8b18e5cb2e789239d"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "can"
+      ],
+      "image_hashes": [
+        "ebf9634619bb78fab8187047dfcb3a21e782182bc08322acb7c5e10623d412fb",
+        "13f91de26bfd67cd27e158f6a180b3a5eead46722cca30ffe35817cabe3f9a8e",
+        "ae0961e2609bde7c7079112ff63047371f3a40505d5d9bb1df6ec76254837868",
+        "b623955250bb8e26ba1034f7c1e396de4f4cae60bd067ec051682ab7380430c1"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "headphones"
+      ],
+      "image_hashes": [
+        "af9becb74d9cf6b1f566338469f7687edaabac2965600c5f13ebddd39714e2ea",
+        "5644915dff0f7f8ac56e26f4d4d3aad78f888957e3c6dd40cb709e0f28e6985e",
+        "94a66269a8f9a3dfd5c3db0aad9fa16eb02a87c8ecdc01989c0213da8e4ad92f",
+        "ea7d7cd125283693424dec064da626080400b46d6bc760a5cebfee90393b64f9"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "flower"
+      ],
+      "image_hashes": [
+        "a382bec3f8920c15c470a630705c3fa658ecdeed140df0e5a85f07c62c36133a",
+        "8c78ed424eaf12a3adc4541556c8d1f0154deed63105c5ad14c01d465252f0fe",
+        "5a819078de50fa61064f796689f3a002df4ffa2dab83cf3ffff7cf8bf090c0ea",
+        "8d6c7d5181af2c2aa3ea5a2933c129835b80342a6ae34957705e8fc8649d65f0"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "book",
+        "remote"
+      ],
+      "image_hashes": [
+        "b255c11e6b6331d781de42352cf6b299e597969925f09ed8c32baa63131c053b",
+        "b8aeb3ca34f01b591f4ab780a570f430646179c9e96ce47279b15889e651def8",
+        "6d7f5d1083fe421447c044488feb2e0bd2e10d828f393a7fdd4df84cbc6d95a7",
+        "82aec42db9b8aaed5ef7361333343981b9c1857d44b47c84b40096725cf31f68"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "phone"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "knife"
+      ],
+      "image_hashes": [
+        "f287bbd11093d2fe73e0833188fa453475356a4f18627d3e656bf54bb2db48bf",
+        "a3296ad0bd67d51e10250cb2ada5a9fabaaa5d7e1fe316225f07c005e2e65c82",
+        "0cd651e1365565009c3f04f5104e8d0b55d646fe0562d3da9292e34a2a519a9d",
+        "94c7d199951011cd35356fb1f316c7feb8d3196b87a58e48124217311a45f39d"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "plate"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "headphones"
+      ],
+      "image_hashes": [
+        "78a7769950013da4477c40466ced2efd02fa87de189fbe560cc145ed521082e4",
+        "df07eeef68868cd03691a4b6a6954802ce8e2c9739b75a69a598a8f88906f8f0",
+        "b38e66d99fe030ddb6413a16693fd5578abdf76c0d3a0705991973b791f1e4ff",
+        "b236ee02a799867e93103ae1210733a68d61aa197f66802181282cf81b6f41b8"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "sunglasses",
+        "tape"
+      ],
+      "image_hashes": [
+        "1ead6f1e9dec39b42f564c928c1f55e51e3c1e858976030fc1f2ea2899863a84",
+        "4749dc7e046b706e7ddead3fa581e1dfc0aca0fa36f03a5de77f9c8862487512",
+        "2dedb1d21bb0ac718be061ec7087ca1b5031d26845f46e9ee37f371a33e6dde4",
+        "6a7af65bce1e1fd92b9493a15f827bdf8561c76b5569fc8023b7aee143a0bad3"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "book"
+      ],
+      "image_hashes": [
+        "6b8b76f8ab8c579cbc00d163eb4c1a7b3bc773f8a53508711c5bd89243924af7",
+        "ca78ecc6a311b94683f15bae1630a03c9d0fa847ce78a189018fc34a30572e93",
+        "3108e544cd7eb33d2b5dbf197880636f5c9eee811b32a1f21244834b9d5202ce",
+        "e8a14f65e155cac72c2b97df8849f1d01fb18685ddd46b9b64158272590d859b"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "f729ec952c5d7f2b2f0b05d04e57888a9f9c12fac3c32e83b405d08908227b9b",
+        "d05871f3816e4f6fc2218943f30d1910e6944ba9db6284ecd284c56a3f728f5f",
+        "2d9bc7cce3cd2d4ccc94d5a373e473340a39ee3f27c13399ccc63b9301c54a77",
+        "7ff94b0c805f2416ff37a35624c4efa99526a4d17ed6d12a8ac2c609b77a2092"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "scissors"
+      ],
+      "image_hashes": [
+        "18cf3102deec312c49cb7cbe2c66f40733d8414f5c99acd6fe636758534bdb84",
+        "27d8634b07f4086dec8f2a9dd3b78ec84d51c4ef1d2310e6ee9fc58b75dcbb1c",
+        "617e49689ff3a92e2589c410443b0db3507cba1b1442d6fbedf8aa67e42c6548",
+        "1a72be2bdb95c98d8b621db2103b578492e79112bfb3e120c453e44bba6c7be5"
+      ]
+    },
+    {
+      "objects": [
+        "mug",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "candle"
+      ],
+      "image_hashes": [
+        "3a58fada1d8bf2ebc3284c337801c51c4db6c45045aa96f173fa86b382f36f67",
+        "37439a2ab973edf9ae1139bbcbf83b553cd4eb65027639dca305678adcd6a6cf",
+        "f0f34938c6e7817224f7b9abd1ab9dcfc7998ad6897393912aa6cb674f6f50e2",
+        "485911ed8ad291672ea690ad7d47837b56059500b1b8b60e23c00e37c28e916f"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "book"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "tape"
+      ],
+      "image_hashes": [
+        "2916cb8c8d4c45970a6d5f4a78b60610f5fd10e604607e391175c043778e6c89",
+        "56d823987610e132d210565d245e416de38f53d34cbbde98134ca3263faf475c",
+        "58f6ca64c1e346f4ce9ad4c099f1cc0e1eeeb4270cc1b7ba3834f72eb0a24505",
+        "aaffc27cb5ec88bd294dfa65122f8acf4b5e8292a4e6aa902afcadb3a2750780"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "bowl"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "flower"
+      ],
+      "image_hashes": [
+        "ebbf58faf91eec248ed9d44abb6bc75b788dd180bb9f5023a075baa31e741409",
+        "20a4fda989ca0190a8e7a2840339e7b09c27e97fa8eb93f8495b02a9525decc1",
+        "d965bf6349882d9058d33929288230e11b99418486da8714f5dff1479694266f",
+        "ada3b1c37cc1e1618b341a96753d7aa074afa00b56d5dc3d57f5cbe80ef71dbc"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "can"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "cup"
+      ],
+      "image_hashes": [
+        "ec8e913421db5a6333bda8c22a206f9545cd6332b261d4cf327015a6851e5b97",
+        "474d23dec4db837ef84003f728441949443a38d04758ccec60fffb4a25e56a81",
+        "57e4175072f629551497f037b2b113a8e96dc814e8e625228a8c8f8de67df4fc",
+        "ec9b4cc3dff6dafb05d7ebebb9e2fe9635442ad6d07e06459c3c2878917df7ea"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "flower"
+      ],
+      "image_hashes": [
+        "fe5d87f9393c3df17d5ce6b401bc40c8a5c1997c8eba198c60be23750610810a",
+        "eebb6d675d094f71c97b7e9886710eab157b94550e6336927e8583a76973b3e5",
+        "e21eaab08b26a22d56532923595ae8b1283c4ac54f42016cd8cb849a37458baa",
+        "96f20eae8ea7064160bd7726d1d07cc66dccc9c724bb70f855ad2da99a6b5dbc"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "cap"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "cup"
+      ],
+      "image_hashes": [
+        "169ff1dc4424c65181ecb7e1847564aa5b52a87718aff18402b958b10b29e4e6",
+        "035b31038a3649ed14f9185de87dde61b8fe0c2b3d3c9dd8d4f69251d1471d30",
+        "c218c42ac6d137e4d32955e8a1514a89fb3436a0b61adcbf417a3b9217d18774",
+        "e57434a430a39df674b5a2aa2abaa29e7c84a2ff339655fab3f78cd20e9c3a8c"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "cup"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "bowl"
+      ],
+      "image_hashes": [
+        "dca8f96f169c1cbd8a2fc7b8ab5ec6df0a3c57ead4975f21247171e85567f577",
+        "8b98d9711167d3328ec63904f240b75367545d2765836afe030157f7cb3bac76",
+        "5005781f71472ae8cc30a61c5fcdaf0303b14477cf40a4036f3e2b0f8a549bab",
+        "4a524956310f6f4617601b861062145d5187d1d326acf0b9e6ec5d43f40a2009"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "can",
+        "fork"
+      ],
+      "image_hashes": [
+        "57bcc368950a2f479b6ac69a73451c86679d2880fc792d3c424d4414a45cb4b2",
+        "a0a681c46ab2b14c3556afaae2c97e58d90fb39af509d672ea8d41fb11186b5a",
+        "7664c067d0f023114f7cf024e257edc50fa3a80eec53f5ada0586374349afda8",
+        "0a600d16a9aed1a86bb96968f159be23121b7e577c438fa224c554a0b583b597"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "can"
+      ],
+      "image_hashes": [
+        "826a622afd1d5f220e8555afa11f7e3043978faa03ebff97befb46647f907a80",
+        "a32c5931e6384989bffe52326e91ea09afd1b99b7bb450deb8307345c2c6598d",
+        "4c204392af1ec2b4846b4f2db0ae67ee6f153a460872217d9fb39694442af37e",
+        "579979289a7f389ddc0ade9ec8581e757e08396569209323046b6ebeff9d5933"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "book",
+        "cap"
+      ],
+      "image_hashes": [
+        "d6e42e9f8b955f96089fcfa8f4879af41994a8ad61ce855a7cf0c172b62903e3",
+        "4ffeaf0e2426c836d43ffba8d9c94ed7167aa34308bae8dc09e5529292b0617c",
+        "a913aafd209169697d1257b3154dd7563f0acbc03f045789f0719146d595b1e2",
+        "80d0826c51cd084ebc35a876af443e454311c1f0bef75690478d61455883e706"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "knife"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "remote"
+      ],
+      "image_hashes": [
+        "53f608841aed7797b08f447b9ee262bdf9798c9bed5ee72ab357b9de0e51d6c0",
+        "aaded7ddc247cbafdef5220d7cb85179c275a673c8f2243a1e2b79de00758983",
+        "085f0afd91edd4d8aeed293ec07f105c5a422d622e2de0c960427c01ad66bacc",
+        "961dcb696e2825eba783db1039fce95b255ac4684ba822eb002b221a1d660b9b"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "phone"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "8909fbed27fbefb8d81ec3fb611cb7a33a8e75216585a9ef5221bbd060e9e9bc",
+        "9cd6faf29efe9f8cb39257cbb27b1d1e47199dca6bd262c74fe009a90b03a756",
+        "e0aa0acc86968633ca84f2c87b487352c8256ba00d18a747b0c149db3979b8cc",
+        "9696c401aeb7dd6904af1d684e3a9207d8b6078b93b4235ca1e22ea34be90d5f"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "remote"
+      ],
+      "shuffled_donor": [
+        "can",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "cf3302896dfd8204a6b785574ecccbab46f9c102adeee92f232022a3f0a3c67f",
+        "8febfbaefd3c309b00a94a35a051fd7286191aa0ccf2b2dcfaf6a7592949921c",
+        "e82214c5e5a0294d0b3788d4396f5fc6d3f8e40f2898a9cfacb917c2bb1654cc",
+        "345438c117dfe1f5c7e78cf4970b6ee774eb2c5de0a4b986e3ceb018e1174cb4"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "remote"
+      ],
+      "image_hashes": [
+        "f2bde5afa11208325c5803ded729286cb811e6b7ee1b73ebeb06723d089fa015",
+        "52abc7ca58eba49a8516599fc90616d936755a53c860a918fa1fee403ac2b5b7",
+        "56097a63f8ef5fcf140b9dbf3b755b73376f178a55bc48e8686177e6339bfbe8",
+        "dfc33fbb0ab84c827ce1e9666745177012f1689e9d267d7a473574cbd90492fb"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "fork"
+      ],
+      "image_hashes": [
+        "be2044a5e6a085038098512e6fb0655a38a9aba4d2e070101541b14c611a22a5",
+        "4e77f81a50f4949a04e928e99c52328d37a4b2e2707bc79c8e5b9fe511de2d05",
+        "7b193fa2ebcd169b8ee799c33811ed65ad04545a2dff073d37b25969de98eb73",
+        "117f3fc82a4bdfdbe3f6c68a885c5c7e7f48b74d87ab8582caa50f20ed384d3c"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "cap",
+        "flower"
+      ],
+      "image_hashes": [
+        "64d4e4ee9f7163e1f38ff58ee198fa7b59145592bcbf8a8cbfadfd191c1a36b3",
+        "50abe474e17ec37da18110e38305e774b38d24fafb8ee55685b056f9149acfa2",
+        "c0cd729b0f13b2dc2215676d8882b213cb28eb887e19b56c02560a252c013ddc",
+        "89d332a104f499ceea218c8521c10324daac7fd56eceb230cbbb1353ca1d9e7a"
+      ]
+    },
+    {
+      "objects": [
+        "plate",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "can",
+        "headphones"
+      ],
+      "image_hashes": [
+        "94d2d52ff488f498cd9548cb23618f87ab2812c86e9e1ff415088419a8547c57",
+        "e571d69aeb4e03d2453ad58dc0eab93fd62d4271b9fe94f9ece7039be94d0e90",
+        "a37f3c43ca3c83d67ee0a05f57186d08f51f0edcd472ad277a2ce37c2a65af83",
+        "a7b0bea145ea35053dc90f7dc7291cf5a2fdd17513b28f5583e484f2c6c5d347"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "candle"
+      ],
+      "shuffled_donor": [
+        "book",
+        "can"
+      ],
+      "image_hashes": [
+        "afe6f2d59aa40629ab303315965c2aa3594cd4d82f18affa0e06e26625d5eaf1",
+        "6c89ffea0a0174cf09a27c62c38f294f0bec9129cd4fb285d888a57403dd6aba",
+        "ac0f5f18dc759c83a3a408d1e1ecfcc9496d4fb115644216c78e85ef23169e64",
+        "9dd94011b9a611307c0f41051ec931dc9bdbfbc3629bb065f72106329b4a42b0"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "flower"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "candle"
+      ],
+      "image_hashes": [
+        "f7d7af2d42d2aec7ebd4ff485a73a1f150c0de585dee3baa7f45015c5ed639cb",
+        "aa226d2458ddf30b6fd703eff5af116e9b3d514f11c960bd13ab63b7d1350e2f",
+        "52f3d83c323a38b8133b1170559a920976ccb8d644534b518ed2427ac7166557",
+        "0cf6461986efb6548c66696ab6713e3972b65101f6069778a9611e5a576256a0"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "fork"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "scissors"
+      ],
+      "image_hashes": [
+        "f777bacf913e9b7f38540f4c34124a50f8ddb84c4d01eb60fa4ee7a91f21feeb",
+        "761c51e2bcb205bd4aedad2e0587133e31c8a6911f34f0410b19437c77e2c7db",
+        "a6d78fb0218267eed85d5116bb2184abc46e7ed2ac282dbe7aef0d7a26e632d0",
+        "50848a79dca987f329db3e87316ed01b5e674ae31db50b79613374d0fd1878db"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "headphones"
+      ],
+      "shuffled_donor": [
+        "cup",
+        "can"
+      ],
+      "image_hashes": [
+        "ae9989befecf902939295194a4b049b3ad58df8553d3057124439b28c03ecdc4",
+        "3f3a5a56a966ddd0493dab66827d198ef721eb1746e2684aa0fbebb3d3adaf85",
+        "668017660a7751120f952fcc9ecfe067995bcfad193d7ad379456e218a54149a",
+        "2163f7db59a7b89d3565df93427181200d37ebd7ae0d3b876d063a303fab70e0"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "scissors"
+      ],
+      "shuffled_donor": [
+        "plate",
+        "sunglasses"
+      ],
+      "image_hashes": [
+        "f5ed6bd18cbf2a44ca49b48f60e71417ec60ee46a9623c92bae19b8a5fc6681a",
+        "eccb630c15870235bbf4e48c4d623ec3f279da7c889f590d92cd9272d6a35dd3",
+        "c3270a390415e37e4ac8762a6adea3498983d29ae8f338957f2273ddbda5d167",
+        "dcc24df2b7e33665e9310c796ebf10e954a8b77119b0bb37fac7c21bface0588"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "spoon"
+      ],
+      "shuffled_donor": [
+        "mug",
+        "book"
+      ],
+      "image_hashes": [
+        "89063cd269938eef1253411ff98e92ad838aef7792493d08b7658f3adbf6b4e1",
+        "db259435a90f18162e7e9c4a31ffe19be7555b22f721072740bf5fa303a2937b",
+        "d2dd8bec9f7202ac674774d9b401cd395f716aa6b92e487e54d7e12e2513a171",
+        "16ee9b3f7e649be86fd6c53a72aac7c9c5361818cfddffb45f660135054f24b5"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "sunglasses"
+      ],
+      "shuffled_donor": [
+        "book",
+        "cup"
+      ],
+      "image_hashes": [
+        "074fdd8e3b7ce35362461c2daa981bba648d9d7d5ddf12b2ddff49765d01e631",
+        "cec5249427215c8bcbdada422cefe2d549f4403a1e99b9274c96b5089ad2d7f5",
+        "ee2c51a4d223e79307aba0a1b30daa63d681be93e503b7ec05f4f8a94c0b5bcc",
+        "d17f89fec1f09ba0aff24079cb12cb84ed032435c32f6431a42de9f1a8721496"
+      ]
+    },
+    {
+      "objects": [
+        "remote",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "bowl",
+        "scissors"
+      ],
+      "image_hashes": [
+        "3058902213af00a7b17eee663717682c9ec0fe6bb8d5ba70d222b97fc23b3878",
+        "04201308d86ad7ae2a60a11ffac048653ec2f4fb30d1bc89349ce57ac3c1ad16",
+        "20f05c2c82cf05d758d4aaaf649e37d899902605961b26e2378cf439db5867e2",
+        "76c70af939aa33108c8c008f7eabe6f469e3ef32f5da1c080996b084c4872c64"
+      ]
+    },
+    {
+      "objects": [
+        "sunglasses",
+        "tape"
+      ],
+      "shuffled_donor": [
+        "remote",
+        "candle"
+      ],
+      "image_hashes": [
+        "7ed349f13650d70f4465c8e34b2c25fe8ac9ed5e4a19ed719a4240342ceaa060",
+        "00309e479be099a37aa17b6d7f0c2cbc6ecbaaadf22f38243ac6749c5b50b416",
+        "8f6c0507172f8b94694d0b4e548fd85881c541b4205d1f0def63e0055c1a07d9",
+        "b0bf6750dc32ecc738b9170bdf0c8faad9ede42aa52b19fd3f95c73dbb9e4721"
+      ]
+    }
+  ],
+  "relation_order": [
+    "to the left of",
+    "to the right of",
+    "in front of",
+    "behind"
+  ]
+}

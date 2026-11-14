@@ -1,11 +1,12 @@
-# 大檔與暫存不進 git；results 的 json/md（含原始數字）要進 git
+# 排除大檔、暫存，以及下方兩項留在叢集的 Slurm 實驗輸出。
 results/**/*.npz
 results_smoke/
 logs/*.out
 logs/*.err
 logs/env_freeze_cr-headroom.txt
 results/headroom/26393/e2_*.json
-results/prospective_rank/*/_source/
+/results/prospective_rank/
+/results/controlled_spatial/
 *.pt
 *.bin
 *.safetensors
