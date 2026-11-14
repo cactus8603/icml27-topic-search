@@ -70,3 +70,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 06:36 submit 26502 gate-optimizer 4倍人工壓力，固定12保留seed和三強基線，獨立複核及CPU測試通過 4d87430
 [codex] 2026-11-15 06:36 submit 26503 t2i-rare-failure CLIP 同分探索診斷，三臂共用1500張像素，不保存生成影像 37e6ae9
 [codex] 2026-11-15 06:37 submit 26505 chameleon-defense CPU 作者乾淨基準診斷，改用帳號有權的 h200q CPU-only 資源，先前 defq 送件未建立作業 b9b43d7
+[codex] 2026-11-15 06:49 submit 26511 fallible-verifier 合成8題的單token格式與A/B對應敏感度，兩端同標準，無正式資料 c682f29
