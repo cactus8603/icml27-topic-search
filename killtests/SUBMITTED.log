@@ -41,3 +41,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 00:20 submit 26393 compositional-retrieval CORE/SigLIP2/CLIC 固定索引與 CORE reranker 補量，Astra 複審及離線合成測試通過 c834e87
 [codex] 2026-11-15 00:24 submit 26394 multifidelity-attribution 已審查第0階段 CPU 彙總，依賴26326重訓、26327精確歸因、26374便宜方法全部成功 8458f65
 [codex] 2026-11-15 00:35 cancel 26394 multifidelity-attribution 同一凍結程式已在CPU完成正式彙總，移除重複等候工作 bd61e41
+[codex] 2026-11-15 00:50 submit 26397 inoculation-lambda Phase A v2 等原閘門 26333 結束，固定離線輸入與隔離輸出，單 H200 最多 3 小時 d7e8421
