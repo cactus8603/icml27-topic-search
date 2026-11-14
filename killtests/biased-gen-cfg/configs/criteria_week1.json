@@ -1,5 +1,5 @@
 {
- "_comment": "第 1 週停損判準的數字集中在這裡，aggregate_week1.py 只讀此檔。回報 53 原文見 README。Fable 重審後若要改判準，改這個檔即可。",
+ "_comment": "第 1 週停損判準的數字集中在這裡，aggregate_week1.py 只讀此檔。2026-11-14 依 DECISIONS_fable.md 條文 1、2、5 更新（審查後、結果前定案，非探索性）。",
  "celeba": {
   "bias_metric": "train_input_cos_similarity_between_disjoint_models",
   "similarity_times": [
@@ -14,7 +14,15 @@
   "min_models": 6,
   "smooth_window": 3,
   "statistic": "log(e_testloss_min / e_bias_min) 逐模型，mean > sem_multiple*SEM",
-  "_note": "e_bias_min = 該模型訓練輸入上 1-cos(ε_A,ε_B)（對其餘模型、t∈similarity_times 平均）平滑後最低點 epoch；e_testloss_min 同樣平滑。重現不過 = 未能測試，不是 FAIL。"
+  "_note": "e_bias_min = 該模型訓練輸入上 ε 空間 1-cos（對其餘模型、t∈similarity_times 原始平均，不正規化）平滑後最低點 epoch；e_testloss_min 同樣平滑。有效模型：偏差曲線有內部最低點（條文 2）且 e_testloss_min 不在第一格；在最後一格仍有效（右設限，以最後 epoch 代入，log ratio 為下界）。有效模型>=5 且無效<2 才判定，否則未能測試並依 PREREG §4 診斷順序處理。",
+  "min_valid_models": 5,
+  "max_invalid_models": 1,
+  "loss_last_edge_is_right_censored_valid": true,
+  "model_bootstrap_descriptive": {
+   "n_boot": 2000,
+   "seed": 0,
+   "used_in_verdict": false
+  }
  },
  "hier": {
   "require_bp_unit_tests_pass": true,
@@ -32,15 +40,29 @@
   "min_early_fraction": 0.2,
   "fail_band": 0.1,
   "min_runs_main": 6,
-  "max_ckpt_ratio": 1.1
+  "max_ckpt_ratio": 1.1,
+  "b_gate_min_cond_interior": {
+   "3": 2,
+   "15": 10
+  },
+  "max_invalid_pair_fraction": 0.3333,
+  "max_invalid_pairs_rule": "invalid > floor(P * max_invalid_pair_fraction) -> (c) 未能測試（P=3: >=2；P=6: >=3；P=15: >=6）",
+  "pair_valid_rule": "cond 與 cfg3 兩條主曲線都有內部最低點"
  },
  "main_metric": {
   "formula": "log[t*(w=3)/t*(w=0)]",
-  "t_star": "sample-split 分數距離（兩不相交模型分支輸出的 1-cos，兩份訓練輸入、t 網格平均）平滑後最低點 epoch",
-  "bootstrap": "以模型為單位，2000 次，95% CI",
+  "t_star": "ε 空間逐樣本 1-cos（pair_cos_eps）：先對兩份訓練輸入平均，每個（對,分支,t）除以自身跨 checkpoint 平均，再對 t_mask_hier.json 保留的 t 等權平均，3 點置中平滑後取 argmin epoch。x0-hat 空間 pair_cos 不得用於任何 t* 或判定。",
+  "bootstrap": "以模型為單位，2000 次，95% CI；每次重抽統計量 = Σ m_i·m_j·x_ij / Σ m_i·m_j（只計有效對、i≠j）；分母為 0 的重抽跳過並回報次數；點估計為有效對等權平均",
   "c_pass": "平均 <= log(0.8) 且 CI 上界 < 0",
   "d_pass": "同向且 CI 不含 0",
   "fail": "(c)(d) 的 CI 皆落在 ±10% 內",
-  "gray": "僅 (c) 過 -> 加跑 n_c=100 的 6 個模型一次後再判"
- }
+  "gray": "僅 (c) 過 -> 加跑 n_c=100 的 6 個模型一次後再判",
+  "internal_min": "平滑後 argmin 不在網格第一格或最後一格，且 argmin 之後平滑曲線最大值 >= 1.10 × 最低值"
+ },
+ "distance_space": "eps",
+ "t_norm": "per_t_mean_over_ckpt",
+ "t_mask_file": "configs/t_mask_hier.json",
+ "t_mask_rel_threshold": 0.01,
+ "interior_min_rise": 1.1,
+ "bootstrap_weight": "mi_mj"
 }

@@ -7,10 +7,14 @@
   per_model（每個 run j、checkpoint e、時間 t、輸入集合 s、分支 b）：
      mse_oracle  NN 與 BP 的 x0hat 均方差      kl_oracle  KL(BP||NN)（僅 cond/uncond）
      ce          以真實 x0 為標籤的 token CE（僅 cond/uncond，其中 BP 的 ce 另存 ce_bp）
-  pair（兩個不相交 run i<j、輸入集合 S_i / S_j / S_test）：pair_mse、pair_cos（兩模型分支輸出的 cosine 距離）
+  pair（兩個不相交 run i<j、輸入集合 S_i / S_j / S_test）：pair_mse、pair_cos（x0-hat 空間 cosine 距離，保留但判定不得使用）、
+     pair_cos_eps（ε 空間 1-cos，DECISIONS_fable 條文 1.1：每個分支先得 p_b（CFG 為 (1+w)p_c - w p_u），再轉
+     ε_b=(x_t-sqrt(abar)p_b)/sqrt(1-abar)；float64；逐樣本整段序列展平；以 0.5*||a_hat-b_hat||^2 計算）
+  另存 git_hash（含是否有未提交修改）。
 偏差間隙 gap = mse_oracle(自身訓練輸入) - mse_oracle(測試輸入)；pair 版本 = pair_cos(S_i) - pair_cos(S_test)。
 """
-import argparse, glob, json, os, sys
+import argparse, glob, json, os, subprocess, sys
+import math
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -84,6 +88,26 @@ mse = np.zeros(shape_m); kl = np.full(shape_m, np.nan); ce = np.full(shape_m, np
 pairs = [(i, j) for i in range(R) for j in range(i + 1, R)]
 pair_mse = np.zeros((len(pairs), len(epochs), len(T), 3, len(branches)))
 pair_cos = np.zeros_like(pair_mse)
+pair_cos_eps = np.zeros_like(pair_mse)
+ABAR = [float(ab[t - 1]) for t in T]
+
+def eps_of(xt, p, abar):
+    return (xt.double() - math.sqrt(abar) * p) / math.sqrt(1.0 - abar)
+
+def one_minus_cos_eps(a, b):
+    """逐樣本展平後的 1-cos，用 0.5*||a_hat-b_hat||^2（單位向量）避免相消誤差；float64。"""
+    a = a.flatten(1).double(); b = b.flatten(1).double()
+    a = a / a.norm(dim=1, keepdim=True).clamp_min(1e-300); b = b / b.norm(dim=1, keepdim=True).clamp_min(1e-300)
+    return 0.5 * ((a - b) ** 2).sum(1)
+
+def git_hash():
+    try:
+        d = os.path.dirname(os.path.abspath(__file__))
+        h = subprocess.check_output(["git", "-C", d, "rev-parse", "HEAD"], text=True).strip()
+        dirty = subprocess.check_output(["git", "-C", d, "status", "--porcelain", "--", d], text=True).strip()
+        return h + ("+dirty" if dirty else "")
+    except Exception:
+        return "unknown"
 
 models = [H.CondDenoiser(depth and 2 ** depth, q, m["hidden"], m["nhead"], m["layers"]).to(dev).eval() for m in metas]
 
@@ -118,10 +142,13 @@ for ei, e in enumerate(epochs):
                     pair_mse[pi, ei, ti, k, bi] = ((a - bb) ** 2).mean().item()
                     cs = F.cosine_similarity(a.flatten(1), bb.flatten(1), dim=1)
                     pair_cos[pi, ei, ti, k, bi] = (1 - cs).mean().item()
+                    xt64 = XT[s][ti]
+                    pair_cos_eps[pi, ei, ti, k, bi] = one_minus_cos_eps(
+                        eps_of(xt64, a.double(), ABAR[ti]), eps_of(xt64, bb.double(), ABAR[ti])).mean().item()
     print(f"epoch {e} done", flush=True)
 
 os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
 np.savez(args.out, epochs=np.array(epochs), t_grid=np.array(T), branches=np.array(branches),
          picks=np.array(picks), pairs=np.array(pairs), mse_oracle=mse, kl_oracle=kl, ce=ce, ce_bp=ce_bp,
-         pair_mse=pair_mse, pair_cos=pair_cos, test_block=args.test_block, n_eval=ne, guidance=np.array(W))
+         pair_mse=pair_mse, pair_cos=pair_cos, pair_cos_eps=pair_cos_eps, git_hash=git_hash(), test_block=args.test_block, n_eval=ne, guidance=np.array(W))
 print("saved", args.out)
