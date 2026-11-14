@@ -17,6 +17,7 @@
 """
 import argparse, glob, json, os, subprocess, sys
 import math
+from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -24,6 +25,7 @@ import torch.nn.functional as F
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hier_cond as H
 from schedule import WEEK2_T_GRID, week2_epochs
+from week2_identity import ROLES, actual_eval, expected_eval, read_runs, sha256
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--data", required=True)
@@ -37,6 +39,7 @@ ap.add_argument("--t-grid", default=",".join(map(str, WEEK2_T_GRID)))
 ap.add_argument("--guidance", default="1,3")
 ap.add_argument("--epochs", default=None, help="逗號分隔；預設取所有 run 共有的 checkpoint")
 ap.add_argument("--require-full-week2", action="store_true", help="正式第 2 週：每個 run 必須備齊凍結 checkpoint 與 8 個 t")
+ap.add_argument("--week2-role", choices=ROLES, help="驗證正式第 2 週的資料、訓練與評估角色，並保存 manifest")
 ap.add_argument("--seed", type=int, default=123)
 ap.add_argument("--device", default=None)
 ap.add_argument("--gamma", action="store_true", help="條文 7：另存 pair_cos_gamma（γ=p_c-p_u 的跨模型 1-cos）；既有輸出不變")
@@ -44,7 +47,7 @@ args = ap.parse_args()
 
 T = [int(x) for x in args.t_grid.split(",")]
 ck_sets = [set(int(os.path.basename(f)[2:-3]) for f in glob.glob(os.path.join(r, "ep*.pt"))) for r in args.runs]
-if args.require_full_week2:
+if args.require_full_week2 or args.week2_role:
     epochs = week2_epochs()
     if args.epochs is not None or tuple(T) != WEEK2_T_GRID:
         ap.error("正式第 2 週須使用凍結的 checkpoint 排程與完整 8 個 t")
@@ -58,7 +61,6 @@ print("epochs", epochs, flush=True)
 
 dev = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
 metas = [json.load(open(os.path.join(r, "meta.json"))) for r in args.runs]
-q, depth, roots, leaves, M = H.load_hier(args.data)
 n_train = args.block_size
 # run 類型（由 meta 判斷；同一次評估內必須同型）：normal / const（K=1 常數條件，條件輸入給 0、條件 oracle = 無條件 BP）/ uncond_only（pdrop=1.0，只輸出 null 分支）
 def run_type(m):
@@ -75,6 +77,40 @@ assert len(set(picks)) == len(picks), "run 的資料區塊必須互不相交"
 assert not (args.gamma and RUN_TYPE != "normal"), "--gamma 只支援一般（K=6 條件）run"
 ne = args.n_eval
 W = [float(x) for x in args.guidance.split(",") if float(x) != 0]
+manifest = None
+if args.require_full_week2 or args.week2_role:
+    if not args.week2_role:
+        ap.error("正式第 2 週需明示 --week2-role")
+    evaluation = actual_eval(args.week2_role, RUN_TYPE, args.class_filter, ne, W, args.gamma,
+                             n_train, args.test_block, args.seed)
+    if evaluation != expected_eval(args.week2_role):
+        ap.error(f"評估設定不符 {args.week2_role}：{evaluation}")
+    sizes = (6,) if args.week2_role == "k6" else (4, 6)
+    if len(picks) not in sizes or sorted(picks) != list(range(len(picks))):
+        ap.error(f"{args.week2_role} 的訓練 pick 不完整：{picks}")
+    if Path(args.out).exists():
+        ap.error(f"正式評估輸出已存在：{args.out}")
+    mask_file = Path(__file__).resolve().parents[1] / "configs/t_mask_hier.json"
+    mask = json.loads(mask_file.read_text())
+    try:
+        data_sha = sha256(args.data)
+    except OSError as exc:
+        ap.error(f"無法讀取凍結階層資料：{exc}")
+    if data_sha != mask["data_sha256"]:
+        ap.error("階層資料 SHA-256 與凍結遮罩不符")
+    try:
+        sources = read_runs(args.runs, metas, RUN_TYPE, args.data, data_sha)
+    except (ValueError, KeyError, OSError) as exc:
+        ap.error(f"正式訓練來源不符：{exc}")
+    manifest = {"version": 1, "evaluation": evaluation, "data_sha256": data_sha, "runs": sources}
+
+q, depth, roots, leaves, M = H.load_hier(args.data)
+if manifest is not None and RUN_TYPE == "uncond_only":
+    for meta in metas:
+        start = meta["pick"] * n_train
+        actual_n = int((roots[start:start + n_train] == 0).sum())
+        if actual_n != meta["n_c"]:
+            ap.error(f"pick {meta['pick']} 的類別 0 訓練樣本數不符")
 branches = ["cond", "uncond"] + [f"cfg{w:g}" for w in W]
 if RUN_TYPE == "uncond_only":
     branches = ["uncond"]
@@ -193,7 +229,12 @@ for ei, e in enumerate(epochs):
 
 os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
 extra = dict(pair_cos_gamma=pair_cos_gamma) if args.gamma else {}
+if manifest is not None:
+    extra["week2_manifest"] = np.array(json.dumps(manifest, sort_keys=True))
+    extra["guidance"] = np.array(manifest["evaluation"]["guidance"])
+else:
+    extra["guidance"] = np.array(W)
 np.savez(args.out, epochs=np.array(epochs), t_grid=np.array(T), branches=np.array(branches),
          picks=np.array(picks), pairs=np.array(pairs), mse_oracle=mse, kl_oracle=kl, ce=ce, ce_bp=ce_bp,
-         pair_mse=pair_mse, pair_cos=pair_cos, pair_cos_eps=pair_cos_eps, git_hash=git_hash(), test_block=args.test_block, n_eval=ne, guidance=np.array(W), **extra)
+         pair_mse=pair_mse, pair_cos=pair_cos, pair_cos_eps=pair_cos_eps, git_hash=git_hash(), test_block=args.test_block, n_eval=ne, **extra)
 print("saved", args.out)

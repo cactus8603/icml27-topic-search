@@ -21,6 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..
 sys.path.insert(0, HERE)
 import reach
 from schedule import WEEK2_T_GRID, week2_epochs
+from week2_identity import expected_eval, manifest_error
 ap = argparse.ArgumentParser()
 ap.add_argument("--criteria", default=os.path.join(ROOT, "configs", "criteria_week2.json"))
 for k in ("k6", "k1", "k6c0", "u833c0", "k1c0"):
@@ -58,10 +59,12 @@ def interior_info(ep, y, k=K, rise=RISE):
 
 def load_mask():
     p = crit["t_mask_file"]; p = p if os.path.isabs(p) else os.path.join(ROOT, p)
-    return json.load(open(p))["keep_t"]
+    with open(p) as fd:
+        return json.load(fd)
 
 
-KEEP = load_mask()
+MASK = load_mask()
+KEEP = MASK["keep_t"]
 
 
 class Run:
@@ -73,6 +76,13 @@ class Run:
         self.R = len(self.picks); self.P = len(self.pairs)
         tg = [int(x) for x in d["t_grid"]]
         self.complete_grid = self.ep.tolist() == week2_epochs() and tuple(tg) == WEEK2_T_GRID
+        try:
+            self.manifest = json.loads(d["week2_manifest"].item()) if "week2_manifest" in d.files else None
+        except (ValueError, TypeError):
+            self.manifest = None
+        self.n_eval = d["n_eval"].item() if "n_eval" in d.files and d["n_eval"].shape == () else None
+        self.test_block = d["test_block"].item() if "test_block" in d.files and d["test_block"].shape == () else None
+        self.guidance = d["guidance"].tolist() if "guidance" in d.files else None
         idx = [tg.index(t) for t in KEEP if t in tg]
         full_mask = len(idx) == len(KEEP)
         pce = d["pair_cos_eps"]; self.curve = {}
@@ -105,7 +115,8 @@ def main_metric(run, label):
     nb, db = crit["main_branches"]["numerator"], crit["main_branches"]["denominator"]
     x = np.full(run.P, np.nan); valid = []; info = []
     for p in range(run.P):
-        rs = {b: run.inter(b, p) for b in (nb, db)}; v = all(o for o, _ in rs.values())
+        rs = {b: run.inter(b, p) if b in run.curve else (False, "missing_branch") for b in (nb, db)}
+        v = all(o for o, _ in rs.values())
         info.append({"pair": [int(i) for i in run.pairs[p]], "valid": v, "reason": {b: r for b, (o, r) in rs.items() if not o}})
         if v: valid.append(p); x[p] = np.log(run.ts(nb, p) / run.ts(db, p))
     n_inv = run.P - len(valid)
@@ -140,12 +151,26 @@ def expected_panel(run, sizes):
             and run.pairs.tolist() == [list(pair) for pair in combinations(range(run.R), 2)])
 
 
-def formal_panel_error(run, sizes):
+def formal_panel_error(run, sizes, role):
     if not expected_panel(run, sizes):
         return "run 或配對未形成完整區塊"
     if not run.complete_grid:
         return "缺凍結的完整 checkpoint 或 8 個 t"
+    error = manifest_error(run.manifest, role, run.picks, MASK["data_sha256"])
+    if error:
+        return error
+    expected = expected_eval(role)
+    if run.n_eval != expected["n_eval"] or run.test_block != expected["test_block"] or run.guidance != expected["guidance"]:
+        return "NPZ 樣本數、測試區塊或 guidance 與 manifest 不符"
+    branches = ["uncond"] if expected["run_type"] == "uncond_only" else ["cond", "uncond", *[f"cfg{w:g}" for w in run.guidance]]
+    if run.br != branches:
+        return "NPZ 分支與 manifest 不符"
     return None
+
+
+def same_sources(left, right):
+    a = {r["training"]["pick"]: r["meta_sha256"] for r in left.manifest["runs"]}
+    return all(a.get(r["training"]["pick"]) == r["meta_sha256"] for r in right.manifest["runs"])
 
 
 def pick_pairs(run):
@@ -176,9 +201,9 @@ r6 = m6 = ci6 = None
 panel6_error = "缺 --k6"
 if need("k6"):
     r6 = Run(args.k6)
-    panel6_error = formal_panel_error(r6, (6,))
+    panel6_error = formal_panel_error(r6, (6,), "k6")
     m6 = main_metric(r6, "K=6 m6")
-    n_cond = sum(1 for p in range(r6.P) if r6.inter("cond", p)[0])
+    n_cond = sum(1 for p in range(r6.P) if r6.inter("cond", p)[0]) if "cond" in r6.curve else 0
     req = crit["c"]["b_gate_min_cond_interior"]["15"]
     b_status = f"未能測試（K=6：{panel6_error}）" if panel6_error else (
         "PASS" if n_cond >= req else "未能測試（條件分支有內部最低點的配對不足）")
@@ -209,7 +234,7 @@ if need("k1"):
         neg["h_gpu_hours"] = args.h
         neg["expected_n_runs_from_h"] = control_sizes[0]
         neg["n_runs_matches_rule"] = r1.R in control_sizes
-    panel1_error = formal_panel_error(r1, control_sizes)
+    panel1_error = formal_panel_error(r1, control_sizes, "k1")
     neg["valid_panel"] = panel1_error is None
     if not m1["testable"]:
         neg.update(pub(m1)); neg["status"] = "未能測試（K=1 無效對過多）：(c) 加註後交人工判讀"
@@ -253,9 +278,15 @@ S["c_main"]["use"] = "descriptive_only"
 pcn = crit["positive_control"]
 if all(need(k) for k in ("k6c0", "u833c0", "k1c0")):
     rc, ru, r5 = Run(args.k6c0), Run(args.u833c0), Run(args.k1c0)
-    ok_shape = rc.picks == ru.picks == r5.picks and all(formal_panel_error(run, control_sizes) is None for run in (rc, ru, r5))
-    if not ok_shape:
-        S["positive_control"] = {"status": "未能測試（三組 pick／配對或評估網格不完整）",
+    panels = dict(k6c0=rc, u833c0=ru, k1c0=r5)
+    errors = {role: formal_panel_error(run, control_sizes, role) for role, run in panels.items()}
+    if not any(errors.values()):
+        if panel6_ok and not same_sources(r6, rc):
+            errors["k6c0"] = "正控制與 K=6 未使用相同訓練 run"
+        if panel1_ok and not same_sources(r1, r5):
+            errors["k1c0"] = "正控制與 K=1 未使用相同訓練 run"
+    if rc.picks != ru.picks or rc.picks != r5.picks or any(errors.values()):
+        S["positive_control"] = {"status": "未能測試（正控制輸入或配對不符）", "input_errors": errors,
                                  "picks": [r.picks for r in (rc, ru, r5)]}
     else:
         grp = {"c": (rc, "cond"), "u833": (ru, "uncond"), "u5000": (r5, "cond")}
@@ -298,7 +329,7 @@ else:
 
 # ---------------- 條文 7：w→∞ 極限診斷 ----------------
 limit_config = crit["asymptotic_onset"]
-if r6 is not None and r6.gamma is not None:
+if r6 is not None and r6.gamma is not None and "cond" in r6.curve:
     S["asymptotic_onset"] = reach.h_inf(r6.ep, r6.curve["cond"], r6.gamma, r6.pairs, r6.R, tstar, interior_info,
                                        max_invalid(r6.P), limit_config["reference_log_ratio"], limit_config["n_boot"], limit_config["bootstrap_seed"])
 else:

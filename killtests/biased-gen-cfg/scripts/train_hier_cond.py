@@ -12,6 +12,7 @@ import torch.nn.functional as F
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hier_cond as H
+from hier_run import complete_run, start_run
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--data", required=True)
@@ -34,6 +35,7 @@ ap.add_argument("--amp", default="bf16", choices=["bf16", "none"])
 ap.add_argument("--device", default=None)
 ap.add_argument("--compile", action="store_true")
 args = ap.parse_args()
+start_run(args.out)
 
 dev = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
 torch.manual_seed(args.seed); np.random.seed(args.seed)
@@ -55,7 +57,6 @@ def lr_lambda(ep):
 sched = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
 from schedule import ckpt_schedule
 ck_epochs = ckpt_schedule(args.first_ckpt_epoch, args.epochs, args.max_ratio)
-os.makedirs(args.out, exist_ok=True)
 json.dump({**vars(args), "q": q, "depth": depth, "ckpt_epochs": ck_epochs, "n_params": sum(p.numel() for p in model.parameters())},
           open(os.path.join(args.out, "meta.json"), "w"), indent=1)
 print("params", sum(p.numel() for p in model.parameters()), "ckpts", len(ck_epochs), flush=True)
@@ -83,4 +84,5 @@ for ep in range(1, args.epochs + 1):
         sd = {k: (v.half() if (args.save_dtype == "fp16" and v.is_floating_point()) else v) for k, v in sd.items()}
         torch.save(sd, os.path.join(args.out, f"ep{ep}.pt"))
 json.dump(hist, open(os.path.join(args.out, "train_loss.json"), "w"))
+complete_run(args.out, args.data, ck_epochs)
 print("done", time.time() - t0)

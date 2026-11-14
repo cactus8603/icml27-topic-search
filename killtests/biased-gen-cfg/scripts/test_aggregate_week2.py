@@ -1,23 +1,33 @@
 #!/usr/bin/env python
 """aggregate_week2.py 的合成資料測試。用法：python test_aggregate_week2.py [--tmp DIR]"""
-import argparse, json, os, subprocess, sys
+import argparse, hashlib, json, os, subprocess, sys
+from pathlib import Path
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 from schedule import ckpt_schedule
+from week2_identity import expected_eval, expected_training, is_legacy, read_runs, sha256
 ap = argparse.ArgumentParser(); ap.add_argument("--tmp", default=os.path.join(os.environ.get("TMPDIR", "."), "agg2_test")); a = ap.parse_args()
 os.makedirs(a.tmp, exist_ok=True)
 EPH = np.array(ckpt_schedule(30, 20000)); E = len(EPH)
 TG = [10, 25, 50, 75, 100, 150, 200, 300]; SC = np.array([1e-4, 3e-3, 1e-2, 5e-3, 2e-3, 8e-4, 3e-4, 4e-5])
 rng = np.random.default_rng(3)
 JIT = rng.normal(0, 0.06, 6)   # 每個區塊（模型）共同的 t* 偏移，使 CI 有寬度
+DATA_SHA = json.loads((Path(HERE).parent / "configs/t_mask_hier.json").read_text())["data_sha256"]
 
 def curve(kind, ts):
     le = np.log(EPH / ts)
     return {"v": 0.2 + 0.1 * np.abs(le), "down": np.linspace(2, 1, E)}[kind]
 
-def mk(name, picks, tmap, kinds=None, branches=("cond", "uncond", "cfg1", "cfg3"), gamma_t=None, gamma_kind="v", gaps=None, e_dag=None):
+def mk(name, picks, tmap, kinds=None, branches=("cond", "uncond", "cfg1", "cfg3"), gamma_t=None, gamma_kind="v", gaps=None, e_dag=None, role=None):
     """gamma_t：γ 曲線的基準 t*（寫入 pair_cos_gamma）；gaps=(g_cond, g_cfg3, jitter)：e† 處 oracle 偏差間隙；e_dag：e† 的 checkpoint 索引（CE 曲線最低點）。"""
     """tmap[branch] = 基準 t*；pair 的 t* = base*exp(jit_i+jit_j)；kinds[(branch)] = 'down' 使該分支無內部最低點。"""
+    if role is None:
+        role = {("cond", "cfg3"): "k1", ("cond",): "k6c0", ("uncond",): "u833c0"}.get(branches, "k6")
+    ev = expected_eval(role)
+    tmap = dict(tmap)
+    branches = ["uncond"] if ev["run_type"] == "uncond_only" else ["cond", "uncond", *[f"cfg{w:g}" for w in ev["guidance"]]]
+    for br in branches:
+        tmap.setdefault(br, next(iter(tmap.values())))
     pairs = [(i, j) for i in range(len(picks)) for j in range(i + 1, len(picks))]
     pc = np.zeros((len(pairs), E, 8, 3, len(branches)))
     for p, (i, j) in enumerate(pairs):
@@ -25,7 +35,19 @@ def mk(name, picks, tmap, kinds=None, branches=("cond", "uncond", "cfg1", "cfg3"
             ts = tmap[br] * np.exp(JIT[picks[i]] + JIT[picks[j]]); kd = (kinds or {}).get(br, "v")
             kd = kd(p) if callable(kd) else kd
             pc[p, :, :, :, b] = curve(kd, ts)[:, None, None] * SC[None, :, None]
-    path = os.path.join(a.tmp, name + ".npz"); extra = {}
+    path = os.path.join(a.tmp, name + ".npz")
+    runs = []
+    for pick in picks:
+        kind = ev["run_type"]
+        train = expected_training(kind, pick)
+        if kind in ("const", "uncond_only"):
+            train.update(block_size=5000, n_c=5000 if kind == "const" else 850, steps_per_epoch=10)
+        meta_sha = hashlib.sha256(f"{kind}:{pick}".encode()).hexdigest()
+        receipt = {"version": 1, "data_sha256": DATA_SHA, "meta_sha256": meta_sha, "epochs": EPH.tolist()}
+        runs.append({"training": train, "meta_sha256": meta_sha, "completion": None if is_legacy(kind, pick) else receipt})
+    manifest = {"version": 1, "evaluation": ev, "data_sha256": DATA_SHA, "runs": runs}
+    extra = {"week2_manifest": np.array(json.dumps(manifest)), "n_eval": np.array(ev["n_eval"]),
+             "test_block": np.array(ev["test_block"]), "guidance": np.array(ev["guidance"])}
     if gamma_t is not None:
         pg = np.zeros((len(pairs), E, 8, 3, 1))
         for p, (i, j) in enumerate(pairs):
@@ -61,6 +83,21 @@ def agg(**kw):
     with open(outfile) as fh:
         return json.load(fh)["sections"]
 
+
+def rewrite(source, name, mutate):
+    with np.load(source) as source_npz:
+        data = dict(source_npz)
+    mutate(data)
+    path = os.path.join(a.tmp, name + ".npz")
+    np.savez(path, **data)
+    return path
+
+
+def change_manifest(data, mutate):
+    manifest = json.loads(data["week2_manifest"].item())
+    mutate(manifest)
+    data["week2_manifest"] = np.array(json.dumps(manifest))
+
 fails = []
 def check(n, c, x=""):
     print(("OK   " if c else "FAIL ") + n, x)
@@ -94,7 +131,7 @@ check("K=6 invalid 6/15 -> 未能測試", s["c_main"]["status"].startswith("未�
 # 正控制
 def pcs(tc, tu833, tu5000, **kw):
     return dict(k6c0=mk("pc_c", P4, {"cond": tc}, branches=("cond",)), u833c0=mk("pc_u833", P4, {"uncond": tu833}, branches=("uncond",)),
-                k1c0=mk("pc_u5000", P4, {"cond": tu5000}, branches=("cond",)))
+                k1c0=mk("pc_u5000", P4, {"cond": tu5000}, branches=("cond",), role="k1c0"))
 s = agg(**pcs(350, 300, 1000))["positive_control"]
 check("pos ctrl pass", s["status"] == "通過", f"λ={s['lambda']:.2f} ci={s['lambda_ci95']} sep={s['separation_Lu5000_minus_Lu833']:.2f}")
 s = agg(**pcs(900, 800, 1000))["positive_control"]
@@ -104,12 +141,12 @@ check("pos ctrl premise fails", s["status"].startswith("n/K 時鐘前提不成�
 s = agg(**pcs(300, 1000, 300))["positive_control"]   # u833 比 u5000 晚 -> 方向錯
 check("pos ctrl wrong direction -> 無分辨力", s["status"].startswith("控制無分辨力"))
 s = agg(k6c0=mk("pc_c", P4, {"cond": 400}, branches=("cond",)), u833c0=mk("pc_u833", P4, {"uncond": 300}, kinds={"uncond": lambda p: "down" if p < 3 else "v"}, branches=("uncond",)),
-        k1c0=mk("pc_u5000", P4, {"cond": 1000}, branches=("cond",)))["positive_control"]
+        k1c0=mk("pc_u5000", P4, {"cond": 1000}, branches=("cond",), role="k1c0"))["positive_control"]
 check("pos ctrl invalid>floor(P/3) -> 未能測試", s["status"].startswith("未能測試"))
 disjoint = []
-for group, branch, onset, start in (("c", "cond", 350, 0), ("u833", "uncond", 300, 5), ("u5000", "cond", 1000, 10)):
+for group, branch, onset, start in (("k6c0", "cond", 350, 0), ("u833c0", "uncond", 300, 5), ("k1c0", "cond", 1000, 10)):
     kinds = {branch: lambda p, start=start: "down" if start <= p < start + 5 else "v"}
-    disjoint.append(mk("disjoint_" + group, P6, {branch: onset}, kinds=kinds, branches=(branch,)))
+    disjoint.append(mk("disjoint_" + group, P6, {branch: onset}, kinds=kinds, branches=(branch,), role=group))
 s = agg(k6c0=disjoint[0], u833c0=disjoint[1], k1c0=disjoint[2])["positive_control"]
 check("正控制各用自身的 10/15 有效對，共用 bootstrap 區塊",
       s["status"] == "通過" and set(s["n_valid_pairs"].values()) == {10} and s["bootstrap_skipped"] > 0)
@@ -202,7 +239,7 @@ check("第 1 週 G2 未能測試，現象未能測試",
       agg(k6=AMP, k1=K1OK, week1_verdict=w1bad)["report60"]["phenomenon"]["state"] == "未能測試")
 short = mk("short_panel", P4, {"cond": 1000, "cfg3": 500}, branches=("cond", "cfg3"))
 check("4-run 6-pair panel 不能通過 6-run 15-pair (b) 閘門", agg(k6=short, k1=K1OK)["report60"]["phenomenon"]["state"] == "未能測試")
-perm = mk("perm_panel", [5, 3, 4, 1, 0, 2], {"cond": 1000, "cfg3": 500}, branches=("cond", "cfg3"))
+perm = mk("perm_panel", [5, 3, 4, 1, 0, 2], {"cond": 1000, "cfg3": 500}, branches=("cond", "cfg3"), role="k6")
 perm_delta = agg(k6=perm, k1=k1c)["report60"]
 check("同一組 pick 換序仍有效，配對 Δ 依 pick ID 對齊", perm_delta["phenomenon"]["state"] == "PASS"
       and perm_delta["signal"]["S_a"]["state"] == "PASS" and np.isclose(perm_delta["signal"]["S_a"]["mean"], d["mean"]))
@@ -235,6 +272,50 @@ cmd = [sys.executable, os.path.join(HERE, "eval_hier_oracle.py"), "--require-ful
 evaluation = subprocess.run(cmd, text=True, capture_output=True)
 check("正式 evaluator 逐 run 預檢並回報缺少的中段及末段 checkpoint", evaluation.returncode != 0
       and f"[{EPH[25]}, {EPH[-1]}]" in evaluation.stderr and "缺少必要 checkpoint" in evaluation.stderr)
+
+q = agg(k6=AMP, k1=AMP)["report60"]
+check("K=6 NPZ 不能冒用 K=1", q["signal"]["state"] == "未能測試" and q["headroom"]["state"] == "PASS")
+for key, value in (("n_eval", 1), ("test_block", 6)):
+    path = rewrite(AMP, f"bad_{key}", lambda data: data.__setitem__(key, np.array(value)))
+    q = agg(k6=path, k1=K1OK)["report60"]
+    check(f"拒絕 NPZ 錯誤 {key}", q["candidate_pool"]["state"] == "未能測試")
+legacy = rewrite(AMP, "no_manifest", lambda data: data.pop("week2_manifest"))
+check("未標明正式評估角色的歷史 NPZ 不得作第 2 週判讀",
+      agg(k6=legacy, k1=K1OK)["report60"]["candidate_pool"]["state"] == "未能測試")
+
+for failure, edit in (
+    ("data", lambda m: m.__setitem__("data_sha256", "0" * 64)),
+    ("train_t_final", lambda m: m["runs"][2]["training"].__setitem__("t_final", 700)),
+    ("receipt", lambda m: m["runs"][3].__setitem__("completion", None)),
+):
+    path = rewrite(AMP, "manifest_" + failure, lambda z: change_manifest(z, edit))
+    check(f"拒絕正式來源不符 {failure}", agg(k6=path, k1=K1OK)["report60"]["candidate_pool"]["state"] == "未能測試")
+
+pc = pcs(350, 300, 1000)
+pc["k1c0"] = K1OK
+q = agg(k6=AMP, k1=K1OK, **pc)["positive_control"]
+check("未過濾的 K=1 NPZ 不得充當類別 0 正控制", q["status"].startswith("未能測試") and "評估角色" in q["input_errors"]["k1c0"])
+
+root = Path(a.tmp) / "source_run"
+root.mkdir(exist_ok=True)
+datafile = Path(a.tmp) / "fake_data.npy"
+datafile.write_bytes(b"synthetic fixture")
+for pick in (0, 3):
+    model_meta = {**expected_training("normal", pick), "out": str(root), "data": str(datafile)}
+    (root / "meta.json").write_text(json.dumps(model_meta))
+    if pick == 0:
+        check("舊 pick 0 完整正式設定時可沿用", read_runs([root], [model_meta], "normal", datafile, DATA_SHA)[0]["completion"] is None)
+    else:
+        try:
+            read_runs([root], [model_meta], "normal", datafile, DATA_SHA)
+        except ValueError as exc:
+            check("新 pick 3 缺 completion.json 時拒絕", "completion.json" in str(exc))
+        else:
+            check("新 pick 3 缺 completion.json 時拒絕", False)
+        receipt = {"version": 1, "data_sha256": DATA_SHA, "meta_sha256": sha256(root / "meta.json"), "epochs": EPH.tolist()}
+        (root / "completion.json").write_text(json.dumps(receipt))
+        check("新 pick 3 完成標記吻合，來源檢查通過",
+              read_runs([root], [model_meta], "normal", datafile, DATA_SHA)[0]["completion"] == receipt)
 
 q = agg(k6=k6f("low_headroom", gaps=(1, 0.5, 0)), k1=K1OK)["report60"]
 check("G3 95% 上界低於 .05 -> 空間 FAIL", q["headroom"]["state"] == "FAIL" and "headroom" in q["candidate_pool"]["failed_axes"])
