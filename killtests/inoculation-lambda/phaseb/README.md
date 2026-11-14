@@ -20,7 +20,8 @@ python=/work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/python
 `author-config` 可產生作者 `finetune_lora.py --config` 接受的 JSON。指定 `none` 或 `ip`，綁定獨立核對過的 `inputs_sha256`。模型設定用固定 snapshot 的絕對路徑，僅保留最終 LoRA。原作的途中存檔是為了梯度曲線。依這個模型的七個投影矩陣尺寸估算，每個 FP32 LoRA 約 616 MiB，另加 tokenizer 與中繼檔。兩臂各自用獨立的新輸出目錄。訓練前依共享規則核對磁碟額度。
 
 ```bash
-"$python" -B -m phaseb.feasibility author-config ip my-run +  --binding "$inputs_sha256" --preview
+"$python" -B -m phaseb.feasibility author-config ip my-run \
+  --binding "$inputs_sha256" --preview
 ```
 
 預覽只輸出包有 `preview_config` 的報告。正式輸出配置時先以作者釘選環境執行並移除 `--preview`，把 JSON 存於共用實驗資料夾。訓練須設 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`。在完整評估途徑核實前先用預檢及預覽。
