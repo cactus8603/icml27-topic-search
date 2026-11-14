@@ -51,3 +51,10 @@ sbatch slurm/stage2_e2.sbatch   # E2 與最終 aggregate
 6. E2 的條件與文字模板（COCO 類別、"a photo of ..."）是我定的，回報 46 只寫「COCO 或 VG」；J 缺一個條件但可能含其他未列類別，confound 已在 PREREG 聲明。
 7. CORE reranker 未評估，46 的「reranker >= 90% 限定情境」旗標無法判定。
 8. 群組額度吃緊：下載與解壓前先確認剩餘空間；寫入失敗即停（本次曾遇一次 EDQUOT fsync 暫時錯誤）。
+
+## 第二探針（停損後；PREREG_probe2.md）
+stage1 P1 FAIL 後的整句條件 PMI（s~）探針；同一批 1437 列已看過結果，凍結後只跑一次。檔案：`PREREG_probe2.md`、`configs/params_probe2.json`、`scripts/probe2_{precheck,condpmi,embed}.py`、`scripts/aggregate_probe2.py`、`scripts/unit_tests_probe2.py`、`slurm/probe2.sbatch`；輸出在 `results/probe2/`。
+- 主指標與閘門只需 stage1 已存的 npz（CPU）；GPU 只用於正控制句與 COCO 5000 影像池的 embedding。
+- 跑前預檢 `results/probe2/precheck.json` 已完成（CPU，描述用）。
+- B 做法（VLM 條件 LLR）：**未做**。
+- 凍結（commit）後執行：`sbatch slurm/probe2.sbatch`（內含凍結檢查、單元測試、embedding、分析、`aggregate_probe2.py`）。
