@@ -80,3 +80,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 07:23 submit 26521 gate-optimizer 固定4倍和48新seed；4個12seed分段，完整品質守門，已獨立審查 6e16f49
 [codex] 2026-11-15 07:23 submit 26522 gate-optimizer 四段完整後核對所有收據及144個配對的CPU單次分析，依賴26521 6e16f49
 [codex] 2026-11-15 07:29 submit 26523 biased-gen-cfg 固定三臂與六pick共54份權重錨點核對，共同早期網格重測n/K探索對照，預檢與合成通過 0fded0d
+[codex] 2026-11-15 07:45 submit 26525 rl-sparse-distill CPU重評同一批Pair A greedy輸出，分開診斷停止規則、作者計分器與原版標答，預檢通過 ed42f9d
+[codex] 2026-11-15 07:49 submit 26526 inoculation-lambda Grant Spanish作者鎖版none訓練，1張H200；實測吞吐守門，兩臂CPU預檢通過 f7bf700
+[codex] 2026-11-15 07:49 submit 26527 inoculation-lambda Grant Spanish作者鎖版IP訓練，1張H200；等26526成功及核對收據後才啟動 f7bf700

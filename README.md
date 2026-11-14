@@ -4,19 +4,19 @@
 
 ## 目前題目
 
-前七題沿用 Claude 的前期工作，Codex 依交接紀錄跟進。後三題由 Codex 發展具體實驗、實作先導並送出第二輪。作業進度核對至 05:20（台北）。[Claude 交接](reports/2026-11-14-61-claude-handoff-to-codex.md) · [Codex 三題深查](codex/reports/2026-11-14-rebuttal-topic-deepcheck.md)
+前七題沿用 Claude 的前期工作，Codex 依交接紀錄跟進。後三題由 Codex 發展具體實驗、實作先導並送出第二輪。[Claude 交接](reports/2026-11-14-61-claude-handoff-to-codex.md) · [Codex 三題深查](codex/reports/2026-11-14-rebuttal-topic-deepcheck.md)
 
 | 題目 | 前期分工 | 目前接手 | 下一步 |
 |---|---|---|---|
 | [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 完成固定候選庫與獨立正反關係試驗 | `26450` 和 `26514` 均未支持這版 anchor 的排序增益。原同圖排序維持 GO |
 | [條件擴散的兩個時鐘](#條件擴散的兩個時鐘) | Claude 做第一週訓練與評估 | Codex 完成第二週正式評估與早期回播 | `26523` 用三組共同早期網格比較每類樣本數的解釋 |
-| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成 Phase A v2 與 Phase B 預檢 | 補齊作者環境、評審憑證及信度語料，再送正式重現與小試 |
+| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成 Phase A v2，備妥作者鎖版環境 | `26526`／`26527` 依序訓練作者 none／IP。補齊原版評分證據及信度語料 |
 | [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成 12 個新查詢的精確診斷 | `26517` 用新查詢和遮罩比較等預算的方向選擇 |
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 完成 CPU 乾淨基準診斷 | 補找作者原探測器、metadata 與權重對應 |
-| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成 B 的 16K 重現與新題模板對照 | 新題支持 raw abel 較好，原重現仍未過，短預算資格暫緩 |
+| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成 B 的 16K 重現與新題模板對照 | `26525` 以作者計分器重評配對 A 的原輸出，短預算資格暫緩 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成 CPU 尾端代理與 CLIP 精度診斷 | `26516` 用新種子和 FP32 logits 重驗代理閘門 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 已完成第二輪等推論成本比較 | 暫停這版 Joint 特徵。續做時先測能否以低成本超過原 confidence 規則 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 檢查金標與單標籤偏差 | `26520` 用新開發題檢查雙映射校正與拒答 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結官方 GSM8K 獨立留出集 | `26520` 檢查雙映射校正。依診斷在開發集驗量測格式，再凍結留出試驗 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成 12 個保留種子的壓力試驗 | `26521`／`26522` 用 48 個全新種子重驗訊號 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
