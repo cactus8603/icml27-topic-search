@@ -1,0 +1,4 @@
+{
+  "model": "cs_clip",
+  "device": "cuda"
+}

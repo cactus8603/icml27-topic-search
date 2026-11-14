@@ -20,3 +20,6 @@ multifid s0_qchunk=26305 (afterok:26304_0; diagnostic)
 retrieval probe2=26314 commit 9505c42
 multifid stage0 train=26324 cheap=26325 retrain=26326 exact=26327 commit 8151894
 2026-11-14 22:xx cancelled 26301-26305 (duplicate mf stage0 submitted pre-freeze by agent); held 26286 26294 26295 pending proxy-gap audit decisions; inoc a1 26261 FAILED gate1 (r=-0.579, slope -7.58) -> 未能測試 (code)
+inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
+2026-11-14 21:56 (Taipei) resumed the original biased-gen-cfg evaluations 26294 and 26295 with their existing dependencies.
+inoc Spanish step-size diagnostic=26337 (fixed six-step sweep, separate from formal retry 26333)

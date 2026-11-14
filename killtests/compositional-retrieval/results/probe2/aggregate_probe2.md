@@ -1,0 +1,203 @@
+# 第二探針機械判定（aggregate_probe2.py 產生，無人工判斷）
+
+結果：**FAIL**
+
+```
+{
+ "gates": {
+  "pos_control": {
+   "value": 72.10216110019645,
+   "min": 70.0,
+   "pass": true
+  },
+  "neg_control": {
+   "value": 2.9469548133595285,
+   "max": 20.0,
+   "pass": true
+  },
+  "pairwise_upper_bound": {
+   "value": 79.76424361493125,
+   "threshold_gt": 63.153241650294696,
+   "pass": true
+  }
+ },
+ "gates_pass": true,
+ "primary_diff": {
+  "n": 509,
+  "point": -27.308447937131632,
+  "lo": -32.220039292730846,
+  "hi": -22.39685658153242,
+  "lo_1s": -32.220039292730846,
+  "hi_1s": -22.39685658153242
+ },
+ "state_raw": "FAIL",
+ "note_raw": "單尾上界 < 5pp",
+ "cor_stilde": 30.844793713163064,
+ "cor_holistic": 58.153241650294696,
+ "state": "FAIL",
+ "note": "單尾上界 < 5pp",
+ "rejection_text": "可淘汰。理由：免訓練、固定索引的雙塔證據聚合，邊際和條件兩種形式都贏不了 CS-CLIP；剩下的路線已被 CS-CLIP 和 CORE 佔住，沒有可區隔的切入點。"
+}
+```
+
+## 描述項（不參與判定）
+```
+{
+ "cs_clip": {
+  "coco_qwen": {
+   "cor_stilde": 30.844793713163064,
+   "cor_holistic": 58.153241650294696,
+   "diff_pp": -27.308447937131632,
+   "pairwise_acc_stilde": 79.76424361493125,
+   "pos_control_cor": 72.10216110019645,
+   "neg_control_cor": 2.9469548133595285,
+   "coco5000_pool": {
+    "cor_stilde": 30.451866404715126,
+    "diff_pp": -27.70137524557957
+   }
+  },
+  "coco_mistral": {
+   "cor_stilde": 27.312775330396477,
+   "cor_holistic": 50.440528634361236,
+   "diff_pp": -23.127753303964756,
+   "pairwise_acc_stilde": 82.37885462555066,
+   "pos_control_cor": 73.34801762114537,
+   "neg_control_cor": 1.762114537444934,
+   "coco5000_pool": {
+    "cor_stilde": 30.616740088105725,
+    "diff_pp": -19.823788546255507
+   }
+  },
+  "cc3m_qwen": {
+   "cor_stilde": 28.48101265822785,
+   "cor_holistic": 42.19409282700422,
+   "diff_pp": -13.71308016877637,
+   "pairwise_acc_stilde": 74.0506329113924,
+   "pos_control_cor": 62.447257383966246,
+   "neg_control_cor": 3.1645569620253164,
+   "coco5000_pool": {
+    "cor_stilde": 28.48101265822785,
+    "diff_pp": -13.71308016877637
+   }
+  }
+ },
+ "clip_b32_same_metric": {
+  "coco_qwen": {
+   "cor_stilde": 21.021611001964637,
+   "cor_holistic": 18.860510805500983,
+   "diff_pp": 2.161100196463654,
+   "pairwise_acc_stilde": 73.0844793713163,
+   "pos_control_cor": 60.11787819253438,
+   "neg_control_cor": 5.50098231827112,
+   "coco5000_pool": {
+    "cor_stilde": 22.20039292730845,
+    "diff_pp": 3.3398821218074657
+   }
+  },
+  "coco_mistral": {
+   "cor_stilde": 19.60352422907489,
+   "cor_holistic": 19.162995594713657,
+   "diff_pp": 0.4405286343612335,
+   "pairwise_acc_stilde": 75.99118942731278,
+   "pos_control_cor": 62.33480176211453,
+   "neg_control_cor": 4.6255506607929515,
+   "coco5000_pool": {
+    "cor_stilde": 24.229074889867842,
+    "diff_pp": 5.066079295154185
+   }
+  },
+  "cc3m_qwen": {
+   "cor_stilde": 20.464135021097047,
+   "cor_holistic": 24.47257383966245,
+   "diff_pp": -4.008438818565401,
+   "pairwise_acc_stilde": 70.25316455696202,
+   "pos_control_cor": 56.75105485232067,
+   "neg_control_cor": 6.962025316455696,
+   "coco5000_pool": {
+    "cor_stilde": 21.518987341772153,
+    "diff_pp": -2.9535864978902953
+   }
+  }
+ },
+ "approach_B_vlm_llr": "未做",
+ "precheck": {
+  "_note": "描述用預檢；不參與任何判定。",
+  "holistic_pairwise_acc_pct": {
+   "clip_b32/coco_qwen": {
+    "pairwise_full_gt_half": 78.1925343811395,
+    "holistic_cor": 18.860510805500983,
+    "n": 509
+   },
+   "clip_b32/coco_mistral": {
+    "pairwise_full_gt_half": 79.95594713656388,
+    "holistic_cor": 19.162995594713657,
+    "n": 454
+   },
+   "clip_b32/cc3m_qwen": {
+    "pairwise_full_gt_half": 72.78481012658227,
+    "holistic_cor": 24.47257383966245,
+    "n": 474
+   },
+   "cs_clip/coco_qwen": {
+    "pairwise_full_gt_half": 92.33791748526524,
+    "holistic_cor": 58.153241650294696,
+    "n": 509
+   },
+   "cs_clip/coco_mistral": {
+    "pairwise_full_gt_half": 92.95154185022027,
+    "holistic_cor": 50.440528634361236,
+    "n": 454
+   },
+   "cs_clip/cc3m_qwen": {
+    "pairwise_full_gt_half": 86.07594936708861,
+    "holistic_cor": 42.19409282700422,
+    "n": 474
+   }
+  },
+  "marginal_pmi_best_threshold": {
+   "clip_b32/coco_qwen": {
+    "cor_at_t0": 23.18271119842829,
+    "best_cor_upper_bound": 25.147347740667975,
+    "best_t": 0.8405847549438477,
+    "p_pmi_dplus_gt_dminus": 69.54813359528488,
+    "n": 509
+   },
+   "clip_b32/coco_mistral": {
+    "cor_at_t0": 23.348017621145374,
+    "best_cor_upper_bound": 26.87224669603524,
+    "best_t": 1.0519390106201172,
+    "p_pmi_dplus_gt_dminus": 70.92511013215858,
+    "n": 454
+   },
+   "clip_b32/cc3m_qwen": {
+    "cor_at_t0": 21.518987341772153,
+    "best_cor_upper_bound": 24.47257383966245,
+    "best_t": 1.2663145065307617,
+    "p_pmi_dplus_gt_dminus": 70.042194092827,
+    "n": 474
+   },
+   "cs_clip/coco_qwen": {
+    "cor_at_t0": 28.68369351669941,
+    "best_cor_upper_bound": 34.3811394891945,
+    "best_t": 1.4522056579589844,
+    "p_pmi_dplus_gt_dminus": 81.53241650294696,
+    "n": 509
+   },
+   "cs_clip/coco_mistral": {
+    "cor_at_t0": 24.44933920704846,
+    "best_cor_upper_bound": 36.34361233480176,
+    "best_t": 2.686964988708496,
+    "p_pmi_dplus_gt_dminus": 79.29515418502203,
+    "n": 454
+   },
+   "cs_clip/cc3m_qwen": {
+    "cor_at_t0": 25.105485232067508,
+    "best_cor_upper_bound": 29.746835443037973,
+    "best_t": 2.101390838623047,
+    "p_pmi_dplus_gt_dminus": 74.26160337552743,
+    "n": 474
+   }
+  }
+ }
+}
+```
