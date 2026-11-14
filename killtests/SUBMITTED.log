@@ -42,3 +42,7 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 00:24 submit 26394 multifidelity-attribution 已審查第0階段 CPU 彙總，依賴26326重訓、26327精確歸因、26374便宜方法全部成功 8458f65
 [codex] 2026-11-15 00:35 cancel 26394 multifidelity-attribution 同一凍結程式已在CPU完成正式彙總，移除重複等候工作 bd61e41
 [codex] 2026-11-15 00:50 submit 26397 inoculation-lambda Phase A v2 等原閘門 26333 結束，固定離線輸入與隔離輸出，單 H200 最多 3 小時 d7e8421
+[codex] 2026-11-15 03:48 submit 26440 large-commit-sets 第二輪等推論成本，Astra 通過，隔離兩題 GPU 試跑 c979eba
+[codex] 2026-11-15 03:48 submit 26441 large-commit-sets 第二輪 480 題訓練候選，依賴試跑 26440 c979eba
+[codex] 2026-11-15 03:48 submit 26442 large-commit-sets 第二輪 1000 題鎖定測試，依賴收集作業 26441 c979eba
+[codex] 2026-11-15 03:48 submit 26443 large-commit-sets 第二輪 CPU 擬合與三門檻機械判讀，依賴 26441 與 26442 c979eba
