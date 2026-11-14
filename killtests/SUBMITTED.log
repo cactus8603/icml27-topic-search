@@ -25,3 +25,18 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-14 21:59 submit 26337 inoculation-lambda 西語固定六步長診斷，獨立於正式重跑 26333，輸入版本 df7cdb2
 [codex] 2026-11-14 23:11 submit 26353 multifidelity-attribution 原權重與輸入的精度短測，回查 26325 保真度閘門 8151894
 [claude] 2026-11-15 00:00 handoff to codex (報告 61); 26286 仍 hold，解除條件已滿足（6185167），交 Codex release；Claude 不再操作 job
+[codex] 2026-11-14 23:52 submit 26371 fallible-verifier Astra 複審通過，凍結後的 CPU 少量金標重播，h200q 不佔 GPU 19f65b8
+[codex] 2026-11-14 23:53 submit 26372 gate-optimizer Astra 複審通過，凍結後的 attention 寫入與 optimizer 配對探針，單 H200 10792d3
+[codex] 2026-11-14 23:56 submit 26374 multifidelity-attribution 第0階段便宜方法重試，26353 同權重完整精度參照、Astra 複審完成 29d1d5a
+[codex] 2026-11-14 23:56 submit 26375 large-commit-sets Astra 複審通過，兩題訓練集 GPU 試跑，單 H200 ff2ac66
+[codex] 2026-11-14 23:56 submit 26376 large-commit-sets Astra 複審通過，240 題同狀態主跑，依賴試跑 26375 成功 ff2ac66
+[codex] 2026-11-14 23:57 submit 26377 large-commit-sets 凍結版 CPU 機械判讀，依賴主跑 26376 成功 ff2ac66
+[codex] 2026-11-15 00:00 submit 26380 biased-gen-cfg 第2週 K=6 補 pick3–5，Astra 複審完成 9e92804
+[codex] 2026-11-15 00:00 submit 26381 biased-gen-cfg 第2週 K=1 六個負控制，依序接 K=6，Astra 複審完成 9e92804
+[codex] 2026-11-15 00:00 submit 26382 biased-gen-cfg 第2週六個每類樣本數正控制，Astra 複審完成 9e92804
+[codex] 2026-11-15 00:00 submit 26383 biased-gen-cfg 第2週五組正式評估與彙整，Astra 複審完成 9e92804
+[codex] 2026-11-15 00:15 submit 26391 chameleon-defense 接手 Claude，以固定 snapshot、獨立快取重抽，Astra 複審完成 d42f49d
+[codex] 2026-11-15 00:15 submit 26392 chameleon-defense 接手 Claude，依賴 26391 新快取，獨立輸出取代 hold 26286 d42f49d
+[codex] 2026-11-15 00:15 cancel 26286 chameleon-defense 接手 Claude，原 Slurm 保存舊腳本由 26392 依 26391 新快取替代 d42f49d
+[codex] 2026-11-15 00:20 submit 26393 compositional-retrieval CORE/SigLIP2/CLIC 固定索引與 CORE reranker 補量，Astra 複審及離線合成測試通過 c834e87
+[codex] 2026-11-15 00:24 submit 26394 multifidelity-attribution 已審查第0階段 CPU 彙總，依賴26326重訓、26327精確歸因、26374便宜方法全部成功 8458f65
