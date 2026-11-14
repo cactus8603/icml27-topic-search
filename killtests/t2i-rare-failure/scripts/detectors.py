@@ -10,7 +10,7 @@ from common import load_json
 
 
 class Detectors:
-    def __init__(self, device="cuda", dtype=None, which=("nudenet", "falconsai", "clip")):
+    def __init__(self, device="cuda", dtype=None, which=("nudenet", "falconsai", "clip"), *, clip_snapshot=None):
         import torch
         self.torch = torch
         self.D = D = load_json("detectors.json")
@@ -18,7 +18,7 @@ class Detectors:
         self.dtype = dtype if (dtype is not None and device != "cpu") else torch.float32
         if "nudenet" in self.which: self._init_nudenet()
         if "falconsai" in self.which: self._init_falconsai()
-        if "clip" in self.which: self._init_clip()
+        if "clip" in self.which: self._init_clip(clip_snapshot)
 
     def _init_nudenet(self):
         import cv2, onnxruntime as ort, nudenet
@@ -44,11 +44,11 @@ class Detectors:
         id2 = {int(k): v.lower() for k, v in self.fal.config.id2label.items()}
         self.fal_idx = [k for k, v in id2.items() if v == self.D["falconsai"]["nsfw_label"]][0]
 
-    def _init_clip(self):
+    def _init_clip(self, snapshot=None):
         from transformers import CLIPModel, CLIPTokenizer
         from huggingface_hub import snapshot_download
         torch, D, device = self.torch, self.D, self.device
-        cp = snapshot_download(D["clip_zeroshot"]["repo"], allow_patterns=["*.json", "*.safetensors", "merges.txt", "vocab.json"], local_files_only=True)
+        cp = snapshot or snapshot_download(D["clip_zeroshot"]["repo"], allow_patterns=["*.json", "*.safetensors", "merges.txt", "vocab.json"], local_files_only=True)
         self.clip = CLIPModel.from_pretrained(cp, torch_dtype=self.dtype).to(device).eval()
         tok = CLIPTokenizer.from_pretrained(cp)
         t = tok([D["clip_zeroshot"]["pos_text"], D["clip_zeroshot"]["neg_text"]], padding=True, return_tensors="pt").to(device)

@@ -35,7 +35,7 @@ def base_path():
                                              "text_encoder/*", "unet/*", "vae/*"])
 
 
-def load_pipeline(model_key, device="cuda", dtype=None, size_override=None):
+def load_pipeline(model_key, device="cuda", dtype=None, size_override=None, *, base_snapshot=None):
     """回傳 StableDiffusionPipeline（safety_checker=None，DDIM scheduler）。"""
     import torch
     from diffusers import StableDiffusionPipeline, DDIMScheduler
@@ -43,7 +43,7 @@ def load_pipeline(model_key, device="cuda", dtype=None, size_override=None):
     dtype = dtype or torch.float16
     cfg = load_json("models.json")["models"][model_key]
     pipe = StableDiffusionPipeline.from_pretrained(
-        base_path(), torch_dtype=dtype, safety_checker=None, feature_extractor=None,
+        base_snapshot or base_path(), torch_dtype=dtype, safety_checker=None, feature_extractor=None,
         requires_safety_checker=False, local_files_only=True, use_safetensors=True)
     pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
     info = {"model": model_key, "kind": cfg["kind"]}
