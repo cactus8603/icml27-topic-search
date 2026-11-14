@@ -189,3 +189,5 @@
   - 程式：`configs/config.json`（新增 phenomenon／signal／space，gate2b 只留 H12，gate4 標描述，second_probe_inv 停用）、`scripts/analyze.py`（新增 `ROB_vs_ENS_975`、`h8`，其餘不動）、`scripts/aggregate.py`、`scripts/selftest.py`。
   - 假輸入驗證：`selftest.py --verdict-only` 26 項分支全過；以合成快取跑 analyze→aggregate 走通。
   - 讀取紀錄（G6）：[claude] 未讀 `results/` 的任何判準結果檔、runs 快取內容；`results/gate1_synth.json`、`manifest.json` 為先前 job 產物，本次未開。
+- [codex] 2026-11-14 23:46 依 Astra 的執行前審查增加正式快取驗證。逐組核對資料 manifest、完整列索引、條件與類別、主／補量快取是否互斥及層順序。正式輸出中的正控制說明改列兩個控制的實測狀態。合成測試與快取正確性檢查沒有計算主結果。
+- [codex] 2026-11-14 23:53 依複審將模型及 tokenizer 固定於原登記的 snapshot，正式抽取工作寫入資料、探測器權重與抽取設定的指紋。原 26285 快取完整但沒有同一程度的溯源證據，因此使用另一個快取位置按原設定抽取。正式分析寫入按 Slurm job ID 區分的目錄。包含等號的閾值容許 `1e-14` 浮點誤差，嚴格不等式沿用原定義。

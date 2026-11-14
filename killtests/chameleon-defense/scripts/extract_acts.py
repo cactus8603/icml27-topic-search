@@ -7,6 +7,7 @@ import argparse, glob, json, os, sys, time
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import load_config, render_cond
+from cache_fingerprint import extraction_fingerprint
 
 cfg = load_config()
 PROBE_NAMES = ["HTML", "all-caps", "biology-focused", "chemistry-based", "comforting", "confused", "finnish",
@@ -51,12 +52,13 @@ def main():
     print(f"rows={len(rows)}", flush=True)
 
     mid = cfg["model"]["hf_id"]
-    tok = AutoTokenizer.from_pretrained(mid)
+    revision = cfg["model"]["revision"]
+    tok = AutoTokenizer.from_pretrained(mid, revision=revision)
     tok.padding_side = "left"
     if not tok.pad_token:
         tok.pad_token_id = tok.unk_token_id if tok.unk_token else tok.eos_token_id
     if a.tiny:
-        c = AutoConfig.from_pretrained(mid)
+        c = AutoConfig.from_pretrained(mid, revision=revision)
         c.hidden_size = 64; c.intermediate_size = 128; c.num_hidden_layers = 6; c.num_attention_heads = 4
         c.num_key_value_heads = 2; c.head_dim = 16; c.layer_types = c.layer_types[:6]
         torch.manual_seed(0)
@@ -64,9 +66,21 @@ def main():
         layers = [1, 2, 3, 4, 5]; dev = "cpu"; dtype = torch.float32; evl = 2
     else:
         dev = "cuda"; dtype = torch.bfloat16
-        model = AutoModelForCausalLM.from_pretrained(mid, dtype=dtype, attn_implementation="eager").to(dev).eval()
+        model = AutoModelForCausalLM.from_pretrained(mid, revision=revision, dtype=dtype, attn_implementation="eager").to(dev).eval()
         layers = cfg["layers_L8"]; evl = cfg["model"]["evaded_layer"]
     D = model.config.hidden_size
+    fingerprint = extraction_fingerprint(cfg, a.data_dir, a.sets, PROBE_NAMES, a.batch_size, a.shard_rows, a.limit, a.tiny)
+    receipt = os.path.join(a.out, "extraction.json")
+    if not a.bench:
+        if os.path.exists(receipt):
+            with open(receipt) as stream:
+                if json.load(stream) != fingerprint:
+                    raise ValueError("incompatible existing extraction; choose a new output directory")
+        else:
+            if os.listdir(a.out):
+                raise ValueError("existing extraction has no provenance; choose a new output directory")
+            with open(receipt, "x") as stream:
+                json.dump(fingerprint, stream, indent=2)
     # 作者探測器（只在 hidden=3584 時有意義；tiny 用隨機探測器只測程式路徑）
     pdir = os.path.join(cfg["paths"]["minimal_repo"], "probes")
     W = np.zeros((len(PROBE_NAMES), D), np.float32); Bv = np.zeros(len(PROBE_NAMES), np.float32)
@@ -100,7 +114,8 @@ def main():
     for sh in range(n_sh):
         fn = os.path.join(a.out, f"shard_{sh:04d}.npz")
         idx = order[sh * a.shard_rows:(sh + 1) * a.shard_rows]
-        if os.path.exists(fn) and not a.bench:
+        meta_file = fn.replace(".npz", ".meta.json")
+        if os.path.exists(fn) and os.path.exists(meta_file) and not a.bench:
             continue
         acts = np.zeros((len(idx), len(layers), D), np.float16); pr = np.zeros((len(idx), len(PROBE_NAMES)), np.float32)
         for b0 in range(0, len(idx), a.batch_size):
@@ -131,10 +146,13 @@ def main():
                                   n_full_rows=n_full,   # 2026-11-14 審查修正：原本用 bench 列數估總時數（低估約 50 倍）
                                   est_total_gpu_h=n_full / (done / dt) / 3600)), flush=True)
             return
-        np.savez(fn, acts=acts, probes=pr, row_idx=idx)
+        pending = fn + ".pending.npz"
+        np.savez(pending, acts=acts, probes=pr, row_idx=idx)
+        os.replace(pending, fn)
         meta = [{k: rows[i][k] for k in ("ex_id", "set", "concept", "label", "role", "cond")} for i in idx]
-        with open(os.path.join(a.out, f"shard_{sh:04d}.meta.json"), "w") as f:
+        with open(meta_file + ".pending", "w") as f:
             json.dump(meta, f)
+        os.replace(meta_file + ".pending", meta_file)
         print(f"shard {sh+1}/{n_sh} rows={len(idx)} elapsed={time.time()-t_start:.0f}s rows/s={done/(time.time()-t_start):.1f}", flush=True)
     json.dump(dict(layers=layers, probe_names=PROBE_NAMES, D=D, n_rows=len(rows), sets=a.sets, tiny=a.tiny),
               open(os.path.join(a.out, "cache_info.json"), "w"))

@@ -25,7 +25,7 @@ def make(rng, n, D, L, w, shift=None):
 # ---------------------------------------------------------------------------------------------
 # 2026-11-14（59 號 C1/C2；INV 已停用）：樣本內正控制 PC-in/PC-loo 與三項判定分支的合成測試。
 # 造一個與真實快取同格式的小快取（D=40、8 層、11 個 benign 概念），植入四種已知情境，驗證 analyze.pos_control_stage
-# → aggregate.judge_pc/pc_tier 的四條分支；另驗三項判定（現象／訊號／空間）的各分支。假輸入，不碰真實快取。
+# → aggregate.judge_pc 的四種情境；另驗三項判定與正式快取的輸入檢查。假輸入，不讀真實快取。
 LAYERS = [4, 8, 12, 16, 20, 24, 28, 32]
 PNAMES = ["HTML", "all-caps", "biology-focused", "chemistry-based", "comforting", "confused", "finnish", "german", "jokey", "literature-focused", "mathematical", "harmful", "deception"]
 
@@ -139,24 +139,59 @@ def verdict_scenarios(aggregate):
     rec("整體：PC 無法執行→未能測試", aggregate.combine(P, U, P).startswith("未能測試"), True)
     # 與 judge_pc 端到端：PC 缺檔＝無法執行
     rec("judge_pc(None)＝無法執行", aggregate.judge_pc(None)["status"], "無法執行")
+    on_boundary = dict(ens_clean_tpr=0.8, ens_t0_tpr=0.4, rob_in_t0_tpr=0.6,
+                       rob_loo_t0_tpr=0.6, rob_in_clean_tpr=0.8, rob_loo_clean_tpr=0.8)
+    judged_pc = aggregate.judge_pc(dict(concepts={str(i): on_boundary for i in range(8)}))
+    rec("PC 含等號邊界不因浮點使訊號降級", aggregate.judge_signal(judged_pc, d(0.01, -0.02, 0.05))["state"], "PASS")
+    rec("H12 含等號邊界", aggregate.judge_phenomenon(True, 0.7 - 0.4)["state"], "PASS")
+    monitor = dict(families={"ENS": {"tpr_primary_per_seed": [0.3, 0.3]}},
+                   delta_primary={"ROB_vs_ENS": {"lo": 0.12, "hi": 0.28}})
+    rec("閘門 3 半寬含等號", aggregate.gate3({"mon": {"harm": monitor}})[1]["ok"], True)
+    monitor["delta_primary"]["ROB_vs_ENS"]["hi"] = 0.28000001
+    rec("閘門 3 實質超出半寬", aggregate.gate3({"mon": {"harm": monitor}})[1]["ok"], False)
+    harm = {"clean": {"tpr": 0.575}, **{"T0:" + t: {"tpr": 0.23, "avg_pos": 0.1} for t in cfg["trigger_words"]["harm"]}}
+    deception = {"clean": {"tpr": 0.9}, **{"T0:" + t: {"tpr": 0.0} for t in cfg["trigger_words"]["deception_strong"]}}
+    rep = {"g2": {"harm": harm, "deception": deception}}
+    rec("閘門 2 逃避率含等號", aggregate.gate2(rep)[2]["ok"], True)
+    harm["T0:harmful"]["tpr"] += 0.001
+    rec("閘門 2 確實未達逃避率", aggregate.gate2(rep)[2]["ok"], False)
     out = dict(n=len(chk), failed=[c for c in chk if not c["ok"]], detail=chk); out["all_match"] = not out["failed"]
     return out
 
 
+def cache_scenarios():
+    from analyze import validate_cache_metadata
+
+    rows = [dict(ex_id=i, set="benign", concept="german", label=1, role="E", cond=cond)
+            for i in (0, 1) for cond in ("clean", "T0:german")]
+    info = dict(layers=cfg["layers_L8"], n_rows=len(rows), tiny=False)
+    validate_cache_metadata(info, rows, rows)
+    invalid = [(dict(info, n_rows=2), rows[:2]), (info, rows[:3] + rows[:1]),
+               (dict(info, layers=info["layers"][::-1]), rows)]
+    for other_info, other_rows in invalid:
+        try:
+            validate_cache_metadata(other_info, other_rows, rows)
+        except ValueError:
+            continue
+        raise AssertionError("invalid production cache was accepted")
+    return len(invalid) + 1
+
+
 def pc_scenarios(outdir, scratch):
     import analyze, aggregate
-    exp = {"shared": ("通過", "通過", "機制層（限 layer-12 organism）：良性概念的子空間不轉移到 harm"),
-           "specific": ("通過", "未通過", "機制層：逃避子空間在良性概念之間就不共享"),
-           "none": ("無法執行", "無法執行", "此擴增實作停損；層級未定（正控制無法執行）"),
-           "masked": ("未通過", None, "實作層：擴增在真實激活上無效")}
+    exp = {"shared": ("通過", "通過"), "specific": ("通過", "未通過"),
+           "none": ("無法執行", "無法執行"), "masked": ("未通過", None)}
     res = {}
-    for sc, (e_in, e_loo, e_tier) in exp.items():
+    for sc, (e_in, e_loo) in exp.items():
         d = os.path.join(scratch, f"fake_{sc}"); build_fake_cache(d, sc, seed=1)
         c = analyze.Cache(d); rd = os.path.join(scratch, f"res_{sc}"); os.makedirs(rd, exist_ok=True)
         pc = analyze.pos_control_stage(c, rd, 5)
-        pj = aggregate.judge_pc(pc); tier = aggregate.pc_tier(pj)
-        ok = (pj["in"]["state"] == e_in) and (e_loo is None or pj["loo"]["state"] == e_loo) and tier == e_tier
-        res[sc] = dict(expected=dict(pc_in=e_in, pc_loo=e_loo, tier=e_tier), observed=dict(pc_in=pj["in"]["state"], pc_loo=pj["loo"]["state"], tier=tier,
+        pj = aggregate.judge_pc(pc)
+        summary = aggregate.pc_summary(pj)
+        ok = pj["in"]["state"] == e_in and (e_loo is None or pj["loo"]["state"] == e_loo)
+        if sc == "shared":
+            ok = ok and summary == "PC-in 通過，PC-loo 通過。"
+        res[sc] = dict(expected=dict(pc_in=e_in, pc_loo=e_loo), observed=dict(pc_in=pj["in"]["state"], pc_loo=pj["loo"]["state"], summary=summary,
                        n_eligible=len(pj["eligible"]), in_stats={k: pj["in"].get(k) for k in ("delta", "recovery", "tax")}, loo_stats={k: pj["loo"].get(k) for k in ("delta", "recovery", "tax")}), match=bool(ok))
         print("PC scenario", sc, "match" if ok else "MISMATCH", json.dumps(res[sc]["observed"], ensure_ascii=False), flush=True)
     # 三項判定分支（60 號第 6 節）：不跑 GPU／分析，只驗 aggregate 的 judge_phenomenon／judge_signal／judge_space／combine
@@ -172,6 +207,7 @@ def main():
     ap.add_argument("--scratch", default=os.environ.get("TMPDIR")); a = ap.parse_args()
     out = {}
     if a.verdict_only:   # 只驗三項判定分支（純 CPU、秒級、不需快取）
+        print("cache scenarios passed", cache_scenarios())
         import aggregate; vs = verdict_scenarios(aggregate); print(json.dumps({k: v for k, v in vs.items() if k != "detail"}, ensure_ascii=False)); print("all_match", vs["all_match"]); sys.exit(0 if vs["all_match"] else 1)
     if a.pc_only:   # 只跑 PC／INV 合成測試，輸出到 --out（不動 results/gate1_synth.json）
         sc = tempfile.mkdtemp(dir=a.scratch); os.makedirs(a.out, exist_ok=True)

@@ -12,4 +12,5 @@
 set -euo pipefail
 source slurm/env.sh
 BS=${BS:-16}
-$PY -I scripts/extract_acts.py --sets benign harm_train harm_test dec_train dec_test --batch-size $BS --out $RUN/cache
+cache=${CHAM_CACHE:-$RUN/cache}
+$PY -I scripts/extract_acts.py --sets benign harm_train harm_test dec_train dec_test --batch-size "$BS" --out "$cache"

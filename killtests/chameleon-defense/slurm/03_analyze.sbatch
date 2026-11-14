@@ -11,6 +11,9 @@
 # 閘門 1（合成）→ 閘門 2–4 原始數字 → 機械判讀。邏輯迴歸用 GPU（torch LBFGS）。
 set -euo pipefail
 source slurm/env.sh
-$PY -I scripts/selftest.py
-$PY -I scripts/analyze.py all --cache $RUN/cache --results $EXP/results
-$PY -I scripts/aggregate.py --results $EXP/results
+cache=${CHAM_CACHE:-$RUN/cache}
+result_dir="$EXP/results/analysis_${SLURM_JOB_ID:?run through Slurm}"
+mkdir "$result_dir"
+$PY -I scripts/selftest.py --out "$result_dir"
+$PY -I scripts/analyze.py all --cache "$cache" --results "$result_dir"
+$PY -I scripts/aggregate.py --results "$result_dir"

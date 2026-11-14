@@ -2,28 +2,114 @@
 子命令：gate1_real | gate2 | monitors | detector | all
 用法：python -I analyze.py all --cache DIR [--results DIR] [--seeds 5]
       python -I analyze.py inv --cache DIR --cache-extra DIR2   # 第二探針 INV（只在 ROB=FAIL 時由 04_inv_probe.sbatch 呼叫）"""
-import argparse, glob, json, os, sys, time
+import argparse, glob, hashlib, json, os, sys, time
+from collections import Counter
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import load_config, EXP, auroc, tpr_at_fpr, thr_at_fpr, cluster_bootstrap_delta, fit_logistic, prob, Scaler
+from cache_fingerprint import extraction_fingerprint
 import monitors as M
 
 cfg = load_config()
 
+MAIN_SETS = ["benign", "harm_train", "harm_test", "dec_train", "dec_test"]
+META_FIELDS = ("ex_id", "set", "concept", "label", "role", "cond")
+
+
+def validate_cache_metadata(info, meta, expected):
+    if info.get("tiny") is not False or info.get("layers") != cfg["layers_L8"]:
+        raise ValueError("formal cache must use the configured production layers in order")
+    if info.get("n_rows") != len(meta) or len(meta) != len(expected):
+        raise ValueError(f"formal cache has {len(meta)} metadata rows, expected {len(expected)}")
+    expected_rows = Counter(tuple(m[key] for key in META_FIELDS) for m in expected)
+    actual_rows = Counter(tuple(m[key] for key in META_FIELDS) for m in meta)
+    keys = {(m["ex_id"], m["cond"]) for m in meta}
+    if len(keys) != len(meta) or expected_rows != actual_rows:
+        raise ValueError("formal cache does not match the frozen examples and conditions")
+
+
+def expected_cache_rows(sets):
+    from extract_acts import PROBE_NAMES, expand_rows
+
+    data_dir = os.path.join(cfg["paths"]["run_dir"], "data")
+    with open(os.path.join(EXP, "results", "manifest.json")) as stream:
+        manifest = json.load(stream)
+    for name in sets:
+        path = os.path.join(data_dir, name + ".jsonl")
+        with open(path, "rb") as stream:
+            digest = hashlib.md5(stream.read()).hexdigest()
+        if digest != manifest[name]["md5"]:
+            raise ValueError(f"{name} data do not match the frozen manifest")
+    rows = expand_rows(sets, data_dir)
+    for name in sets:
+        ids = {row["ex_id"] for row in rows if row["set"] == name}
+        if len(ids) != manifest[name]["n"]:
+            raise ValueError(f"{name} example count does not match the frozen manifest")
+    if "benign" in sets:
+        clean_counts = Counter((row["concept"], row["label"]) for row in rows
+                               if row["set"] == "benign" and row["cond"] == "clean")
+        for concept in cfg["concepts"]["benign_E"]:
+            for label, size_key in ((1, "benign_pos_per_concept"), (0, "benign_neg_per_concept")):
+                if clean_counts[concept, label] != cfg["sizes"][size_key]:
+                    raise ValueError(f"{concept} does not have the frozen PC class counts")
+    extra = cfg["grey_extra"]
+    if extra["set"] in sets:
+        counts = Counter(row["label"] for row in rows if row["cond"] == "clean")
+        if counts != {1: extra["n_pos"], 0: extra["n_neg"]}:
+            raise ValueError("extra cache does not have the registered class counts")
+    return rows, PROBE_NAMES
+
 
 class Cache:
-    def __init__(self, d, merge_extra=False, extra_dir=None):
+    def __init__(self, d, merge_extra=False, extra_dir=None, *, production=False):
         info = json.load(open(os.path.join(d, "cache_info.json")))
         self.layers = info["layers"]; self.pnames = info["probe_names"]
         A, P, meta = [], [], []
+        if production and merge_extra and not extra_dir:
+            raise ValueError("--merge-extra requires a separate registered extra cache")
         dirs = [d] + ([extra_dir] if extra_dir else [])   # 2026-11-14（C3）：harm_test_extra 的激活在另一個快取目錄
-        for dd in dirs:
-            if dd != d:
+        for part, dd in enumerate(dirs):
+            ie = info
+            if part:
                 ie = json.load(open(os.path.join(dd, "cache_info.json")))
                 assert ie["layers"] == self.layers and ie["probe_names"] == self.pnames and ie["D"] == info["D"], "extra cache 與主快取的層/探測器不一致"
+            part_meta = []
+            indices = []
             for f in sorted(glob.glob(os.path.join(dd, "shard_*.npz"))):
-                z = np.load(f); A.append(z["acts"]); P.append(z["probes"])
-                meta += json.load(open(f.replace(".npz", ".meta.json")))
+                with open(f.replace(".npz", ".meta.json")) as stream:
+                    rows = json.load(stream)
+                with np.load(f) as z:
+                    acts, probes = z["acts"], z["probes"]
+                    if production:
+                        if acts.shape != (len(rows), len(self.layers), ie["D"]) or probes.shape != (len(rows), len(self.pnames)):
+                            raise ValueError(f"cache shard arrays and metadata disagree: {f}")
+                        row_indices = z["row_idx"]
+                        if row_indices.shape != (len(rows),) or row_indices.dtype.kind not in "iu":
+                            raise ValueError(f"invalid frozen row indices: {f}")
+                        indices.extend(row_indices.tolist())
+                    A.append(acts)
+                    P.append(probes)
+                part_meta.extend(rows)
+            if production:
+                sets = [cfg["grey_extra"]["set"]] if part else MAIN_SETS
+                expected, probe_names = expected_cache_rows(sets)
+                with open(os.path.join(dd, "extraction.json")) as stream:
+                    fingerprint = json.load(stream)
+                frozen = extraction_fingerprint(cfg, os.path.join(cfg["paths"]["run_dir"], "data"), sets,
+                                                probe_names, fingerprint["batch_size"], fingerprint["shard_rows"])
+                if fingerprint != frozen:
+                    raise ValueError("cache provenance disagrees with the frozen extraction")
+                if ie.get("sets") != sets or self.pnames != probe_names:
+                    raise ValueError("cache sets or probe names disagree with the extraction setup")
+                validate_cache_metadata(ie, part_meta, expected)
+                if sorted(indices) != list(range(len(expected))):
+                    raise ValueError("cache shard indices overlap or omit registered rows")
+                for idx, row in zip(indices, part_meta):
+                    if any(row[key] != expected[idx][key] for key in META_FIELDS):
+                        raise ValueError(f"cache row {idx} is misaligned with the frozen input")
+                if {m["ex_id"] for m in meta}.intersection(m["ex_id"] for m in part_meta):
+                    raise ValueError("extra and main cache example IDs overlap")
+            meta.extend(part_meta)
         self.acts = np.concatenate(A); self.probes = np.concatenate(P); self.meta = meta
         # 2026-11-14 審查修正：fp16 快取可能溢位成 inf；有非有限值就停（屬閘門 1 程式正確性）
         nf = int((~np.isfinite(self.acts)).sum()) + int((~np.isfinite(self.probes)).sum())
@@ -255,7 +341,7 @@ def inv_stage(c, rdir, seeds):
 
 # ---------------------- 偵測器 ----------------------
 def detector_stage(c, rdir):
-    dc = cfg["detector"]; tmpl = cfg["template_split"]
+    dc = cfg["detector"]
     # 訓練：E 概念，標籤 = 證據性觸發（T0/T1）= 1；乾淨與誘餌 = 0
     tr_rows, ytr = [], []
     for e in ex_list(c, "benign"):
@@ -274,11 +360,7 @@ def detector_stage(c, rdir):
         exs = [e for e in ex_list(c, setname, 1) if c.meta[c.ix[(e, "clean")]]["concept"] == concept]
         exn = [e for e in ex_list(c, setname, 0) if c.meta[c.ix[(e, "clean")]]["concept"] == concept]
         return exs, exn
-    layer_probs = {}   # concept -> template -> list over layers
-    clfs = []
     nul = np.random.default_rng(0).permutation(ytr)
-    scores = {}; null_scores = {}
-    needed = {}  # row -> None
     all_test_rows = set()
     plan = {}
     for concept, (setname, word) in tests.items():
@@ -288,11 +370,17 @@ def detector_stage(c, rdir):
             cd = f"{t}:{word}"
             eff = [e for e in exs if (cd and (e, cd) in c.ix) and c.probes[c.ix[(e, "clean")], p] - c.probes[c.ix[(e, cd)], p] >= dc["effective_drop"]]
             d[t] = dict(eff=eff, n_pos=len([e for e in exs if (e, cd) in c.ix]))
-        negrows = [c.ix[(e, "clean")] for e in exs] + [c.ix[(e, "D:" + word)] for e in exs if (e, "D:" + word) in c.ix] + [c.ix[(e, "clean")] for e in exn]
-        plan[concept] = dict(d=d, negrows=negrows, word=word)
-        for t in d:
-            all_test_rows |= {c.ix[(e, f"{t}:{word}")] for e in d[t]["eff"]}
-        all_test_rows |= set(negrows)
+        settings = {t: [(e, t) for e in dd["eff"]] for t, dd in d.items()}
+        settings["T2T3"] = settings["T2"] + settings["T3"]
+        for name, entries in settings.items():
+            effective = list(dict.fromkeys(e for e, _ in entries))
+            matched = [c.ix[(e, cond)] for e in effective for cond in ("clean", "D:" + word) if (e, cond) in c.ix]
+            negatives = matched + [c.ix[(e, "clean")] for e in exn]
+            positives = [c.ix[(e, f"{t}:{word}")] for e, t in entries]
+            d.setdefault(name, {})
+            d[name].update(positives=positives, negatives=negatives)
+            all_test_rows.update(positives + negatives)
+        plan[concept] = d
     all_test_rows = sorted(all_test_rows); pos_in = {r: k for k, r in enumerate(all_test_rows)}
     S = np.zeros((len(c.layers), len(all_test_rows))); SN = np.zeros_like(S)
     for li in range(len(c.layers)):
@@ -304,23 +392,18 @@ def detector_stage(c, rdir):
     s_all = S.mean(0); s_null = SN.mean(0)
     res = dict(per_concept={}, n_train=int(len(ytr)))
     rng = np.random.default_rng(cfg["bootstrap"]["seed"])
-    for concept, pl in plan.items():
-        word = pl["word"]; neg_s = s_all[[pos_in[r] for r in pl["negrows"]]]; neg_n = s_null[[pos_in[r] for r in pl["negrows"]]]
+    for concept, plan_by_template in plan.items():
         r = {}
-        for t, dd in pl["d"].items():
-            pr = [pos_in[c.ix[(e, f"{t}:{word}")]] for e in dd["eff"]]
-            r[t] = dict(n_pos_total=dd["n_pos"], n_effective=len(pr),
-                        auroc=auroc(s_all[pr], neg_s) if len(pr) else None,
-                        auroc_permuted_labels=auroc(s_null[pr], neg_n) if len(pr) else None)
-            if len(pr) >= dc["min_effective_pos"]:
+        for t, setting in plan_by_template.items():
+            pr = [pos_in[i] for i in setting["positives"]]
+            ng = [pos_in[i] for i in setting["negatives"]]
+            neg_s, neg_n = s_all[ng], s_null[ng]
+            r[t] = dict(n_pos_total=setting.get("n_pos"), n_effective=len(pr), n_negative=len(ng),
+                        auroc=auroc(s_all[pr], neg_s) if pr and ng else None,
+                        auroc_permuted_labels=auroc(s_null[pr], neg_n) if pr and ng else None)
+            if len(pr) >= dc["min_effective_pos"] and ng:
                 bs = [auroc(s_all[rng.choice(pr, len(pr))], neg_s[rng.integers(0, len(neg_s), len(neg_s))]) for _ in range(300)]
                 r[t]["ci"] = [float(np.quantile(bs, .025)), float(np.quantile(bs, .975))]
-        # 留出模板 T2+T3 合併
-        pr = [pos_in[c.ix[(e, f"{t}:{word}")]] for t in ("T2", "T3") for e in pl["d"][t]["eff"]]
-        r["T2T3"] = dict(n_effective=len(pr), auroc=auroc(s_all[pr], neg_s) if len(pr) else None)
-        if len(pr) >= dc["min_effective_pos"]:
-            bs = [auroc(s_all[rng.choice(pr, len(pr))], neg_s[rng.integers(0, len(neg_s), len(neg_s))]) for _ in range(300)]
-            r["T2T3"]["ci"] = [float(np.quantile(bs, .025)), float(np.quantile(bs, .975))]
         res["per_concept"][concept] = r
     json.dump(res, open(os.path.join(rdir, "detector.json"), "w"), indent=1)
     return res
@@ -334,7 +417,7 @@ def main():
     ap.add_argument("--cache-extra", default=None, help="harm_test_extra 的激活快取目錄（灰區加碼或 INV 探針用）")
     ap.add_argument("--merge-extra", action="store_true", help="灰區加碼：把 harm_test_extra 併入 harm_test")
     a = ap.parse_args(); os.makedirs(a.results, exist_ok=True)
-    c = Cache(a.cache, a.merge_extra or a.stage == "inv", a.cache_extra); print("cache rows", len(c.meta), flush=True)
+    c = Cache(a.cache, a.merge_extra or a.stage == "inv", a.cache_extra, production=True); print("cache rows", len(c.meta), flush=True)
     st = [a.stage] if a.stage != "all" else ["gate1_real", "gate2", "monitors", "detector", "pos_control"]
     if a.stage == "all": pc_split(c, cfg["thresholds"]["pos_control"])   # 先檢查 PC 資料切分可行；不可行就在主分析之前停下
     if "gate1_real" in st or "gate2" in st:
