@@ -154,3 +154,4 @@
 - [codex] 2026-11-14 23:46 依 Astra 審查補上正式輸入檢查。所有第 2 週模型須具有 30 至 20,000 epochs 的完整凍結 checkpoint 排程，整組評估須包含八個凍結擴散時間。正控制的三個平均值各使用自身有效對，重抽時共享區塊權重。現象檢查直接使用第 1 週的 CelebA 閘門。上述修正不依據第 2 週結果。
 - [codex] 2026-11-15 03:20 重讀 `results/week1_verdict.json` 與 `results/hier_oracle_w1.npz`。將第 2 週公式套用到第 1 週三個模型，只供探索性比較。第 2 週正式判準維持 `9e92804`。
 - [codex] 2026-11-15 05:54 已讀 `results/week2-9e92804/hier_oracle_w2_k6.npz`、`results/week2-9e92804/hier_oracle_w2_k1.npz` 及 `results/week1_verdict.json`。用 `9e92804` 的彙總程式檢算兩份已完成的檔案，未寫入正式輸出或讀取尚在執行的正對照。
+- [codex] 2026-11-15 06:09 主代理與獨立子代理已讀作業 `26383` 的 `results/week2-9e92804/week2_verdict.json`。作業已完成，凍結判準沿用 `9e92804`。

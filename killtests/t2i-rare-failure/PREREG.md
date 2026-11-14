@@ -207,3 +207,4 @@
 
 - [codex] 2026-11-15 00:04 已讀 26289 Slurm 完成日誌中的凍結閘門 (b) 初判（首次 2026-11-14 23:47）。以凍結版本 77823dc 複核 `results_gateb` 中原取樣資料、來源與先決條件。
 - [codex] 2026-11-15 03:20 重讀 `results_gateb/gate_b_verified.json` 與 `results_gateb/gate_b_verified.md`，核對現象、訊號與空間的先決條件。未修訂判準。
+- [codex] 2026-11-15 06:18 主代理與獨立子代理已讀純 CPU 作業 `26479` 的 `results/gate_a_prime/gate_a_prime.json` 機械彙總，凍結版沿用 `4f1be75`。

@@ -10,18 +10,18 @@
 
 | 題目 | 三項複查 | 下一個有辨識力的實驗 |
 |---|---|---|
-| 多條件檢索的單調證據聚合（`compositional-retrieval`） | **GO。** COCO(Qwen) 的 CS-CLIP 嚴格三句排序 58.15%，而完整句勝過半真句為 92.34%，原正負控制皆過。補量的四種固定索引基線齊備，最佳仍是 58.15%，低於 75% 空間門檻。CORE reranker 為 30.45%，未觸發 90% 的情境限定。[凍結判準](killtests/compositional-retrieval/PREREG_headroom.md) · [正式補量](killtests/compositional-retrieval/results/headroom/26393/verdict_headroom.json) | Anchor 同時有偏高、偏低的失誤，單一全域平移在留出子集無穩定增益。下一次把方法凍結在開發集，在新查詢及固定候選圖比較逐圖、逐查詢的評分校準是否提高真實檢索排名。[錯誤拆解](codex/retrieval-anchor-audit/REPORT.md) |
+| 多條件檢索的單調證據聚合（`compositional-retrieval`） | **GO。** 適用於原同圖三句排序判準。[凍結判準](killtests/compositional-retrieval/PREREG_headroom.md) · [正式補量](killtests/compositional-retrieval/results/headroom/26393/verdict_headroom.json) | 新查詢的 anchor 校準未達固定候選庫的排名門檻。若續做，先查標註與錯排，並採 CORE-EMBED-2B 全句作較強基線。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#多條件檢索) |
 
 ## 仍待判定的交接題目
 
 | 題目 | 現象／訊號／空間 | 最值得先釐清的因素 |
 |---|---|---|
-| 兩個時鐘 | CelebA 已重現。正式階層現象、CFG 的時機／放大訊號、G3 空間均等第 2 週。 | `26383` 一次核對 10/15 對內部最低點、K=1 配對訊號和 G3 是否過 0.10。正式通過後再考慮 CIFAR。[第 1 週結果](codex/2026-11-14-two-clocks-week1-codex.md) |
+| 兩個時鐘 | 正式評估完成。現象與放大訊號通過，提前時機未確立，G3 改善空間灰區。 | 先查每類樣本數正控制的第一格觸底。依預登記暫緩 CIFAR，等使用者決定是否入池。[正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md#兩個時鐘) |
 | Λ | 限步長且等權的 v2 數值閘門通過。訓練後的現象、訊號、空間待測。 | 跨到真實訓練後，無防禦與 IP 能否重現，以及五個 arm 三個 seed 的漏出信度是否達 0.80。[v2 判讀](killtests/inoculation-lambda/VERDICT_phasea_v2.md) |
-| 多保真度歸因 | 第 0 階段現象和同軌跡空間通過，補空間訊號為灰區。雙留出的 349 個可評分查詢中，十方向 Gram 延伸混合法贏同預算 Spell，但輸給最佳便宜基線。 | 優先在少量新查詢直接量測精確投影，區分舊方向投影不足與廉價補值的外推誤差。跨種子正式補量仍受原門檻約束。[留出結果](codex/multifidelity-heldout/REPORT.md) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
+| 多保真度歸因 | 第 0 階段現象與同軌跡空間通過，訊號灰區。新查詢診斷指出十方向覆蓋偏低。 | 先驗證代表性更好的精確方向。跨種子正式補量仍受原門檻約束。[新查詢診斷](codex/reports/2026-11-15-topic-status-codex.md#多保真度資料歸因) · [第 0 階段](killtests/multifidelity-attribution/VERDICT_stage0.md) |
 | Chameleon | 基準重現閘門未過，三項未能正式判讀。同 checkpoint 的 ENS8 幾乎飽和。 | 逐例核對作者探測器的資料、層索引與池化，隨後確認 ENS8 是否有可回收的失誤。[預登記](killtests/chameleon-defense/PREREG.md) |
 | RL 稀疏蒸餾 | A 配對的重現與截斷門檻未過，B 尚未測。三項待測。 | 確認同預算、可比截斷的 pass@1／pass@64 交叉。先查 A 的既有輸出，再分開 B 的原作重現和短預算配對。[A 配對](killtests/rl-sparse-distill/results/aggregate_gate0_A.json) |
-| 文生圖罕見失敗 | CLIP 篩選未過，正式現象與訊號未測。加速空間的代理也待測。 | 先用已登記的 CPU 模擬測代理加速，並用現有分數查同分成因。大批生成需要可信的篩選。[預登記](killtests/t2i-rare-failure/PREREG.md) |
+| 文生圖罕見失敗 | CPU 加速代理通過。CLIP 篩選未過，正式現象與訊號仍待測。 | 查篩選分數同分的成因。大批生成需要可信的篩選。[CPU 診斷](codex/reports/2026-11-15-topic-status-codex.md#文生圖罕見失敗) · [預登記](killtests/t2i-rare-failure/PREREG.md) |
 
 ## 第一梯：建議現在就跑停損（依優先順序）
 

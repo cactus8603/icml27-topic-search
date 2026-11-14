@@ -29,3 +29,7 @@
 保留同一個離線模型環境 `icml/envs/vllm033`。H200 單卡，最多 1 GPU 小時。共 4,884 張 CS-CLIP 影像和 3,306 張 CORE-EMBED 影像，另有少量去重文字；兩模型從快取逐次載入。前一個同硬體作業 26393 的完整 Half-Truths 與五模型 E2 約 11 分鐘，現試驗預估 5–25 分鐘，實際耗時由工作記錄。
 
 從題目目錄指定凍結 commit 執行 `sbatch slurm/prospective_rank.sbatch <40-char-commit>`。輸出 `results/prospective_rank/<Slurm jobid>/`，含凍結 commit、manifest／設定 SHA-256、套件版本、DEV 校準及 TEST 判讀，另存每個主查詢和各評分臂的 AP 供重核。`scripts/prospective_rank.py --preflight` 只查離線權重及候選雜湊，無模型推論。`scripts/test_prospective_rank.py` 使用合成分數、構造測試及已凍結清單檢查。
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 06:09 主代理與獨立子代理已讀 `results/prospective_rank/26450/verdict_prospective_rank.json`。子代理第一次預覽一併顯示同檔前 11 個逐查詢項，判讀僅用事前指定的彙總。凍結版沿用 `5062061`。

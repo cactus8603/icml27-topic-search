@@ -35,3 +35,8 @@
 ## 產物
 
 整段使用已凍結 checkpoint 和兩個已核對 parquet。2 題 smoke 只驗證程式與資源；正式 train/test 產物驗證精確樣本 ID、權重 SHA-256、資料和程式雜湊、固定 quota 及預算一致性。各作業從已凍結 commit 取出執行程式。依序啟動 smoke、train、test 及 CPU scorer，單 H200 的 train 和 test 上限分別為 2h、3h。CPU scorer 同時讀入完整 train、test；只用 train 擬合。 [執行說明](README.md)
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 06:09 已讀 CPU 評分作業 `26443` 的 `results/verdict-26443.json` 機械彙總。凍結版沿用 `c979eba`。
+- [codex] 2026-11-15 06:11 獨立子代理已讀同一機械彙總並核對凍結判準，未讀逐題收集檔。
