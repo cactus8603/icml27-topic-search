@@ -24,3 +24,7 @@ bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --local
 ## 已知結果與讀取紀錄
 
 - [codex] 2026-11-15 17:16（台北），制定診斷前已閱讀原正式複核與十題報告中的 G3 彙總。僅以雜湊核對舊 NPZ 和判讀檔，本步未打開同輸入矩陣或其中各格數值。
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 17:33（台北）。`26804` 仍排隊時撤回，單核入口先修正讀取已公開彙總的欄位位置，再以 `362be1119db6c62bdde796d8f45d7542b78dfd63` 成功執行。已讀 `runs/two-clocks-input-block/local-BgHzAPwM/results.json`，SHA-256 `154e3e1bba43c17f30a071731e77544c71d1a10d78b472137f1f88f2052c0d1e`，核對原 `26383`、封存與當初摘要吻合。

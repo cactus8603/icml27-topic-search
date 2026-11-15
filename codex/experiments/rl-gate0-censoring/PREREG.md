@@ -15,3 +15,7 @@ stage=codex/experiments/rl-gate0-censoring
 bash "$stage/run.sbatch" "$freeze" --check-only
 sbatch --parsable "$stage/run.sbatch" "$freeze"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 17:31（台北）。`26803` 等候期間撤回後，已用單核封存 `47af4110b1b03386c392522b5771fff7d7e74d33` 驗收並讀取 `runs/rsd-gate0-censoring/local-ENQaz5XH/summary.json`，SHA-256 `69f67465a0b1735ff17334acbb9b1a286b08dff5df4b0a53180c6b1692eafaee`。已核舊凍結、兩臂評分憑證、原始 gzip 雜湊與原正式彙總。

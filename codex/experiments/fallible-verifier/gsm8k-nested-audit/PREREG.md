@@ -25,3 +25,7 @@ bash "$stage/run.sbatch" "$freeze" --check-only
 sbatch --parsable "$stage/run.sbatch" "$freeze"
 bash "$stage/run.sbatch" "$freeze" --local
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 17:33（台北）。`26805` 等候期間撤回後，已用原封存 `d2e8487a53e0248e307d733d5d7d8cfad8d069ed` 的單核入口完成並讀取 `runs/fallible-verifier/gsm8k-nested-audit/local-TPt9LqAw/summary.json`，SHA-256 `771438b25baca1e281b1d132226c43a0a79917f508adab087e7bab09b291f9a9`，原暖機與留出、評分收據、風險判準及上限來源綁定一致。

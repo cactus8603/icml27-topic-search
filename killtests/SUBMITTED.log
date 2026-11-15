@@ -166,3 +166,11 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 16:35 submit 26744 inoculation-lambda 獨立GCD同五臂、三初始化計Λ，封存CPU已核200目標、權重、遮罩及正負梯度 0e5f9d43a68e8bf410906352a538ebfaef104298
 [codex] 2026-11-15 16:35 submit 26745 inoculation-lambda 等26739/26744都成功後，核對做答和梯度收據並依固定臂配對量訊號 0e5f9d43a68e8bf410906352a538ebfaef104298
 [codex] 2026-11-15 16:55 submit 26765 t2i-rare-failure formal-stage=1 修復 26743 前置啟動，再以凍結程式完整驗原 60 塊；原六模型84格各2000種子、103分鐘/段、納入前次GPU秒 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-15 17:27 submit 26802 t2i-rare-failure formal-plan=2a CPU驗收原336分塊及六模型收據，等完整Stage1陣列26765成功才選格 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-15 17:28 submit 26803 rl-sparse-distill CPU 原1053題每題128次取樣截斷識別界與同pass@1上限，三測試和封存收據預檢通過 569b6c053f0f06006b7eab01ab64b815cd136702
+[codex] 2026-11-15 17:28 submit 26804 biased-gen-cfg CPU 原G3精確分解，同輸入成員差與留出區塊差，四測試及封存來源預檢通過 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
+[codex] 2026-11-15 17:28 submit 26805 fallible-verifier CPU 同暖機預算強端樣本內抽金標，核對原六項風險和實測至上限，三測試及封存預檢通過 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
+[codex] 2026-11-15 17:28 submit 26806 compositional-retrieval 同舊面板兩種前50各用50次固定重排，六測試及離線來源預檢通過，低優先排隊 569b6c053f0f06006b7eab01ab64b815cd136702
+[codex] 2026-11-15 17:31 cancel 26803 rl-sparse-distill 原CPU預計20:31才開始，切換同分析的單核備援 569b6c053f0f06006b7eab01ab64b815cd136702
+[codex] 2026-11-15 17:32 cancel 26804 biased-gen-cfg 原CPU佇列數小時，改同封存單核備援 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
+[codex] 2026-11-15 17:32 cancel 26805 fallible-verifier 原CPU佇列數小時，改同封存單核備援 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
