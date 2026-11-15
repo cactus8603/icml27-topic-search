@@ -25,7 +25,7 @@ shared="$root/icml"
 stage=codex/experiments/rl-gate0-censoring
 topic=killtests/rl-sparse-distill
 source=d52d5d737906ddc21f77269eb67d54d2ab8a56e6
-python="$shared/envs/oat-vllm072/bin/python"
+python="$shared/envs/t2irare/bin/python"
 [[ -z "$(git -C "$repo" status --porcelain --untracked-files=all -- "$stage")" ]]
 git -C "$repo" diff --quiet "$freeze" HEAD -- "$stage"
 
