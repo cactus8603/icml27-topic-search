@@ -5,7 +5,7 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(git -C "$here" rev-parse --show-toplevel)
 runtime=${RETRIEVAL_ROOT:-$repo/dl/retrieval3090}
 python=${PYTHON:-$runtime/envs/retrieval3090/bin/python}
-entry=${1:?Use test, preflight, smoke, cache, or analyze}
+entry=${1:?Use test, preflight, smoke, cache, cache2, analyze, analyze2, or tests}
 shift
 SOURCE=2daedf522c6d64b860277657d3067b61da3a0f2b
 FREEZE=569b6c053f0f06006b7eab01ab64b815cd136702
@@ -25,8 +25,19 @@ git -C "$repo" archive "$SOURCE" "$topic/scripts" "$topic/scripts_shim" "$topic/
   "$stages"/retrieval-conjunction/{prepare.py,panel.json} | tar -x -C "$bundle"
 git -C "$repo" archive "$FREEZE" "$stages/retrieval-recall-budget" | tar -x -C "$bundle"
 mkdir "$bundle/dev"
-cp "$repo"/topics/compositional-retrieval/code/dev-3090/*.py "$bundle/dev/"
-cp "$here/local_entry.py" "$here/smoke.py" "$bundle/dev/"
+# Research runs use committed files even while other agents edit the checkout.
+# RETRIEVAL_CODE_REF=working is reserved for pre-commit technical tests.
+code_ref=${RETRIEVAL_CODE_REF:-HEAD}
+if [[ "$code_ref" == working ]]; then
+  cp "$repo"/topics/compositional-retrieval/code/dev-3090/*.py "$bundle/dev/"
+  cp "$here"/*.py "$bundle/dev/"
+  export DEV_COMMIT=$(git -C "$repo" rev-parse HEAD) DEV_DIRTY=1
+else
+  git -C "$repo" archive "$code_ref" topics/compositional-retrieval/code/dev-3090 codex/retrieval3090 | tar -x -C "$bundle"
+  cp "$bundle"/topics/compositional-retrieval/code/dev-3090/*.py "$bundle/dev/"
+  cp "$bundle"/codex/retrieval3090/*.py "$bundle/dev/"
+  export DEV_COMMIT=$(git -C "$repo" rev-parse "$code_ref^{commit}") DEV_DIRTY=0
+fi
 # Relocate path literals in this disposable copy, preserving all model/scoring parameters.
 "$python" - "$bundle" "$runtime" <<'PY'
 from pathlib import Path
@@ -42,6 +53,4 @@ for p in root.rglob('*.py'):
 PY
 export EXP="$bundle/$topic" RETRIEVAL_ROOT="$runtime"
 export DEV_BUNDLE="$bundle" DEV_SOURCE="$SOURCE" DEV_FREEZE="$FREEZE"
-export DEV_COMMIT=$(git -C "$repo" rev-parse HEAD)
-export DEV_DIRTY=$([[ -z "$(git -C "$repo" status --porcelain -- "$here" topics/compositional-retrieval/code/dev-3090)" ]] && echo 0 || echo 1)
 "$python" -IB "$bundle/dev/local_entry.py" "$entry" "$@"

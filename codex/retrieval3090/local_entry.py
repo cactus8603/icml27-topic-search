@@ -8,11 +8,16 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 entry, *args = sys.argv[1:]
-if entry in {'test', 'analyze', 'smoke'}:
-    script = {'test': 'test_analyze.py', 'analyze': 'analyze.py', 'smoke': 'smoke.py'}[entry]
+if entry == 'tests':
+    import unittest
+    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.discover(str(HERE), 'test_*.py'))
+    raise SystemExit(not result.wasSuccessful())
+elif entry in {'test', 'analyze', 'analyze2', 'smoke', 'diagnostics'}:
+    script = {'test': 'test_analyze.py', 'analyze': 'analyze.py', 'analyze2': 'analysis_v2.py',
+              'smoke': 'smoke.py', 'diagnostics': 'diagnostics.py'}[entry]
     sys.argv = [str(HERE / script), *args]
     runpy.run_path(sys.argv[0], run_name='__main__')
-elif entry in {'preflight', 'cache'}:
+elif entry in {'preflight', 'cache', 'cache2', 'supplement', 'benchmark'}:
     import cache_scores as cache
     score = cache.score
     frozen_preflight = score.preflight
@@ -50,7 +55,12 @@ elif entry in {'preflight', 'cache'}:
         return panel, config, snapshots, context
 
     score.preflight = local_preflight
-    sys.argv = [str(HERE / 'cache_scores.py'), '--preflight' if entry == 'preflight' else '--run', *args]
-    cache.main()
+    if entry in {'preflight', 'cache'}:
+        sys.argv = [str(HERE / 'cache_scores.py'), '--preflight' if entry == 'preflight' else '--run', *args]
+        cache.main()
+    else:
+        script = {'cache2': 'cache_v2.py', 'supplement': 'supplement.py', 'benchmark': 'benchmark.py'}[entry]
+        sys.argv = [str(HERE / script), *args]
+        runpy.run_path(sys.argv[0], run_name='__main__')
 else:
-    raise SystemExit('Use test, preflight, smoke, cache, or analyze')
+    raise SystemExit('Unknown retrieval development command')
