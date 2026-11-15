@@ -1,0 +1,11 @@
+{
+  "clean_union_input_sha256": "8fd388943cb8d6604952d3ae88615e3d69825b5ea01a7dd8b9700a6395a7981e",
+  "panel_placement_sha256": "47ff2c17b50be0f2a2360adc310cc0cdd2c97ec4823f0ce7df51ba49958af41f",
+  "runtime": {
+    "cuda_build": "12.8",
+    "numpy": "2.5.4",
+    "safetensors": "0.8.0",
+    "torch": "2.8.0+cu128",
+    "transformers": "4.57.6"
+  }
+}
