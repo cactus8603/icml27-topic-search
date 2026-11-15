@@ -35,8 +35,11 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 ## 讀取紀錄
 
 - [codex] 2026-11-16，固定前僅讀既有公開VERDICT／報告、來源與設計，未讀本輪新研究結果或封存資料。新增研究結果的讀取在此逐項追加時間與路徑；判準內容不隨結果改寫。
+- [codex] 2026-11-16 04:21–04:23，root已讀 `dl/retrieval3090/runs/supplement-20261116-v2/lcse_calibration.json` 作機械來源與同參數重現校驗；已讀 `dl/retrieval3090/runs/dev-20261116-v2/baseline-early-audit.json` 的top50早期重現結果。未通過原驗收，僅作版本差異診斷，未跑或解讀M1/M2/D3模型效果。授權setup_review讀同早期重現檔協助查因。原容差及未通過停止方法分析的規則不改。
+- [codex] 2026-11-16 04:25–04:27，setup_review/root已讀相同開發快取的 `checkpoints/core_embed_image.npy`、`core_embed_full.npy`、`cross_top50.npy` 及 `parity-cpu-threads-20261116.json`，僅作原基線重現差異診斷與輸入對齊核驗，未讀政策或封存結果。
 
 ## 前置完整性修正
 
 - [codex] 2026-11-16 04:06，僅檢查公開標註群分割、未看本輪任何M1／M2／D3結果時，發現原sentinel群仍可能共享其他正例。因此OOF選法改用「同原群或共享任一正例」的連通群，同一seed/hash規則；原基線比較仍保留原群bootstrap以便對照，OOF另按連通群估計。另加四模板原向量、文字順序、模型revision及來源指紋驗證。這些是結果讀取前的完整性補強。
 - [codex] 2026-11-16，依使用者新增要求：後續GPU工作只選有足夠餘裕的卡（預設至少14 GiB空閒且整體util不高、連續兩次檢查）；無卡持續排隊等待。完整輸出驗證成功且無writer時，清除可由最終NPZ逐位驗證的重複batch中間陣列，保留來源、timing、raw scores、分析與清理收據。
+- [codex] 2026-11-16 04:33，原基線重現未通過後，只作版本查因，不變更接受容差。新增同代Torch 2.14.0+cu126／torchvision0.29.0對照環境，其他模型／資料／查詢／batch／Pillow／Transformer設定保持，先以原batch的前16圖、前32查詢及8個既存重排pair做技術差異測試。僅版本與driver相容測試，不依M1結果挑環境。原環境與原結果保留。後續全池重現改成前50完成立即驗收，未過不再計51–200。

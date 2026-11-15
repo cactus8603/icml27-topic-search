@@ -100,7 +100,9 @@ def main():
                                   'transformers': legacy.package_version('transformers'),
                                   'open_clip': legacy.package_version('open_clip_torch'),
                                   'cuda': torch.version.cuda, 'device': torch.cuda.get_device_name(0),
-                                  'capability': list(torch.cuda.get_device_capability(0))}}
+                                  'capability': list(torch.cuda.get_device_capability(0)),
+                                  'cpu_threads': {key: os.environ.get(key) for key in
+                                                 ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS')}}}
         manifest = args.out / 'checkpoint-provenance.json'
         if manifest.exists() and json.loads(manifest.read_text()) != json.loads(json.dumps(identity, default=str)):
             raise ValueError('Refusing to mix runs from different sources')
@@ -140,8 +142,32 @@ def main():
             def compute(batch):
                 # Legacy cross_scores converts the scalar array to float64.
                 return np.asarray(scorer.score([(text, opener()) for text, opener in batch]), dtype=float)
-            return batches(checkpoint / f'cross_{part}.npy', rows, batch_size, compute,
-                           identity | {'stage': part, 'queries': queries, 'images': keys}, status=status)
+            values = batches(checkpoint / f'cross_{part}.npy', rows, batch_size, compute,
+                             identity | {'stage': part, 'queries': queries, 'images': keys}, status=status)
+            if part == 'top50':
+                # Check before spending three times more compute on ranks 51-200.
+                image = np.load(checkpoint / 'core_embed_image.npy', mmap_mode='r')
+                full = np.load(checkpoint / 'core_embed_full.npy', mmap_mode='r')
+                core = legacy.original.ranks(full @ image.T)
+                expected_keys = [panel['ids'][col] for col in core[:, :legacy.K].flat]
+                if keys != expected_keys:
+                    raise ValueError('Early replay candidate/input alignment changed')
+                inverse = {key: col for col, key in enumerate(panel['ids'])}
+                relevance = np.zeros(core.shape, dtype=bool)
+                for row, query in enumerate(panel['queries']):
+                    relevance[row, [inverse[key] for key in query['relevant']]] = True
+                base = legacy.score.aggregate(legacy.score.query_metrics(
+                    legacy.score.rerank_shortlist(core, core[:, :legacy.K], values.reshape(-1, legacy.K)),
+                    relevance, legacy.K), relevance.sum(axis=1))
+                try:
+                    legacy.score.check_replay(base)
+                except ValueError:
+                    atomic_json(args.out / 'baseline-top50-replay.json',
+                                {'state': 'MISMATCH', 'metrics': base, 'scope': 'top50 replay only'})
+                    raise SystemExit('Baseline replay failed; no rank51-200 or policy evaluation was run')
+                atomic_json(args.out / 'baseline-top50-replay.json',
+                            {'state': 'PASS', 'metrics': base, 'scope': 'top50 replay only'})
+            return values
 
         legacy.encode = encode
         legacy.original.cross_scores = cross_scores
