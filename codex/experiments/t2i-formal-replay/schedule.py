@@ -11,6 +11,7 @@ import pipeline
 
 
 HISTORICAL_GPU_JOBS = ("26288", "26289", "26503", "26516", "26570", pipeline.GATE_JOB)
+SUPERSEDED_STAGE1_FREEZE = "040dfbc5b14febb89420519fd6cc15e1bf48576d"
 TOTAL_MINUTES = 50 * 60
 REGISTERED_RATE = 9.0
 INITIAL_FULL_RATE = 168000 / (9.17 * 3600)
@@ -69,6 +70,8 @@ def main():
         ap.error("First produce the original stage's selection manifest")
     prompts = json.loads(pipeline.git_file(repo, pipeline.SOURCE, pipeline.TOPIC / "configs/prompts.json"))["prompts"]
     initial = historical_gpu_seconds()
+    if args.freeze != SUPERSEDED_STAGE1_FREEZE:
+        initial += sum(attempt[-1] for attempt in pipeline.allocation_report(repo, SUPERSEDED_STAGE1_FREEZE, "1"))
     spent, previous_rows = initial, 0
     for previous in pipeline.PHASES[:pipeline.PHASES.index(args.phase)]:
         tasks = pipeline.stage_tasks(root, criteria, previous)
