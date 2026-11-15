@@ -26,6 +26,7 @@ from scipy import stats
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+PHASE_A_RESULTS = "/work/ChihChungHsu/cactus8603/icml/runs/inoculation-lambda/phasea_legacy/manual/results"
 
 
 def load_criteria():
@@ -226,7 +227,7 @@ def ref_pg(rdir, ref):
 
 
 def phase_a(args, crit):
-    rdir = os.path.join(ROOT, args.results_dir)
+    rdir = os.path.join(ROOT, args.results_dir or PHASE_A_RESULTS)
     ref = json.load(open(os.path.join(ROOT, "configs", "reference.json")))
     g1 = gate1(rdir, crit, args.include_smoke)
     refs = {"grant": ref_grant(rdir, ref), "pg_chunks": ref_pg(rdir, ref)}
@@ -241,7 +242,9 @@ def phase_a(args, crit):
     flat.append(("pg/A_ratio_pooled", refs["pg_chunks"]["A_ratio_pooled_bottom_top"]["rho"]))
     res = dict(criteria_version=crit["version"], gate1=g1, reference_only=refs)
     output_name = "aggregate_phaseA_smoke.json" if args.include_smoke else "aggregate_phaseA.json"
-    json.dump(res, open(os.path.join(rdir, output_name), "w"), indent=1, default=str)
+    os.makedirs(args.output_dir, exist_ok=True)
+    with open(os.path.join(args.output_dir, output_name), "x", encoding="utf-8") as report:
+        json.dump(res, report, indent=1, default=str)
     print("=" * 70)
     print(f"[criteria {crit['version']}] 閘門 1（有限差分 Pearson ≥ {crit['gate1']['pearson_min']}）：{g1['status']}"
           + (f"  pooled r={g1['pearson_pooled']:.3f}  n={g1['n']}  斜率(實測/預測)={g1['slope_true_on_pred']:.2f}" if "pearson_pooled" in g1 else ""))
@@ -357,7 +360,8 @@ def phase_b(args, crit):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--phase", choices=["a", "b"], required=True)
-    ap.add_argument("--results-dir", default="results")
+    ap.add_argument("--results-dir", help="Phase A 原始結果目錄")
+    ap.add_argument("--output-dir", default=PHASE_A_RESULTS, help="Phase A 新報表目錄")
     ap.add_argument("--include-smoke", action="store_true")
     ap.add_argument("--table", default=None)
     args = ap.parse_args()

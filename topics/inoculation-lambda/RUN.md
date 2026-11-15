@@ -30,9 +30,11 @@ bash scripts/check-frozen.sh 907eb5d12885cd6f67c6f757660378dc8da61b7e \
   01adff19f4fdc7598bfca7fed06ae892345dd1075e8f773fa6f0160bc6335a71
 ~~~
 
-正式順序是資料清冊 → 技術短測 → 訓練前 Λ、PHM 與基線 → 51 格正式行為 → CPU 驗收與跨家族比較。既有作業可以用 `sacct -X -n -P -j 26826,26827,27112,27113,27114 --format=JobID,State,ExitCode` 查詢。[正式行為提交](code/experiments/lambda-gcd-family-design/outcomes/README.md) · [最終驗收](code/experiments/lambda-gcd-family-design/evaluation/JOIN.md)
+正式順序是資料清冊 → 技術短測 → 訓練前 Λ、PHM 與基線 → 51 格正式行為 → CPU 驗收與跨家族比較。既有作業可以用 `sacct -X -n -P -j 26826,26827,27112,27113,27162 --format=JobID,State,ExitCode` 查詢。[正式行為提交](code/experiments/lambda-gcd-family-design/outcomes/README.md) · [最終驗收](code/experiments/lambda-gcd-family-design/evaluation/JOIN.md)
 
 輸出在 `$ICML/runs/lambda-gcd-family-{step0,phm,outcomes,comparison}/` 下，以作業或陣列編號區分。逐格結果與驗收摘要都附來源雜湊。
+
+Phase A 有限差分另有獨立入口。執行產物寫入叢集的 `$ICML/runs/inoculation-lambda`，各次正式跑測保留各自的目錄。已複核的結果可查閱 [Phase A v2 判讀](code/killtest/VERDICT_phasea_v2.md)；提交與路徑設定見 [Phase A v2 作業說明](code/killtest/phasea_v2/README.md)。
 
 [CPU 預檢工具](../../scripts/check-frozen.sh)從 Git repo 根目錄讀取指定提交，在叢集暫存區建立原路徑的執行副本。需要完整 Git 歷史和已備妥的資料、環境。正式 GPU 作業沿用對應預登記指定的執行工作區與凍結提交，依[協作規則](../../COORDINATION.md)提交及登記。
 

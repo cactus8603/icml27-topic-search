@@ -59,14 +59,15 @@
 
 ## 8. 送出指令（寫出來，不要執行）
 ```bash
-cd /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda
+cd topics/inoculation-lambda/code/killtest
+export LAMBDA_PHASE_A_RUN_ID=phasea-YYYYMMDD-unique   # 下列四支工作共用同一個新跑次名稱
 # 前置（登入節點、不佔 GPU）：環境與資料已完成；模型下載確認 logs/download_models.log 結束後：
 sbatch slurm/a1_gate1_fd.sbatch                      # 閘門 1，先跑；FAIL 則停下修程式
 sbatch --dependency=afterok:<a1_jobid> slurm/a2_grant_lambda.sbatch
 sbatch --dependency=afterok:<a1_jobid> slurm/a3_pg_lambda.sbatch
 sbatch --dependency=afterok:<a2_jobid>:<a3_jobid> slurm/a4_aggregate.sbatch
 ```
-CPU smoke（已執行過一次）：`scripts/smoke_cpu.sh`。
+新版 Phase A 寫入 `/work/ChihChungHsu/cactus8603/icml/runs/inoculation-lambda/phasea_legacy/<跑次名稱>/`。Slurm 預設日誌在共享 `icml/tmp/%x_%j.out`。CPU smoke 使用 `scripts/smoke_cpu.sh`，會建立獨立跑次目錄。
 
 ## 9. 風險與未確認事項（請審查者特別注意）
 1. **Λ 的定義取捨**：τ 用「同資料集 held-out 的特質回應在非誘發情境下的 NLL」，非 judge 判定的特質行為；對 evil 類資料，整段回應 NLL 混有風格與一般語言成分。Grant 自己指出銀行的防禦效果來自跨步一致性而非單步梯度幾何，一階 step-0 的 Λ 預期無法區分銀行與其成員（bank3/4/5 vs 單一提示），這是已知的失敗模式。

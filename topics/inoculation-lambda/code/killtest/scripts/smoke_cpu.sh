@@ -5,7 +5,12 @@ cd "$(dirname "$0")/.."
 export TMPDIR=/work/ChihChungHsu/cactus8603/icml/tmp HF_HUB_OFFLINE=1 CUDA_VISIBLE_DEVICES=""
 PY=/work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/python
 M=/work/ChihChungHsu/cactus8603/models/Qwen2.5-0.5B
-$PY scripts/compute_lambda.py --config configs/grant_sycophantic_qwen7b.yaml --smoke --model $M --device cpu
-$PY scripts/compute_lambda.py --config configs/grant_sycophantic_qwen7b.yaml --smoke --finite_diff --model $M --device cpu
-$PY scripts/compute_lambda.py --config configs/pg_qwen7b_idmedical.yaml --smoke --model $M --device cpu
-$PY scripts/aggregate.py --phase a --include-smoke || true
+run_parent=/work/ChihChungHsu/cactus8603/icml/runs/inoculation-lambda/phasea_legacy
+mkdir -p "$run_parent"
+run=$(mktemp -d "$run_parent/smoke.XXXXXX")
+printf 'Smoke output: %s\n' "$run"
+"$PY" -B scripts/compute_lambda.py --config configs/grant_sycophantic_qwen7b.yaml --smoke --model "$M" --device cpu --out "$run/grant_sycophantic_qwen7b_smoke"
+"$PY" -B scripts/compute_lambda.py --config configs/grant_sycophantic_qwen7b.yaml --smoke --finite_diff --model "$M" --device cpu --out "$run/grant_sycophantic_qwen7b_fd_smoke"
+"$PY" -B scripts/compute_lambda.py --config configs/pg_qwen7b_idmedical.yaml --smoke --model "$M" --device cpu --out "$run/pg_qwen7b_idmedical_smoke"
+"$PY" -B scripts/aggregate.py --phase a --include-smoke --results-dir "$run" --output-dir "$run" ||
+  test -s "$run/aggregate_phaseA_smoke.json"

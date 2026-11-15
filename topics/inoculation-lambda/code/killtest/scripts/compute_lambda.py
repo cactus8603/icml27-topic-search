@@ -14,7 +14,7 @@
   groups 把參數依層切成多組（例如 2611.12864 的 5 個層段），每組各自報告 Λ。
 
 不依賴 peft／兩篇論文的程式碼；LoRA 以 20 行自行實作（與 peft 預設初始化等價）。
-輸出：results/<name>/lambda_raw.json（逐項）與 lambda_summary.csv（彙整）。
+輸出：指定跑次目錄下的 lambda_raw.json（逐項）與 lambda_summary.csv（彙整）。
 """
 import argparse
 import csv
@@ -30,6 +30,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import yaml
+
+PHASE_A_RESULTS = "/work/ChihChungHsu/cactus8603/icml/runs/inoculation-lambda/phasea_legacy/manual/results"
 
 
 # ----------------------------------------------------------------------------
@@ -272,7 +274,7 @@ def resolve_groups(cfg, n_layers):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True)
-    ap.add_argument("--out", default=None, help="預設 results/<name>")
+    ap.add_argument("--out", default=None, help="預設共享 runs/inoculation-lambda/phasea_legacy/manual/results/<name>")
     ap.add_argument("--smoke", action="store_true", help="CPU 極小測試：覆寫模型、樣本數、防禦數")
     ap.add_argument("--model", default=None, help="覆寫 config 的 model")
     ap.add_argument("--device", default=None)
@@ -284,9 +286,6 @@ def main():
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.dirname(here)
     cfg = yaml.safe_load(open(args.config))
-    name = cfg["name"] + ("_smoke" if args.smoke else "")
-    out_dir = args.out or os.path.join(root, "results", name)
-    os.makedirs(out_dir, exist_ok=True)
     data_root = cfg.get("data_root", "")
 
     device = args.device or ("cuda" if torch.cuda.is_available() and not args.smoke else "cpu")
@@ -301,9 +300,9 @@ def main():
         cfg["n_folds"] = 1
         cfg["lora"]["seeds"] = cfg["lora"]["seeds"][:crit["gate1"]["fd_n_lora_seeds"]]
         cfg["microbatch"] = min(cfg.get("microbatch", 4), 2)
-        name = cfg["name"] + "_fd" + ("_smoke" if args.smoke else "")
-        out_dir = args.out or os.path.join(root, "results", name)
-        os.makedirs(out_dir, exist_ok=True)
+    name = cfg["name"] + ("_fd" if args.finite_diff else "") + ("_smoke" if args.smoke else "")
+    out_dir = args.out or os.path.join(PHASE_A_RESULTS, name)
+    os.makedirs(out_dir, exist_ok=False)
     dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[cfg.get("dtype", "bfloat16")]
     if args.smoke:
         dtype = torch.float32

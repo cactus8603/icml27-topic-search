@@ -5,7 +5,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
-#SBATCH --output=/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/logs/%x_%j.out
+#SBATCH --output=/work/ChihChungHsu/cactus8603/icml/tmp/%x_%j.out
 set -euo pipefail
 
 if [[ $# != 4 || ! $1 =~ ^(gate|grant|pg)$ || ! $2 =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ || ! $3 =~ ^[a-f0-9]{40}$ || -z $4 || $4 == *$'\n'* ]]; then
@@ -18,24 +18,33 @@ commit=$3
 reason=$4
 source_root=$(cd -- "${SLURM_SUBMIT_DIR:-$PWD}" && pwd -P)
 topic=killtests/inoculation-lambda
+moved_topic=topics/inoculation-lambda/code/killtest
 work=/work/ChihChungHsu/cactus8603/icml
 export TMPDIR="$work/tmp" HF_HOME="$work/hf_home" HF_HUB_OFFLINE=1
 py="$work/envs/inoc/bin/python"
-results="$source_root/results/phasea_v2/$run_id"
+output_root="$work/runs/inoculation-lambda"
+results="$output_root/phasea_v2/$run_id"
 inputs="$results/inputs_v2.json"
 job=${SLURM_JOB_ID:?Run this launcher through Slurm}
 
 if [[ $stage == gate ]]; then
     repo=$(git -C "$source_root" rev-parse --show-toplevel)
-    if [[ $source_root != "$repo/$topic" ]] || ! git -C "$repo" cat-file -e "$commit^{commit}"; then
-        printf 'Submit from the clean, frozen inoculation-lambda directory.\n' >&2
+    repo=$(cd -- "$repo" && pwd -P)
+    if [[ $source_root != "$repo/$moved_topic" && $source_root != "$repo/$topic" ]] ||
+        ! git -C "$repo" cat-file -e "$commit^{commit}"; then
+        printf 'Submit from the inoculation-lambda source directory with a frozen commit.\n' >&2
         exit 2
+    fi
+    archive_topic=$topic
+    if git -C "$repo" cat-file -e "$commit:$moved_topic/PREREG.md" 2>/dev/null; then
+        archive_topic=$moved_topic
     fi
     mkdir -p "$(dirname "$results")"
     mkdir "$results"
-    git -C "$repo" archive "$commit" "$topic/PREREG.md" "$topic/scripts" "$topic/configs" \
-        "$topic/phasea_v2/estimator.py" "$topic/phasea_v2/inputs.py" "$topic/phasea_v2/integration.patch" \
-        "$topic/phasea_v2/run.sbatch" | tar -xf - -C "$results"
+    git -C "$repo" archive "$commit" "$archive_topic/PREREG.md" "$archive_topic/scripts" "$archive_topic/configs" \
+        "$archive_topic/phasea_v2/estimator.py" "$archive_topic/phasea_v2/inputs.py" \
+        "$archive_topic/phasea_v2/integration.patch" "$archive_topic/phasea_v2/run.sbatch" |
+        tar -xf - -C "$results" --transform="flags=r;s|^$archive_topic|$topic|"
     snapshot="$results/$topic"
     "$py" -BI - "$results/run_v2.json" "$run_id" "$commit" "$job" "$reason" "$snapshot/phasea_v2/run.sbatch" <<'PY'
 import hashlib
@@ -69,12 +78,13 @@ PY
     mkdir "$results/$stage"
 fi
 
+mkdir -p "$output_root/logs"
 dest="$results"
 if [[ $stage != gate ]]; then
     dest="$results/$stage"
 fi
 printf '[codex] %s Phase A v2 %s job %s commit %s output %s reason %s\n' \
-    "$(TZ=Asia/Taipei date '+%Y-%m-%d %H:%M')" "$stage" "$job" "$commit" "$dest" "$reason" >> "$source_root/logs/RUNLOG.md"
+    "$(TZ=Asia/Taipei date '+%Y-%m-%d %H:%M')" "$stage" "$job" "$commit" "$dest" "$reason" >> "$output_root/logs/RUNLOG.md"
 
 if [[ $stage == gate ]]; then
     patch --batch --forward --fuzz=0 -d "$results" -p1 < "$snapshot/phasea_v2/integration.patch"
