@@ -4,7 +4,7 @@
 
 使用 `extract` 的 20 題，按原順序每題 10 樣本，固定 system prompt `You are an LLM chatbot.`、seed 42、batch 20、最多 500 新 tokens、BF16、temperature 1、top-p 1，沿用底層 Qwen 的 top-k 20、repetition penalty 1.05 及 EOS。CPU 預檢核對來源和 snapshot 的小型檔雜湊、權重分片指紋及大小，並以空白回覆 CPU 替身走完整作者 tokenization 及十批呼叫。實際 GPU 文字及敘述性吞吐需要首次執行才有。作者原始 Hub revision 及歷史 GPU 數值環境未發布，因此這是對當前固定版設定的重跑。
 
-生成作業以 `afterok:26526:26527` 等兩個訓練成功，再讀完整輸入憑證確認同一訓練版本與模型。三臂以獨立 Python process 依序執行，生成前驗證該臂已完成的 adapter 檔案雜湊。每臂的 `responses.jsonl` 保存短 ID、作者問題 ID、樣本序、提示雜湊和未修改回覆；文字不進 log。遇到解碼後空白照常留在固定格內，並記數。各 `receipt.json` 記錄 200 筆覆蓋、採樣參數、回覆與原訓練憑證的雜湊。整套後續只接受三臂完整收據，評分及閘門判讀另走原協定。
+生成作業以 `afterok:26562:26563` 等 none 與 IP 訓練成功，再讀完整輸入憑證確認訓練版本 `f945365c3404849e2ee0b3c3bc110871005d4a0e` 與模型。三臂以獨立 Python process 依序執行，生成前驗證該臂已完成的 adapter 檔案雜湊。每臂的 `responses.jsonl` 保存短 ID、作者問題 ID、樣本序、提示雜湊和未修改回覆；文字不進 log。遇到解碼後空白照常留在固定格內，並記數。各 `receipt.json` 記錄 200 筆覆蓋、採樣參數、回覆與原訓練憑證的雜湊。整套後續只接受三臂完整收據，評分及閘門判讀另走原協定。
 
 一張 H200、8 CPU、64 GiB RAM，Slurm 上限 90 分鐘。推估三臂共 15–45 分鐘，尚未量測，最多 300,000 個生成 tokens。共用輸出在 `/work/ChihChungHsu/cactus8603/icml/runs/inoculation-lambda/author-generation-<job>/`，估小於 10 MiB。沿用已有模型、adapter 和環境空間。
 

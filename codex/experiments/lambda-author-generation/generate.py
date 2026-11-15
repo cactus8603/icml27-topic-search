@@ -13,12 +13,12 @@ import time
 
 ROOT = Path("/work/ChihChungHsu/cactus8603/icml")
 AUTHOR = "6964328411bf0ae49de47fa1bdfcfe8f94a75cce"
-TRAIN = "f7bf7002f111d775b7a1bb5b01773fe6a12a5e7b"
+TRAIN = "f945365c3404849e2ee0b3c3bc110871005d4a0e"
 BINDING = "1a0873aa84988bf845d9e7edd2ab57c8873c4a359c2459eef99fcd66919ae1c0"
 MODEL_REVISION = "a09a35458c702b33eeacc393d103063234e8bc28"
 BASE = ROOT / "hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots" / MODEL_REVISION
 RUNS = ROOT / "runs/inoculation-lambda"
-TRAIN_JOBS = {"none": "26526", "ip": "26527"}
+TRAIN_JOBS = {"none": "26562", "ip": "26563"}
 QUESTIONS = "data/trait_questions/extract/spanish.json"
 QUESTIONS_N = 20
 SAMPLES = 10
@@ -69,10 +69,10 @@ def verify_inputs(source):
         for name, value in expected.items():
             if digest(root / name) != value:
                 raise ValueError(f"frozen source or tokenizer hash differs: {name}")
+    blobs = (BASE.parents[1] / "blobs").resolve(strict=True)
     for i, (blob, size) in enumerate(BASE_BLOBS, 1):
         shard = BASE / f"model-{i:05d}-of-00004.safetensors"
-        expected = BASE.parents[1] / "blobs" / blob
-        if not shard.is_symlink() or shard.resolve(strict=True) != expected or shard.stat().st_size != size:
+        if not shard.is_symlink() or shard.resolve(strict=True) != blobs / blob or shard.stat().st_size != size:
             raise ValueError("base weights differ from the reviewed shared HF snapshot")
 
 

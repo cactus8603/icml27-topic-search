@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 #SBATCH --time=01:30:00
-#SBATCH --dependency=afterok:26526:26527
+#SBATCH --dependency=afterok:26562:26563
 #SBATCH --output=/work/ChihChungHsu/cactus8603/icml/tmp/lambda-author-generate-%j.log
 set -euo pipefail
 
@@ -46,8 +46,8 @@ fi
 job=${SLURM_JOB_ID:?Submit through Slurm after both training jobs}
 [[ "$job" =~ ^[0-9]+$ ]]
 output="$shared/runs/inoculation-lambda/author-generation-$job"
-[[ -f "$shared/runs/inoculation-lambda/author-training-26526/none/receipt.json" ]]
-[[ -f "$shared/runs/inoculation-lambda/author-training-26527/ip/receipt.json" ]]
+[[ -f "$shared/runs/inoculation-lambda/author-training-26562/none/receipt.json" ]]
+[[ -f "$shared/runs/inoculation-lambda/author-training-26563/ip/receipt.json" ]]
 echo "[codex] $(date '+%Y-%m-%d %H:%M') Lambda Spanish generation source=$author freeze=$freeze"
 for arm in base none ip; do
     "$python" -IBu "$entry" "${args[@]}" --arm "$arm" --output "$output" --commit "$freeze"
