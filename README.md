@@ -13,11 +13,11 @@
 | [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成訓練與生成，Astra 完成小樣本獨立盲評 | 正式重現待原指定評審的逐筆結果 |
 | [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成獨立種子及兩條軌跡交叉比較 | 正式跨種子結論需按原前提做保留 seed 評估 |
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 完成同一公開探測器的乾淨面板對照 | 取得原歷史面板選樣與合併探測器以重現 |
-| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成 B 的 16K 重現、模板比較、同輸出重評與文字停止診斷 | `26612` 重送配對 A 的合成試跑，`26613` 等成功後重現 |
+| [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成 B 的重現診斷及配對 A 的作者環境試跑 | `26621` 依公開設定重驗配對 A |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | 候選 Stage 1 待代理修復定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
 | [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成開發校準與正式留出，Astra 獨立複核 | 依逐題報告決定是否續查同風險成本 |
-| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成獨立種子壓力試驗，Astra 複核 | `26594` 補量正常排程的單步損傷、訊號與局部回收 |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | 若延伸到部署，先確立正常排程的事件覆蓋 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
 

@@ -14,3 +14,7 @@ freeze=$(git rev-parse HEAD)
 bash "$stage/run.sbatch" "$freeze" --check-only
 sbatch --parsable "$stage/run.sbatch" "$freeze"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 12:04（台北），Astra 子代理與 Codex 分別讀取 `nominal-26594/summary.json`，凍結版本 `d89b15761fbf6be47bb7098d3a088061d76751ab`。
