@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "abstain_abs_log_odds": {
+    "weak": 0.0,
+    "strong": 0.25
+  }
+}
