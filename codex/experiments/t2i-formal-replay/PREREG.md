@@ -33,6 +33,8 @@ sbatch --array="0-$last%2" "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt
 
 既有 `26802` 完成後，可用[正式 2a 接續入口](../t2i-formal-continue/README.md)核對選格收據與剩餘成本，再提交原 2a 分片。
 
+碰到 Slurm 重排時，由[重排配置入口](../t2i-requeue-accounts/PREREG.md)驗收及加總歷次配置。足以進入下一輪的條件是各索引最後有成功配置與完成收據。
+
 正式取樣完整後執行 `aggregate` 和 `make-blind`。補圖由獨立封存的 `regen_exact.sbatch` 執行。原存縮圖直接沿用，缺圖依原模型、提示、500-seed 塊內的完整批次重放，只留盲標所需的縮圖。正式批次大小為 32，塊尾為 20。原入口的 `regen` 將缺圖重組批次，正式盲標包改用下列入口。`--plan` 只回報需重播的總張數與清單雜湊，提交前把整批重播的 GPU 配置時間納入 50 GPU 小時上限。重播跑一張 H200，按當時剩餘預算設定 `--time`。
 
 ```bash
