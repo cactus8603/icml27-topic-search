@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import evaluate as oat
@@ -45,6 +45,14 @@ class OatEvaluationTest(unittest.TestCase):
         answer.stop_reason = 151645
         with self.assertRaisesRegex(ValueError, "additional stop"):
             oat.run_author(oat.MODEL, panels, engine, sample, grade, max_tokens=oat.SMOKE_LIMIT)
+
+        with (patch.object(oat.faulthandler, "dump_traceback_later") as trace,
+              patch.object(oat.faulthandler, "cancel_dump_traceback_later") as cancel):
+            with self.assertRaisesRegex(RuntimeError, "engine fixture"):
+                oat.run_author(oat.MODEL, panels, Mock(side_effect=RuntimeError("engine fixture")),
+                               sample, grade, max_tokens=oat.SMOKE_LIMIT, trace_init=True)
+            trace.assert_called_once_with(8, repeat=True)
+            cancel.assert_called_once_with()
 
     def test_grade_worker_smoke_opens_no_arrow_and_private_mode_uses_passed_fixture(self):
         fixtures = {task: {"problem": [f"Synthetic {task}"], "answer": ["42"]} for task in oat.PANELS}
