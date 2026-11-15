@@ -6,6 +6,7 @@ from collections import Counter
 from contextlib import contextmanager, redirect_stdout
 import faulthandler
 from hashlib import sha256
+from importlib import import_module
 from importlib.metadata import version
 import json
 import math
@@ -51,7 +52,7 @@ SMOKE_LIMIT = 16
 CONTEXT = 4096
 TOLERANCE_PP = 2.0
 VLLM = "0.8.4"
-ENVIRONMENT_SHA = "e7deaf59d2fb5f056d2fd5475ab68d94240b18f33bd020cdb1c3d73f81f200dd"
+ENVIRONMENT_SHA = "e1a7dfb35caf99aa4775deb4a9df455091e1f818a6db1fac905e425ca51fa41b"
 GRADER_PACKAGES = {"sympy": "1.14.0", "pyarrow": "26.0.1", "math-verify": "0.9.0",
                    "latex2sympy2-extended": "1.11.0", "antlr4-python3-runtime": "4.13.2"}
 GRADER_SOURCE = {
@@ -307,6 +308,10 @@ def runtime_check():
     require(version("transformers") == "4.51.3" and version("numpy") == "1.26.4", "Resolved author runtime differs")
     require(digest(Path(sys.executable).parent.parent / "installed-packages.txt") == ENVIRONMENT_SHA,
             "Resolved author package inventory differs")
+    progress("triton_build_import")
+    # The V1 GPU worker reaches this import; wheel dependency metadata omits setuptools on Python 3.10.
+    import_module("triton.runtime.build")
+    require(version("triton") == "3.2.0" and version("setuptools") == "80.9.0", "Resolved Triton build dependencies differ")
     import torch
     import vllm
     from transformers import AutoTokenizer
@@ -351,6 +356,7 @@ def main():
     torch, vllm = runtime_check()
     if args.mode == "runtime-preflight":
         print(json.dumps(preflight(vllm.SamplingParams) | {"runtime": VLLM, "torch": torch.__version__,
+                                                           "triton": version("triton"), "setuptools": version("setuptools"),
                                                            "mode": "runtime_preflight"}, sort_keys=True))
         return
 
