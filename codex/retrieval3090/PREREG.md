@@ -61,3 +61,8 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16 05:48，literature_check於05:48:35.212首次讀取D3結果及其平台來源，繼續以design、同214文字／影像向量獨立重算。其稍早被動收到potential_audit的COCO彙總審查訊息，但未開COCO原始分析、未讀外部效果或私有盲審映射。
 - [codex] 2026-11-16 05:46–05:51，三個新子代理（fork_turns=none）只看公開query／原尺寸匿名圖片，按固定0–47／48–95／96–143分段完成144例AI初審；未讀private、方法排名／效果或其他審查者標籤。root於05:51:16核對覆蓋與原欄位後保存 `ai-review/AI-freeze.json`、合併標籤及SHA，之後於05:51–05:52首次讀 `private/key.json` 作分層描述。人工標籤仍空白；AI不稱人工gold或整體錯標率。
 - [codex] 2026-11-16 05:53，root在AI標籤凍結後，對兩個已見分歧案例（image218589、125017）看原圖並查官方train標註bbox，另讀image567609標註；屬事後質性診斷，未改任何凍結標籤、評分或政策，不作整體錯標率或人工裁決。
+- [codex] 2026-11-16 06:00，potential_audit於06:00:16讀D3獨立審查文字、06:00:25讀已凍結AI audit.json與AI-freeze.json，對root整合稿作文字核對；沒有重判圖片、改標籤或讀取外部效果。
+- [codex] 2026-11-16 05:52–06:03，setup_review首次於05:52:10讀成本checkpoint、06:03:37讀完整report.json，作未實作benchmark.py的獨立成本審查；root於06:02–06:03讀完整成本report。setup_review另於06:01:13以原vectors與header完成固定8題候選忠實性核對，未讀AP或cross分數、未使用標籤，沒有改政策。
+- [codex] 2026-11-16 06:04–06:05，root首次讀取已鎖定單一政策的 `mcmr-selected-torch214-20261116/analysis.json` 外部效果；政策與超參數不改，不在MCMR另選政策。授權literature_check作未實作MCMR runner／reuse wrapper的獨立效果與完整性審查，實際首次讀取時間另記。
+- [codex] 2026-11-16 06:05，literature_check於06:05:54.075首次直接讀MCMR分析及方法raw scores；此前被動收到root的已讀摘要。其獨立重算全部128題選入、排序、指標與bootstrap，並逐值核對三個CS checkpoint後同意清理重複檔；沒有改政策或子集。
+- [codex] 2026-11-16 05:50–06:12，root已讀COCO、D3、成本及MCMR的獨立審查文字，將計算／統計／證據邊界整合到reports與results摘要；主判準、政策及子集不改。保留所有讀後敏感性分析的探索標記，並維持人工gold與正式叢集確認尚未執行的狀態。

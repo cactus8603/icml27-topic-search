@@ -116,3 +116,9 @@ OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
 ```
 
 以上GPU步驟仍由前述共用卡排程器啟動；可換同型同平台3090，實際卡號另記，不必占住原卡。
+
+## 結果與獨立審查位置
+
+本輪本機開發的結果、證據限制與下一輪建議見 [完整實驗報告](../reports/2026-11-16-retrieval-experiments-codex.md)；可追溯的精簡數字與輸入SHA見 [結果摘要](results/2026-11-16-local-study.json)。原基線重現、同平台相對探索與正式確認的狀態分開記錄。
+
+固定政策的外部快取若使用 `mcmr_reuse.py`，須同時指定已驗收的 `--baseline`、`--index` 與事前鎖定的 `--selection-lock`；cache與analyze都經此wrapper入口，不能改用只認原生COMPLETE的分析入口。原始候選圖文資訊、batch及政策保持，重用配對與固定抽樣新算的收據一併驗證。
