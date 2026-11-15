@@ -31,3 +31,8 @@ bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 ```
 
 主執行在 `icml/runs/multifid/complement/<job-id>/` 寫技術收據及唯一正式彙總 `summary.json`。獨立判讀使用凍結後完成的彙總。
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 12:40（台北，12:40:51）。已讀 `icml/runs/multifid/complement/26643/summary.json`，凍結 `1432b5d`。 [研究進度報告](../../reports/2026-11-15-topic-status-codex.md#多保真度資料歸因)
+- [codex] 2026-11-15 12:40（台北，12:40:58）。Astra 獨立讀取同一份凍結彙總。
