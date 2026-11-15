@@ -6,7 +6,7 @@
 
 `ingest_split` 接受固定面板的 `gold.jsonl` 完整位元組，核對既有 SHA-256 後，只解碼呼叫端指定的 train 或 test。核對題目 ID、候選 ID、分割與每題的四種變體；需要完整 250 或 747 題。每個 verifier 傳一份 JSON 收據，以及由正式執行紀錄獨立核對的 SHA-256。收據包含 `schema: 1`、`role`、`model`、`model_revision`、`split`、`binding`、`prompt_manifest_sha256` 和 `records`。每筆 `records` 只含 `id`、`verdict`（0、1、null）及 `status`（`observed`、`abstain`、`missing`）。預期每一候選都有一筆收據；沒有有效分數明列 null。
 
-`Binding` 需要正式凍結的 commit、量測協定 SHA-256、分數轉成 verdict 的規則 SHA-256，並加入面板既有來源指紋。正式執行須從固定面板產出該分割的 prompt manifest、驗收兩個推論輸出，再傳入獨立核對的 manifest 和收據雜湊。GPU 推論收據與正式 CLI 待規格定案才接線。
+`Binding` 需要正式凍結的 commit、量測協定 SHA-256、分數轉成 verdict 的規則 SHA-256，並加入面板既有來源指紋。CPU 入口獨立重建兩個分割的 prompt manifest，核對兩個成功的 Slurm 工作及其原始日誌所列的四份推論收據雜湊。 [GPU 收據入口](../holdout-scoring/README.md)
 
 ## 比較介面
 
@@ -22,7 +22,12 @@
 
 配對 Brier 使用已有 gold 且 weak 已觀測的同一候選。兩臂都用 weak、資料集和 solver variant 作條件，僅加強端的模型允許用 strong verdict 修正。擬合只取 train。測試缺強判決或 train 中相應條件格缺任一種強判決時，使用同一弱端預測。以題群重抽共用分母，回報兩臂 Brier、相對降幅、候選數及缺強覆蓋。`assess_binary_signal` 可在另行固定標準後帶入原現象／訊號門檻。該判讀使用原分母和未知下界，observed-only 比例供描述。
 
+## CPU 作業入口
+
+`run_evaluation.py` 沿用已鎖版的 Round 2 數值與原比較順序，產出候選方法的三項機械判讀。等暖機主要比較為可查強模型的策略對只買 gold，包含暖機攤銷。完整訓練資訊的對照也同時計算，作為指定策略與訓練資訊範圍的參考。預檢只測合成資料、收據格式及 criteria 雜湊。實跑須等共同凍結的 train/test GPU 作業成功，並逐份核對日誌綁定後才載入封存面板。只寫聚合 `icml/runs/fallible-verifier/gsm8k-policy-evaluation/<job>/summary.json`。
+
 ```bash
 /work/ChihChungHsu/cactus8603/icml/envs/t2irare/bin/python -IB \
   codex/experiments/fallible-verifier/holdout-evaluation/test_evaluation.py
+bash codex/experiments/fallible-verifier/holdout-evaluation/run.sbatch FULL_FREEZE_COMMIT --check-only
 ```
