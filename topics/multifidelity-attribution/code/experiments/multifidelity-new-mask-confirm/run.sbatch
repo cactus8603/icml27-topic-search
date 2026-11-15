@@ -22,7 +22,7 @@ if [[ "$mode" == run ]]; then
 fi
 
 root=/work/ChihChungHsu/cactus8603
-repo="$root/icml27-topic-search"
+repo="${MULTIFID_FROZEN_REPO:-$root/icml27-topic-search}"
 shared="$root/icml"
 stage=codex/experiments/multifidelity-new-mask-confirm
 source=killtests/multifidelity-attribution
