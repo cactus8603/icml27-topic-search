@@ -1,5 +1,13 @@
 # 實驗硬體與顯存紀錄
 
+## 3090 本機環境技術驗證
+
+[codex] 2026-11-16（台北）。本機 NVIDIA 550.163.01 驅動採 Python 3.12.14、Torch 2.6.0+cu124、torchvision 0.21.0+cu124，保留 Transformers 5.20.2 與 open_clip_torch 2.32.0。不更新系統驅動。BF16 矩陣運算及三個固定 revision 模型的兩張純色圖片測試均通過。依序載入 CORE-EMBED、CS-CLIP、CORE-RERANKER 的 PyTorch 已保留峰值為 **4.02、0.62、4.01 GiB**。這是合成圖片的技術預檢，**不代表完整圖庫、原 batch 或基線已完成 3090 重現**。
+
+原始技術紀錄在本機 `dl/retrieval3090/cuda-check.json`、`dl/retrieval3090/smoke-20261116.json`，不進版控。[本機入口與環境說明](retrieval3090/README.md) · [原開發規範](../topics/compositional-retrieval/code/dev-3090/SPEC.md)
+
+## H200 與 24 GB 移植規劃
+
 涵蓋本輪九個研究題目。下一步的設備判斷更新至 2026-11-15 18:26（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
