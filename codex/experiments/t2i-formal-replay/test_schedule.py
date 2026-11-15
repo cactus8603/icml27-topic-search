@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from schedule import time_groups
+from schedule import completed_rates, phase_time_budget, time_groups
 
 
 STAGE2B_WORK = [(index, size) for index, size in enumerate((25_000, 25_000, 25_000, 5_000) * 6)]
@@ -37,6 +37,34 @@ class TimeGroupsTests(unittest.TestCase):
 
     def test_no_tasks_need_no_allocation(self):
         self.assertEqual(time_groups([], REPLAY_RATE, 0), [])
+
+    def test_retry_budget_charges_time_against_the_current_phase(self):
+        available = phase_time_budget(10_000, 30_000, 2_200, 0)
+        self.assertEqual(available, 4_466)
+        self.assertIsNone(time_groups([(1, 25_000)], 5.3, available))
+
+    def test_blind_reserve_and_strict_total_cap_can_limit_a_phase(self):
+        available = phase_time_budget(6_000, 30_000, 0, 420)
+        self.assertEqual(available, 5_579)
+        self.assertEqual(phase_time_budget(6_000, 30_000, 0, 0), 5_999)
+        self.assertIsNone(time_groups([(0, 25_000), (1, 5_000)], 5.3, available))
+
+    def test_matching_rates_can_fit_a_stage_rejected_by_pooled_rate(self):
+        work = [(0, 25_000), (1, 5_000)]
+        self.assertIsNone(time_groups(work, 5.14, 5_640))
+        groups = time_groups(work, 5.14, 5_640, {0: 5.5, 1: 5.5})
+        self.assertEqual([group["minutes_per_task"] for group in groups], [76, 16])
+
+    def test_matching_rates_include_failed_allocations_for_the_same_task(self):
+        tasks = [("sd14", "all", 0, 2000), ("uce", "all", 0, 2000)]
+        attempts = [("1", 0, "1", "FAILED", "1:0", 100),
+                    ("2", 0, "2", "COMPLETED", "0:0", 5500),
+                    ("2", 1, "3", "COMPLETED", "0:0", 5000)]
+        seconds, rates = completed_rates(tasks, attempts, 14)
+        self.assertEqual(seconds, 10_600)
+        self.assertEqual(rates, {("sd14", "all"): 5.0, ("uce", "all"): 5.6})
+        with self.assertRaisesRegex(ValueError, "successful GPU allocation"):
+            completed_rates(tasks, attempts[:2], 14)
 
 
 if __name__ == "__main__":
