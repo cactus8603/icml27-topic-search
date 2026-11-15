@@ -11,3 +11,8 @@ stage=codex/experiments/lambda-language-local
 bash "$stage/run.sh" "$freeze" --check-only
 bash "$stage/run.sh" "$freeze" --run
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 14:00（台北，14:00:31）。已讀 `language-panel-local-20261115T135953-a8cf144e665e/summary.json`，分析凍結 `ac12f76`，本機入口 `bf44236`。 [詳細判讀](../../reports/2026-11-15-topic-status-codex.md#inoculation-防禦漏出預測-λ)
+- [codex] 2026-11-15 14:00（台北，14:00:39）。Astra 獨立讀取同一份彙總。
