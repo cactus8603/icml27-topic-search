@@ -58,7 +58,14 @@ if [[ "$mode" == run ]]; then
     receipt="$shared/runs/rsd-pair-a-author/$job.json"
 fi
 echo "[codex] $(date '+%F %R') Oat-Zero public author $mode freeze=$freeze"
-if OAT_REPORT_STAGE=1 "$python" -IBu "$entry" "${args[@]}" 3>&2 >/dev/null 2>&1; then
+run_author() {
+    if [[ "$mode" == smoke ]]; then
+        "$python" -IBu -X faulthandler "$entry" "${args[@]}"
+    else
+        "$python" -IBu "$entry" "${args[@]}" >/dev/null 2>&1
+    fi
+}
+if OAT_REPORT_STAGE=1 run_author 3>&2; then
     [[ -f "$receipt" && ! -L "$receipt" ]]
     sha256sum -- "$receipt"
 else

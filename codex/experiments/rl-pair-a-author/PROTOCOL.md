@@ -20,3 +20,5 @@ smoke=$(sbatch --parsable --time=00:10:00 "$stage/run.sbatch" "$freeze" smoke)
 smoke=${smoke%%;*}
 sbatch --parsable --dependency="afterok:$smoke" "$stage/run.sbatch" "$freeze" run "$smoke"
 ```
+
+合成 smoke 的 Slurm 日誌保留完整引擎輸出。引擎初始化未完成時，每八秒列一份 Python 堆疊。正式作業的日誌只保留階段和彙總指紋。`26607` 在引擎初始化收到 SIGKILL，Slurm 未標為記憶體不足，根因待同設定 smoke 的完整診斷。`26608` 未達相依條件。

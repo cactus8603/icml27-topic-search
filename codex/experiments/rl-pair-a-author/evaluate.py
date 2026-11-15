@@ -4,6 +4,7 @@ import argparse
 import ast
 from collections import Counter
 from contextlib import contextmanager, redirect_stdout
+import faulthandler
 from hashlib import sha256
 from importlib.metadata import version
 import json
@@ -209,7 +210,7 @@ def score_results(accuracies):
             "scope": "gate0a_public_author_evaluation_only", "panels": output}
 
 
-def run_author(model_path, panels, engine, sample, grader, max_tokens=LIMIT):
+def run_author(model_path, panels, engine, sample, grader, max_tokens=LIMIT, trace_init=False):
     import numpy as np
 
     calls = iter(panels.items())
@@ -229,7 +230,13 @@ def run_author(model_path, panels, engine, sample, grader, max_tokens=LIMIT):
                                                              "dtype": "bfloat16", "enable_prefix_caching": True},
                 "Unexpected author engine parameters")
         progress("engine_init")
-        llm = engine(model_name, **kwargs)
+        if trace_init:
+            faulthandler.dump_traceback_later(8, repeat=True)
+        try:
+            llm = engine(model_name, **kwargs)
+        finally:
+            if trace_init:
+                faulthandler.cancel_dump_traceback_later()
         require(llm.get_tokenizer().eos_token_id == EOS, "vLLM tokenizer does not use the published EOS")
         progress("engine_ready")
 
@@ -366,7 +373,7 @@ def main():
             panels = header["panels"]
         require(list(panels) == list(PANELS), "Unexpected author panel order")
         accuracies, completion, decode = run_author(MODEL, panels, vllm.LLM, vllm.SamplingParams, grader,
-                                                    max_tokens=SMOKE_LIMIT if smoke else LIMIT)
+                                                    max_tokens=SMOKE_LIMIT if smoke else LIMIT, trace_init=smoke)
     report = {"author_commit": AUTHOR, "freeze_commit": args.freeze, "slurm_job_id": job,
             "model_snapshot": REVISION, "author_code_sha256": CODE,
             "weight_blob": WEIGHT_BLOB, "model_metadata_sha256": MODEL_METADATA,
