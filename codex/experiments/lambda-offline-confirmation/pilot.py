@@ -168,7 +168,7 @@ def main():
                                      and re.fullmatch(r"[0-9a-f]{40}", args.freeze or "")):
         parser.error("a numeric array and full frozen Git revision are required")
     if args.mode == "train" and (args.task is None or args.scratch is None
-            or args.scratch.resolve().parent != staged.ROOT / "tmp"
+            or args.scratch.resolve().parent != (staged.ROOT / "tmp").resolve()
             or args.array != os.environ.get("SLURM_ARRAY_JOB_ID")
             or str(args.task) != os.environ.get("SLURM_ARRAY_TASK_ID")):
         parser.error("training requires the corresponding Slurm array cell and shared scratch directory")
