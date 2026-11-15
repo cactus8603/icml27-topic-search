@@ -24,3 +24,4 @@ bash "$stage/run.sbatch" "$freeze" --join "$gradient_job" "$gradient_sha" \
 ## 修改紀錄
 
 - [codex] 2026-11-15 18:53（台北），獨立複核首次讀取 `gcd-signal-26744/paired-26738.json`。梯度 `26744` 與配對 `26745` 均成功後，核對來源雜湊並獨立重算排序。 [正式判讀與來源雜湊](../../reports/2026-11-15-gcd-pilot-verdict-codex.md)
+- [codex] 2026-11-15 19:41（台北）獨立重讀 `gcd-signal-26744/paired-26738.json` 及 `gradients.json`，重算三初始化及合併的六對排序。 [核對紀錄](../../reports/2026-11-15-gcd-pilot-source-verification-codex.md)

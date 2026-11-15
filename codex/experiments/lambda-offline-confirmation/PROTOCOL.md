@@ -30,3 +30,4 @@ bash "$stage/run.sbatch" "$freeze" --judge "$array"
 ## 修改紀錄
 
 - [codex] 2026-11-15 18:53（台北），獨立複核首次讀取 `gcd-offline-confirmation-26738/summary.json`。15 個訓練格及評分 `26739` 均成功後，核對收據並重評全部回答。 [正式判讀與來源雜湊](../../reports/2026-11-15-gcd-pilot-verdict-codex.md)
+- [codex] 2026-11-15 19:41（台北）獨立重讀 `gcd-offline-confirmation-26738/summary.json`，核對 15 份收據並從摘要重算漏出界。 [核對紀錄](../../reports/2026-11-15-gcd-pilot-source-verification-codex.md)
