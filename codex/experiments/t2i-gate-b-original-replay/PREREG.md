@@ -20,3 +20,7 @@ bash "$stage/run.sbatch" "$freeze" --check-only
 sbatch "$stage/run.sbatch" "$freeze"
 bash "$stage/run.sbatch" "$freeze" --verify-job "$job"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 16:33（台北）。獨立子代理已讀 `runs/t2irare/gate-b-original-replay/26663/precision_replay_verified.json` 與原 `results_gateb/gate_b_verified.json`，以凍結 `10d42bdf86534a44b47c03d56ea5e1dd749cdbac` 的 `--verify-job 26663` 核對全部 60 對分數及側錄、原 Gate (a) 與 bench。`26663` 為 `COMPLETED / 0:0`。收據 SHA-256 `d88b2d37b09d64a57a3102ecd7049c57d616aa19ed3fcc85a69a5dc447f9cffe`，來源彙整 `dc3e802e5d7f537bd0c82a19a9dd68a45e055a1f557074f7ae60d5500d68f7c4`。修復後原代理通過，B1 在 0.99 門檻命中 213/10,000，有 9,981 個相異分數。舊同種子命中 209/10,000，相異 770 個。Slurm 實測 1 小時 32 分 11 秒、36.15 GiB VRAM、約 2.69 GiB RAM，產物實佔 508 KiB。
