@@ -32,6 +32,13 @@ K = original.K
 DEPTH = 200
 
 
+def package_version(name):
+    try:
+        return version(name)
+    except Exception:  # open_clip lives in an extra site directory without metadata on some hosts
+        return None
+
+
 def condition_texts(panel):
     names = {int(cat): name for cat, name in panel["names"].items()}
     per_query = [[joint_text([names[cat]]) for cat in q["key"]] for q in panel["queries"]]
@@ -129,7 +136,7 @@ def run(out, depth):
     meta = context | {
         "depth": depth, "top_k": K, "timings": timings, "replay": replay,
         "device": torch.cuda.get_device_name(0), "bf16": torch.cuda.is_bf16_supported(),
-        "versions": {name: version(name) for name in ("numpy", "torch", "transformers", "open_clip_torch")},
+        "versions": {name: package_version(name) for name in ("numpy", "torch", "transformers", "open_clip_torch")},
         "bundle": {key: os.environ.get(f"DEV_{key.upper()}") for key in ("source", "freeze", "commit", "dirty")},
         "scope": "exposed 8,191-image pool; development only, not formal evidence"}
     (out / "meta.json").write_text(json.dumps(meta, indent=2, sort_keys=True, default=str))

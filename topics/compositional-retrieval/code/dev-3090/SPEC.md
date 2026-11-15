@@ -1,6 +1,6 @@
 # 多條件檢索｜24 GB 開發規範（dev-3090）
 
-[claude] 2026-11-16（台北）撰寫，交由 Codex 執行。這是開發工具，產出只作方法開發參考，不構成正式證據。正式判定仍走預登記、凍結、H200 送件與獨立複核。 [開發計畫](../../../../reports/2026-11-16-62-retrieval-3090-dev-plan.md) · [目前結果](../../VERDICT.md) · [協作規則](../../../../COORDINATION.md)
+[claude] 2026-11-16（台北）撰寫，交由 Codex 執行。這是開發工具，產出只作方法開發參考，不構成正式證據。正式判定仍走預登記、凍結、H200 送件與獨立複核。 [需要的檔案與資料集](DATA.md) · [開發計畫](../../../../reports/2026-11-16-62-retrieval-3090-dev-plan.md) · [目前結果](../../VERDICT.md) · [協作規則](../../../../COORDINATION.md)
 
 ## 目標
 
@@ -15,6 +15,7 @@
 
 | 檔案 | 用途 | 資源 |
 |---|---|---|
+| `check_host.sh` | 檢查主機是否有全部需要的檔案、模型與環境，加 `--hash` 會核對固定檔案的 SHA-256 | CPU，約 40 秒 |
 | `bundle.sh` | 用 Git 取出 26806 用過的凍結程式（共用腳本與前置階段取自 `2daedf5`，recall-budget 階段取自凍結版 `569b6c0`），加上本資料夾的檔案，設定離線環境後執行 | — |
 | `cache_scores.py --preflight` | CPU 預檢：面板與 26601 收據、模型快照、用 COCO 類別規則重建全部相關標註 | CPU，約 1.5 分鐘 |
 | `cache_scores.py --run --out DIR` | 唯一的 GPU 步驟。CORE-EMBED、CS-CLIP 的全庫影像、整句與單條件向量；CORE-RERANKER 對每題 CORE 前 200 名打分。最後檢查 26806 基線能否重現 | 1 張 GPU，預估峰值約 6 GiB |
@@ -23,6 +24,7 @@
 
 ```bash
 cd topics/compositional-retrieval/code/dev-3090
+bash check_host.sh --hash                              # 檔案、模型、環境齊全
 bash bundle.sh test_analyze.py                         # 7 項測試
 bash bundle.sh cache_scores.py --preflight             # CPU 預檢
 bash bundle.sh cache_scores.py --run --out /work/ChihChungHsu/cactus8603/icml/runs/retrieval-dev/<主機>-<YYYYMMDD-HHMM>
@@ -34,8 +36,8 @@ bash bundle.sh analyze.py --cache /work/ChihChungHsu/cactus8603/icml/runs/retrie
 ## 24 GB 主機需求
 
 - **路徑**：凍結程式寫死 `/work/ChihChungHsu/cactus8603/icml`。3090 主機需要掛載或 symlink 同一路徑。`bundle.sh` 不接受其他根目錄。
-- **環境**：`envs/vllm033`，Python 3.12、Torch 2.14、Transformers 5.20。CUDA 驅動需支援該 Torch 版本。
-- **需要的檔案**：三個模型快照（`params_headroom.json` 固定的 revision，合計約 15 GB）、`data/coco2017-anchor-rerank`（約 1.3 GiB）、`data/coco2017/annotations_trainval2017.zip`，以及 `runs/retrieval-anchor-rerank/26601/summary.json`（預檢會核對它的 SHA-256）。
+- **環境**：`envs/vllm033`（Python 3.12、Torch 2.14+cu130、Transformers 5.20）加上 `envs/t2irare_extra_cscomp`（open_clip）。驅動要支援 CUDA 13.0（R580 以上）。
+- **需要的檔案**：環境、三個模型、開發圖庫、COCO 標註和 26601 收據，合計約 24 GB。完整清單、固定版本與複製指令見 [DATA.md](DATA.md)。模型 snapshot 是 symlink，複製時要解開。
 - **主機 RAM**：至少 32 GiB。COCO 標註以串流讀取，主要的 RAM 用量在模型載入。
 - **精度**：3090 是 Ampere，支援 BF16，與 H200 的設定相同。
 
