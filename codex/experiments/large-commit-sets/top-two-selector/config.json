@@ -1,0 +1,13 @@
+{
+  "seed": "large-commit-top-two-no-probes-2026-11-15",
+  "counts": {"gsm8k_project_holdout": 512, "math500_numeric": 128},
+  "math500_sha256": "35dc41080a3680858b27fa7e0533d2d547825316fc5dafe5d316f4ccc5a06132",
+  "math500_revision": "6e4ed1a2a79af7d8630a6b768ec859cb5af4d3be",
+  "sample_sha256": {
+    "main": "ee08165dd4e41509574c27c324474ac37d3a2ab04ae6dd03c7fe956221be2ab3",
+    "smoke": "c90ca1bce22915e00e29fc45210e247223c187f8a348ecb2450ac41c010c1fca"
+  },
+  "bootstrap_seed": 2026111509,
+  "bootstrap_resamples": 5000,
+  "minimum_gain_for_follow_up": 0.04
+}
