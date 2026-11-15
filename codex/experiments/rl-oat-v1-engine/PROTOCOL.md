@@ -26,3 +26,9 @@ bash "$stage/run.sbatch" "$freeze" --check-runtime "$inventory_sha"
 sbatch --parsable "$stage/run.sbatch" "$freeze" smoke "$inventory_sha"
 sbatch --dependency="afterok:$smoke_job" "$stage/run.sbatch" "$freeze" run "$inventory_sha" "$smoke_job"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 12:52（台北，12:52:08）。已讀 `icml/runs/rsd-pair-a-v1-engine/26652.json`，凍結 `1432b5d`。 [研究進度報告](../../reports/2026-11-15-topic-status-codex.md#rl-稀疏決策蒸餾)
+- [codex] 2026-11-15 12:52（台北，12:52:16）。Astra 獨立讀取同一份凍結彙總。
+- [codex] 2026-11-15 12:52（台北）。重讀既有 `aggregate_gate0_A.json` 的歷史短預算資格摘要。

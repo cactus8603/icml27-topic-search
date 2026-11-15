@@ -126,3 +126,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 12:17 submit 26622 chameleon-defense CPU固定1174共同乾淨列/公開probe/一致門檻換標籤，四合成測試與封存預檢通過 3606083
 [codex] 2026-11-15 12:19 submit 26628 multifidelity-attribution 固定原十方向與EK-FAC因子，12新查詢補空間對齊和同列置換，封存預檢四測試及Astra幾何複核通過 6d8344a
 [codex] 2026-11-15 12:39 submit 26643 multifidelity-attribution 26628精確矩陣指紋核對後續跑；恢復原400查詢Gram與EK-FAC批次，六測試與封存預檢通過 1432b5d
+[codex] 2026-11-15 12:47 submit 26651 rl-sparse-distill Oat首版同日0.7.2推論堆疊，兩個合成題，封存CPU預檢與套件inventory c49872e678c0 1432b5d
+[codex] 2026-11-15 12:47 submit 26652 rl-sparse-distill 首版同日推論堆疊兩面板772題，沿用評分與原規格，成功依賴合成試跑 26651 1432b5d
