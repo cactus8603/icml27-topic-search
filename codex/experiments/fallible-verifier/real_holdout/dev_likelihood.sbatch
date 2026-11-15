@@ -43,10 +43,14 @@ git -C "$repo" archive "$native" "$topic"/{phase3_likelihood,phase3_feasibility,
 
 for role in weak strong; do
     printf '[codex] %s train-only assay %s\n' "$(date '+%Y-%m-%d %H:%M')" "$role"
-    # Native engine failure diagnostics may embed scheduler inputs.
-    if ! "$shared/envs/vllm033/bin/python" -IB "$snapshot/$experiment/dev_likelihood.py" \
-        --role "$role" --run-dir "$run" --freeze "$freeze" >/dev/null 2>&1; then
-        printf '[codex] %s %s failed to complete the train-only assay\n' "$(date '+%Y-%m-%d %H:%M')" "$role" >&2
-        exit 1
+    # Only fixed stage names go to fd 3. Native output can contain scheduler inputs.
+    if FV_REPORT_STAGE_FD3=1 "$shared/envs/vllm033/bin/python" -IB "$snapshot/$experiment/dev_likelihood.py" \
+        --role "$role" --run-dir "$run" --freeze "$freeze" 3>&2 >/dev/null 2>&1; then
+        continue
+    else
+        status=$?
+        printf '[codex] %s %s failed to complete the train-only assay (exit %s)\n' \
+            "$(date '+%Y-%m-%d %H:%M')" "$role" "$status" >&2
+        exit "$status"
     fi
 done

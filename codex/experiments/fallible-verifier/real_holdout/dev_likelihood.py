@@ -10,6 +10,32 @@ from pathlib import Path
 import re
 import sys
 
+
+REPORT_STAGES = __name__ == "__main__" and os.environ.get("FV_REPORT_STAGE_FD3") == "1"
+STAGE = "startup"
+
+
+def report_stage(stage):
+    global STAGE
+    if REPORT_STAGES:
+        STAGE = stage
+        os.write(3, f"[codex] verifier stage: {stage}\n".encode("ascii"))
+
+
+def report_failure(error_type, _error, traceback):
+    error_classes = (ModuleNotFoundError, ImportError, FileNotFoundError, PermissionError,
+                     OSError, ValueError, KeyError, TypeError, AssertionError, RuntimeError)
+    kind = next((category.__name__ for category in error_classes if issubclass(error_type, category)), "other")
+    while traceback is not None and traceback.tb_next is not None:
+        traceback = traceback.tb_next
+    line = traceback.tb_lineno if traceback is not None else 0
+    os.write(3, f"[codex] verifier failed: stage={STAGE} category={kind} line={line}\n".encode("ascii"))
+
+
+if REPORT_STAGES:
+    sys.excepthook = report_failure
+
+report_stage("imports")
 import numpy as np
 
 
@@ -215,29 +241,36 @@ def main():
     modes.add_argument("--run-dir", type=Path)
     parser.add_argument("--freeze")
     args = parser.parse_args()
+    report_stage("provenance")
     model_dir = MODEL_ROOTS[args.role]
     if version("vllm") != "0.33.0" or digest(CONFIG) != prepare.ROUND2_CONFIG_SHA256:
         raise ValueError("Frozen native backend or model config differs")
     if not args.check_only:
         job = os.environ.get("SLURM_JOB_ID", "")
-        if (not re.fullmatch(r"[0-9a-f]{40}", args.freeze or "") or not job.isdecimal()
-                or args.run_dir.resolve() != RESULT_ROOT / job):
+        if not re.fullmatch(r"[0-9a-f]{40}", args.freeze or "") or not job.isdecimal():
             parser.error("GPU scoring requires a frozen Slurm job directory")
+        if args.run_dir.resolve() != RESULT_ROOT.resolve() / job:
+            raise ValueError("GPU scoring requires the registered output directory")
         output = args.run_dir / f"{args.role}.json"
         if output.exists():
             raise FileExistsError(output)
 
+    report_stage("transformers_import")
     from transformers import AutoTokenizer
 
     config = json.loads(CONFIG.read_text())
     spec = config["models"][args.role]
+    report_stage("model_files")
     verify_model(model_dir, spec, args.check_only)
+    report_stage("tokenizer")
     tokenizer = AutoTokenizer.from_pretrained(str(model_dir), local_files_only=True)
     ids = label_ids(tokenizer)
+    report_stage("development_prompts")
     prompts = load_train("prompts.jsonl")
     groups = group_prompts(prompts)
     maximum = config["max_input_tokens"]
     requests, aliases, changed = requests_for(groups, tokenizer, maximum)
+    report_stage("sampler")
     params = logprobs_params(ids)
     if len(aliases) != 2 * (2 * len(prompts) + len(groups)):
         raise ValueError("Incorrect candidate, marker or blind request coverage")
@@ -254,14 +287,18 @@ def main():
         "development_prompts_sha256": hashlib.sha256(prepare.jsonl_bytes(prompts)).hexdigest(),
     }
     if args.check_only:
+        report_stage("cpu_checks")
         label_rows = load_train("gold.jsonl")
         gold = linked_gold(groups, label_rows)
         print(json.dumps(metadata | {"gold_status": Counter(row["gold_status"] for row in gold.values()),
                                      "development_gold_sha256": hashlib.sha256(prepare.jsonl_bytes(label_rows)).hexdigest()},
                          sort_keys=True))
+        report_stage("complete")
         return
 
+    report_stage("native_gpu")
     predictions = run_gpu(model_dir, args.role, config, requests, smoke, params, ids)
+    report_stage("aggregate")
     deltas = {key: predictions[actual] for key, actual in aliases.items()}
     label_rows = load_train("gold.jsonl")
     gold = linked_gold(groups, label_rows)
@@ -269,6 +306,7 @@ def main():
                                   "unique_native_scores_missing": sum(score is None for score in predictions.values()),
                                   "development_gold_sha256": hashlib.sha256(prepare.jsonl_bytes(label_rows)).hexdigest()}
                | summarize(groups, gold, deltas, changed))
+    report_stage("complete")
 
 
 if __name__ == "__main__":
