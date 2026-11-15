@@ -1,17 +1,23 @@
 # ICML 2027 選題與實驗
 
-這個專案用小規模實驗篩選九個研究題目。我們先確認問題量得到，再檢查有沒有可用的訊號，以及現有方法還能改善多少。
+我們用小規模實驗確認研究現象、可用訊號，以及相較現有方法的改善空間。每題的介紹卡用例子說明問題，設計卡整理結果、判準、論文潛力與資源。
 
-每題各有一頁。介紹卡用例子說明問題，設計卡列出對照、最新結果、下一步和所需資源。信心與潛力各以 1–5 分表示研究判斷。信心看目前證據，潛力看關鍵驗證通過後能支撐的研究貢獻。
+## 優先完成現象與訊號
+
+- [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda.md)　補完四類防禦的漏出差異，檢查 Λ 能否預測哪種設定比較容易漏出。
+- [文生圖罕見失敗的機率估計](topics/t2i-rare-failure.md)　補完正式事件率和人工盲評，確認生成失敗有多罕見、偵測器報出的陽性有多少是真的。
+
+## 其他候選
 
 - [多條件影像檢索](topics/compositional-retrieval.md)
-- [條件擴散的兩個時鐘](topics/biased-gen-cfg.md)
-- [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda.md)
 - [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution.md)
 - [只移植少數 RL 推理決策的蒸餾](topics/rl-sparse-distill.md)
-- [文生圖罕見失敗的機率估計](topics/t2i-rare-failure.md)
-- [大型平行解碼提交集合](topics/large-commit-sets.md)
 - [強驗證器與少量金標](topics/fallible-verifier.md)
-- [注意力寫入與最佳化器](topics/gate-optimizer.md)
 
-[選題標準](criteria.md) · [排程與入池](shortlist.md) · [實驗硬體](codex/HARDWARE.md) · [作業紀錄](killtests/SUBMITTED.log)
+## 暫停與淘汰
+
+- [大型平行解碼提交集合](topics/large-commit-sets.md)　論文潛力降為 **2/5**，暫停。
+- [注意力寫入與最佳化器](topics/gate-optimizer.md)　論文潛力 **2/5**，本輪淘汰。
+- [條件擴散的兩個時鐘](topics/biased-gen-cfg.md)　論文潛力 **2/5**，本輪淘汰。
+
+[選題標準](criteria.md) · [研究排程](shortlist.md) · [實驗硬體](codex/HARDWARE.md) · [作業紀錄](killtests/SUBMITTED.log)

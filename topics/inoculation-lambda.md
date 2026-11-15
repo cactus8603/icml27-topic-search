@@ -1,5 +1,7 @@
 # 用訓練前的 Λ 預測防禦漏出
 
+**優先補量 · 現有證據 2/5 · 論文潛力 4/5**（2026-11-15）
+
 ## 介紹卡
 
 **要解的問題。** 微調時可以加一道防禦，讓模型只在指定情境學到某種行為。部署時拿掉該情境，仍可能出現同一行為。這個題目想在訓練前就預測哪個防禦設定較容易漏出，減少逐個設定重訓的成本。
@@ -18,7 +20,7 @@
 
 **目前現象。** 語言盲評中，無防禦的 20 筆回覆有 17 筆含西語，基礎模型和加防禦各為 0/20。各臂 200 筆的離線檢查也見到語言分離。這批結果支持語言漏出，原三任務的重現與跨初始化信度仍待正式驗證。合成 GCD 五臂已完成獨立複核，回答格式造成大幅不確定，各臂之間可重複的漏出差異未建立。 [語言檢查](../codex/experiments/lambda-language-local/PREREG.md#讀取紀錄) · [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md)
 
-**目前訊號。** 一步近似已通過數值檢查。GCD 五臂的訓練後漏出區間互相重疊，訊號方向未定。四家族的留出試驗已備妥題組並通過技術短測，待實測排名與設定選擇。 [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md) · [四家族作業進度](../codex/experiments/lambda-gcd-family-design/PROTOCOL.md#提交紀錄)
+**目前訊號。** 一步近似已通過數值檢查。GCD 五臂的訓練後漏出區間互相重疊，訊號方向未定。四家族正式量測已排程，51 組訓練前評分正在執行。行為試驗要等分數驗收後啟動，才能比較留出家族的排名與設定選擇。 [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md) · [四家族設計](../codex/experiments/lambda-gcd-family-design/PROTOCOL.md) · [作業紀錄](../killtests/SUBMITTED.log)
 
 **目前空間。** 還缺重複訓練的信度上限，以及 PHM 等方法在同一批設定上的表現。知道這兩者，才有尺度判斷預測漏出還能改善多少。 [比較規則](../codex/experiments/lambda-gcd-family-design/evaluation/README.md)
 
