@@ -32,3 +32,9 @@
 - **條件式估算**　找到介入前訊號後，第二個同量級模型的正常排程與等品質對照約 **2–4 個工作天**，排隊另計。單張 H200 約 **3–8 GPU 小時**。本輪加密量測實測 **1 小時 49 分鐘**，顯存峰值 **3.33 GiB**、主機 RAM **2.05 GiB**，結果檔約 **17.5 MiB**。 [硬體實測](../codex/HARDWARE.md)
 
 [正常排程的設計與結果](../codex/experiments/gate-optimizer-nominal-dense/PREREG.md#讀取紀錄) · [壓力對照](../codex/experiments/gate-optimizer/round3/PREREG.md#讀取紀錄)
+
+### 深入調查
+
+Qwen3.8-Next 的對照顯示，採用 Muon 等較強的最佳化器就能減少一部分突發損失。既有研究也已比較過注意力閘門與不同的正規化方法。
+
+我們要驗證的是，在正常學習率和強最佳化器下，能否及時辨識有害更新，並用局部調整讓模型更快達到同樣的驗證表現。 [訓練穩定性文獻深查](../codex/reports/2026-11-14-deepcheck-gate-optimizer.md)

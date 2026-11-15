@@ -32,3 +32,9 @@
 - **下一步估算**　找到候選訊號後，設計與跑完第一輪新題確認約 **1–2 個工作天**，排隊另計。單張 H200 約 **0.5–2 GPU 小時**。同模型 640 題實測 **18 分 39 秒、顯存 16.58 GiB**，權重約 **16 GB**。 [硬體實測](../codex/HARDWARE.md)
 
 [等成本聯合探測](../codex/experiments/large-commit-sets/round2/PREREG.md) · [免額外運算與兩種上限](../codex/experiments/large-commit-sets/observable-selector/PREREG.md#讀取紀錄)
+
+### 深入調查
+
+SetCommit 已比較同一步換上等大的填詞組合後，最終能多答對多少題。Measured Coupling 也已量到多個詞一起填的影響，有時會偏離兩兩影響的加總。
+
+我們要驗證的是，能否用這個差異選到更好的組合，並在計入探測成本後，比現有方法在同樣時間內答對更多題。 [平行解碼文獻深查](../codex/reports/2026-11-14-deepcheck-large-commit-sets.md)

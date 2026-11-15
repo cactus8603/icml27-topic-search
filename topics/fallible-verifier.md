@@ -33,3 +33,9 @@
 - **下一步估算**　有現成標準答案時，準備面板到判讀約 **1–3 個工作天**，排隊另計。單張 H200 約 **0.25–0.75 GPU 小時**，判讀用 CPU。ASDiv-A 與 GSM1k 推論實測約 **6–15 分鐘**，結果檔 **7–18 MiB**。ASDiv-A 顯存峰值 **127.52 GiB**（含框架預留），主機 RAM 約 **9.2 GiB**。 [硬體實測](../codex/HARDWARE.md)
 
 [GSM8K 暖機分配與結果](../codex/experiments/fallible-verifier/gsm8k-nested-audit/PREREG.md#讀取紀錄) · [ASDiv-A 複驗](../codex/experiments/fallible-verifier/asdiv-replication/PREREG.md#讀取紀錄) · [ASDiv-A 點風險上限](../codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/PREREG.md#讀取紀錄)
+
+### 深入調查
+
+Selective Auditing 已研究何時請專家複查，AM-PPI 也已研究如何分配模型判分與金標預算。我們重算過公開判決資料，在其中一組模型配對裡，只抽查意見相左的答案會漏掉多數共同誤收。 [公開資料重算](../codex/reports/2026-11-14-deepcheck-verifier-replay-data.md)
+
+我們要驗證的是，付費詢問一個也會判錯的強模型，能否改進當下接受、拒絕或複查的決定，並在同樣的誤收、誤拒限制下省費。 [驗證器文獻深查](../codex/reports/2026-11-14-deepcheck-fallible-verification.md)
