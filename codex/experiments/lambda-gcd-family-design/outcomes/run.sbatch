@@ -77,6 +77,7 @@ if [[ "$mode" == --check-only ]]; then
     export CUDA_VISIBLE_DEVICES=''
     core=$("$python" -IB -c 'import os; print(min(os.sched_getaffinity(0)))')
     taskset -c "$core" "$python" -IB "$bundle/$stage/test_panel.py"
+    taskset -c "$core" "$python" -IBu "$bundle/$stage/train_entry.py" --help >/dev/null
     taskset -c "$core" "$python" -IBu "${entry[@]}" "${options[@]}"
 else
     "$python" -IBu "${entry[@]}" "${options[@]}"

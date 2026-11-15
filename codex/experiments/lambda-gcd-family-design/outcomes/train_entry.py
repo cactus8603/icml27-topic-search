@@ -1,11 +1,13 @@
 """Run the pinned author CLI and capture its actual initialization before training."""
 
+import argparse
 import math
 from pathlib import Path
 import runpy
 import sys
 from unittest.mock import patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from cell import design, readiness
 
 
@@ -61,4 +63,10 @@ def main(source, config, arm, expected):
 
 
 if __name__ == "__main__":
-    main(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], sys.argv[4])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", type=Path)
+    parser.add_argument("config", type=Path)
+    parser.add_argument("arm")
+    parser.add_argument("expected_initial_sha256")
+    args = parser.parse_args()
+    main(args.source, args.config, args.arm, args.expected_initial_sha256)

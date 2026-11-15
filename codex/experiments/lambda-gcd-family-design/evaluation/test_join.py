@@ -26,7 +26,11 @@ class SyntheticRun:
         self.ledger.write_text("".join(f"[codex] 2026-11-15 17:00 submit {job} inoculation-lambda fixture {self.freeze}\n"
                                       for job in self.jobs.names()))
         self.allocations = []
-        for job, name in self.jobs.names().items():
+        submitted = {"26821": "lambda-gcd-family-preflight", "26822": "lambda-gcd-phm-score",
+                     "26823": "lambda-gcd-family-train-ready", "600": "lambda-gcd-family-step0",
+                     "601": "lambda-gcd-family-step0-join", "602": "lambda-gcd-family-outcomes",
+                     "603": "lambda-gcd-family-outcome-judge"}
+        for job, name in submitted.items():
             ids = [f"{job}_{i}" for i in range(51)] if job in ("600", "602") else [job]
             self.allocations.extend(f"{i}|COMPLETED|0:0|{name}" for i in ids)
 

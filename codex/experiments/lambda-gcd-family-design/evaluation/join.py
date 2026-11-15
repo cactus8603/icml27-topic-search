@@ -54,7 +54,7 @@ class Jobs:
     outcome_judge: str
 
     def names(self):
-        return {DATA_JOB: PREFIX + "preflight", PHM_JOB: "lambda-gcd-phm", READY_JOB: PREFIX + "train-ready",
+        return {DATA_JOB: PREFIX + "preflight", PHM_JOB: "lambda-gcd-phm-score", READY_JOB: PREFIX + "train-ready",
                 self.step_array: PREFIX + "step0", self.step_join: PREFIX + "step0-join",
                 self.outcome_array: PREFIX + "outcomes", self.outcome_judge: PREFIX + "outcome-judge"}
 
