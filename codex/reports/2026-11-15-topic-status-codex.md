@@ -1,6 +1,6 @@
 # ICML 2027 十題研究進度
 
-[codex] 2026-11-15 12:57（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
+[codex] 2026-11-15 13:06（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
 
 | 題目 | 現象 | 訊號 | 最佳比較方法、參考上限與差距 |
 |---|---|---|---|
@@ -101,6 +101,7 @@
 * **作者首版同日的環境。** 論文首版已有上述基準。作者同日 Git `08db9b8` 的 README 明列 vLLM 0.7.2，與較後公開 README 的 0.8.4 有版本差。兩版公開評估入口、計分原始碼和兩份題庫的 Git blob 相同。首版實際執行環境及逐題輸出未發布可驗指紋，現有評分套件也晚於論文首版。這些是後續可以隔離的版本來源，原重現窗沿用。 [首版論文](https://arxiv.org/html/2503.20783v1) · [同日作者 README](https://github.com/sail-sg/understand-r1-zero/blob/08db9b810ace3ed128bbee85e780b418d72a156e/README.md#L99-L107)
 * **首版推論環境診斷。** 合成 `26651` 與完整兩面板 `26652` 均完成。結果為 MATH500 **368／500（73.60%）**、Minerva **67／272（24.63%）**，相對論文 **−0.60／−1.07 點**，均在原 ±2 點內。相較 26621 分別變動 **−1.00／+1.47 點**，Minerva 回到原窗。兩面板分別有 7／8 題達長度上限。Astra 複核一致。vLLM、Torch 與 Transformers 同時改版，結果支持首版公開推論堆疊在固定評分下的這次重驗。彙總 SHA-256 `a1cfccca5128ef045a043fdcdd5c5d8f77f71bd67a4d81dd33f38378416c6b08`。 [首版推論診斷](../experiments/rl-oat-v1-engine/PROTOCOL.md)
 * **短預算資格。** 歷史 A 的同配對 128 樣本，Base／RL 截斷率為 **30.53%／2.51%**，差 **28.03 點**，超出原 <2 點。Base／RL 的 pass@64 為 **73.63%／75.46%**，現有結果中 RL 高 **1.83 點**，未達原由 Base 領先的條件。首版推論診斷只做 RL greedy。正式配對與稀疏介入仍須具備可比短預算證據。 [原資格彙總](../../killtests/rl-sparse-distill/results/aggregate_gate0_A.json)
+* **短預算截斷對照。** `26655` 與其相依的 `26656` 已送出。兩模型沿用原短預算提示、共同抽出的 128 題和每題四個樣本，以 0.7.2 先生成原生 EOS 路徑，再用同一序列重建歷史額外停止。比較截斷率及題群區間。四項合成測試、兩模型全權重指紋、原提示 token 一致性及封存 CPU 預檢已通過。 [截斷診斷](../experiments/rl-a-short-stop/PREREG.md)
 
 ## 文生圖罕見失敗
 

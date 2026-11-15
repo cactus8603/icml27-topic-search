@@ -129,3 +129,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 12:47 submit 26651 rl-sparse-distill Oat首版同日0.7.2推論堆疊，兩個合成題，封存CPU預檢與套件inventory c49872e678c0 1432b5d
 [codex] 2026-11-15 12:47 submit 26652 rl-sparse-distill 首版同日推論堆疊兩面板772題，沿用評分與原規格，成功依賴合成試跑 26651 1432b5d
 [codex] 2026-11-15 12:56 submit 26654 multifidelity-attribution 64個新重訓遮罩驗固定12查詢補空間能否轉成LDS；五測試、封存預檢及Astra複核通過 c7aa443
+[codex] 2026-11-15 13:06 submit 26655 rl-sparse-distill 0.7.2短預算同模板Base/RL合成雙題，四測試、封存CPU runtime及兩權重指紋通過 8a9f389
+[codex] 2026-11-15 13:06 submit 26656 rl-sparse-distill 同128題×4樣本比較原生EOS與額外停止重截，依賴合成試跑 26655 8a9f389
