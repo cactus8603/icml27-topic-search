@@ -34,6 +34,10 @@
 
 離線單核，無 GPU。透過封存入口先跑合成測試與靜態配置檢查。正式執行只寫一份帶 SHA-256 及固定來源的聚合 JSON。預計少於 16 KiB。依協作規則登記讀取，再獨立複核。
 
+## 讀取紀錄
+
+- [codex] 2026-11-15 16:30（台北）。排隊作業 `26737` 因共用 CPU 配額取消，確認未啟動後用同凍結版本 `b3507617caae44d0a5b64bed9599c7b76fd04194` 的離線單核入口完成。`runs/large-commit-sets-observable-selector/local-gSjPYX2G/summary.json` 共 3,219 bytes，SHA-256 `660b74c1d0f81215cb8fc87f112341d764ea6a56dea572d14977e6ead54bb3d2` 與收據吻合。重算原跨線 466/946。全 1,000 題原 confidence 297、訓練擬合 300（配對 +0.3 個百分點，95% 區間 −2.1 至 +2.7）、同狀態最優 305、同資格逐題最優 426、原逐題最優 430。Astra 獨立複核差額及推論範圍。
+
 ```sh
 stage=codex/experiments/large-commit-sets/observable-selector
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only

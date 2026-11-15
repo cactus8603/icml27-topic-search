@@ -152,3 +152,13 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 15:53 submit 26704 fallible-verifier 250暖機題指令模型替代Base，合計1,000候選之原解析與雙端長度；九測試、封存預檢及Astra核對通過 dbc60ce
 [codex] 2026-11-15 15:57 submit 26707 fallible-verifier 26704暖機技術資格通過；正式新ASDiv-A 250/747、雙映射與原省費風險門檻，十測試與封存CPU預檢通過 885ac70
 [codex] 2026-11-15 16:16 submit 26712 fv-asdiv-point-risk CPU-only ASDiv 11% point-risk cost envelope 580772dcb825f11af836b4f3d966d4c444ba0379
+[codex] 2026-11-15 16:26 submit 26718 inoculation-lambda 獨立GCD五臂三種子量漏出全距與信度，12測試及封存CPU預檢通過 a2e2e7f716a9949025e3cf15ec100f184763f42d
+[codex] 2026-11-15 16:26 submit 26719 inoculation-lambda 獨立GCD陣列26718全通過後以CPU驗封存收據和漏出信度 a2e2e7f716a9949025e3cf15ec100f184763f42d
+[codex] 2026-11-15 16:27 submit 26734 multifidelity-attribution 原Stage0公式固定50個新精確欄補量M1與殘差餘弦，封存預檢、合成對照和獨立方法核對通過，等26703終止 09661dc26c24ea06623bae30fe6fdc80692dd0aa
+[codex] 2026-11-15 16:27 submit 26735 rl-sparse-distill 新預算對照先做同封存合成GPU重截，三測試與權重/標答封存預檢通過 af75bf0ddb7f5b202d73dc32170794187c5b76a5
+[codex] 2026-11-15 16:27 submit 26736 rl-sparse-distill 128新題同一單token續寫重截3000/3710，估截斷識別界，依賴合成GPU 26735 af75bf0ddb7f5b202d73dc32170794187c5b76a5
+[codex] 2026-11-15 16:27 submit 26737 large-commit-sets 原面板免額外 forward 訊號與同資格選擇上限；四測試、封存預檢與來源作業查核通過 b3507617caae44d0a5b64bed9599c7b76fd04194
+[codex] 2026-11-15 16:29 cancel 26719 inoculation-lambda 26718各段在資料前因運算節點暫存別名核對停止，撤已不可能成立的相依 883c9ff16677884d7eb3a2a579a25d4770efbe39
+[codex] 2026-11-15 16:29 submit 26738 inoculation-lambda 修正運算節點暫存路徑兩側比對後重送同件獨立GCD面板，封存CPU預檢通過 883c9ff16677884d7eb3a2a579a25d4770efbe39
+[codex] 2026-11-15 16:29 submit 26739 inoculation-lambda 獨立GCD陣列26738全通過後驗收據及量漏出信度；無效相依自動結束 883c9ff16677884d7eb3a2a579a25d4770efbe39
+[codex] 2026-11-15 16:30 cancel 26737 large-commit-sets 共用CPU配額排隊，改同封存單核本機備援 b3507617caae44d0a5b64bed9599c7b76fd04194

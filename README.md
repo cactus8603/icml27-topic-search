@@ -15,7 +15,7 @@
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 完成公開探測器與固定門檻的乾淨標籤對照 | 等歷史選樣、合併探測器與 checkpoint 對應 |
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成短預算截斷對照、公開 32K 交叉重播及單 token 診斷，Astra 複核 | 正式短預算仍需截斷可比的配對，單 token 收益的停止行為待分離 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 正以原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
-| [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
+| [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪、零額外 forward 新題測試及同狀態上限重播 | 現象通過。免額外 forward 的固定狀態上限只多 0.8 點，低於 4 點參考線。續驗需不同訊號 |
 | [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K、GSM1k 與 ASDiv-A 留出，Astra 複核 | ASDiv-A 誤收重現、條件訊號低於門檻。同點風險下，查強端的事後最優比直接決策再省 13.21%。下一步若續驗，需固定策略後測獨立題群 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
 
@@ -80,6 +80,7 @@
 - **訊號**在留出題量聯合探測是否比等次數的兩兩探測更常排對候選。
 - **現有方法**沿用原 confidence 選擇、單點加總和等額 forward 的已擬合兩兩探測作對照。
 - **上限**固定同一狀態和候選池，事後選能答對的候選。可回收空間以兩兩方法答錯、池內至少有一個答對的測試題計算。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#大型平行解碼提交集合) · [第二輪預登記](codex/experiments/large-commit-sets/round2/PREREG.md)
+- **可用訊號實測**原 1,000 題以信心差、交換跨度及介入步選候選，勝原 confidence **0.3 個百分點**（95% 區間 **−2.1 至 +2.7**）。同資格且只能依同一狀態選的事後上限為 **+0.8 點**。原三候選池逐題選正解的上限是 **+13.3 點**。 [CPU 續驗及讀取紀錄](codex/experiments/large-commit-sets/observable-selector/PREREG.md#讀取紀錄)
 
 ### 強驗證器與少量金標
 
