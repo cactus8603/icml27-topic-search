@@ -29,3 +29,7 @@ smoke_job=$(sbatch --parsable --time=00:15:00 "$stage/run.sbatch" "$freeze" smok
 smoke_job=${smoke_job%%;*}
 sbatch --parsable --dependency="afterok:$smoke_job" "$stage/run.sbatch" "$freeze" diagnostic "$smoke_job"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 15:32（台北）已讀 `icml/runs/rsd-single-token-fork/26678.json`。Slurm 成功，摘要 SHA-256 與執行紀錄相符，分叉配對與整體分母已重算。凍結版 `1a80f08`。
