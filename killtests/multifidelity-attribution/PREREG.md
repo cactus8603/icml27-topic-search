@@ -94,3 +94,5 @@ CIFAR-10 ResNet-9 上，便宜歸因方法離精確 metagradient 還有沒有足
 - [codex] 2026-11-15 03:42–03:48 已讀 `results/stage0/verdict_stage0.json`、`results/stage0` 的匯出與凍結重訓參照，以及 seed 0 既有 `exact/`、`cheap/`、`retrain/` 檔案。逐檔雜湊、產生作業和時間見 `codex/multifidelity-heldout/results.json`。固定十方向的留出檢查另記為探索性，正式判準與跨種子加碼條件未修訂。
 - [codex] 2026-11-15 06:16–06:18 主代理與獨立子代理已讀 `icml/runs/multifid/exact_probe/target12-599469e/results.json` 的機械彙總。只核對作業 `26449` 的同軌跡診斷，凍結版沿用 `599469e`。
 - [codex] 2026-11-15 08:09 主代理已讀 `icml/runs/multifid/direction_coverage/26517/{selection,results}.json`。Astra 隨後複核已核對的彙總。探索性試驗沿用 `dc5c2db`，未修訂第 0 階段正式判準。
+
+- [codex] 2026-11-15 10:09–10:10（台北）主代理與子代理重讀 `VERDICT_stage0.md`，核對同軌跡最強比較基線、完整精確歸因參考與 50 查詢分母。未讀 `26535` 的部分結果。

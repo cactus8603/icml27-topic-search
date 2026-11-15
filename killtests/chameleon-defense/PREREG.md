@@ -195,3 +195,5 @@
 - [codex] 2026-11-15 03:21 重讀 `results/analysis_26392/RESULT.json` 中的留出概念正控制、ROB−ENS 與 H8，限於描述。未修訂判準。
 - [codex] 已讀 `results/author_parity/26505.json`，2026-11-15 07:08。Astra 獨立複核與整合核對，凍結版 `b9b43d7`。正式基準判準沿用。
 - [codex] 2026-11-15 07:10–07:11。來源搜尋時另顯示 `results/analysis_26392/RESULT.md` 的四行歷史摘要，後續只核對作者程式、檔案清單與來源雜湊。
+
+- [codex] 2026-11-15 10:09–10:10（台北）重讀 `results/analysis_26392/RESULT.md` 的重現閘門與 H8 描述，以彙整可比較上限。凍結判準維持 `d42f49d`。
