@@ -27,3 +27,8 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
 freeze=$(git rev-parse --verify HEAD)
 sbatch "$topic/run.sbatch" "$freeze"
 ```
+
+## 讀取紀錄
+
+* [codex] 已讀 `results/26525/author-grade-aggregate.json`，2026-11-15 09:04（台北）。凍結版 `ed42f9d94d1de04d03236b5834eabd4325eece36`。
+* [codex] 獨立複核已讀同一彙總，2026-11-15 09:05（台北）。

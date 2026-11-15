@@ -90,3 +90,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 08:20 submit 26534 compositional-retrieval 新COCO兩條件固定索引和前50榜單上限，Astra及全部JPEG預檢通過 6aa7eb5
 [codex] 2026-11-15 08:22 submit 26535 multifidelity-attribution seed6獨立軌跡，固定12查詢100重訓遮罩，比精確LDS與固定EK-FAC，已複核和CPU預檢 c6ff6aa
 [codex] 2026-11-15 08:36 submit 26558 inoculation-lambda CPU驗26533三臂收據、600筆作者評分輸入和60筆盲化診斷材料，替身預檢通過 37cd61b
+[codex] 2026-11-15 08:57 submit 26559 biased-gen-cfg 同母體833/5000唯一本數配對，固定更新量與探測輸入，真實CPU小跑及Astra審查通過 24cd3d3
