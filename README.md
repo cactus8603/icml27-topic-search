@@ -16,7 +16,7 @@
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成短預算截斷對照、公開 32K 交叉重播及單 token 診斷，Astra 複核 | 正式短預算仍需截斷可比的配對，單 token 收益的停止行為待分離 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 正以原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K、GSM1k 與 ASDiv-A 留出，Astra 複核 | ASDiv-A 通過金標覆蓋，下一步量相同風險限制下能達到的省費空間 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K、GSM1k 與 ASDiv-A 留出，Astra 複核 | ASDiv-A 誤收重現、條件訊號低於門檻。同點風險下，查強端的事後最優比直接決策再省 13.21%。下一步若續驗，需固定策略後測獨立題群 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
@@ -88,6 +88,7 @@
 - **現有方法**在相同暖機預算下，比較只買專家金標與混買強判決、金標的政策。
 - **上限參考**用完整暖機金標訓練有無強判決的兩類政策，在同一鎖定測試集比較等風險的部署成本。這個參考受固定政策類別限制。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#強驗證器與稀疏金標) · [第二輪預登記](codex/experiments/fallible-verifier/round2/PREREG.md)
 - **獨立續驗** GSM1k 固定 250 題暖機、747 題留出。用新作答器產生四個候選，沿用兩端驗證器、判決門檻與成本規格。[GSM1k 預登記](codex/experiments/fallible-verifier/gsm1k-replication/PREREG.md)
+- **ASDiv-A 實測**金標覆蓋 98.76%，強端誤收 57.29%，條件 Brier 下降 6.35%，低於 15% 門檻。原策略的等風險省費仍未確立。在誤收、誤拒各限 11% 的事後點風險分析，直接政策最小成本 0.83015，可查強端時為 0.72045。相對直接最優額外省 13.21%，低於 20% 幅度。兩個原已擬合策略的誤收點風險上界均超過 11%，無法直接和這組最優解比較。 [ASDiv-A 正式結果](codex/experiments/fallible-verifier/asdiv-replication/PREREG.md#讀取紀錄) · [同點風險分析](codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/PREREG.md#讀取紀錄)
 
 ### Attention gate × optimizer
 

@@ -15,3 +15,7 @@ bash codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/run.sbatch FUL
 sbatch codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/run.sbatch FULL_FREEZE_COMMIT
 bash codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/run.sbatch FULL_FREEZE_COMMIT --local
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 16:17（台北）。核對 `26712` 為 `COMPLETED / 0:0`，摘要 `runs/fallible-verifier/asdiv-point-risk-ceiling/26712/summary.json` 的 SHA-256 為 `34eded9d78b587b55c39dae74569264d54201ac1ac811dd2d419c670f2523a85`，與執行收據、凍結版本 `580772dcb825f11af836b4f3d966d4c444ba0379`、正式來源及面板摘要吻合。直接與雙端的每候選最小成本為 0.83015134 與 0.72045133，相對直接最優額外省 13.2145%。兩種解的保守絕對誤收與誤拒點風險均達 11%，原始與對偶成本差小於 `7e-15`。Astra 獨立核對比例與證據範圍。Slurm 實測 5 秒、MaxRSS 約 76.93 MiB，CPU 無 GPU，摘要 5,363 bytes。
