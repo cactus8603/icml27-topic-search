@@ -28,6 +28,10 @@
 4. 標註：匯出匿名盲查樣本和另存映射；空白人工審查表不算完成的人類標註。若由模型協助看圖，明確標為AI初審，保留不確定，不冒充人工gold。
 5. 外部泛化：先核對MCMR schema與原始輸入資訊，取得公開metadata、釘版本和schema；原本的圖文candidate／query若與本題不同，列獨立協定，不能任意刪metadata後仍稱官方主設定。訓練與正式大實驗依使用者決定回叢集；本機無叢集連線時保留可執行交接與未執行狀態，不偽造完成。
 
+[codex] 2026-11-16 05:06，任何M1／M2／D3效果仍未計算或讀取，固定外部pilot／成本的單一政策選法：在完整COCO開發的所有 `m1/` 政策中，依mean AP降序、固定Recall@50降序、policy id升序選一個，保存分析檔SHA與政策收據；即使未過送正式門檻也可做探索pilot，但不得因此宣稱正式成功。保留CORE及其等價控制作保底；若選中基線等價政策，照實報無新增政策收益。該政策及深度直接轉移MCMR，train-only LCSE參數如需則原樣轉移，不在MCMR看標籤後重新選法。成本也只加測此同一政策。外部pilot使用事前固定的128 query／8,320商品原生圖文輸入，並列其不同於官方重現的prompt／batch／重排改編；不稱完整MCMR benchmark。
+
+[codex] 2026-11-16 05:10，為平行利用空閒時段，MCMR方法無關的CORE50共6,400對可在COCO政策鎖定前先計算raw scores，不分析外部效果。政策鎖定後，僅在同來源／資料／索引／環境／原cross batch1的共同實際pair才可復用；先固定抽8個共同pair逐值重算驗證，另記wrapper程式與cache指紋、復用與新算數量。不能改query/商品metadata、挑subset、改batch或藉復用讀取cross來選入池。若無法完成此一致性驗證，走直接計算流程。
+
 ## 分工與產物
 
 root整合、固定協定、快取／追加編碼／成本執行、結果報告。setup_review只寫analysis_v2與其測試；literature_check只寫logic_baselines、測試及theory審計；potential_audit只寫diagnostics、測試及data協定。各自不修改他人檔案。報告置 `codex/reports/`，大量陣列／圖片置ignored `dl/retrieval3090/`。主README只記操作方法。
@@ -47,3 +51,4 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16 04:48，仍未讀取任何M1／M2／D3方法效果，torch214全池基線尚在執行時，另外固定條件式 [本機平台開發協定](platform_plan.json)。原重現流程與原容差不變；僅當這一次同代框架重現也失敗時，另開新輸出與明示入口，保留原 `MISMATCH`，通過來源、逐值重複、完整快取及同環境驗證後才做相對本機CORE的探索比較。不是把失敗改為PASS，也不是原H200結果的確認。算法、seed、控制組、OOF與正式驗證要求沿用原已凍結設定；不再為湊基線搜尋版本或backend。
 - [codex] 2026-11-16 04:51–04:55，root已讀 `dl/retrieval3090/runs/supplement-torch214-20261116/lcse_calibration.json` 及相應原始校準向量，僅核對train-only來源、cosine指紋及重新擬合結果，確認後清理可重建的重複中間陣列。未讀取政策或D3效果。
 - [codex] 2026-11-16 04:55–04:58，root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/candidate-replay-only.json`，只檢查原候選召回與oracle重現。條件式平台協定於04:48起草；本次提交前已知原候選閘門未過，但仍未計算或讀取任何M1／M2／D3效果。正式採用新平台流程須本次提交後，另一次明示啟動、完整來源／逐值重複驗證及獨立審查。
+- [codex] 2026-11-16 05:06:54–05:09，potential_audit/root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/baseline-top50-replay.json`；potential_audit亦讀獨立本機續算的 `reranker-repeat.json` 作8對技術重複核驗。原重現檔保留不變，未讀M1／M2／D3或外部效果。
