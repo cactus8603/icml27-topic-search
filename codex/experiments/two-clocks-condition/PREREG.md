@@ -18,3 +18,7 @@ bash -n "$stage/run.sbatch"
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --cpu-smoke
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:41（台北），Codex 與 Astra 子代理獨立讀取 `26596/results.json`。凍結版本 `e82ef6bdab22de36a11e0138d6ee02c6075705d9`。

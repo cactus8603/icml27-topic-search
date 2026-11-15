@@ -18,7 +18,7 @@
 
 使用既有 COCO、CS-CLIP 與 CORE snapshots。公開圖檔初估約 1.24 GiB，累計下載上限 2.5 GiB。無額外模型下載。H200 一張、8 CPU、48 GiB RAM；先估 5–12 分鐘，作業上限 30 分鐘。先前同 pipeline 的 CORE-only 26568 實測 6.16 GiB、3 分 23 秒。24 GB 逐模型載入有資源基礎，須以相容的本地 CUDA 與封存版本跑小 smoke 後確認。
 
-凍結面板有 8,191 張圖、136 個新查詢、118 群，105 個查詢只有一個標註相關候選。下載收據共 1,330,217,839 bytes，按原格式與尺寸規則排除一張。固定評分 6,800 組原前 50 名查詢影像對。
+凍結面板有 8,191 張圖、136 個新查詢、118 群，105 個查詢只有一個標註相關候選。下載收據共 1,330,217,839 bytes，按原逐位元去重規則排除一張。固定評分 6,800 組原前 50 名查詢影像對。
 
 ```bash
 shared=/work/ChihChungHsu/cactus8603/icml
@@ -33,3 +33,7 @@ bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 ```
 
 在本 repo 重建 `verify` 後，將 receipt 的 `manifest_sha256` 填入 `panel.json`，複核兩份一致再凍結。執行入口只輸出一份正式聚合 `summary.json` 至叢集路徑 `runs/retrieval-anchor-rerank/<job-id>/`。
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:52／11:54（台北），獨立子代理與 Codex 分別讀取 `26601/summary.json`，凍結版本 `2daedf522c6d64b860277657d3067b61da3a0f2b`。依收據訂正面板排除原因為逐位元重複，候選名單及判讀規則依凍結版。

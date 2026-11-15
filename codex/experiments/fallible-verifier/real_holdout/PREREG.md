@@ -21,3 +21,7 @@ export PYTHONPATH="$shared/envs/t2irare_extra_cscomp"
 ```
 
 正式將 `--check-only` 改為 `--output-dir "$shared/runs/fallible-verifier/gsm8k-holdout/<new-id>"`。只使用新的私有目錄，成功時最後寫 `coverage.json`。題目、候選及逐列標籤保留在叢集。
+
+## 留出彙總讀取紀錄
+
+- [codex] 2026-11-15 11:51（台北），Codex 與 Astra 子代理獨立讀取 `gsm8k-policy-evaluation/26599/summary.json`，凍結 `ac3950820be8c7f4f1528ecc553b9cf51aad894b`。原判讀門檻沿用。
