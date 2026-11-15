@@ -20,3 +20,8 @@ stage=codex/experiments/chameleon-clean-panel
 ../icml/envs/inoc/bin/python -IB "$stage/measure.py" preflight
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT preflight
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:05（台北），Codex 已讀 `26572.json`。凍結版本 `5bff580`。
+- [codex] 2026-11-15 11:04（台北），獨立子代理已獨立讀取並複核同一份彙總。

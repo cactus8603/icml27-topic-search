@@ -28,3 +28,7 @@ export TMPDIR="$shared/tmp" HF_HOME="$shared/hf_home" VLLM_NO_USAGE_STATS=1
 "$shared/envs/vllm033/bin/python" -IB "$experiment/test_dev_likelihood.py"
 sbatch "$experiment/dev_likelihood.sbatch" FULL_FREEZE_COMMIT
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:06（台北），Codex 與獨立子代理已讀 `26565/strong.json` 及 `26565/weak.json`。凍結版本 `2bc9d7e`。

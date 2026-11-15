@@ -23,3 +23,8 @@ stage=codex/experiments/t2i-tie-secondary-key
 bash -n "$stage/run.sbatch"
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:03（台北），Codex 已讀 `26585/summary.json`。凍結版本 `be2f605`。
+- [codex] 2026-11-15 11:03（台北），Astra 子代理已獨立讀取並複核同一份彙總。

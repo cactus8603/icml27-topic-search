@@ -19,3 +19,8 @@ export TMPDIR="$shared/tmp" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 "$shared/envs/attrib-jax/bin/python" -IB "$stage/compare.py" preflight
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:12（台北），Codex 已讀 `26574/summary.json`。凍結版本 `4beacb2`。
+- [codex] 2026-11-15 11:12（台北），獨立子代理已獨立讀取並複核同一份彙總。

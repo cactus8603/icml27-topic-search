@@ -107,3 +107,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 10:04 submit 26574 multifidelity-attribution CPU比對0/6兩seed固定12查詢同100遮罩四格排序，依賴26535，Astra及封存預檢通過 4beacb2
 [codex] 2026-11-15 10:16 submit 26582 t2i-rare-failure 另32未揭露種子CPU四臂同真事件只改評分同分，Astra與封存前置通過 bf261c3
 [codex] 2026-11-15 10:33 submit 26585 t2i-rare-failure 32全新種子七臂CPU同事件比較原分數與同分次鍵，Astra及封存預檢通過 be2f605
+[codex] 2026-11-15 11:10 submit 26593 rl-sparse-distill 26569取樣與作者評分SymPy隔離，沿用原384題與分析，獨立程式審查及封存雙CPU預檢通過 4442d1b

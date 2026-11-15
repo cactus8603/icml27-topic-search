@@ -27,3 +27,8 @@ export COUNT_CLOCK_TEST_DATA="$shared/data/biasgen-hier/hier_q6_l4_s1.0_qeff4_se
 bash "$stage/run.sbatch" FULL_COMMIT --check-only
 sbatch --parsable "$stage/run.sbatch" FULL_COMMIT
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:02（台北），Codex 已讀 `26559/results.json`。凍結版本 `24cd3d3`。
+- [codex] 2026-11-15 11:01（台北），Astra 子代理已獨立讀取並複核同一份彙總。

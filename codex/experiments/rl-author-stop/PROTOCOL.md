@@ -17,3 +17,8 @@ freeze=REVIEWED_FULL_COMMIT
 bash "$stage/run.sbatch" "$freeze" --check-only
 sbatch --parsable "$stage/run.sbatch" "$freeze"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:14（台北），Codex 已讀 `26593.json`。凍結版本 `4442d1b`。
+- [codex] 2026-11-15 11:14（台北），Astra 子代理已獨立讀取並複核同一份彙總。

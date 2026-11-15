@@ -28,3 +28,8 @@ stage=codex/experiments/retrieval-rerank
 "$shared/envs/vllm033/bin/python" -IB "$stage/prepare.py" verify
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:02（台北），Codex 已讀 `26568/summary.json`。凍結版本 `53027bd`。
+- [codex] 2026-11-15 11:02（台北），獨立子代理已獨立讀取並複核同一份彙總。

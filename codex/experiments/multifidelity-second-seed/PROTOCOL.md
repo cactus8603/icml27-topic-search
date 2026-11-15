@@ -29,3 +29,8 @@ bash -n "$pilot/run.sbatch"
 freeze=$(git rev-parse --verify HEAD)
 sbatch "$pilot/run.sbatch" "$freeze"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 11:12（台北），Codex 已讀 `26535/summary.json`。凍結版本 `c6ff6aa`。
+- [codex] 2026-11-15 11:12（台北），獨立子代理已獨立讀取並複核同一份彙總。
