@@ -104,7 +104,7 @@ D3 決定這題能不能寫成 ICML 的框架。使用者標準寫明純分析�
 
 ## 協作與待決事項
 
-- 這題的實驗原由 Codex 執行。由誰接手開發需要使用者決定。
-- 開發程式的位置待定。依 `COORDINATION.md` 第 4 節，Claude 的免 lock 工作區只有 `reports/` 中帶編號的報告與 `.claude/`。若要放在 `topics/compositional-retrieval/code/` 下，需先在 `LOCKS.md` claim。
+- 使用者決定：開發與正式實驗都由 Codex 執行，Claude 提供規範與初版程式。
+- 規範與初版程式已放在 [`topics/compositional-retrieval/code/dev-3090/`](../topics/compositional-retrieval/code/dev-3090/SPEC.md)，由 Codex 執行。階段 0 的重現檢查、D1、D2、M1 與 M2 初版都已實作；D3 先讀 `26393` 既有的 E2 輸出。
 - 3090 不經 Slurm，但開發紀錄仍會寫進報告，正式 GPU 作業照常登記在 `killtests/SUBMITTED.log`。
 - 主 checkout `/work/ChihChungHsu/cactus8603/icml27-topic-search` 落後遠端 16 個 commit，而且有大量不是 Claude 的未提交修改與未追蹤檔案。這份計畫在 `icml/tmp` 的乾淨 clone 中撰寫並推送，沒有動主 checkout。
