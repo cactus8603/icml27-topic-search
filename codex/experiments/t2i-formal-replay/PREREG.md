@@ -39,7 +39,7 @@ bash "$stage/regen_exact.sbatch" "$regen_freeze" "$freeze" --plan
 sbatch --parsable --time="$review_minutes" "$stage/regen_exact.sbatch" "$regen_freeze" "$freeze"
 ```
 
-只將 `review/exact_packet/index.html`、`review/exact_packet/review_imgs/`、`review/review_blind.csv` 與凍結評分規則交予標註者。人工回填後跑 `review-stats` 及 `aggregate` 更新三項判讀。對照列的身分與原分數在標註後才開啟。
+只將 `review/exact_packet/index.html`、`review/exact_packet/review_imgs/`、`review/review_blind.csv` 與凍結評分規則交予標註者。人工回填後使用獨立凍結的[盲標計分修復入口](../t2i-blind-label-zero/PREREG.md)執行 `review-stats` 及 `aggregate`。它接受原準則的陰性標籤 `0`，真陽性仍只計 `1`。對照列的身分與原分數在標註後才開啟。
 
 ## 讀取紀錄
 
