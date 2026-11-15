@@ -1,6 +1,6 @@
 # ICML 2027 十題研究進度
 
-[codex] 2026-11-15 08:23（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
+[codex] 2026-11-15 08:42（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
 
 | 題目 | 現象 | 訊號 | 空間 |
 |---|---|---|---|
@@ -44,7 +44,9 @@
 * **空間。** 比較 C 與四種既有預測量的最佳相關，主要差距門檻為 0.20。若各既有量都無法覆蓋每個任務至少 10/13 的設定，依條文可通過，因此這項判準對覆蓋定義敏感。
 * **作者重現的訓練。** 已用作者 `uv.lock` 建立隔離的 Python 3.10.20，84 個套件通過相容性檢查，固定模型快照及 1,000 筆作者訓練資料指紋吻合。兩臂各用真實資料通過參數及張量預檢。`26526` 跑 none，`26527` 等前一臂成功及核對憑證後才跑 IP。只保留最終 LoRA。Astra 已獨立複核此訓練階段的證據邊界。 [兩臂訓練設定](../experiments/lambda-author-training/README.md) · [預登記](../../killtests/inoculation-lambda/PREREG.md)
 * **原設定生成。** `26533` 等兩臂訓練和收據驗證後，沿用作者的題庫、HF sampler 和 PEFT 推論，各生成 Base、none、IP 的 20 題 × 10 筆。CPU 替身走完十批，符合題序、左側 padding 及輸出格的規格。回覆寫入叢集並保留簡短匿名 ID，以便與後續評分分開。 [原設定生成](../experiments/lambda-author-generation/README.md)
-* **待量的行為與信度。** Table 13 仍需三臂各 200 份的指定版本評分。若另用 Astra 做診斷，保留完整作答，用盲化短 ID 和一份共用評分規則，結果另列。Spanish＋ALL-CAPS 現有 4,625 筆，低於規劃的 5,000 筆。另一個登記任務 GCD 已用作者數學與模板取得 5,000 筆訓練、200 筆 Λ 題及六族各 50 筆評估，5,500 個原始數對互斥。第二次生成的雜湊一致。改用固定 Qwen tokenizer 做本地長度檢查。結構化評分保留格式不符與矛盾回覆為未知，真實解析率、五個防禦設定和固定 Λ 目標仍待凍結。 [GCD 素材和評分限制](../experiments/lambda-gcd/README.md) · [Phase B 預檢及評分資產](../../killtests/inoculation-lambda/phaseb/README.md)
+* **複核材料。** CPU `26558` 在 `26533` 成功後重建並核對三臂提示及作答收據。保留 600 份符合作者原請求規格的輸入，另外每題每臂挑一份同樣本序的盲化作答，共 60 份，供 Astra 獨立診斷。CPU 替身已攔截並比對作者鎖版 judge 的完整請求。正式 Table 13 閘門仍需原指定版本的逐筆評分證據。 [離線複核流程](../experiments/lambda-author-review/README.md) · [原論文評分方法](https://arxiv.org/html/2604.16423v2)
+* **GCD 信度診斷。** Spanish＋ALL-CAPS 仍為 4,625 筆。另一個登記任務 GCD 已取得 5,000 筆訓練、200 筆 Λ 題及六族各 50 筆評估，5,500 個原始數對互斥。第二次生成雜湊一致。新增五臂三種子的 CPU 評分器。全數可解析時回報原 ICC(1,1)，格式不符及內部矛盾保留為未知並列全分母下的保守下界。Astra 複核確認這個界的適用範圍。正式替換初始任務、模型訓練與生成憑證及固定 Λ 目標仍待凍結，依原順序先完成 Gate 2。 [GCD 信度診斷](../experiments/lambda-gcd/GATE3.md) · [Phase B 預檢及評分資產](../../killtests/inoculation-lambda/phaseb/README.md)
+* **GCD 五臂訓練輸入。** CPU 預檢對同一 5,000 筆資料套用五臂提示，共核對 25,000 筆序列。最長 409 token，低於配置的 512。各臂 assistant 標籤逐列與無提示臂相同。鎖版作者載入器另核對每臂三筆回合分隔、右側 padding 和 assistant-only loss。 [五臂預檢](../experiments/lambda-gcd/GATE3.md)
 
 ## 多保真度資料歸因
 
@@ -64,6 +66,7 @@
 * **空間。** 同一 checkpoint 的 ENS8 接近飽和，目前只作描述。正式改善空間是 ENS8 在乾淨及觸發條件之間的 TPR 差，通過門檻為 30 個百分點。作者另行訓練的八層 checkpoint 未公開。
 * **乾淨基準診斷。** CPU `26505` 已完成。作者 demo 各類 50 筆中，只有 31 個負例與 30 個正例出現在本地凍結組。本地 2,000 筆均未碰到長度上限。每類各四例的配對中，BF16 相對 FP32 的最大分數差為 0.00354，CPU 相對既有 GPU 快取的最大差為 0.00034，兩種 CPU 長度處理的分數一致。小樣本支持先查資料母體及作者原彙總方式。彙總 SHA-256 `b21bd7f7d829cad94624196a685ef87f7f803bf420bac0805a610c02cd074f6b`。 [預登記](../../killtests/chameleon-defense/PREREG.md) · [配對診斷](../../killtests/chameleon-defense/AUTHOR_PARITY.md)
 * **原作輸入核對。** 完整合成測試資料已與作者 minimal 版逐位元核對。正式評估另需原版 `merged_probe.pkl` 或 `probe.pkl` 及其 `metadata.json` 來建立判讀母體，也缺歷史訓練權重與公開 HF snapshot 的明確對應。原作使用乾淨負例的 1% FPR 門檻與分層 bootstrap，每次重估門檻。這些來源補齊後才能判斷正式基準落差。 [作者評估流程](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/docs/PIPELINE_GUIDE.md)
+* **歷史 concept probe 的重建。** 公開的訓練材料兩份吻合，作者列第 12 層 logistic。訓練入口只設 Python RNG，線性層使用 PyTorch 的隨機初始化，無相應初始化紀錄。原論文指名的基座版本也尚無歷史 revision 對應。本地已微調權重可支援原有描述；重建歷史 probe 仍需原權重及 metadata，或可核對的原基座版本與有效初始化。概念 probe 和另行訓練的 test-time monitor 各自核對。 [原論文模型與 probe 設定](https://arxiv.org/html/2512.11949#A3) · [作者概念探針訓練入口](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/experiments/training/train_concept_probes.py#L179)
 
 ## RL 稀疏決策蒸餾
 
@@ -104,6 +107,7 @@
 * **官方 GSM8K 獨立留出。** 排除前兩輪共 322 題後，保留 997 題，每題有四種原作設定的候選。250 題供格式開發，747 題留出確認。留出集逐列比對發布標籤和終局數值，得到 1,865 筆錯答、1,108 筆正答、15 筆未知，412 題同時含可核對的正答和錯答。兩份輸出已在叢集核對雜湊。發布答案以 `A:` 起首，可能影響字母判決，需先在開發集量測。假陽性、增量訊號與等風險省費尚未在這個留出集評估。 [留出設計](../experiments/fallible-verifier/real_holdout/PREREG.md) · [GSM8K 作者釋出](https://github.com/openai/grade-school-math#view-model-solutions)
 * **合成診斷完成。** `26520` 兩端各 144 個請求零缺測。強端同題排序勝／平／負為 20／0／4，弱端為 16／1／7，候選盲均為 24 平。固定門檻下強端 35 正確、11 錯、2 棄權，弱端 24 正確、24 錯。這證實合成候選上可量到排序訊號，尚未量真實誤收、誤拒及等風險成本。強端彙總 SHA-256 `6b888e0aedb322a623bb5882daa9ef92e82592d6ea7c0929976b0f36bc90eafb`。 [雙映射診斷](../experiments/fallible-verifier/phase3_likelihood.md)
 * **真實開發診斷。** `26528` 在獨立開發題比較同題正錯候選排序與候選盲基準，另配對比較 `A:` 與中性 `Result:`。Astra 複核確認雙對應可抵消共享的加性字母偏好，候選盲對照在同題為平手基準。試驗後須先檢查覆蓋與對應敏感度，再固定留出規則。 [開發預登記](../experiments/fallible-verifier/real_holdout/PREREG_dev_likelihood.md)
+* **留出評分程式。** 已用合成題測試誤收與共錯、控制 solver variant 的配對 Brier，以及風險和成本等條件的量測。開發集負責擬合，留出按題成簇，未知金標、棄權和缺測各自保留。等 `26528` 後再定正式判決與推論收據，留出預測尚未產生。 [CPU 評分介面](../experiments/fallible-verifier/holdout-evaluation/EVALUATION_INTERFACE.md)
 
 ## Attention gate × optimizer
 
@@ -112,7 +116,7 @@
 * **訊號。** 三個留出 seed 均無正例，無法計算 AUROC，也無法評估加入 attention 寫入資訊後，AUROC 是否比既有診斷提高至少 0.03。
 * **空間。** 固定 token 的第一版 gate 比各 seed 最強基線高 0.257 至 0.308 nats。一般寫入控制的改善空間未知。第二輪會量同 checkpoint 的局部 NLL 回收，持續訓練收益仍需要獨立驗證。
 * **獨立驗證。** 校準 `26446` 選出最低合格的 4×。`26502` 的 36 個配對均通過品質守門，1,368 次探針發現 12 次損傷，跨 7 個新種子和三個強基線。低於 30 次事件門檻，因此未計算主 AUROC 增量。就 12 個損傷步來看，整步回退可回收的觀察損失平均 0.1002 nats，定向介入只回收該局部參考的 0.157%，同量縮步回收 0.187%。仍待驗證自然訓練中的部署收益。彙總 SHA-256 `086cdab5a836e33cf4f33a25298617ece0fa14b152897c4f104a39f6d408a57b`。 [獨立驗證](../experiments/gate-optimizer/round2/PREREG_validation.md)
-* **增加事件覆蓋。** 固定同一 4× 壓力、品質守門及 30 次事件門檻，以 48 個全新種子重驗。`26521` 分四段跑完 144 對後，`26522` 核對所有分支憑證並一次判讀。第二輪維持獨立結果。 [48 種子驗證](../experiments/gate-optimizer/round3/PREREG.md)
+* **增加事件覆蓋。** 固定同一 4× 壓力、品質守門及 30 次事件門檻，以 48 個全新種子重驗。`26521` 第一段成功完成。等四段共 144 對齊全，`26522` 才核對所有分支憑證並一次判讀。第二輪維持獨立結果。 [48 種子驗證](../experiments/gate-optimizer/round3/PREREG.md)
 
 ## 備案與舊題
 

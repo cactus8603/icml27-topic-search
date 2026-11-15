@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 08:23（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 08:42（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -10,14 +10,14 @@
 |---|---|---|---|
 | 多條件檢索 | `26534` 新庫排名與前 50 名重排上限 | 固定庫 `26450` **5.38 GiB、1 分 53 秒**；正反關係 `26514` **6.89 GiB、1 分 24 秒**。新候選庫實佔 **1.9 GiB 磁碟**。 | **有望用 24 GB。** 新作業只載 CORE 2B，圖像 batch 8、文字 batch 32。先用 H200，暫估 **6–18 分鐘**，上限 50 分鐘。新池峰值待量，影像指紋核對可用 CPU。[新庫預登記](experiments/retrieval-conjunction/PREREG.md) |
 | 兩個時鐘 | `26523` 三組共用早期網格 | 第 2 週正式評估 `26383` **2.87 GiB、57 分 7 秒**，系統 RAM 約 **27.1 GiB**。早期回播 `26513` **1.83 GiB、11 分 45 秒**，系統 RAM 約 **16.55 GiB**。 | **一般階層評估優先試 24 GB 顯存，主機 RAM 另計。** 三組回播留 H200，先對齊 54 份權重，暫存估 **5.66 GiB**。CIFAR 依預登記暫緩。[三組診斷](experiments/two-clocks-cohort/PREREG.md) |
-| Inoculation 防禦漏出預測 Λ | `26526`／`26527` 作者 LoRA 訓練，`26533` 三臂生成 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。作者 LoRA VRAM 待量。鎖版環境實佔 **5.9 GiB 磁碟**。 | **先留 H200。** BF16 7B 權重約 14 GB，另需活化、梯度和 optimizer 狀態。訓練每臂估 **45 分鐘**，兩個最終 LoRA 合計估 **1.20 GiB 磁碟**。生成三臂合計估 **15–45 分鐘**，暫存估低於 10 MiB。兩階段皆單卡，預檢可用 CPU。[作者訓練](experiments/lambda-author-training/README.md) · [作者生成](experiments/lambda-author-generation/README.md) |
+| Inoculation 防禦漏出預測 Λ | `26526`／`26527` 訓練、`26533` 生成、`26558` 整理複核材料 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。作者 LoRA VRAM 待量。鎖版環境實佔 **5.9 GiB 磁碟**。 | **訓練與生成先留 H200。** BF16 7B 權重約 14 GB，訓練另需活化、梯度和 optimizer 狀態。訓練每臂估 **45 分鐘**，兩個 LoRA 合計估 **1.20 GiB 磁碟**。生成估 **15–45 分鐘**。複核材料與 GCD 信度評分用 CPU，複核材料估低於 10 MiB。[作者訓練](experiments/lambda-author-training/README.md) · [複核流程](experiments/lambda-author-review/README.md) |
 | 多保真度資料歸因 | 新方向比較 `26517` 完成，`26535` 重測獨立 seed | `26517` **126.45 GiB、28 分 28 秒**，含 JAX 預留，系統 RAM 約 **6.76 GiB**。CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** `26535` 含 100 次重訓，單卡估 **65–80 分鐘**、暫存約 **0.8 GiB**。24 GB 需另量未預留峰值。[新軌跡協定](experiments/multifidelity-second-seed/PROTOCOL.md) |
 | Neural Chameleons 防禦 | 核對作者基準，分析既有快取，必要時完整重抽 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
 | RL 稀疏決策蒸餾 | `26525` 以 CPU 重評配對 A，短預算資格暫緩 | B 正確性 `26499` **12.73 GiB、32 秒**。B 16K `26500` 約 **127 GiB**，兩臂分別 **10 分 28 秒／3 分 46 秒**，含預留。 | **單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。`26525` 無 GPU、8 個評分程序，Slurm 上限 30 分鐘，叢集實配 16 CPU／170 GiB 系統 RAM。[同輸出重評](experiments/oat-author-grading/PREREG.md) |
 | 文生圖罕見失敗 | `26516` 以 FP32 logits 重驗代理門檻 | 三精度 `26503` **37.77 GiB、4 分 47 秒**。舊篩選 `26289` **36.1 GiB**；原 batch 32／64 方案 **52.9 GiB**。 | **現有 batch 32 留 H200。** 24 GB 可另驗 SD v1.4 縮批，須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) |
 | 大型平行解碼提交集合 | `26529` GPU 檢查，`26530` 零額外 forward 的候選選擇 | LLaDA-8B 第二輪 `26441`／`26442` **16.29／16.23 GiB、21 分 52 秒／45 分 3 秒**。 | **有望用 24 GB。** 權重約 14.93 GiB，需量新題最長 787-token（含 canvas）形狀。640 題先用 H200，估 15–30 分鐘，上限 45 分鐘。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
 | 不完美驗證器 | `26520` 合成診斷完成，`26528` 上真實開發集 | `26484` **110.44 GiB、5 分 45 秒**，含 vLLM 預留。短合成作業 `26520` 的 Slurm 取樣峰值 **19.46 GiB、1 分 7 秒**，可能漏掉瞬間尖峰。 | **整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18 GiB，現行 0.78 顯存比例在 24 GiB 約給 18.72 GiB，另需 KV cache 和運行資源。開發作業上限 60 分鐘，CPU 已核對每端 4,494 個唯一請求。[開發預登記](experiments/fallible-verifier/real_holdout/PREREG_dev_likelihood.md) |
-| Attention gate × optimizer | `26521` 四段 48 個全新 seed、`26522` CPU 彙總 | 第二輪校準 `26446` **3.72 GiB、11 分 51 秒**；獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量與前次 12 seed 接近，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
+| Attention gate × optimizer | `26521` 四段 48 個新 seed，首段完成。`26522` CPU 彙總 | 首段 `26521_0` **3.72 GiB、18 分 7 秒**。獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量近似，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
 
 已送出的工作依原 Slurm 佇列執行。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
 
