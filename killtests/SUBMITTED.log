@@ -100,3 +100,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 09:12 submit 26566 inoculation-lambda 作者三臂離線生成改接26562/26563，快取別名修正與鎖版HF sampler預檢通過 639bf14
 [codex] 2026-11-15 09:14 submit 26567 inoculation-lambda CPU複核改接26566，600筆原規格與60筆盲化，作者鎖版替身預檢通過 63109d1
 [codex] 2026-11-15 09:31 submit 26568 compositional-retrieval CORE前50固定名單交叉編碼重排，4095圖104新查詢93群，Astra和CPU預檢通過 53027bd
+[codex] 2026-11-15 09:41 submit 26569 rl-sparse-distill 384道新MATH同題同seed比對文字停止與同軌跡回放，Astra及作者鎖版CPU預檢通過 8546a1d
+[codex] 2026-11-15 09:41 submit 26570 t2i-rare-failure 合成圖案量原三偵測器batch32/64吞吐和顯存，無生成與事件計數，Astra與CPU預檢通過 0d86f96

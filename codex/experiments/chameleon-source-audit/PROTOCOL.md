@@ -16,3 +16,4 @@ bash "$stage/run.sh" FULL_FREEZE_COMMIT
 ## 來源讀取紀錄
 
 * [codex] 2026-11-15 09:35（台北）讀取作者固定版本的 `harmful_synthetic/summary.csv`，只核對發布的每類分母。尚未以兩個面板執行模型打分。
+* [codex] 2026-11-15 09:44（台北）主代理及 Astra 獨立複核均讀取凍結版 `c08640fbf0d27239f179eb20c3adba6c4ecc0d2a` 的來源稽核彙總 `source-audit-c08640fbf0/summary.json`。

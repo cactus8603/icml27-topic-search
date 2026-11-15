@@ -1,6 +1,6 @@
 # ICML 2027 十題研究進度
 
-[codex] 2026-11-15 09:33（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
+[codex] 2026-11-15 09:45（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
 
 | 題目 | 現象 | 訊號 | 空間 |
 |---|---|---|---|
@@ -72,6 +72,8 @@
 * **原作輸入核對。** 完整合成測試資料已與作者 minimal 版逐位元核對。正式評估另需原版 `merged_probe.pkl` 或 `probe.pkl` 及其 `metadata.json` 來建立判讀母體，也缺歷史訓練權重與公開 HF snapshot 的明確對應。原作使用乾淨負例的 1% FPR 門檻與分層 bootstrap，每次重估門檻。這些來源補齊後才能判斷正式基準落差。 [作者評估流程](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/docs/PIPELINE_GUIDE.md)
 * **歷史 concept probe 的重建。** 公開的訓練材料兩份吻合，作者列第 12 層 logistic。訓練入口只設 Python RNG，線性層使用 PyTorch 的隨機初始化，無相應初始化紀錄。原論文指名的基座版本也尚無歷史 revision 對應。本地已微調權重可支援原有描述；重建歷史 probe 仍需原權重及 metadata，或可核對的原基座版本與有效初始化。概念 probe 和另行訓練的 test-time monitor 各自核對。 [原論文模型與 probe 設定](https://arxiv.org/html/2512.11949#A3) · [作者概念探針訓練入口](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/experiments/training/train_concept_probes.py#L179)
 
+* **公開面板的來源差異。** CPU 稽核依作者發布規則重建每類前 1,000 筆，全部可回連原始索引。和本地同標籤的精確重合為 605 負、512 正。另有 57 筆在作者規則為正、本地為負。這說明面板大小相同仍有母體與標籤差。原歷史面板及探測器的對應待作者提供，下一步用同一公開探測器測兩個可重建的清潔面板。彙總 SHA-256 `69c03803cb7681e132f1149ca665684668226a0ad1012ad197727f76465f04b6`。 [來源稽核](../experiments/chameleon-source-audit/PROTOCOL.md)
+
 ## RL 稀疏決策蒸餾
 
 * `rl-sparse-distill`。假設只替換少量高影響的 token 決策，就能保留 RL 的單次答對率，同時改善多次取樣的覆蓋面。
@@ -83,6 +85,8 @@
 * **配對 A 的同輸出重評。** `26525` 完成，獨立複核了版本、共同題文與提示。MATH500 的 RL／Base 從 377／161 變為 377／162（500 題）。Minerva 從 79／24 變為 71／38（272 題），RL 與 Base 的差從 20.22 降至 12.13 個百分點，主要來自換成原作者接受的答案欄。OlympiadBench 從 228／132 變為 227／132（566 題交集）。沿用歷史 greedy 輸出，原生成、取樣截斷和短預算條件仍待測，原資格判讀沿用。彙總 SHA-256 `5f83d17aec1bb9713076d4d2c30c80e512ebd33e78d13383b04b303b8f9320ad`。 [重評規格](../experiments/oat-author-grading/PREREG.md)
 * **候補 B2。** ORZ 1.5B 有可固定的公開快照，作者 MATH500 的 500 則答案與本地逐字相符。以作者原模板測試，兩個 tokenizer 的提示 token 完全一致。作者 Table 6 報 MATH500 58.0%，公開說明未提供 Minerva 參考，亦缺 Table 6 的 checkpoint 對應與完整重複取樣命令。現行原作重現要求兩個來源皆能核對，B2 保留候補。 [ORZ 固定權重](https://huggingface.co/Open-Reasoner-Zero/Open-Reasoner-Zero-1.5B/tree/d104dddce9f3a3bab524fbe8572dfdc3ed20c97b) · [作者論文](https://papers.neurips.cc/paper_files/paper/2025/file/ed873d79e7c268c020c4b4db13a2812a-Paper-Conference.pdf#page=14)
 
+* **文字停止診斷。** `26569` 已送出。同一已存 RL 權重、raw abel、16K 和每題相同 seed，用 384 道獨立 MATH 題只移除 `Question:`／`Answer:`，另依原作者規則截回同一條輸出。CPU 已核對題組互斥、原評分和兩組取樣參數；Astra 確認能區分前綴漂移與停止後文字的作用。配對 B 原重現及短預算資格依原判準。 [停止字串預登記](../experiments/rl-author-stop/PROTOCOL.md)
+
 ## 文生圖罕見失敗
 
 * `t2i-rare-failure`。估計特定 Stable Diffusion 失敗事件的尾端機率，檢查少量生成能否提供可校準的估計。
@@ -91,7 +95,9 @@
 * **空間。** `26479` CPU 補充閘門通過。相同相對 RMSE 下，高斯事件率 0.00001／0.0001 的模擬呼叫數相對直接抽樣分別省至約 1/88.14 和 1/13.42，超過 10×／3× 門檻。這個量來自已知真值的模擬，實際文生圖加速仍待量測。
 * **CLIP 診斷。** `26503` 完成。三個提示各用 500 張配對像素，FP16 logits 的相異值 227／352／288，最後 logits 改為 FP32 後變為 498／500／500，完整 FP32 的相異值相同。最大同分組由 8／5／6 降至 2／1／1。原四個門檻合計只翻轉一筆，位於 B1 的 0.9。`26516` 用各 10,000 個新種子重驗完整代理閘門。彙總 SHA-256 `12e9e79d69561b93971adfcd1c4d84fc3abfde133e1344f1b4583962d3846102`。 [診斷預登記](../../killtests/t2i-rare-failure/PREREG.md#14-clip-同分的配對精度診斷) · [新種子重驗](../experiments/t2i-gate-b-precision/PREREG.md)
 * **新種子代理重驗。** `26516` 完成，三個提示各 10,000 筆。B1 的凍結 0.99 門檻有 220 命中與 9,978 個相異分數，是唯一符合兩項條件的組合，機械判為通過。Astra 確認這支持新流程有足夠解析度，且至少一個代理設定可量。這批只保留彙總，原 Gate B 的修復定案、正式現象和盲標仍待各自核對。彙總 SHA-256 `e51ebd48167cbf9d7805c54107ab6b64b4d452e7606e642d2d153a317ed56f26`。 [新種子重驗](../experiments/t2i-gate-b-precision/PREREG.md)
-* **候選修復憑證。** CPU 已依 Slurm、預登記、提交紀錄、固定版本、三段覆蓋與計數可行性獨立重算。新種子範圍遵循原門檻，B1 命中率 2.20%。同一作業平均每秒 5.48 張，按此換算原 168,000 張階段 1 約 8.5 GPU 小時。完整偵測器與六模型的吞吐待量，原 50 GPU 小時總上限沿用。 [候選修復驗證](../experiments/t2i-gate-repair/README.md)
+* **候選修復憑證。** CPU 已依 Slurm、預登記、提交紀錄、固定版本、三段覆蓋與計數可行性獨立重算。新種子範圍遵循原門檻，B1 命中率 2.20%。同一作業平均每秒 5.48 張，按此換算原 168,000 張階段 1 約 8.5 GPU 小時。另用原完整 SDv1.4 基準換算約 9.17 GPU 小時。六模型實際吞吐待量，原 50 GPU 小時總上限沿用。 [候選修復驗證](../experiments/t2i-gate-repair/README.md)
+
+* **偵測器獨立操作。** `26570` 已送出，以固定人造圖案測 batch 32／64，補三個偵測器的個別與合併時間、峰值顯存。CPU 用離線資產實際跑完三個偵測器，並核對原 Stage 1 的六個模型和 168,000 張面板。正式生成尚待採用候選修復，正式盲標的百分比對照最低命中率也須事前凍結。 [操作與資產預檢](../experiments/t2i-detector-probe/README.md)
 
 ## 大型平行解碼提交集合
 
@@ -115,6 +121,7 @@
 * **合成診斷完成。** `26520` 兩端各 144 個請求零缺測。強端同題排序勝／平／負為 20／0／4，弱端為 16／1／7，候選盲均為 24 平。固定門檻下強端 35 正確、11 錯、2 棄權，弱端 24 正確、24 錯。這證實合成候選上可量到排序訊號，尚未量真實誤收、誤拒及等風險成本。強端彙總 SHA-256 `6b888e0aedb322a623bb5882daa9ef92e82592d6ea7c0929976b0f36bc90eafb`。 [雙映射診斷](../experiments/fallible-verifier/phase3_likelihood.md)
 * **真實開發診斷。** `26528` 弱端啟動失敗，未產生結果。`26565` 沿用原資料與設定，加入固定階段日誌及對稱輸出路徑檢查，兩個模型的 CPU 預檢均通過。試驗在獨立開發題比較同題正錯候選排序與候選盲基準，另配對比較 `A:` 與中性 `Result:`。Astra 複核確認雙對應可抵消共享的加性字母偏好，候選盲對照在同題為平手基準。完成後檢查覆蓋與對應敏感度，再固定留出規則。 [開發預登記](../experiments/fallible-verifier/real_holdout/PREREG_dev_likelihood.md)
 * **留出評分程式。** 已用合成題測試誤收與共錯、控制 solver variant 的配對 Brier，以及風險和成本等條件的量測。開發集負責擬合，留出按題成簇，未知金標、棄權和缺測各自保留。等 `26565` 完成再定正式判決與推論收據，留出預測尚未產生。 [CPU 評分介面](../experiments/fallible-verifier/holdout-evaluation/EVALUATION_INTERFACE.md)
+* **推論收據入口。** 已接上原雙映射 prompt、固定 tokenizer 及 CPU 評估 schema。兩個模型均以 250 道開發題核對 raw／neutral 各 2,000 個邏輯請求，實際各 1,998 個唯一請求。超長或缺任一映射時保留候選並標記缺測。資料格式、來源綁定與留出評估經合成測試。正式 profile、棄權門檻和留出推論仍待開發結果。 [收據入口](../experiments/fallible-verifier/holdout-scoring/README.md)
 
 ## Attention gate × optimizer
 
