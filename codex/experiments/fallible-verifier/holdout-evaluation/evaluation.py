@@ -2,11 +2,8 @@
 
 from collections import Counter, defaultdict
 from dataclasses import dataclass
-import hashlib
-import json
 import math
 from pathlib import Path
-import re
 import sys
 
 import numpy as np
@@ -17,16 +14,9 @@ sys.path[:0] = [str(TOPIC / "real_holdout"), str(TOPIC / "round2")]
 import analysis as reference
 from prepare import EXPECTED_OUTPUTS, VARIANTS
 from protocol import hash_order
+from receipt_contract import Binding, DIGEST, MODEL_PINS, PANEL_COMMIT, ROLES, SPLIT_GROUPS, checked_bytes, load_json
 
 
-PANEL_COMMIT = "37a8a783bd7b1f7648dfbf0376cbbb99099cad58"
-SPLIT_GROUPS = {"train": 250, "test": 747}
-ROLES = ("weak", "strong")
-MODEL_PINS = {
-    "weak": ("Qwen/Qwen3-0.6B", "c1899de289a04d12100db370d81485cdf75e47ca"),
-    "strong": ("Qwen/Qwen3-32B-AWQ", "0499c3ac83fdef8810b907a23894ba91e95eddd8"),
-}
-DIGEST = re.compile(r"[0-9a-f]{64}")
 GOLD_FIELDS = {"id", "question_id", "split", "variant", "gold", "gold_status", "publisher_is_correct"}
 GOLD_STATES = {"corroborated", "empty_candidate", "publisher_reference_mismatch",
                "unparseable_final_answer", "publisher_label_conflict"}
@@ -35,44 +25,6 @@ ACTION_INDEX = {reference.ACCEPT: 0, reference.REJECT: 1, reference.GOLD: 2}
 ARMS = (reference.CONTROL, reference.CASCADE, reference.EXTRA, reference.FULL_CONTROL, reference.FULL_CASCADE)
 PAIRS = ((reference.CONTROL, reference.CASCADE), (reference.CASCADE, reference.EXTRA),
          (reference.CASCADE, reference.FULL_CASCADE), (reference.FULL_CONTROL, reference.FULL_CASCADE))
-
-
-def unique_fields(pairs):
-    output = {}
-    for key, value in pairs:
-        if key in output:
-            raise ValueError("Duplicate JSON field")
-        output[key] = value
-    return output
-
-
-def load_json(payload):
-    return json.loads(payload, object_pairs_hook=unique_fields)
-
-
-def checked_bytes(payload, expected):
-    if not DIGEST.fullmatch(expected) or hashlib.sha256(payload).hexdigest() != expected:
-        raise ValueError("Input artifact bytes do not match their frozen receipt")
-
-
-@dataclass(frozen=True)
-class Binding:
-    """Chosen later by the formal protocol, independently of test measurements."""
-
-    freeze_commit: str
-    measurement_sha256: str
-    decision_rule_sha256: str
-
-    def metadata(self):
-        if (not re.fullmatch(r"[0-9a-f]{40}", self.freeze_commit)
-                or any(not DIGEST.fullmatch(value) for value in (self.measurement_sha256, self.decision_rule_sha256))):
-            raise ValueError("An explicit freeze, measurement protocol and decision rule are required")
-        return {
-            "freeze_commit": self.freeze_commit, "measurement_sha256": self.measurement_sha256,
-            "decision_rule_sha256": self.decision_rule_sha256, "panel_commit": PANEL_COMMIT,
-            "panel_prompts_sha256": EXPECTED_OUTPUTS["prompts.jsonl"]["sha256"],
-            "panel_gold_sha256": EXPECTED_OUTPUTS["gold.jsonl"]["sha256"],
-        }
 
 
 @dataclass(frozen=True)
