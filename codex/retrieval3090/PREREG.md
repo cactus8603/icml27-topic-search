@@ -17,7 +17,7 @@
 - M1：原25政策×depth100/200；`llr` 正名為 `logsigmoid`；新增同backbone mean/product、完整 LCSE AND 公式的明示改編、隨機選50（10個固定seed）與跨query打亂條件。每個模型／解析／候選／尾序一致，分開說明額外索引的差別。
 - 開發內選法：`SHA256([2026111663,group]) mod 5` 固定群分割。每fold只在其餘fold選政策，依 mean AP、固定Recall@50、政策id排序；CORE保底，排除隨機／打亂對照。報全部探索結果及 OOF 結果；OOF區間仍只是條件式開發估計，不能取代封存確認。
 - M2：原分數落差及1–50 margin、softmax entropy（T=1/0.1/0.01）按整批query四分位分配75/50/50/25；固定64個seed的隨機分配作對照。分開報入池Recall@budget、最終固定Recall@50、mAP。這是整批分配，不宣稱已有逐筆服務的預算控制器。
-- 統計：配對query-group bootstrap10,000次，原seed2026111662；按1正例/多正例分層。50組中最佳值有選擇偏差。用群間配對變異估區間精度與80% power的近似MDE，明示假設；不以120查詢直接保證能辨識+2pp。
+- 統計：配對query-group bootstrap10,000次，原seed2026111662；按1正例/多正例分層。原50組加LCSE控制後，共98個M1政策設定中的最佳值有選擇偏差。用群間配對變異估區間精度與80% power的近似MDE，明示假設；不以120查詢直接保證能辨識+2pp。
 - 開發門檻沿用Recall@50至少+5pp、mAP至少+2pp、mAP配對區間下界>0作送正式的參考。未達只描述第一版方法，不自動淘汰整題。正式需新協定、未看過資料及獨立審查。
 
 ## 補充實驗
@@ -31,6 +31,8 @@
 [codex] 2026-11-16 05:06，任何M1／M2／D3效果仍未計算或讀取，固定外部pilot／成本的單一政策選法：在完整COCO開發的所有 `m1/` 政策中，依mean AP降序、固定Recall@50降序、policy id升序選一個，保存分析檔SHA與政策收據；即使未過送正式門檻也可做探索pilot，但不得因此宣稱正式成功。保留CORE及其等價控制作保底；若選中基線等價政策，照實報無新增政策收益。該政策及深度直接轉移MCMR，train-only LCSE參數如需則原樣轉移，不在MCMR看標籤後重新選法。成本也只加測此同一政策。外部pilot使用事前固定的128 query／8,320商品原生圖文輸入，並列其不同於官方重現的prompt／batch／重排改編；不稱完整MCMR benchmark。
 
 [codex] 2026-11-16 05:10，為平行利用空閒時段，MCMR方法無關的CORE50共6,400對可在COCO政策鎖定前先計算raw scores，不分析外部效果。政策鎖定後，僅在同來源／資料／索引／環境／原cross batch1的共同實際pair才可復用；先固定抽8個共同pair逐值重算驗證，另記wrapper程式與cache指紋、復用與新算數量。不能改query/商品metadata、挑subset、改batch或藉復用讀取cross來選入池。若無法完成此一致性驗證，走直接計算流程。
+
+[codex] 2026-11-16 05:26，盲審包及任何AI審查尚未生成／讀取。補充一輪明示的AI盲初審：依公開CSV固定順序分三個不重疊區段，由未見私有映射、模型排名或標籤的子代理，只看query與原尺寸匿名圖片，逐例記yes/no/uncertain與tiny/occluded等不確定性。先凍結完整AI標籤與檔案SHA，再合併私有COCO規則標籤作分層描述；圖片可見性、2%面積規則及缺標註分開討論。保留空白人工表，AI不稱人工gold、模型評分oracle或整體錯標率估計。
 
 ## 分工與產物
 
@@ -52,3 +54,4 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16 04:51–04:55，root已讀 `dl/retrieval3090/runs/supplement-torch214-20261116/lcse_calibration.json` 及相應原始校準向量，僅核對train-only來源、cosine指紋及重新擬合結果，確認後清理可重建的重複中間陣列。未讀取政策或D3效果。
 - [codex] 2026-11-16 04:55–04:58，root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/candidate-replay-only.json`，只檢查原候選召回與oracle重現。條件式平台協定於04:48起草；本次提交前已知原候選閘門未過，但仍未計算或讀取任何M1／M2／D3效果。正式採用新平台流程須本次提交後，另一次明示啟動、完整來源／逐值重複驗證及獨立審查。
 - [codex] 2026-11-16 05:06:54–05:09，potential_audit/root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/baseline-top50-replay.json`；potential_audit亦讀獨立本機續算的 `reranker-repeat.json` 作8對技術重複核驗。原重現檔保留不變，未讀M1／M2／D3或外部效果。
+- [codex] 2026-11-16 05:21–05:23，literature_check於05:21:16首次讀取MCMR共享索引的 `index.npz` 及來源／環境／圖片manifest作獨立技術驗收；root讀取相同索引及逐值清理收據以刪除已由最終NPZ保留的兩份重複checkpoint。未讀MCMR重排效果或任何COCO方法效果。
