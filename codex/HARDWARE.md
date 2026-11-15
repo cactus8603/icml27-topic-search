@@ -6,6 +6,8 @@
 
 原始技術紀錄在本機 `dl/retrieval3090/cuda-check.json`、`dl/retrieval3090/smoke-20261116.json`，不進版控。[本機入口與環境說明](retrieval3090/README.md) · [原開發規範](../topics/compositional-retrieval/code/dev-3090/SPEC.md)
 
+同日另以開發圖庫的兩張真實 COCO 圖片驗證，三個模型全部通過；PyTorch 已保留峰值依序為 **4.105、0.629、4.111 GiB**。輸出為 `dl/retrieval3090/smoke-real-images-20261116.json`。只檢查有限輸出、向量形狀與單位範數，沒有計算研究指標，未量完整圖庫或原 batch 的資源需求。[環境及精確資料重建驗收](reports/2026-11-16-retrieval3090-setup-codex.md)
+
 ## H200 與 24 GB 移植規劃
 
 涵蓋本輪九個研究題目。下一步的設備判斷更新至 2026-11-15 18:26（台北）。歷史表保留 04:38 的現場紀錄。
