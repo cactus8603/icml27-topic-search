@@ -198,3 +198,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 00:21 submit 27114 inoculation-lambda 替代26861，等待新版行為陣列 27112 與驗收 27113 後比較已完成的Λ與PHM 2b04482255ee1942969ba41ef2ffdc3af6a77187
 [codex] 2026-11-16 00:22 cancel 26802 t2i-rare-failure 原驗收不辨識已結束的Slurm重排配置，改由封存 45fc76383dd5cfbf9eb016e514ee9d6ac80168fb 驗收 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
 [codex] 2026-11-16 00:22 submit 27116 t2i-rare-failure formal-plan=2a 依賴原26765，重排歷次成本全計且各索引仍須成功，驗收封存 45fc76383dd5cfbf9eb016e514ee9d6ac80168fb 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-16 01:10 submit 27117 t2i-rare-failure formal-stage=2a 固定選格 0,1,2,3,4,5,6,7,8,9,10,11，成本與配額已核對 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-16 01:56 cancel 27117_[1-11] t2i-rare-failure 共享主目錄已搬遷，僅撤回尚未啟動的索引，保留執行中的27117_0 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-16 01:56 submit 27161 t2i-rare-failure formal-stage=2a 替代27117尚未啟動的索引1–11，沿用選格與配置，從原路徑執行副本啟動並等待索引0 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567

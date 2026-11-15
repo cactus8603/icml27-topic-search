@@ -12,7 +12,7 @@ set -euo pipefail
 umask 077
 
 root=/work/ChihChungHsu/cactus8603
-repo="$root/icml27-topic-search"
+repo="${LAMBDA_GCD_REPO:-$root/icml27-topic-search}"
 shared="$root/icml"
 stage=codex/experiments/lambda-gcd-family-design/evaluation
 freeze=${1:?Pass the full frozen Git commit}
