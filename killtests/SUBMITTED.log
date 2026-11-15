@@ -118,3 +118,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 11:54 submit 26607 rl-sparse-distill Oat配對A原版vLLM雙合成題GPU試跑，三測試與封存runtime預檢通過 69a368c
 [codex] 2026-11-15 11:54 submit 26608 rl-sparse-distill Oat公開MATH500與Minerva共772題原生EOS與3K greedy重現Gate0(a)，依賴 26607 69a368c
 [codex] 2026-11-15 11:57 cancel 26608 rl-sparse-distill 合成GPU試跑26607在引擎初始化SIGKILL，afterok相依不會滿足，撤失效正式作業 69a368c
+[codex] 2026-11-15 12:01 submit 26612 rl-sparse-distill 同設定重送26607合成試跑，加入初始化堆疊與完整診斷，封存runtime預檢通過 7a4fa04
+[codex] 2026-11-15 12:01 submit 26613 rl-sparse-distill 重新掛接合成試跑 26612，成功後才開始772題正式配對A重現 7a4fa04

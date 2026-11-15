@@ -93,7 +93,7 @@
 * **候補 B2。** ORZ 1.5B 有可固定的公開快照，作者 MATH500 的 500 則答案與本地逐字相符。以作者原模板測試，兩個 tokenizer 的提示 token 完全一致。作者 Table 6 報 MATH500 58.0%，公開說明未提供 Minerva 參考，亦缺 Table 6 的 checkpoint 對應與完整重複取樣命令。現行原作重現要求兩個來源皆能核對，B2 保留候補。 [ORZ 固定權重](https://huggingface.co/Open-Reasoner-Zero/Open-Reasoner-Zero-1.5B/tree/d104dddce9f3a3bab524fbe8572dfdc3ed20c97b) · [作者論文](https://papers.neurips.cc/paper_files/paper/2025/file/ed873d79e7c268c020c4b4db13a2812a-Paper-Conference.pdf#page=14)
 
 * **文字停止診斷。** `26569` 因取樣和作者評分的 SymPy 衝突退出。固定相同 384 道 MATH、16K、權重與 seed，修正後 `26593` 成功。作者停止、同筆延長再重截、直接延長各答對 **219／219／220**。同筆延長比重截多答對 1 題（**+0.26 點**，95% 區間 **0 至 +0.78**）。作者臂只有 2 題觸發文字停止，兩題前綴皆與重截一致，全組前綴 **383／384** 一致。兩臂各 9 題撞長度上限，均無判分逾時。這次同筆對照的幅度有限，配對 B 原重現差距及短預算資格仍待驗證。彙總 SHA-256 `a4da26f6f1d8fdb7e37293a8bf271b62c944443b0bdbd24244fc577394c43306`。 [停止字串協定](../experiments/rl-author-stop/PROTOCOL.md)
-* **配對 A 的作者生成。** 舊生成有額外停止 token。新方案用公開的 Python 3.10／vLLM 0.8.4 推論入口和原生 EOS，保留 MATH500 與 Minerva 的 3K greedy 及作者計分。固定權重與 Arrow 核對和 CPU 預檢均通過。合成 GPU 試跑 `26607` 在引擎初始化被終止（137），根因待完整診斷，失效相依的正式作業 `26608` 已撤。重送後仍需先通過合成試跑，再依原兩資料集 ±2 點判重現。 [配對 A 作者協定](../experiments/rl-pair-a-author/PROTOCOL.md)
+* **配對 A 的作者生成。** 舊生成有額外停止 token。新方案用公開的 Python 3.10／vLLM 0.8.4 推論入口和原生 EOS，保留 MATH500 與 Minerva 的 3K greedy 及作者計分。固定權重與 Arrow 核對和 CPU 預檢均通過。合成 GPU 試跑 `26607` 在引擎初始化被終止（137），根因待完整診斷，失效相依的正式作業 `26608` 已撤。同設定合成試跑 `26612` 已加初始化診斷重送，`26613` 等它完成後才用原兩資料集 ±2 點判重現。 [配對 A 作者協定](../experiments/rl-pair-a-author/PROTOCOL.md)
 
 ## 文生圖罕見失敗
 
