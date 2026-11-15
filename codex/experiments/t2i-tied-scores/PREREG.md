@@ -24,3 +24,5 @@ sbatch --parsable "$stage/run.sbatch" FULL_FREEZE_COMMIT
 ## 執行及讀取紀錄
 
 - [codex] 2026-11-15 10:14（台北）在 Git 凍結前已讀種子 `[2026111550, 2026111582)` 的 stdout 彙總。確認批只用凍結的另一段種子。
+
+- [codex] 2026-11-15 10:26–10:27（台北），主代理及 Astra 獨立複核讀取 Slurm `26582` 成功後的凍結彙總 `icml/runs/t2irare/tied-scores/26582/summary.json`。凍結版 `bf261c35a5296f6625e8dff889e76997bfb3adfa`。
