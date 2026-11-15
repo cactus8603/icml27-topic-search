@@ -2,15 +2,48 @@
 
 import json
 from pathlib import Path
+import subprocess
 import sys
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pipeline
 
 
 class PipelineTests(unittest.TestCase):
+    def test_appending_read_log_does_not_invalidate_frozen_gate_verifier(self):
+        with TemporaryDirectory(dir=Path(__file__).parent) as path:
+            root = Path(path)
+            repo, archive = root / "repo", root / "archive"
+            live_gate = repo / pipeline.GATE_DIR
+            live_gate.mkdir(parents=True)
+            verifier = live_gate / "run.py"
+            protocol = live_gate / "PREREG.md"
+            verifier.write_text("import sys\nassert sys.argv[-2:] == ['--verify-job', '26663']\n")
+            protocol.write_text("Frozen protocol\n")
+            git = ["git", "-C", str(repo), "-c", "user.name=Test", "-c", "user.email=test@example.invalid"]
+            subprocess.run(git + ["init", "-q"], check=True)
+            subprocess.run(git + ["add", "--", str(verifier), str(protocol)], check=True)
+            subprocess.run(git + ["-c", "commit.gpgsign=false", "commit", "-qm", "Freeze"], check=True)
+            freeze = subprocess.check_output(git + ["rev-parse", "HEAD"], text=True).strip()
+            relative_verifier = pipeline.GATE_DIR / "run.py"
+            archived_verifier = archive / relative_verifier
+            archived_verifier.parent.mkdir(parents=True)
+            archived_verifier.write_bytes(pipeline.git_file(repo, freeze, relative_verifier))
+
+            with protocol.open("a") as file:
+                file.write("[codex] The verified receipt was read.\n")
+            subprocess.run(git + ["-c", "commit.gpgsign=false", "commit", "-qm", "Record read", "--", str(protocol)], check=True)
+            old_guard = subprocess.run(git + ["diff", "--quiet", freeze, "HEAD", "--", str(pipeline.GATE_DIR)])
+            self.assertEqual(old_guard.returncode, 1)
+            with patch.object(pipeline, "GATE_FREEZE", freeze):
+                pipeline.verify_frozen_gate(repo, archive)
+                archived_verifier.write_text("raise SystemExit('unexpected verifier execution')\n")
+                with self.assertRaisesRegex(ValueError, "differs from the registered replay"):
+                    pipeline.verify_frozen_gate(repo, archive)
+
     def test_replay_receipt_accepts_shared_mount_alias_not_receipt_symlink(self):
         with TemporaryDirectory(dir=Path(__file__).parent) as path:
             root = Path(path)

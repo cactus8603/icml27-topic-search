@@ -17,6 +17,7 @@ STAGE = Path("codex/experiments/t2i-formal-replay")
 TOPIC = Path("killtests/t2i-rare-failure")
 SOURCE = "b54a86fb05e845e2c11139822beac8846c63c77a"
 GATE_DIR = Path("codex/experiments/t2i-gate-b-original-replay")
+GATE_PRECISION = Path("codex/experiments/t2i-gate-b-precision/run.py")
 GATE_FREEZE = "10d42bdf86534a44b47c03d56ea5e1dd749cdbac"
 GATE_JOB = "26663"
 SHARED = Path("/work/ChihChungHsu/cactus8603/icml")
@@ -47,7 +48,22 @@ def replay_receipt(shared):
     return receipt
 
 
-def gate_replay(repo, receipt_sha):
+def verify_frozen_gate(repo, gate_archive):
+    verifier = GATE_DIR / "run.py"
+    archived_verifier = gate_archive / verifier
+    if archived_verifier.read_bytes() != git_file(repo, GATE_FREEZE, verifier):
+        raise ValueError("The archived Gate (b) verifier differs from the registered replay")
+    subprocess.run([
+        sys.executable, "-IB", str(archived_verifier),
+        "--upstream", str(gate_archive / TOPIC), "--original", str(repo / TOPIC),
+        "--precision", str(gate_archive / GATE_PRECISION),
+        "--freeze", GATE_FREEZE, "--verify-job", GATE_JOB,
+    ], cwd=repo, check=True)
+
+
+def gate_replay(repo, gate_archive, receipt_sha):
+    if not re.fullmatch(r"[0-9a-f]{64}", receipt_sha or ""):
+        raise ValueError("The independently reviewed repaired Gate (b) digest is required")
     command = [SACCT, "-X", "-n", "-P", "-j", GATE_JOB, "--format=JobIDRaw,State,ExitCode,JobName%40"]
     records = subprocess.check_output(command, text=True).strip().splitlines()
     if records != [f"{GATE_JOB}|COMPLETED|0:0|t2ir-gate-b-original-replay"]:
@@ -57,7 +73,7 @@ def gate_replay(repo, receipt_sha):
     records = [match[1] for line in ledger if (match := pattern.fullmatch(line))]
     if len(records) != 1 or not GATE_FREEZE.startswith(records[0]):
         raise ValueError("The original-seed replay is not bound to the registered launch")
-    subprocess.run(["bash", str(repo / GATE_DIR / "run.sbatch"), GATE_FREEZE, "--verify-job", GATE_JOB], cwd=repo, check=True)
+    verify_frozen_gate(repo, gate_archive)
     body = replay_receipt(SHARED).read_bytes()
     result = json.loads(body)
     if (digest(body) != receipt_sha or result["status"] != "PASS" or result["frozen_commit"] != GATE_FREEZE
@@ -266,9 +282,10 @@ def main():
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--upstream", type=Path, required=True)
     parser.add_argument("--freeze", required=True)
+    parser.add_argument("--gate-archive", type=Path, required=True)
     parser.add_argument("--receipt-sha")
     parser.add_argument("--plan-sha")
-    parser.add_argument("command", choices=("preflight", "plan", "sample", "aggregate", "make-blind", "regen", "review-stats"))
+    parser.add_argument("command", choices=("preflight", "verify-gate", "plan", "sample", "aggregate", "make-blind", "regen", "review-stats"))
     parser.add_argument("phase", nargs="?", choices=PHASES)
     args = parser.parse_args()
     if (args.command in {"plan", "sample"}) != (args.phase is not None):
@@ -278,6 +295,10 @@ def main():
         raise ValueError("Run the committed formal workflow archive")
     if git_file(repo, SOURCE, TOPIC / "configs/criteria.json") != (upstream / "configs/criteria.json").read_bytes():
         raise ValueError("The archived criteria differ from the frozen topic")
+    if args.command == "verify-gate":
+        gate_replay(repo, args.gate_archive, args.receipt_sha)
+        print("[codex] Frozen Gate (b) evidence verified. No formal sampling started.")
+        return
     sys.path.insert(0, str(upstream / "scripts"))
     import evidence
     from common import prompts_by_id
@@ -295,9 +316,7 @@ def main():
         return
     # Add the blind-control floor only to the temporary run configuration.
     criteria = formal_configuration(upstream)
-    if not re.fullmatch(r"[0-9a-f]{64}", args.receipt_sha or ""):
-        raise ValueError("The independently reviewed repaired Gate (b) digest is required")
-    gate_result = gate_replay(repo, args.receipt_sha)
+    gate_result = gate_replay(repo, args.gate_archive, args.receipt_sha)
     gate = gate_result["status"] == "PASS"
     run = SHARED.resolve() / "runs/t2irare/formal-replay" / args.freeze
     if run.resolve() != run:

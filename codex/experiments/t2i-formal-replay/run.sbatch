@@ -22,6 +22,12 @@ topic=killtests/t2i-rare-failure
 source=b54a86fb05e845e2c11139822beac8846c63c77a
 candidate_source=a5d3fb86d489dbdc2b7209179879ba3b1e7ecedb
 probe_source=0d86f961a09954cec06434999e63b136bf0a83b1
+gate=codex/experiments/t2i-gate-b-original-replay
+gate_precision=codex/experiments/t2i-gate-b-precision/run.py
+gate_freeze=10d42bdf86534a44b47c03d56ea5e1dd749cdbac
+gate_generator=f54cb310a921966440754d42f65f86d9f565dc62
+gate_reference=37e6ae9a63cd3035822dccca2acf90ef12efec93
+gate_precision_source=2b1c7f64b8b9013a9a32f8353024c1d6f82b6e53
 git -C "$repo" diff --quiet "$freeze" HEAD -- "$pipeline/pipeline.py" "$pipeline/run.sbatch" "$pipeline/test_pipeline.py"
 
 shared=/work/ChihChungHsu/cactus8603/icml
@@ -43,5 +49,14 @@ git -C "$repo" archive "$probe_source" "$probe"/{probe,stage1_check}.py | tar -x
 mv -- "$bundle/$candidate/run.py" "$bundle/$candidate/run_candidate.py"
 export PYTHONPATH="$bundle/$candidate:$bundle/$probe"
 
+gate_archive="$bundle/gate-b"
+mkdir -- "$gate_archive"
+git -C "$repo" archive "$gate_freeze" "$gate/run.py" | tar -xf - -C "$gate_archive"
+git -C "$repo" archive "$gate_generator" "$topic/scripts/generate.py" | tar -xf - -C "$gate_archive"
+git -C "$repo" archive "$gate_precision_source" "$gate_precision" | tar -xf - -C "$gate_archive"
+git -C "$repo" archive "$gate_reference" "$topic"/configs/{criteria,detectors,sampling,models,prompts}.json \
+    "$topic"/scripts/{clip_precision_probe,common,detectors,evidence,verify_gate_b}.py | tar -xf - -C "$gate_archive"
+
 python="$shared/envs/t2irare/bin/python"
-"$python" -B "$bundle/$pipeline/pipeline.py" --repo "$repo" --upstream "$bundle/$topic" --freeze "$freeze" "$@"
+"$python" -B "$bundle/$pipeline/pipeline.py" --repo "$repo" --upstream "$bundle/$topic" \
+    --gate-archive "$gate_archive" --freeze "$freeze" "$@"

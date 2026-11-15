@@ -17,6 +17,7 @@
 ```bash
 stage=codex/experiments/t2i-formal-replay
 bash "$stage/run.sbatch" "$freeze" preflight
+bash "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt_sha" verify-gate
 sbatch --array=0-5%2 "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt_sha" sample 1
 bash "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt_sha" plan 2a
 sbatch --array="0-$last%2" "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt_sha" --plan-sha "$plan_sha" sample 2a
@@ -35,3 +36,7 @@ sbatch --array="0-$last%2" "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt
 ## 讀取紀錄
 
 - [codex] 2026-11-15 16:33（台北）已讀 `icml/runs/t2irare/gate-b-original-replay/26663/precision_replay_verified.json` 及該收據所綁的 60 對 `.npz`／側錄。獨立執行原凍結 `--verify-job 26663`，以逐種子資料重算並核對前置證據及收據，SHA-256 `d88b2d37b09d64a57a3102ecd7049c57d616aa19ed3fcc85a69a5dc447f9cffe`。
+
+## 執行修正
+
+- [codex] 2026-11-15（台北）。`26743` 的 Gate (b) 啟動檢查因原重播文件新增讀取紀錄而退出。正式入口從原來的固定 Git 提交抽取驗證器、生成程式、精度修復及設定，以原 `--verify-job` 重驗全部 60 對資料、先決條件與收據。`verify-gate` 以相同路徑檢查已審查的收據後退出。實驗設計與門檻沿用同一版。
