@@ -12,7 +12,7 @@ set -euo pipefail
 umask 077
 
 shared=/work/ChihChungHsu/cactus8603/icml
-repo=/work/ChihChungHsu/cactus8603/icml27-topic-search
+repo="${LAMBDA_GCD_REPO:-/work/ChihChungHsu/cactus8603/icml27-topic-search}"
 parent=codex/experiments/lambda-gcd-family-design
 stage="$parent/outcomes"
 materials=64eb9427f4bb14adfeff9bc25fb38b65ba728032

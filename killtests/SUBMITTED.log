@@ -190,3 +190,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 18:17 submit 26860 inoculation-lambda 替代26831；驗收新版正式訓練陣列26859全51格 2b04482255ee1942969ba41ef2ffdc3af6a77187
 [codex] 2026-11-15 18:17 submit 26861 inoculation-lambda 替代26836；以Slurm實際工作名驗PHM，九測試通過，等26859全51格及26860 2b04482255ee1942969ba41ef2ffdc3af6a77187
 [codex] 2026-11-15 18:24 submit 26866 multifidelity-attribution 50同查詢64新遮罩驗排名收益，八測試及舊LDS封存見證通過，現有快取/小型產物，低優先 1f3e88e3b47ee1b7263ae8e8594023020df7eeb2
+[codex] 2026-11-16 00:13 cancel 26859 inoculation-lambda 正式行為多格在同一套件驗收處失敗，停止重複耗用並保留已驗收事前分數 2b04482255ee1942969ba41ef2ffdc3af6a77187
+[codex] 2026-11-16 00:13 cancel 26860 inoculation-lambda 正式行為多格在同一套件驗收處失敗，停止重複耗用並保留已驗收事前分數 2b04482255ee1942969ba41ef2ffdc3af6a77187
+[codex] 2026-11-16 00:13 cancel 26861 inoculation-lambda 正式行為多格在同一套件驗收處失敗，停止重複耗用並保留已驗收事前分數 2b04482255ee1942969ba41ef2ffdc3af6a77187

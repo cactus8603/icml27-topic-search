@@ -158,6 +158,29 @@ def require_runtime(source):
     return design.verify_assets(source)
 
 
+def verify_saved_mask(weights, saved_targets, expected_modules):
+    """Resolve PEFT's persisted suffixes and check the actual A/B tensor names."""
+    from safetensors import safe_open
+
+    if type(saved_targets) is not list or not saved_targets or any(
+            type(target) is not str or not target for target in saved_targets):
+        raise ValueError("Saved LoRA projection mask has invalid target names")
+    universe = design.targets(0)
+    selected = set()
+    for target in saved_targets:
+        matches = {module for module in universe if module == target or module.endswith(f".{target}")}
+        if not matches:
+            raise ValueError("Saved LoRA projection mask contains an unexpected target")
+        selected.update(matches)
+    if selected != set(expected_modules):
+        raise ValueError("Saved LoRA projection mask differs from the frozen projections")
+    expected_keys = {f"base_model.model.{module}.lora_{part}.weight"
+                     for module in expected_modules for part in ("A", "B")}
+    with safe_open(weights, framework="pt", device="cpu") as tensors:
+        if set(tensors.keys()) != expected_keys:
+            raise ValueError("Saved LoRA tensor roster differs from the frozen A/B projections")
+
+
 def verify_adapter(parsed, expected_modules):
     from grad_shift.model_artifacts import ADAPTER, SAVE_COMPLETE, SAVE_PENDING, adapter_is_complete
     from worker import file_sha256
@@ -179,8 +202,9 @@ def verify_adapter(parsed, expected_modules):
     settings = design.strict_json((output / "adapter_config.json").read_bytes())
     expected = {"base_model_name_or_path": parsed.model, "r": parsed.lora_r, "lora_alpha": parsed.lora_alpha,
                 "lora_dropout": parsed.lora_dropout, "peft_type": "LORA", "task_type": "CAUSAL_LM"}
-    if any(settings.get(key) != value for key, value in expected.items()) or set(settings["target_modules"]) != set(expected_modules):
-        raise ValueError("Saved adapter does not match the frozen model and projection mask")
+    if any(settings.get(key) != value for key, value in expected.items()):
+        raise ValueError("Saved adapter does not match the frozen model and configuration")
+    verify_saved_mask(output / ADAPTER, settings.get("target_modules"), expected_modules)
     experiment = output / "experiment_config.json"
     throughput = output / "throughput.json"
     if experiment.is_symlink() or throughput.is_symlink() or \

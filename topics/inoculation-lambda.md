@@ -20,7 +20,7 @@
 
 **目前現象。** 語言盲評中，無防禦的 20 筆回覆有 17 筆含西語，基礎模型和加防禦各為 0/20。各臂 200 筆的離線檢查也見到語言分離。這批結果支持語言漏出，原三任務的重現與跨初始化信度仍待正式驗證。合成 GCD 五臂已完成獨立複核，回答格式造成大幅不確定，各臂之間可重複的漏出差異未建立。 [語言檢查](../codex/experiments/lambda-language-local/PREREG.md#讀取紀錄) · [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md)
 
-**目前訊號。** 一步近似已通過數值檢查。GCD 五臂的訓練後漏出區間互相重疊，訊號方向未定。四家族正式量測已排程，51 組訓練前評分正在執行。行為試驗要等分數驗收後啟動，才能比較留出家族的排名與設定選擇。 [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md) · [四家族設計](../codex/experiments/lambda-gcd-family-design/PROTOCOL.md) · [作業紀錄](../killtests/SUBMITTED.log)
+**目前訊號。** 一步近似已通過數值檢查。GCD 五臂的訓練後漏出區間互相重疊，訊號方向未定。四家族的 **51/51 組事前評分**及 PHM 基線已完成。正式行為第一批遇到模型存檔驗收問題，已停止重複失敗並修復驗收。等行為測量完成，才會比較留出家族的排名與設定選擇。 [GCD 五臂實測](../codex/reports/2026-11-15-gcd-pilot-verdict-codex.md) · [四家族設計](../codex/experiments/lambda-gcd-family-design/PROTOCOL.md) · [作業紀錄](../killtests/SUBMITTED.log)
 
 **目前空間。** 還缺重複訓練的信度上限，以及 PHM 等方法在同一批設定上的表現。知道這兩者，才有尺度判斷預測漏出還能改善多少。 [比較規則](../codex/experiments/lambda-gcd-family-design/evaluation/README.md)
 
