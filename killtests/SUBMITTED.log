@@ -147,3 +147,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 14:54 submit 26677 rl-sparse-distill 單步分叉兩合成題GPU確定性檢查；封存CPU六測試、權重指紋和128標答自配通過 1a80f08
 [codex] 2026-11-15 14:54 submit 26678 rl-sparse-distill 固定128道全新數學題單一token局部分叉；Astra已核對限縮，依賴同凍結合成試跑26677 1a80f08
 [codex] 2026-11-15 14:56 submit 26679 compositional-retrieval 123獨立左右群、246查詢各4正4反全排行；14測試、984 JPEG封存收據及Astra方法核對通過 a84de2f
+[codex] 2026-11-15 15:30 submit 26684 fallible-verifier 只在原250暖機題比較Base加長與短提示，原雙端上下文和嚴格解析；六測試、封存CPU預檢及Astra方法核對通過 bc762a1

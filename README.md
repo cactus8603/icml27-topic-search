@@ -16,7 +16,7 @@
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成短預算截斷對照和公開 32K 交叉重播，Astra 複核 | `26677`／`26678` 檢查單一 token 的局部效果。正式短預算仍需截斷可比的配對 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 正以原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K 正式留出、策略上限和 GSM1k 複驗，Astra 複核 | GSM1k 已完成，先查候選截斷與金標覆蓋，再驗共同誤收和等風險省費 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K 正式留出、策略上限和 GSM1k 複驗，Astra 複核 | `26684` 先比較兩種暖機候選生成規格，再以新金標題群驗共同誤收和等風險省費 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
