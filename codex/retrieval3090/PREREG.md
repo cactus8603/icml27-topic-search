@@ -55,3 +55,9 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16 04:55–04:58，root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/candidate-replay-only.json`，只檢查原候選召回與oracle重現。條件式平台協定於04:48起草；本次提交前已知原候選閘門未過，但仍未計算或讀取任何M1／M2／D3效果。正式採用新平台流程須本次提交後，另一次明示啟動、完整來源／逐值重複驗證及獨立審查。
 - [codex] 2026-11-16 05:06:54–05:09，potential_audit/root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/baseline-top50-replay.json`；potential_audit亦讀獨立本機續算的 `reranker-repeat.json` 作8對技術重複核驗。原重現檔保留不變，未讀M1／M2／D3或外部效果。
 - [codex] 2026-11-16 05:21–05:23，literature_check於05:21:16首次讀取MCMR共享索引的 `index.npz` 及來源／環境／圖片manifest作獨立技術驗收；root讀取相同索引及逐值清理收據以刪除已由最終NPZ保留的兩份重複checkpoint。未讀MCMR重排效果或任何COCO方法效果。
+- [codex] 2026-11-16 05:39，literature_check於05:39:20.766首次讀取外部CORE50原始 `cache.npz`／checkpoint並作來源、pairs及逐值完整性驗收；未計算或讀取外部AP／Recall。控制程序中斷、子程序退出碼未知，COMPLETE產物獨立驗收，不虛報exit 0。
+- [codex] 2026-11-16 05:43–05:44，root首次讀取 `analysis-platform-torch214-20261116/report.md`、`report.json` 與 `d3-platform-torch214-20261116.json`；potential_audit於05:44:16讀report.md、05:44:27讀report.json與per_query.json，進行未實作該分析器的獨立審查。皆僅為已凍結本機平台探索，未讀外部效果、私有盲審映射或封存資料。
+- [codex] 2026-11-16 05:45，依05:06固定規則，root機械選擇單一COCO政策並於05:45:39保存 `analysis-platform-torch214-20261116/selected-policy.json`，綁定完整分析、平台計畫、政策檔SHA；在任何外部效果分析前鎖定。外部與成本工作使用此同一政策。使用者同意以本機結果繼續開發及分析，原重現MISMATCH仍保留。
+- [codex] 2026-11-16 05:48，literature_check於05:48:35.212首次讀取D3結果及其平台來源，繼續以design、同214文字／影像向量獨立重算。其稍早被動收到potential_audit的COCO彙總審查訊息，但未開COCO原始分析、未讀外部效果或私有盲審映射。
+- [codex] 2026-11-16 05:46–05:51，三個新子代理（fork_turns=none）只看公開query／原尺寸匿名圖片，按固定0–47／48–95／96–143分段完成144例AI初審；未讀private、方法排名／效果或其他審查者標籤。root於05:51:16核對覆蓋與原欄位後保存 `ai-review/AI-freeze.json`、合併標籤及SHA，之後於05:51–05:52首次讀 `private/key.json` 作分層描述。人工標籤仍空白；AI不稱人工gold或整體錯標率。
+- [codex] 2026-11-16 05:53，root在AI標籤凍結後，對兩個已見分歧案例（image218589、125017）看原圖並查官方train標註bbox，另讀image567609標註；屬事後質性診斷，未改任何凍結標籤、評分或政策，不作整體錯標率或人工裁決。
