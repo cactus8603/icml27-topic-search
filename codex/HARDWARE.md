@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 14:31（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 14:45（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -17,9 +17,9 @@
 | 文生圖罕見失敗 | 三偵測器資源診斷、CPU 次鍵對照完成，原種子精度重播 `26663` 已送 | `26516` **36.14 GiB、1 小時 31 分 18 秒**，約 **5.48 張／秒**，含 CLIP。完整 SDv1.4 `26288` **52.9 GiB**。獨立三偵測器 `26570` 共 **12 秒**，batch 32／64 的 PyTorch 保留峰值 **1.50／2.13 GiB**、約 **94.9／97.1 張／秒**，NudeNet 用 CPU。CPU `26585` **1 秒、25.4 MiB RAM**。 | **現有生成 batch 32 留 H200，單獨偵測器可試 24 GB。** 完整 SDv1.4 batch 32 實測換算階段 1 約 **9.17 GPU 小時**，六模型吞吐待量。原種子重播估 **1.5 GPU 小時**、只存小於 **2 MiB** 的分數與收據。縮批需通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[原種子重播](experiments/t2i-gate-b-original-replay/PREREG.md) · [重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) · [候選修復](experiments/t2i-gate-repair/README.md) · [偵測器資源診斷](experiments/t2i-detector-probe/README.md) |
 | 大型平行解碼提交集合 | `26530` 完成 640 題，暫停此版規則 | LLaDA-8B 全程 `26530` **16.58 GiB、18 分 39 秒**。兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。 | **同配置有望用 24 GB。** 權重約 14.93 GiB。H200 已覆蓋本輪完整面板，換卡的顯存及執行時間待實測。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
 | 不完美驗證器 | 開發校準、暖機、GSM8K 747 題留出與 CPU 策略上限完成。GSM1k 複驗 `26669` 已送 | 開發校準 `26595` **110.15 GiB、1 分 45 秒**，留出 `26598` **110.24 GiB、3 分 4 秒**，含 vLLM 預留，留出主機 RAM 約 **3.28 GiB**。CPU 判讀 `26599` **4 秒、約 98 MiB RAM**。策略上限本機單核 **5.70 秒、約 98.3 MiB RAM**。 | **完整原配置留 H200，評估用 CPU。** 0.6B 單獨有望用 24 GB。強端約 18 GiB 權重，另需 KV cache。GSM1k 作業依序載入模型，估 **15–40 GPU 分鐘**、保留資料 **<40 MiB**。Slurm 配額為 **1 張 H200、16 CPU、170 GiB 主機 RAM**，執行上限 **2 小時**。新配置的 VRAM、RAM、耗時及磁碟用量待量。[開發校準和留出](experiments/fallible-verifier/holdout-scoring/README.md) · [策略上限](experiments/fallible-verifier/empirical-policy-ceiling/PREREG.md) · [GSM1k 複驗](experiments/fallible-verifier/gsm1k-replication/PREREG.md) |
-| Attention gate × optimizer | 壓力試驗與正常排程探針都完成 | 正常排程 `26594` **3.29 GiB、41 分 6 秒**，主機 RAM 約 **2.05 GiB**。壓力試驗四段各 **3.72 GiB、約 18 分鐘**。 | **同配置可優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。正常排程暫存估 **0.04 GiB**，作業結束清除。[48 種子壓力試驗](experiments/gate-optimizer/round3/PREREG.md) · [正常排程](experiments/gate-optimizer-nominal/PREREG.md) |
+| Attention gate × optimizer | 壓力試驗與舊正常排程完成。獨立加密量測 `26673` 與 CPU 彙總 `26674` 已送 | 正常排程 `26594` **3.29 GiB、41 分 6 秒**，主機 RAM 約 **2.05 GiB**。壓力試驗四段各 **3.72 GiB、約 18 分鐘**。 | **同模型可優先試 24 GB，估約 4–6 GiB。** 目前為保持數值環境用 H200。序列 256、microbatch 8。加密量測八段依序用一張卡，每段上限 1 小時，估合計 **2–4 GPU 小時**、保留檔案 **<80 MiB**。實際顯存與耗時待量。每段約 **0.04 GiB** 暫存，完成後清除。[48 種子壓力試驗](experiments/gate-optimizer/round3/PREREG.md) · [舊正常排程](experiments/gate-optimizer-nominal/PREREG.md) · [加密量測](experiments/gate-optimizer-nominal-dense/PREREG.md) |
 
-文生圖 `26663` 與 GSM1k `26669` 等候共享 CPU 配額，兩項各申請一張 H200。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
+文生圖 `26663`、GSM1k `26669` 與正常學習率加密量測 `26673` 依共享佇列執行，各 GPU 分段申請一張 H200。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
 
 ## H200 各階段實測
 

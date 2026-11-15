@@ -17,7 +17,7 @@
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 排隊中，用原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
 | [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成正式留出與固定策略族的事後省費上限，Astra 複核 | `26669` 排隊中。用新 GSM1k 金標重新暖機，驗證共同誤收、條件訊號與等風險省費 |
-| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | 若延伸到部署，先確立正常排程的事件覆蓋 |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
 

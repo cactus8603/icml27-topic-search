@@ -142,3 +142,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 14:06 submit 26666 fallible-verifier 同250/747面板的點風險策略省費上限，七測試、封存來源及Astra方法核對通過 454e3d7
 [codex] 2026-11-15 14:08 cancel 26666 fallible-verifier 同一封存點風險上限已以本機單核完成且Astra核對，撤重複等候 454e3d7
 [codex] 2026-11-15 14:31 submit 26669 fallible-verifier GSM1k新增金標分割250/747，同額暖機與風險試驗；15測試、封存CPU預檢及Astra方法核對通過 229cdcf
+[codex] 2026-11-15 14:44 submit 26673 gate-optimizer 96新種子正常排程54,720探針，八段各占一張H200且單段執行；Astra方法核對及封存預檢通過 c992d0f
+[codex] 2026-11-15 14:44 submit 26674 gate-optimizer 只在陣列26673八段全成功後驗收收據並以CPU判讀現象訊號與局部上限 c992d0f
