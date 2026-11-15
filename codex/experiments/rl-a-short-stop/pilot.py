@@ -118,8 +118,10 @@ def model_inputs(role, check_weights=False):
         require(path.is_file(), f"Missing model asset {role}/{name}")
         if name == "model.safetensors":
             shared = SHARED_WEIGHTS[role]
+            direct = (repository / "blobs").resolve(strict=True) / sha
+            deduplicated = (HUB / "blobs" / shared[:2]).resolve() / shared
             require(path.is_symlink() and path.readlink() == Path("../../blobs") / sha
-                    and path.resolve() in {repository / "blobs" / sha, HUB / "blobs" / shared[:2] / shared}
+                    and path.resolve(strict=True) in {direct, deduplicated}
                     and path.stat().st_size == 3_087_467_144,
                     f"Weight file must use the frozen shared blob for {role}")
             if not check_weights:
@@ -227,6 +229,8 @@ def generate(role, mode, source, freeze, job, output):
     require(torch.cuda.device_count() == 1 and "H200" in torch.cuda.get_device_name()
             and torch.cuda.is_bf16_supported(), "Expected one NVIDIA H200 with BF16 support")
     weights, prompts, token_ids, seeds, _ = make_panel(source, mode == "smoke")
+    require(digest(weights[role] / "model.safetensors") == MODELS[role][2],
+            f"Model weight content differs for {role}")
     receipt = identity(mode, freeze, job)
     model = LLM(model=str(weights[role]), dtype="bfloat16", max_model_len=CONTEXT,
                 gpu_memory_utilization=0.90, seed=1234, enable_prefix_caching=True, disable_log_stats=True)

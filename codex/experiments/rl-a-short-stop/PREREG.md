@@ -26,3 +26,5 @@ sbatch --dependency="afterok:$smoke_job" "$stage/run.sbatch" "$freeze" diagnosti
 ```
 
 收據位於共用 `icml/runs/rsd-pair-a-short-stop/`。判讀前先核對凍結與 Slurm 完成。
+
+[codex] 2026-11-15 13:10（台北）。合成試跑 `26655` 在運算節點比對權重掛載路徑時停止。依已驗證的首版診斷做法，先解析共用目錄別名再比對固定位置。原符號連結與檔案大小維持核對，正式載入前再核該模型的內容 SHA。取消無法滿足相依的 `26656`，按原抽樣與判讀重送。
