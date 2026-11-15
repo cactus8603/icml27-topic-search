@@ -9,3 +9,8 @@ stage=codex/experiments/rl-external-passk-local
 bash "$stage/run.sh" --check-only
 bash "$stage/run.sh" --run FULL_LAUNCHER_COMMIT
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 13:58（台北，13:58:25）。已讀 `rsd-external-passk-local.NtoaYWdF.json`，分析凍結 `10d42bd`，本機入口 `24b976b`。 [詳細判讀](../../reports/2026-11-15-topic-status-codex.md#rl-稀疏決策蒸餾)
+- [codex] 2026-11-15 13:58（台北，13:58:29）。Astra 獨立讀取同一份彙總。
