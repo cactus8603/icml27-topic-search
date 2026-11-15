@@ -17,7 +17,7 @@
 ~~~bash
 bash scripts/check-frozen.sh 45fc76383dd5cfbf9eb016e514ee9d6ac80168fb \
   codex/experiments/t2i-requeue-accounts/run.sh --check-only
-sacct -X -n -P -j 26765,27116 --format=JobID,State,ExitCode
+sacct -X -n -P -j 26765,27116,27117,27161 --format=JobID,State,ExitCode
 ~~~
 
 正式取樣需要已通過並驗證的 `26663/precision_replay_verified.json`。按已登記流程完成首段驗收，依選格檔的雜湊補樣。發生叢集重排時，驗收從每次配置計入 GPU 時間。完成正式取樣後整理盲評包，再依規則計算陽性可信度。[正式取樣與盲評操作](code/experiments/t2i-formal-replay/PREREG.md) · [重排後的選格入口](code/experiments/t2i-requeue-accounts/PREREG.md)

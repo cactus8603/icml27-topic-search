@@ -201,3 +201,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 01:10 submit 27117 t2i-rare-failure formal-stage=2a 固定選格 0,1,2,3,4,5,6,7,8,9,10,11，成本與配額已核對 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
 [codex] 2026-11-16 01:56 cancel 27117_[1-11] t2i-rare-failure 共享主目錄已搬遷，僅撤回尚未啟動的索引，保留執行中的27117_0 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
 [codex] 2026-11-16 01:56 submit 27161 t2i-rare-failure formal-stage=2a 替代27117尚未啟動的索引1–11，沿用選格與配置，從原路徑執行副本啟動並等待索引0 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
+[codex] 2026-11-16 01:59 cancel 27114 inoculation-lambda 舊比較入口寫死已搬遷的工作目錄，保留兩個上游作業 2b04482255ee1942969ba41ef2ffdc3af6a77187
+[codex] 2026-11-16 01:59 submit 27162 inoculation-lambda 替代27114；從舊執行副本載入原比較凍結版，等待27112和27113，啟動入口 0ebfd7b2534b4938c9c590c315053e7fc71f0f68 2b04482255ee1942969ba41ef2ffdc3af6a77187
