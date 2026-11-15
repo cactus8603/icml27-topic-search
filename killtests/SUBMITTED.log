@@ -87,3 +87,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 08:05 submit 26529 large-commit-sets 兩題新任務GPU測試，核對LLaDA BF16、forward數及候選分支 9ab67c9
 [codex] 2026-11-15 08:05 submit 26530 large-commit-sets 640新題零額外forward的top-two集合選擇、原confidence與同池oracle，依賴26529 9ab67c9
 [codex] 2026-11-15 08:15 submit 26533 inoculation-lambda 依原作者鎖版HF sampler離線生成Base、none、IP各20×10，預檢通過，依賴26526/26527成功及收據 8c391fd
+[codex] 2026-11-15 08:20 submit 26534 compositional-retrieval 新COCO兩條件固定索引和前50榜單上限，Astra及全部JPEG預檢通過 6aa7eb5
+[codex] 2026-11-15 08:22 submit 26535 multifidelity-attribution seed6獨立軌跡，固定12查詢100重訓遮罩，比精確LDS與固定EK-FAC，已複核和CPU預檢 c6ff6aa
