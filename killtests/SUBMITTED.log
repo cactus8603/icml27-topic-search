@@ -99,3 +99,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 09:11 submit 26565 fallible-verifier 26528啟動失敗後以同一開發面板重送，加入階段診斷及正規化路徑，雙CPU預檢與26520成功已驗 2bc9d7e
 [codex] 2026-11-15 09:12 submit 26566 inoculation-lambda 作者三臂離線生成改接26562/26563，快取別名修正與鎖版HF sampler預檢通過 639bf14
 [codex] 2026-11-15 09:14 submit 26567 inoculation-lambda CPU複核改接26566，600筆原規格與60筆盲化，作者鎖版替身預檢通過 63109d1
+[codex] 2026-11-15 09:31 submit 26568 compositional-retrieval CORE前50固定名單交叉編碼重排，4095圖104新查詢93群，Astra和CPU預檢通過 53027bd
