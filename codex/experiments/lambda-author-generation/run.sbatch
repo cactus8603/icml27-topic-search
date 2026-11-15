@@ -21,7 +21,8 @@ python="$shared/envs/inoc-phaseb-author-6964328/env/bin/python"
 freeze=${1:?Pass the full freeze commit and optionally --check-only}
 [[ "$freeze" =~ ^[0-9a-f]{40}$ ]]
 [[ "$#" == 1 || "$#" == 2 && "$2" == --check-only ]]
-[[ -z "$(git -C "$repo" status --porcelain --untracked-files=all -- "$stage")" ]]
+changes=$(git -C "$repo" status --porcelain --untracked-files=all -- "$stage")
+[[ -z "$changes" ]]
 git -C "$repo" diff --quiet "$freeze" HEAD -- "$stage"
 git -C "$repo" cat-file -e "$freeze:$stage/generate.py"
 

@@ -147,22 +147,28 @@ def preflight(tokenizer, conversations, expected):
 
         def __init__(self):
             self.sizes = []
+            self.padded_tokens = 0
 
         def generate(self, *, input_ids, attention_mask, **settings):
             expected_settings = {"do_sample": True, "max_new_tokens": TOKENS, "use_cache": True,
                                  "min_new_tokens": 1, "temperature": 1.0, "top_p": 1.0}
             if settings != expected_settings or input_ids.shape != attention_mask.shape:
                 raise ValueError("pinned author HF sampling kwargs changed")
+            padding = attention_mask == 0
+            if not (input_ids[padding] == tokenizer.pad_token_id).all() or (attention_mask[:, 1:] < attention_mask[:, :-1]).any():
+                raise ValueError("author HF batch uses unexpected pad IDs or padding side")
+            self.padded_tokens += int(padding.sum())
             self.sizes.append(input_ids.shape[0])
             blank = torch.full((input_ids.shape[0], 1), tokenizer.eos_token_id, dtype=input_ids.dtype)
             return torch.cat((input_ids, blank), dim=1)
 
     stub = CPUStub()
     actual, replies = generate_responses(stub, tokenizer, conversations, batch_size=BATCH, max_tokens=TOKENS, temperature=1.0)
-    if actual != expected or stub.sizes != [BATCH] * 10 or replies != [""] * (QUESTIONS_N * SAMPLES):
+    if actual != expected or stub.sizes != [BATCH] * 10 or not stub.padded_tokens or replies != [""] * (QUESTIONS_N * SAMPLES):
         raise ValueError("author CPU sampler path does not match the fixed question batches")
     print(json.dumps({"stage": "cpu_preflight_only", "questions": QUESTIONS_N, "samples_per_question": SAMPLES,
-                      "batches": stub.sizes, "ordered_prompt_hash": sha256(json.dumps(expected).encode()).hexdigest(),
+                      "batches": stub.sizes, "pad_token_id": tokenizer.pad_token_id, "padding_side": tokenizer.padding_side,
+                      "ordered_prompt_hash": sha256(json.dumps(expected).encode()).hexdigest(),
                       "training_receipts_present": {arm: (RUNS / f"author-training-{job}" / arm / "receipt.json").is_file()
                                                     for arm, job in TRAIN_JOBS.items()}}, sort_keys=True))
 
@@ -195,6 +201,13 @@ def main():
     questions = load_trait_questions(trait="spanish", version="extract", system_prompt=SYSTEM)
     ids, conversations = conversation_plan(questions)
     tokenizer = AutoTokenizer.from_pretrained(str(BASE), local_files_only=True)
+    # Match the author's post-load tokenizer configuration before the CPU sampler check.
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
+    tokenizer.padding_side = "left"
+    expected_tokenizer = (tokenizer.pad_token_id, tokenizer.eos_token_id, tokenizer.padding_side)
+    if expected_tokenizer != (151645, 151645, "left"):
+        raise ValueError("unexpected base Qwen tokenizer pad/EOS metadata")
     expected = [render_chat(tokenizer, chat, add_generation_prompt=True) for chat in conversations]
     if not args.arm:
         preflight(tokenizer, conversations, expected)
@@ -209,6 +222,9 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     begin = time.monotonic()
     model, author_tokenizer = load_model_and_tokenizer(str(path), dtype="bfloat16")
+    if ((author_tokenizer.pad_token_id, author_tokenizer.eos_token_id, author_tokenizer.padding_side) != expected_tokenizer
+            or model.device.type != "cuda"):
+        raise ValueError("loaded author tokenizer metadata or GPU placement differs from the checked plan")
     depth = model.generation_config
     if depth.top_k != 20 or depth.repetition_penalty != 1.05 or depth.eos_token_id != [151645, 151643]:
         raise ValueError("inherited author HF generation settings differ")
@@ -229,6 +245,8 @@ def main():
         "inputs_sha256": BINDING, "training_receipt_sha256": trained_receipt, "model_revision": MODEL_REVISION,
         "questions_sha256": AUTHOR_HASHES[QUESTIONS], "source_hashes": AUTHOR_HASHES, "versions": VERSIONS,
         "torch_build": torch.__version__, "device": torch.cuda.get_device_name(),
+        "tokenizer": {"pad_token_id": author_tokenizer.pad_token_id, "eos_token_id": author_tokenizer.eos_token_id,
+                      "padding_side": author_tokenizer.padding_side},
         "answers_sha256": sha256(payload).hexdigest(), "rows": len(rows), "samples_by_question": dict(counts),
         "empty_after_decode": sum(not r["answer"].strip() for r in rows),
         "sampling": {"backend": "hf", "seed": SEED, "temperature": 1.0, "top_p": 1.0, "top_k": depth.top_k,
