@@ -13,6 +13,18 @@ HELPER_COMMIT = "1280b1ff17b18684358fa9a56227d5df5c44e43b"
 ARMS = ("none", "ip")
 
 
+def verify_inputs(checkout, snapshot, author_python):
+    from phaseb.feasibility import fingerprint, preflight
+
+    verified = preflight(checkout, snapshot.resolve(strict=True), author_python)
+    # The physical path can differ by node; the audited input keeps the logical path.
+    verified["inputs"]["snapshot"]["snapshot"] = str(snapshot)
+    verified["inputs_sha256"] = fingerprint(verified["inputs"])
+    if verified["inputs_sha256"] != INPUTS_SHA:
+        raise ValueError("published Spanish training inputs differ from the audited binding")
+    return verified
+
+
 def write_json(path, data):
     with path.open("x", encoding="utf-8") as stream:
         json.dump(data, stream, sort_keys=True, indent=2, allow_nan=False)
@@ -42,12 +54,10 @@ def main():
 
     sys.path.insert(0, str(args.helpers))
     from phaseb.feasibility import (
-        AUTHOR_ARM, AUTHOR_DATASET, AUTHOR_IP, AUTHOR_REVISION, author_training_config, digest, preflight,
+        AUTHOR_ARM, AUTHOR_DATASET, AUTHOR_IP, AUTHOR_REVISION, author_training_config, digest,
     )
 
-    verified = preflight(args.checkout, args.snapshot, args.author_python)
-    if verified["inputs_sha256"] != INPUTS_SHA:
-        raise ValueError("published Spanish training inputs differ from the audited binding")
+    verified = verify_inputs(args.checkout, args.snapshot, args.author_python)
     if verified["author_python_version"] != [3, 10, 20] or not verified["author_environment_matches_pins"]:
         raise ValueError("the provisioned author environment differs from the frozen runtime")
     inputs = verified["inputs"]
