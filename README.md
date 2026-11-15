@@ -14,9 +14,9 @@
 | [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成獨立種子、補空間對照與新遮罩 LDS | 保留固定 EK-FAC 基線，續做混合前先提出新的可驗證規則 |
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 完成公開探測器與固定門檻的乾淨標籤對照 | 等歷史選樣、合併探測器與 checkpoint 對應 |
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成短預算截斷對照和公開 32K 交叉重播，Astra 複核 | 正式短預算仍需截斷可比的配對 |
-| [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 用原種子重驗 CLIP 修復，Stage 1 待前置證據定案 |
+| [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 排隊中，用原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成正式留出與固定策略族的事後省費上限，Astra 複核 | 用新金標題群驗證新策略的風險與實際省費 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成正式留出與固定策略族的事後省費上限，Astra 複核 | `26669` 排隊中。用新 GSM1k 金標重新暖機，驗證共同誤收、條件訊號與等風險省費 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | 若延伸到部署，先確立正常排程的事件覆蓋 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
@@ -87,6 +87,7 @@
 - **訊號**在弱判決、資料集與作答模型已知時，檢查加入強判決還能補多少預測資訊。
 - **現有方法**在相同暖機預算下，比較只買專家金標與混買強判決、金標的政策。
 - **上限參考**用完整暖機金標訓練有無強判決的兩類政策，在同一鎖定測試集比較等風險的部署成本。這個參考受固定政策類別限制。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#強驗證器與稀疏金標) · [第二輪預登記](codex/experiments/fallible-verifier/round2/PREREG.md)
+- **獨立續驗** GSM1k 固定 250 題暖機、747 題留出。用新作答器產生四個候選，沿用兩端驗證器、判決門檻與成本規格。[GSM1k 預登記](codex/experiments/fallible-verifier/gsm1k-replication/PREREG.md)
 
 ### Attention gate × optimizer
 
