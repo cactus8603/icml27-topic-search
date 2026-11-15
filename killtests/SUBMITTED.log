@@ -144,3 +144,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 14:31 submit 26669 fallible-verifier GSM1k新增金標分割250/747，同額暖機與風險試驗；15測試、封存CPU預檢及Astra方法核對通過 229cdcf
 [codex] 2026-11-15 14:44 submit 26673 gate-optimizer 96新種子正常排程54,720探針，八段各占一張H200且單段執行；Astra方法核對及封存預檢通過 c992d0f
 [codex] 2026-11-15 14:44 submit 26674 gate-optimizer 只在陣列26673八段全成功後驗收收據並以CPU判讀現象訊號與局部上限 c992d0f
+[codex] 2026-11-15 14:54 submit 26677 rl-sparse-distill 單步分叉兩合成題GPU確定性檢查；封存CPU六測試、權重指紋和128標答自配通過 1a80f08
+[codex] 2026-11-15 14:54 submit 26678 rl-sparse-distill 固定128道全新數學題單一token局部分叉；Astra已核對限縮，依賴同凍結合成試跑26677 1a80f08
+[codex] 2026-11-15 14:56 submit 26679 compositional-retrieval 123獨立左右群、246查詢各4正4反全排行；14測試、984 JPEG封存收據及Astra方法核對通過 a84de2f
