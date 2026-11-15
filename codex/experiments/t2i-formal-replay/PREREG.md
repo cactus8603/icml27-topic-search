@@ -31,7 +31,15 @@ sbatch --array="0-$last%2" "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt
 
 把每組 `indices` 轉成 `sbatch --array=ID,ID%2 --time=MINUTES …`，用同一份選格雜湊。25,000 與尾段 5,000 張分兩組，依原索引執行。若共享卡數要維持兩張，前一組全部終止後才提交後一組。排程查詢使用 `sacct -X -n -P -j ARRAY --format=JobID,State,ExitCode`，每分鐘查一次。全部計畫分片成功且收據通過後，才執行下一個 `plan`。部分失敗時先重算剩餘時間，重新提交尚未成功的原分片，保留已完成資料及原 seed 範圍。提交與重試都以原協作規則登記。
 
-正式取樣完整後執行 `aggregate` 和 `make-blind`。若人工盲標素材需重生成，單張 H200 提交同一入口的 `regen`。只將 `review/index.html`、`review/review_imgs/`、`review/review_blind.csv` 與凍結評分規則交予標註者。人工回填後跑 `review-stats` 及 `aggregate` 更新三項判讀。對照列的身分與原分數在標註後才開啟。
+正式取樣完整後執行 `aggregate` 和 `make-blind`。補圖由獨立封存的 `regen_exact.sbatch` 執行。原存縮圖直接沿用，缺圖依原模型、提示、500-seed 塊內的完整批次重放，只留盲標所需的縮圖。正式批次大小為 32，塊尾為 20。原入口的 `regen` 將缺圖重組批次，正式盲標包改用下列入口。`--plan` 只回報需重播的總張數與清單雜湊，提交前把整批重播的 GPU 配置時間納入 50 GPU 小時上限。重播跑一張 H200，按當時剩餘預算設定 `--time`。
+
+```bash
+bash "$stage/regen_exact.sbatch" "$regen_freeze" "$freeze" --check-only
+bash "$stage/regen_exact.sbatch" "$regen_freeze" "$freeze" --plan
+sbatch --parsable --time="$review_minutes" "$stage/regen_exact.sbatch" "$regen_freeze" "$freeze"
+```
+
+只將 `review/exact_packet/index.html`、`review/exact_packet/review_imgs/`、`review/review_blind.csv` 與凍結評分規則交予標註者。人工回填後跑 `review-stats` 及 `aggregate` 更新三項判讀。對照列的身分與原分數在標註後才開啟。
 
 ## 讀取紀錄
 
