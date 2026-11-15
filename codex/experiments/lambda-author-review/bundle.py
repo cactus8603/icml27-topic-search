@@ -18,8 +18,8 @@ sys.path.insert(0, str(GENERATORS))
 import generate as generation
 
 
-GEN_JOB = "26533"
-GEN_FREEZE = "8c391fd4e72ed998732034910db1bd13afe4c784"
+GEN_JOB = "26566"
+GEN_FREEZE = "639bf144b1df0b1cb29ded89b5f5cad68213a606"
 AUTHOR_JUDGE = "grad_shift/evaluation/judge.py"
 AUTHOR_JUDGE_SHA = "c54c953d9f3c1008bc5d62a36b31cafc561fec66bbe0d3e625b94bc51734377b"
 ARMS = ("base", "none", "ip")

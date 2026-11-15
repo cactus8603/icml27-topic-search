@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
 #SBATCH --time=00:15:00
-#SBATCH --dependency=afterok:26533
+#SBATCH --dependency=afterok:26566
 #SBATCH --output=/work/ChihChungHsu/cactus8603/icml/tmp/lambda-review-packet-%j.log
 set -euo pipefail
 
@@ -16,7 +16,7 @@ repo="$root/icml27-topic-search"
 shared="$root/icml"
 stage=codex/experiments/lambda-author-review
 generator=codex/experiments/lambda-author-generation
-generation_commit=8c391fd4e72ed998732034910db1bd13afe4c784
+generation_commit=639bf144b1df0b1cb29ded89b5f5cad68213a606
 author=6964328411bf0ae49de47fa1bdfcfe8f94a75cce
 freeze=${1:?Use the full frozen review commit}
 [[ "$freeze" =~ ^[0-9a-f]{40}$ ]]
