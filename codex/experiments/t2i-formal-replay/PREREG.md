@@ -24,6 +24,14 @@ sbatch --array="0-$last%2" "$stage/run.sbatch" "$freeze" --receipt-sha "$receipt
 
 每個陣列以 `formal-stage=1`、`formal-stage=2a`、`formal-stage=2b` 或 `formal-stage=2b_extra` 開頭記錄提交原因。依輸出任務數調整 `last`。未選出格時仍保留選格清單，直接進下一個 CPU 步驟。`2b_extra` 只有原判準 A 灰區允許。
 
+### 分段成本與續跑
+
+送出每段前，以 `python3 -B "$stage/schedule.py" "$freeze" PHASE` 核對既有 GPU 配置時間、該段未完成任務、預計耗時和各陣列的每任務時間上限。首段估速來自完整三個偵測器的基準。完成首段後改用累計實際配置時間與已完成列數，含失敗重試成本。加總各陣列上限仍須在原 50 GPU 小時及每階段兩倍估時內。`array_groups` 為空清單表示無需 GPU，`null` 表示按當前速度無法在兩個原限制內完整生成，須先重排成本。
+
+把每組 `indices` 轉成 `sbatch --array=ID,ID%2 --time=MINUTES …`，用同一份選格雜湊。25,000 與尾段 5,000 張分兩組，依原索引執行。若共享卡數要維持兩張，前一組全部終止後才提交後一組。排程查詢使用 `sacct -X -n -P -j ARRAY --format=JobID,State,ExitCode`，每分鐘查一次。全部計畫分片成功且收據通過後，才執行下一個 `plan`。部分失敗時先重算剩餘時間，重新提交尚未成功的原分片，保留已完成資料及原 seed 範圍。提交與重試都以原協作規則登記。
+
 正式取樣完整後執行 `aggregate` 和 `make-blind`。若人工盲標素材需重生成，單張 H200 提交同一入口的 `regen`。只將 `review/index.html`、`review/review_imgs/`、`review/review_blind.csv` 與凍結評分規則交予標註者。人工回填後跑 `review-stats` 及 `aggregate` 更新三項判讀。對照列的身分與原分數在標註後才開啟。
 
 ## 讀取紀錄
+
+- [codex] 2026-11-15 16:33（台北）已讀 `icml/runs/t2irare/gate-b-original-replay/26663/precision_replay_verified.json` 及該收據所綁的 60 對 `.npz`／側錄。獨立執行原凍結 `--verify-job 26663`，以逐種子資料重算並核對前置證據及收據，SHA-256 `d88b2d37b09d64a57a3102ecd7049c57d616aa19ed3fcc85a69a5dc447f9cffe`。
