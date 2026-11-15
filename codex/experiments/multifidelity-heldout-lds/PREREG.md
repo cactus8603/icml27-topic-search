@@ -31,3 +31,8 @@ bash "$stage/run.sbatch" "$freeze" --check-only
 # 完成指定審查及佇列核對後執行
 sbatch --parsable "$stage/run.sbatch" "$freeze"
 ~~~
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 13:29（台北，13:29:45）。已讀 `icml/runs/multifid/heldout-lds/26654/summary.json`，凍結 `c7aa443`。 [研究進度報告](../../reports/2026-11-15-topic-status-codex.md#多保真度資料歸因)
+- [codex] 2026-11-15 13:29（台北，13:29:50）。Astra 獨立讀取同一份凍結彙總。
