@@ -26,3 +26,8 @@ bash "$stage/produce.sbatch" "$freeze" --check-only
 array=$(sbatch --parsable "$stage/produce.sbatch" "$freeze")
 sbatch --parsable --dependency="afterok:${array%%;*}" "$stage/analyze.sbatch" "$freeze" "${array%%;*}"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 10:58（台北），Codex 已讀 `fresh-26521/validation.json`。凍結版本 `6e16f498bb21044128f8383a684874f3ea12e29c`。
+- [codex] 2026-11-15 10:58（台北），Astra 子代理已獨立讀取並複核同一份彙總。

@@ -1,6 +1,6 @@
 # ICML 2027 選題與實驗
 
-2026-11-15（台北）。目前有 **10 題已建立實驗**，其中 **1 題 GO、6 題待判、3 題已完成先導並送出第二輪**。另有 [7 題備案](codex/reports/2026-11-15-topic-status-codex.md#備案與舊題)。
+2026-11-15（台北）。目前有 **10 題已建立實驗**，其中 **1 題 GO、6 題待判、3 題已完成先導並進入後續驗證**。另有 [7 題備案](codex/reports/2026-11-15-topic-status-codex.md#備案與舊題)。
 
 ## 目前題目
 
@@ -17,7 +17,7 @@
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理與 CLIP 新種子重驗 | `26570` 量三偵測器資源，候選 Stage 1 待代理修復定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
 | [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結官方 GSM8K 獨立留出及開發診斷 | `26565` 重跑真實開發候選的格式與排序診斷 |
-| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成 12 個保留種子的壓力試驗 | `26521`／`26522` 用 48 個全新種子重驗訊號 |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成獨立種子壓力試驗，Astra 複核 | 依逐題報告決定是否續測正常訓練排程 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
 
@@ -93,7 +93,7 @@
 - **現象**看競爭力較強的 optimizer 在壓力下，是否出現可重現的單步驗證損失上升。
 - **訊號**在 QK、激活、梯度和更新幅度等診斷已知時，量 attention 寫入變化能否改善對損傷的預測。
 - **現有方法**比較 StableAdamW、Muon、AdamW 加 sandwich RMSNorm 的配對正常學習率分支。局部介入另和同量縮步、正交調整比較。
-- **上限**同一 checkpoint 回退整步至更新前損失，界定這一步最多能回收的損傷。持續訓練的時間收益仍待量測。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#attention-gate--optimizer) · [第二輪預登記](codex/experiments/gate-optimizer/round2/PREREG.md)
+- **上限參考**用同一 checkpoint 的整步回退量測選定步的局部損失，作為介入回收比例的分母。正常訓練及等品質加速需另行驗證。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#attention-gate--optimizer) · [第三輪預登記](codex/experiments/gate-optimizer/round3/PREREG.md)
 
 ## 硬體與執行
 
