@@ -1,0 +1,17 @@
+# 配對 B 的文字停止診斷
+
+[codex] 2026-11-15，台北。配對 B 的公開規格重現在 MATH500 差 5 個百分點，只有 3 題撞到長度上限。較早的紀錄把提前停止統一記為 `stop`，未區別 EOS 與 `Question:`／`Answer:`。另一份 768 題的模板診斷已單獨比較 raw `abel` 與 chat。這次量文字停止對一組新題的影響，正式重現和 3,000-token 資格仍循原協定。 [配對 B 原協定](../../../killtests/rl-sparse-distill/PREREG_pair_b.md) · [既有模板診斷](../rl-template/PROTOCOL.md)
+
+- 題組沿用模板診斷的固定資料、題文正規化、排除集和雜湊順序，取第 769–1,152 題，與先前 768 題及原重現與短預算題集的正規化題文互斥。保留題組指紋。公開題的模型訓練曝光未知。
+- 兩臂使用相同 SimpleRL-Zoo 1.5B 已存快照、raw `abel`、vLLM 0.33.0、BF16、temperature 1、top-p .95、16,000 新 tokens 和每題共用的固定 seed。作者臂保留全部停止條件，另一臂移除 `Question:`／`Answer:`，保留 EOS、停止 token ID 和其餘文字停止。
+- 同一套作者答案抽取與等價判分計三項。作者臂按照原停止字串切割。延長臂採其實際保留的停止字串。另將延長臂輸出交給原作者停止字串做回放，保留樣本對應。所有題保留分母，判分逾時記錯並回報。
+- 主要描述量為延長臂減作者臂的正確率差，使用 6,000 次整題配對重抽的雙尾 95% 區間。也報延長臂與回放之差、回放與作者臂之差、逐臂停止原因、截斷量及 token 量。回放前綴和作者臂先比文字，再比較計分。文字對不上時，兩條實跑軌跡的差也可能包含引擎批次或數值差異。回放與延長來自同一條已生成軌跡，對照反映停止及後續文字的影響。這些條件無法推定未公布的表列指令。
+
+沿用既有引擎、模型與評分環境，免下載。使用 1 張 H200、8 CPU、48 GiB RAM，Slurm 上限 30 分鐘。共 768 次生成，按既有 1,536 次同模型診斷估計資源。原始生成只進個別作業暫存，單檔上限 512 MiB，作業終了清理。連同編譯暫存預估低於 2 GiB，只保存小型彙總 `icml/runs/rsd-author-stop/<job-id>.json`。CPU 預檢核對凍結題組、模型快照、tokenizer、停止字串設定，以及合成回覆能否重現指定的切割和判分差異。
+
+```bash
+stage=codex/experiments/rl-author-stop
+freeze=REVIEWED_FULL_COMMIT
+bash "$stage/run.sbatch" "$freeze" --check-only
+sbatch --parsable "$stage/run.sbatch" "$freeze"
+```
