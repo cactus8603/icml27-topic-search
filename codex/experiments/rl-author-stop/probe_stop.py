@@ -56,6 +56,15 @@ def stop_sets(spec):
     return {"author": author, "native": author[:-len(LEXICAL)]}
 
 
+def check_sampler_runtime():
+    import sympy
+    from torch.fx.experimental.sym_node import _optimized_add
+
+    left, right = sympy.symbols("rsd_left rsd_right")
+    require(_optimized_add(left, right)[1] == left + right, "Sampler symbolic addition differs")
+    return sympy.__version__
+
+
 def sample(shared, panel):
     from vllm import LLM, SamplingParams
 
@@ -138,14 +147,27 @@ def receipt(shared, panel, output, freeze):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("check", "sample", "score"))
+    parser.add_argument("action", choices=("prepare", "check-score", "check", "sample", "score"))
     parser.add_argument("--shared", required=True, type=Path)
-    parser.add_argument("--scratch", type=Path)
+    parser.add_argument("--scratch", required=True, type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--freeze")
     args = parser.parse_args()
-    if args.action == "check":
+    panel_path = args.scratch / "panel.json"
+    if args.action in ("prepare", "check-score"):
         panel = prepare(args.shared)
+        atomic_json(panel_path, panel)
+        if args.action == "check-score":
+            stops = stop_sets(cfg("pair_b.json")["reproduction"])
+            examples = [("synthetic", "math", "Diagnostic prompt\n", "42")]
+            raw = {"synthetic": {"texts": [r"First \boxed{17}. Answer: Correct \boxed{42}."]}}
+            require(score(examples, raw, stops["author"])[0][2:] == (0, 0)
+                    and score(examples, raw, stops["native"])[0][2:] == (1, 0),
+                    "Author replay scorer did not isolate the stop")
+            print(json.dumps({"synthetic_replay": "passed", "grader_sympy": version("sympy")}, sort_keys=True))
+    elif args.action == "check":
+        sympy_version = check_sampler_runtime()
+        panel = read_json(panel_path)
         _, _, settings, prompts = template.tokenizer_and_requests(args.shared, panel)
         stops = stop_sets(settings["reproduction"])
         from vllm import SamplingParams
@@ -153,23 +175,17 @@ def main():
         for arm in ARMS:
             spec = settings["reproduction"]
             SamplingParams(n=1, **spec["rl"], max_tokens=spec["max_tokens"], stop=stops[arm], stop_token_ids=STOP_IDS)
-        examples = [("synthetic", "math", "Diagnostic prompt\n", "42")]
-        raw = {"synthetic": {"texts": [r"First \boxed{17}. Answer: Correct \boxed{42}."]}}
-        require(score(examples, raw, stops["author"])[0][2:] == (0, 0)
-                and score(examples, raw, stops["native"])[0][2:] == (1, 0), "Author replay scorer did not isolate the stop")
         print(json.dumps({"fresh": len(panel["rows"]), "eligible": panel["remaining_questions"], "stops": stops,
                           "max_raw_prompt_tokens": max(len(tokens) for (_, arm), tokens in prompts.items() if arm == "raw"),
                           "membership_sha256": hashlib.sha256("\n".join(panel["membership"]).encode()).hexdigest(),
-                          "synthetic_replay": "passed"}, sort_keys=True))
+                          "sampler_sympy": sympy_version}, sort_keys=True))
     elif args.action == "sample":
-        require(args.scratch, "Use the isolated job scratch directory")
-        panel = prepare(args.shared)
-        atomic_json(args.scratch / "panel.json", panel)
-        atomic_json(args.scratch / "generations.json", sample(args.shared, panel))
+        check_sampler_runtime()
+        atomic_json(args.scratch / "generations.json", sample(args.shared, read_json(panel_path)))
     else:
-        require(args.scratch and args.output and args.freeze and re.fullmatch("[a-f0-9]{40}", args.freeze),
+        require(args.output and args.freeze and re.fullmatch("[a-f0-9]{40}", args.freeze),
                 "Isolated scratch and output plus full frozen commit are required")
-        atomic_json(args.output, receipt(args.shared, read_json(args.scratch / "panel.json"),
+        atomic_json(args.output, receipt(args.shared, read_json(panel_path),
                                         read_json(args.scratch / "generations.json"), args.freeze))
 
 

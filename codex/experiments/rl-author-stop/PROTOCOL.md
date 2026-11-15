@@ -9,6 +9,8 @@
 
 沿用既有引擎、模型與評分環境，免下載。使用 1 張 H200、8 CPU、48 GiB RAM，Slurm 上限 30 分鐘。共 768 次生成，按既有 1,536 次同模型診斷估計資源。原始生成只進個別作業暫存，單檔上限 512 MiB，作業終了清理。連同編譯暫存預估低於 2 GiB，只保存小型彙總 `icml/runs/rsd-author-stop/<job-id>.json`。CPU 預檢核對凍結題組、模型快照、tokenizer、停止字串設定，以及合成回覆能否重現指定的切割和判分差異。
 
+26569 在啟動引擎時，作者評分用的 SymPy 先載入取樣程序，與 Torch 的符號運算介面不相容。修復後由獨立程序準備同一凍結題組，再由取樣程序從暫存讀入。評分程序仍重建題組並核對內容。預檢分別跑作者合成評分與取樣環境的 Torch 符號加法。
+
 ```bash
 stage=codex/experiments/rl-author-stop
 freeze=REVIEWED_FULL_COMMIT

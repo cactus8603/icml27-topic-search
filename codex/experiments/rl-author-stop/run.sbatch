@@ -39,6 +39,7 @@ args=(--shared "$shared" --scratch "$scratch")
 echo "[codex] $(date '+%F %R') SimpleRL-Zoo stop-string sensitivity freeze=$freeze"
 if [[ "$mode" == --check-only ]]; then
     export CUDA_VISIBLE_DEVICES=''
+    "$python" -IBu "$entry" check-score "${args[@]}"
     "$python" -IBu "$entry" check "${args[@]}"
 else
     job=${SLURM_JOB_ID:?Submit through Slurm}
@@ -47,6 +48,7 @@ else
     mkdir -p -- "$output"
     [[ ! -e "$output/$job.json" && ! -L "$output/$job.json" ]]
     ulimit -f 524288
+    "$python" -IBu "$entry" prepare "${args[@]}"
     "$python" -IBu "$entry" sample "${args[@]}"
     "$python" -IBu "$entry" score "${args[@]}" --freeze "$freeze" --output "$output/$job.json"
 fi
