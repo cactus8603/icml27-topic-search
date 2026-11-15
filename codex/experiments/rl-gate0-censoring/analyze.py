@@ -132,6 +132,7 @@ def main():
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--results", type=Path, required=True)
     parser.add_argument("--grader-lib", type=Path, required=True)
+    parser.add_argument("--local-run-id")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check-only", action="store_true")
     mode.add_argument("--output", type=Path)
@@ -160,6 +161,13 @@ def main():
     if args.check_only:
         print(json.dumps(identity | {"stage": "offline_protocol_checked"}, sort_keys=True))
         return
+    job = os.environ.get("SLURM_JOB_ID")
+    if args.local_run_id and not job and re.fullmatch(r"local-[a-zA-Z0-9]+", args.local_run_id):
+        location = {"execution_mode": "local_cpu", "local_run_id": args.local_run_id}
+    elif args.local_run_id is None and re.fullmatch(r"[1-9][0-9]*", job or ""):
+        location = {"execution_mode": "slurm_cpu", "slurm_job_id": job}
+    else:
+        parser.error("Run through the sealed CPU launcher")
     datasets = {
         arm: source.load_verified(args.results / "A" / arm, "A", arm, pairs, criteria["eval"], rows, gate)
         for arm in RECEIPTS
@@ -167,7 +175,7 @@ def main():
     published = read_json(summary)["pairs"]["A"]["gate0"]
     result = analyze(source, datasets, ids, published, criteria)
     args.output.parent.mkdir(parents=True, exist_ok=False)
-    atomic_json(args.output, identity | {"slurm_job_id": os.environ["SLURM_JOB_ID"], "metrics": result})
+    atomic_json(args.output, identity | location | {"metrics": result})
     print(json.dumps({"summary": str(args.output), "summary_sha256": sha256(args.output)}, sort_keys=True))
 
 

@@ -14,7 +14,7 @@ freeze=${1:?Use the full reviewed commit}
 [[ "$freeze" =~ ^[0-9a-f]{40}$ ]]
 mode=${2:-}
 case "$mode" in
-    --check-only) [[ "$#" == 2 && -z "${SLURM_JOB_ID:-}" ]] ;;
+    --check-only|--local) [[ "$#" == 2 && -z "${SLURM_JOB_ID:-}" ]] ;;
     "") [[ "$#" == 1 && "${SLURM_JOB_ID:-}" =~ ^[1-9][0-9]*$ ]] ;;
     *) exit 2 ;;
 esac
@@ -52,5 +52,11 @@ if [[ "$mode" == --check-only ]]; then
 fi
 records=$(sacct -X -n -P -j 26270,26292,26293 -o JobID,State,ExitCode | sort)
 [[ "$records" == $'26270|COMPLETED|0:0\n26292|COMPLETED|0:0\n26293|COMPLETED|0:0' ]]
+if [[ "$mode" == --local ]]; then
+    local_id="local-${bundle##*.}"
+    timeout --kill-after=1s 29s taskset -c "$core" "$python" -IB "${entry[@]}" \
+        --local-run-id "$local_id" --output "$shared/runs/rsd-gate0-censoring/$local_id/summary.json"
+    exit
+fi
 timeout 150s taskset -c "$core" "$python" -IB "${entry[@]}" \
     --output "$shared/runs/rsd-gate0-censoring/$SLURM_JOB_ID/summary.json"

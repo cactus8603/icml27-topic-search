@@ -8,6 +8,8 @@
 
 只讀 CPU，每程序限一核，讀原始 gzip 作雜湊校驗，產出一份摘要及其 SHA-256。原樣本兩個 gzip 合計約 74 MiB，使用原地讀取，正式作業只寫小型摘要和封存程式的暫存副本。獨立複核後登記讀取。
 
+等候共用 CPU 額度時，可取消同一尚未啟動的作業，再用 `--local` 在單核與 30 秒上限內執行。兩個入口都查相同的來源作業成功狀態、凍結與評分收據，分別登記執行身分。
+
 ```bash
 stage=codex/experiments/rl-gate0-censoring
 bash "$stage/run.sbatch" "$freeze" --check-only
