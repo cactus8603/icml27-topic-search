@@ -26,6 +26,11 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def file_sha(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
 def batches(path, items, batch_size, compute, identity, *, status=None):
     """Commit completed batches, never a partially written batch; retry it after failure."""
     state_path = path.with_suffix('.state.json')
@@ -39,6 +44,9 @@ def batches(path, items, batch_size, compute, identity, *, status=None):
     if done and (result is None or result.shape[0] != len(items)):
         raise ValueError('Incomplete checkpoint metadata')
     if done == len(items):
+        if (state.get('array_shape') != list(result.shape) or state.get('dtype') != result.dtype.str
+                or state.get('sha256') != file_sha(path) or not np.isfinite(result).all()):
+            raise ValueError(f'Completed checkpoint integrity differs: {path}')
         print(f'[codex] Reusing completed {path.name}', flush=True)
         return np.asarray(result)
     for start in range(done, len(items), batch_size):
@@ -58,6 +66,9 @@ def batches(path, items, batch_size, compute, identity, *, status=None):
         state['completed'] = end
         state['active_seconds'] += elapsed
         state['batches'].append({'start': start, 'end': end, 'seconds': elapsed})
+        state['array_shape'], state['dtype'] = list(result.shape), result.dtype.str
+        if end == len(items):
+            state['sha256'] = file_sha(path)
         atomic_json(state_path, state)
         progress = {'stage': path.stem, 'completed': end, 'total': len(items),
                     'active_seconds': round(state['active_seconds'], 3)}
@@ -70,6 +81,8 @@ def batches(path, items, batch_size, compute, identity, *, status=None):
 
 def main():
     import torch
+    if os.environ.get('DEV_DIRTY') != '0':
+        raise ValueError('Research cache requires a committed source reference')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--depth', type=int, default=200)
@@ -81,7 +94,13 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         panel, config, snapshots, context = legacy.score.preflight()
         identity = context | {'depth': args.depth, 'commit': os.environ['DEV_COMMIT'],
-                              'dirty': os.environ['DEV_DIRTY'], 'config': config}
+                              'dirty': os.environ['DEV_DIRTY'], 'config': config,
+                              'execution_environment': {
+                                  'torch': torch.__version__, 'numpy': np.__version__,
+                                  'transformers': legacy.package_version('transformers'),
+                                  'open_clip': legacy.package_version('open_clip_torch'),
+                                  'cuda': torch.version.cuda, 'device': torch.cuda.get_device_name(0),
+                                  'capability': list(torch.cuda.get_device_capability(0))}}
         manifest = args.out / 'checkpoint-provenance.json'
         if manifest.exists() and json.loads(manifest.read_text()) != json.loads(json.dumps(identity, default=str)):
             raise ValueError('Refusing to mix runs from different sources')

@@ -44,6 +44,16 @@ class CheckpointTests(unittest.TestCase):
                 C.batches(path, [0], 1, lambda _: np.array([np.nan]), {})
             self.assertFalse(path.exists())
 
+    def test_completed_checkpoint_detects_tampered_values(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / 'array.npy'
+            C.batches(path, [1, 2], 2, np.array, {})
+            changed = np.load(path, mmap_mode='r+')
+            changed[0] = 9
+            changed.flush()
+            with self.assertRaisesRegex(ValueError, 'integrity'):
+                C.batches(path, [1, 2], 2, lambda _: self.fail('must not recompute'), {})
+
 
 if __name__ == '__main__':
     unittest.main()
