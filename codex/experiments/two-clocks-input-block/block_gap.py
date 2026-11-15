@@ -113,8 +113,7 @@ def matched_summary(block_errors, heldout_errors, n_boot, seed, level, min_gap, 
     }
 
 
-def compute(npz_path, verdict_path, criteria, mask):
-    published = json.loads(verdict_path.read_text())["report60"]["headroom"]
+def compute(npz_path, published, criteria, mask):
     epochs = week2_epochs()
     with np.load(npz_path, allow_pickle=False) as data:
         if (data["epochs"].tolist() != epochs or data["picks"].tolist() != PICKS
@@ -172,6 +171,10 @@ def main():
     verdict_path = args.source / "week2_verdict.json"
     verify_sha256(npz_path, NPZ_SHA256)
     verify_sha256(verdict_path, VERDICT_SHA256)
+    published = json.loads(verdict_path.read_text())["sections"]["report60"]["headroom"]
+    fields = {"state", "ci", "g3", "heldout_mse_sum", "raw_gap_sum", "e_dagger", "t_used"}
+    if not fields <= set(published):
+        raise ValueError("Missing fields in the published G3 summary")
     lineage = {"freeze": args.freeze, "source_job": SOURCE_JOB, "source_freeze": SOURCE_FREEZE,
                "npz_sha256": NPZ_SHA256, "verdict_sha256": VERDICT_SHA256}
     if args.check_only:
@@ -180,7 +183,7 @@ def main():
     configs = ARCHIVE_ROOT / TOPIC / "configs"
     criteria = json.loads((configs / "criteria_week2.json").read_text())
     mask = json.loads((configs / "t_mask_hier.json").read_text())
-    result = compute(npz_path, verdict_path, criteria, mask)
+    result = compute(npz_path, published, criteria, mask)
     verify_sha256(npz_path, NPZ_SHA256)
     verify_sha256(verdict_path, VERDICT_SHA256)
     args.output.parent.mkdir(parents=True, exist_ok=False)
