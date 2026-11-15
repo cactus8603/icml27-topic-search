@@ -32,3 +32,7 @@ TORCH_COMPILE_DISABLE=1 VLLM_USE_FLASHINFER_SAMPLER=0 "$shared/envs/vllm033/bin/
 freeze=$(git rev-parse --verify HEAD)
 sbatch codex/experiments/fallible-verifier/phase3_likelihood.sbatch "$freeze"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 08:09–08:10 主代理與獨立子代理已讀 `results/phase3-likelihood/26520/{weak,strong}.json` 的機械彙總，沿用 `b6023ce`。此為合成開發診斷，與真實候選留出分開。
