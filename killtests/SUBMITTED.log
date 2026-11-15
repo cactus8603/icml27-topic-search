@@ -108,3 +108,10 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 10:16 submit 26582 t2i-rare-failure 另32未揭露種子CPU四臂同真事件只改評分同分，Astra與封存前置通過 bf261c3
 [codex] 2026-11-15 10:33 submit 26585 t2i-rare-failure 32全新種子七臂CPU同事件比較原分數與同分次鍵，Astra及封存預檢通過 be2f605
 [codex] 2026-11-15 11:10 submit 26593 rl-sparse-distill 26569取樣與作者評分SymPy隔離，沿用原384題與分析，獨立程式審查及封存雙CPU預檢通過 4442d1b
+[codex] 2026-11-15 11:22 submit 26594 gate-optimizer 正常1倍補同48seed探針及局部回退，三優化器CPU逐值等同與覆蓋判準驗證通過 d89b157
+[codex] 2026-11-15 11:26 submit 26595 fallible-verifier 250題開發集雙映射中性格式與七個棄權寬度，10項測試與雙角色預檢通過 e334aea
+[codex] 2026-11-15 11:29 submit 26596 biased-gen-cfg 同本數同有效曝光真根與平衡盲條件，固定null比較；三測試、雙臂CPU封存預檢、獨立整合核對通過 e82ef6b
+[codex] 2026-11-15 11:33 submit 26597 fallible-verifier 定版中性雙映射與已核定兩個寬度，250題暖機推論 ac39508
+[codex] 2026-11-15 11:33 submit 26598 fallible-verifier 747題獨立留出推論，依賴 26597 ac39508
+[codex] 2026-11-15 11:33 submit 26599 fallible-verifier CPU核對四份推論收據後判讀條件訊號、風險、成本與方法上限，依賴 26597/26598 ac39508
+[codex] 2026-11-15 11:38 submit 26601 compositional-retrieval 新8191圖136查詢前50固定四臂真假anchor，完整清單重建、Astra與封存CPU預檢通過 2daedf5
