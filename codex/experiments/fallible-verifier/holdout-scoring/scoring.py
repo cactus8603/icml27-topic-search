@@ -8,6 +8,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import sys
 
 
@@ -21,6 +22,8 @@ from round2.protocol import CONFIG, digest, hash_order, question_key, write_json
 
 PROFILES = ("raw", "neutral")
 OUTPUT = assay.prepare.SHARED / "runs/fallible-verifier/gsm8k-policy-scoring"
+DEVELOPMENT_OUTPUT = assay.prepare.SHARED / "runs/fallible-verifier/gsm8k-policy-calibration"
+DEVELOPMENT_PROFILE = "neutral"
 
 
 def panel_rows(payload, split):
@@ -84,20 +87,36 @@ def label(semantic, bound):
     return int(semantic > 0), "observed"
 
 
-def make_receipt(groups, aliases, scores, role, split, profile, bound, binding):
-    model, revision = MODEL_PINS[role]
+def semantic_scores(groups, aliases, scores, profile):
     if scores.keys() != set(aliases.values()) - {None}:
         raise ValueError("Native score coverage differs from the requested aliases")
     deltas = {key: scores[actual] if actual is not None else None for key, actual in aliases.items()}
-    records = []
+    records = {}
     for qid, group in groups.items():
         for row in group.values():
             score = two_mapping(deltas, qid, (row["id"], profile))
-            verdict, state = label(score[0] if score is not None else None, bound)
-            records.append({"id": row["id"], "verdict": verdict, "status": state})
+            records[row["id"]] = score[0] if score is not None else None
+    return records
+
+
+def make_receipt(groups, aliases, scores, role, split, profile, bound, binding):
+    model, revision = MODEL_PINS[role]
+    records = []
+    for key, value in semantic_scores(groups, aliases, scores, profile).items():
+        verdict, state = label(value, bound)
+        records.append({"id": key, "verdict": verdict, "status": state})
     return {"schema": 1, "role": role, "model": model, "model_revision": revision,
             "split": split, "binding": binding.metadata(), "prompt_manifest_sha256": manifest_sha(groups, profile),
             "records": records}
+
+
+def development_header(groups, freeze, job, role):
+    model, revision = MODEL_PINS[role]
+    return {"schema": 1, "scope": "development_calibration_only", "split": "train",
+            "profile": DEVELOPMENT_PROFILE, "role": role, "model": model, "model_revision": revision,
+            "freeze_commit": freeze, "slurm_job_id": job, "panel_commit": assay.PANEL_COMMIT,
+            "native_likelihood_commit": assay.NATIVE_COMMIT, "vllm": "0.33.0",
+            "prompt_manifest_sha256": manifest_sha(groups, DEVELOPMENT_PROFILE)}
 
 
 def load_policy(measurement_path, decision_path, freeze):
@@ -124,6 +143,7 @@ def main():
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check-only", action="store_true")
     mode.add_argument("--split", choices=tuple(SPLIT_GROUPS))
+    mode.add_argument("--calibrate-dev", action="store_true")
     parser.add_argument("--freeze")
     args = parser.parse_args()
     if os.environ.get("FV_REPORT_STAGE_FD3") == "1":
@@ -159,23 +179,36 @@ def main():
         print(json.dumps({"role": args.role, "train_questions": len(groups), "profiles": checks}, sort_keys=True))
         return
 
-    here = Path(__file__).resolve().parent
-    profile, bounds, binding = load_policy(here / "measurement.json", here / "decision.json", args.freeze or "")
     job = os.environ.get("SLURM_JOB_ID", "")
-    if not job.isascii() or not job.isdecimal():
-        raise ValueError("A recorded Slurm job is required")
-    output = OUTPUT / job / f"{args.split}-{args.role}.json"
+    if not re.fullmatch(r"[1-9][0-9]*", job) or not re.fullmatch(r"[0-9a-f]{40}", args.freeze or ""):
+        raise ValueError("A recorded Slurm job and a reviewed full commit are required")
+    if args.calibrate_dev:
+        split, profile = "train", DEVELOPMENT_PROFILE
+        output = DEVELOPMENT_OUTPUT / job / f"{args.role}.json"
+    else:
+        split = args.split
+        here = Path(__file__).resolve().parent
+        profile, bounds, binding = load_policy(here / "measurement.json", here / "decision.json", args.freeze)
+        output = OUTPUT / job / f"{split}-{args.role}.json"
     if output.exists():
         raise FileExistsError(output)
     assay.report_stage("registered_prompts")
-    groups = panel_rows((assay.PANEL / "prompts.jsonl").read_bytes(), args.split)
+    groups = panel_rows((assay.PANEL / "prompts.jsonl").read_bytes(), split)
     requests, aliases = selected_requests(groups, tokenizer, maximum, profile)
     smoke = {choice: tokenize(tokenizer, f"The two allowed choices are A and B. Say {choice}.", maximum)
              for choice in ("A", "B")}
     assay.report_stage("native_gpu")
     scores = run_gpu(directory, args.role, config, requests, smoke, params, label_token_ids)
     assay.report_stage("receipt")
-    receipt = make_receipt(groups, aliases, scores, args.role, args.split, profile, bounds[args.role], binding)
+    if args.calibrate_dev:
+        semantic = semantic_scores(groups, aliases, scores, profile)
+        if any(value is not None and not math.isfinite(value) for value in semantic.values()):
+            raise ValueError("Invalid native development log odds")
+        receipt = development_header(groups, args.freeze, job, args.role) | {"semantic_log_odds": semantic}
+        write_json(output, receipt)
+        return
+
+    receipt = make_receipt(groups, aliases, scores, args.role, split, profile, bounds[args.role], binding)
     write_json(output, receipt)
     print(json.dumps({"receipt_sha256": digest(output), "split": args.split, "role": args.role,
                       "status": Counter(row["status"] for row in receipt["records"])}, sort_keys=True))

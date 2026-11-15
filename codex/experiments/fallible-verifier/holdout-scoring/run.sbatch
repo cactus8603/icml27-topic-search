@@ -11,7 +11,7 @@
 set -euo pipefail
 
 freeze=${1:?Pass the full frozen commit}
-split=${2:?Pass --check-only, train or test}
+split=${2:?Pass --check-only, calibrate-dev, train or test}
 [[ "$#" == 2 && "$freeze" =~ ^[0-9a-f]{40}$ ]]
 root=/work/ChihChungHsu/cactus8603
 repo="$root/icml27-topic-search"
@@ -43,20 +43,33 @@ if [[ "$split" == --check-only ]]; then
     exit 0
 fi
 
-[[ "$split" == train || "$split" == test ]]
-[[ "${SLURM_JOB_ID:?Submit through Slurm}" =~ ^[0-9]+$ ]]
-for filename in measurement.json decision.json; do
-    git -C "$repo" cat-file -e "$freeze:$stage/$filename"
-done
+[[ "$split" == calibrate-dev || "$split" == train || "$split" == test ]]
+[[ "${SLURM_JOB_ID:?Submit through Slurm}" =~ ^[1-9][0-9]*$ ]]
+if [[ "$split" == calibrate-dev ]]; then
+    arguments=(--calibrate-dev)
+    receipt_prefix="$shared/runs/fallible-verifier/gsm8k-policy-calibration/$SLURM_JOB_ID/"
+else
+    arguments=(--split "$split")
+    receipt_prefix="$shared/runs/fallible-verifier/gsm8k-policy-scoring/$SLURM_JOB_ID/$split-"
+    for filename in measurement.json decision.json; do
+        git -C "$repo" cat-file -e "$freeze:$stage/$filename"
+    done
+fi
+hash_args=()
 for role in weak strong; do
-    if FV_REPORT_STAGE_FD3=1 "$python" -IB "$entry" --role "$role" --split "$split" --freeze "$freeze" 3>&2 >/dev/null 2>&1; then
+    if FV_REPORT_STAGE_FD3=1 "$python" -IB "$entry" --role "$role" "${arguments[@]}" --freeze "$freeze" 3>&2 >/dev/null 2>&1; then
         :
     else
         status=$?
         printf '[codex] %s %s %s scoring failed\n' "$(date '+%Y-%m-%d %H:%M')" "$split" "$role" >&2
         exit "$status"
     fi
-    receipt="$shared/runs/fallible-verifier/gsm8k-policy-scoring/$SLURM_JOB_ID/$split-$role.json"
+    receipt="$receipt_prefix$role.json"
     [[ -f "$receipt" && ! -L "$receipt" ]]
-    printf '[codex] %s %s %s receipt SHA-256 %s\n' "$(date '+%Y-%m-%d %H:%M')" "$split" "$role" "$(sha256sum "$receipt" | cut -d' ' -f1)"
+    receipt_sha=$(sha256sum "$receipt" | cut -d' ' -f1)
+    printf '[codex] %s %s %s receipt SHA-256 %s\n' "$(date '+%Y-%m-%d %H:%M')" "$split" "$role" "$receipt_sha"
+    hash_args+=("--$role-sha256" "$receipt_sha")
 done
+if [[ "$split" == calibrate-dev ]]; then
+    CUDA_VISIBLE_DEVICES='' "$shared/envs/t2irare/bin/python" -IB "$bundle/$stage/calibration.py" --freeze "$freeze" "${hash_args[@]}"
+fi

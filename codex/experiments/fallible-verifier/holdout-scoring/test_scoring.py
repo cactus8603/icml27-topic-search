@@ -1,4 +1,6 @@
 from hashlib import sha256
+from contextlib import redirect_stdout
+from io import StringIO
 import json
 from pathlib import Path
 import sys
@@ -9,6 +11,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import scoring
+import calibration
 from evaluation import Binding, ingest_split
 
 
@@ -93,6 +96,67 @@ class ScoringTest(unittest.TestCase):
         binding = Binding("a" * 40, "b" * 64, "c" * 64)
         receipt = scoring.make_receipt(groups, aliases, {}, "strong", "test", "raw", 0.0, binding)
         self.assertEqual([row["status"] for row in receipt["records"]], ["missing"] * 4)
+
+    def test_development_continuous_values_share_final_scoring_and_train_ids(self):
+        groups = scoring.panel_rows(self.prompts, "train")
+        _, aliases = scoring.selected_requests(groups, FakeTokenizer(), 2048, scoring.DEVELOPMENT_PROFILE)
+        rows = list(next(iter(groups.values())).values())
+        pairs = ((2.0, -1.0), (None, -1.0), (-0.5, 0.5), (0.0, 0.0))
+        scores = {aliases[row["question_id"], (row["id"], "neutral"), swap]: delta
+                  for row, pair in zip(rows, pairs, strict=True) for swap, delta in zip((False, True), pair, strict=True)}
+        values = scoring.semantic_scores(groups, aliases, scores, scoring.DEVELOPMENT_PROFILE)
+        self.assertEqual(list(values.values()), [1.5, None, -0.5, 0.0])
+        header = scoring.development_header(groups, "a" * 40, "123", "weak")
+        document = header | {"semantic_log_odds": values}
+        self.assertEqual(calibration.read_semantic(document, header, values.keys()), values)
+        for field, changed in (("split", "test"), ("profile", "raw"), ("slurm_job_id", "456")):
+            with self.assertRaises(ValueError):
+                calibration.read_semantic(document | {field: changed}, header, values.keys())
+
+    def test_development_operating_points_distinguish_unknown_abstain_and_missing(self):
+        scores = dict(a=0.25, b=-1, c=0.25, d=None, e=0.5)
+        gold = dict(a=False, b=True, c=None, d=False, e=True)
+        result = calibration.operating_points(scores, gold)
+        zero, closed = result[:2]
+        self.assertEqual((zero["known_wrong"], zero["known_correct"], zero["gold_unknown"]), (2, 2, 1))
+        self.assertEqual((zero["false_accept"], zero["false_reject"], zero["observed_unknown"]), (1, 1, 1))
+        self.assertEqual((closed["missing"], closed["abstain"], closed["observed_wrong"], closed["false_accept"]), (1, 2, 0, 0))
+        self.assertNotIn("chosen_width", closed)
+
+    def test_calibration_checks_both_receipts_before_parsing_only_training_gold(self):
+        groups = scoring.panel_rows(self.prompts, "train")
+        freeze, job = "d" * 40, "123"
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "prompts.jsonl").write_bytes(self.prompts)
+            (root / "coverage.json").touch()
+            # Invalid JSON outside the canonical train suffix must never be decoded.
+            gold = self.gold + b'not json,"split":"test","variant":"6b_finetuning"}\n'
+            (root / "gold.jsonl").write_bytes(gold)
+            output = root / job
+            output.mkdir()
+            options = ["calibration.py", "--freeze", freeze]
+            for role in scoring.MODEL_PINS:
+                header = scoring.development_header(groups, freeze, job, role)
+                values = {row["id"]: 0.25 for group in groups.values() for row in group.values()}
+                payload = json.dumps(header | {"semantic_log_odds": values}).encode()
+                (output / f"{role}.json").write_bytes(payload)
+                options += [f"--{role}-sha256", sha256(payload).hexdigest()]
+            gold_meta = {"bytes": len(gold), "sha256": sha256(gold).hexdigest()}
+            with (patch.dict(scoring.assay.prepare.EXPECTED_OUTPUTS, {"gold.jsonl": gold_meta}),
+                  patch.object(scoring.assay, "PANEL", root), patch.object(calibration, "DEVELOPMENT_OUTPUT", root),
+                  patch.dict(calibration.os.environ, {"SLURM_JOB_ID": job}),
+                  patch.object(scoring.assay, "load_train", wraps=scoring.assay.load_train) as decode):
+                with patch.object(sys, "argv", options[:-1] + ["f" * 64]):
+                    with self.assertRaisesRegex(ValueError, "frozen receipt"):
+                        calibration.main()
+                decode.assert_not_called()
+                with patch.object(sys, "argv", options), redirect_stdout(StringIO()):
+                    calibration.main()
+                decode.assert_called_once_with("gold.jsonl")
+                report = json.loads((output / "calibration.json").read_bytes())
+                self.assertEqual(report["development_questions"], 1)
+                self.assertEqual(report["operating_points"]["weak"][0]["false_accept"], 3)
 
     def test_check_policy_pins_and_nonfinite_widths(self):
         with tempfile.TemporaryDirectory() as name:
