@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 09:15（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 09:22（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -15,7 +15,7 @@
 | Neural Chameleons 防禦 | 核對作者基準，分析既有快取，必要時完整重抽 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
 | RL 稀疏決策蒸餾 | `26525` 同輸出重評完成，短預算資格暫緩 | B 正確性 `26499` **12.73 GiB、32 秒**。B 16K `26500` 約 **127 GiB**，兩臂分別 **10 分 28 秒／3 分 46 秒**，含預留。CPU `26525` **11 秒**，無 GPU。 | **單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。[同輸出重評](experiments/oat-author-grading/PREREG.md) |
 | 文生圖罕見失敗 | `26516` 技術重驗完成，核對修復憑證 | `26516` **36.14 GiB、1 小時 31 分 18 秒**，單卡 30,000 張約 **5.48 張／秒**，含 CLIP。三精度 `26503` **37.77 GiB、4 分 47 秒**。 | **現有 batch 32 留 H200。** 用 5.48 張／秒換算階段 1 估 8.5 GPU 小時，六模型和完整偵測器吞吐待量。24 GB 縮批須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) · [候選修復核對](experiments/t2i-gate-repair/README.md) |
-| 大型平行解碼提交集合 | `26529` GPU 試跑完成，`26530` 零額外 forward 的候選選擇 | LLaDA-8B 兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。第二輪 `26441`／`26442` **16.29／16.23 GiB、21 分 52 秒／45 分 3 秒**。 | **有望用 24 GB。** 權重約 14.93 GiB，需量新題最長 787-token（含 canvas）形狀與完整作業峰值。640 題用 H200，估 15–30 分鐘，上限 45 分鐘。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
+| 大型平行解碼提交集合 | `26530` 完成 640 題，暫停此版規則 | LLaDA-8B 全程 `26530` **16.58 GiB、18 分 39 秒**。兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。 | **同配置有望用 24 GB。** 權重約 14.93 GiB。H200 已覆蓋本輪完整面板，換卡的顯存及執行時間待實測。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
 | 不完美驗證器 | `26565` 使用同一面板重跑真實開發診斷 | `26484` **110.44 GiB、5 分 45 秒**，含 vLLM 預留。短合成作業 `26520` 的 Slurm 取樣峰值 **19.46 GiB、1 分 7 秒**，可能漏掉瞬間尖峰。 | **整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18 GiB，現行 0.78 顯存比例在 24 GiB 約給 18.72 GiB，另需 KV cache 和運行資源。開發作業上限 60 分鐘，CPU 已核對每端 4,494 個唯一請求。[開發預登記](experiments/fallible-verifier/real_holdout/PREREG_dev_likelihood.md) |
 | Attention gate × optimizer | `26521` 四段 48 個新 seed，首段完成。`26522` CPU 彙總 | 首段 `26521_0` **3.72 GiB、18 分 7 秒**。獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量近似，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
 

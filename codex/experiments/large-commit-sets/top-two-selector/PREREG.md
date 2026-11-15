@@ -38,3 +38,8 @@ smoke_id=$(sbatch --parsable "$trial/run.sbatch" smoke "$freeze")
 smoke_id=${smoke_id%%;*}
 sbatch --dependency="afterok:$smoke_id" "$trial/run.sbatch" main "$freeze"
 ```
+
+## 讀取紀錄
+
+* [codex] 已讀 `results/summary-26530.json`，2026-11-15 09:21（台北）。凍結版 `9ab67c948e99740e50c4f749d0376f4489fea78b`。
+* [codex] Astra 獨立複核已讀同一彙總，2026-11-15 09:21（台北）。
