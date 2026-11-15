@@ -155,3 +155,4 @@
 - [codex] 2026-11-15 03:20 重讀 `results/week1_verdict.json` 與 `results/hier_oracle_w1.npz`。將第 2 週公式套用到第 1 週三個模型，只供探索性比較。第 2 週正式判準維持 `9e92804`。
 - [codex] 2026-11-15 05:54 已讀 `results/week2-9e92804/hier_oracle_w2_k6.npz`、`results/week2-9e92804/hier_oracle_w2_k1.npz` 及 `results/week1_verdict.json`。用 `9e92804` 的彙總程式檢算兩份已完成的檔案，未寫入正式輸出或讀取尚在執行的正對照。
 - [codex] 2026-11-15 06:09 主代理與獨立子代理已讀作業 `26383` 的 `results/week2-9e92804/week2_verdict.json`。作業已完成，凍結判準沿用 `9e92804`。
+- [codex] 2026-11-15 08:44 主代理已讀 `icml/runs/two-clocks-cohort/26523/results.json`，Astra 隨後以機械彙總獨立核對。這是以 `0fded0d` 凍結的同批資料探索，正式第 2 週判準沿用 `9e92804`。
