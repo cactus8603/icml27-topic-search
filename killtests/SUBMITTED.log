@@ -134,3 +134,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 13:09 cancel 26656 rl-sparse-distill 合成試跑26655在運算節點的權重路徑核對停止，撤已無法滿足的相依作業 8a9f389
 [codex] 2026-11-15 13:12 submit 26657 rl-sparse-distill 修正26655掛載別名，兩模型完整SHA、CPU封存與四測試通過後重送同合成試跑 20c6a04
 [codex] 2026-11-15 13:12 submit 26658 rl-sparse-distill 同128題停止重截診斷，依賴已修掛載的合成試跑 26657 20c6a04
+[codex] 2026-11-15 13:45 submit 26663 t2i-rare-failure 原三提示原30000種子逐分數重驗CLIP算術修復，原Gate(a)/bench及三測試通過 10d42bd
+[codex] 2026-11-15 13:45 submit 26664 rl-sparse-distill CPU重現作者32k同題計數交叉、回應混合及事後上限，六測試與發布資料SHA通過 10d42bd
