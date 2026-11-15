@@ -26,3 +26,7 @@ smoke_job=$(sbatch --parsable --time=00:15:00 "$stage/run.sbatch" "$freeze" smok
 smoke_job=${smoke_job%%;*}
 sbatch --parsable --dependency="afterok:$smoke_job" "$stage/run.sbatch" "$freeze" diagnostic "$smoke_job"
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 17:11（台北）。`26735` 和 `26736` 均為 `COMPLETED / 0:0`。獨立子代理已讀 `runs/rsd-fork-budget/26736.json`，核對封存 `af75bf0ddb7f5b202d73dc32170794187c5b76a5`、128 題清冊、逐題重截、合成與正式收據以及 10,000 次配對重抽。正式摘要 SHA-256 `a3b15ef00ca51f5d6422a42e042e7e75ac5b1d5d1f59bb55993d5a908496e1c7`，合成 `ebfbb5742c194ea618e5e05796550c95551b8a40f7e47dba9b80f57aaf505da7`。兩預算的增益均為 44/128（+34.375 點），殘餘截斷識別界 [−8.59375, +39.0625] 點。最佳固定 RL 86/128，逐題事後上限 89/128。Astra 複核差值、識別界及範圍。Slurm 實測 44 分 33 秒、107.46 GiB VRAM、3.73 GiB RAM，收據 89,144 bytes。
