@@ -20,3 +20,7 @@
 bash codex/experiments/chameleon-clean-labels/run.sbatch "$freeze" --check-only
 sbatch codex/experiments/chameleon-clean-labels/run.sbatch "$freeze" --run
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 12:19／12:20（台北），Astra 子代理與 Codex 分別讀取 `26622/summary.json`，凍結版本 `36060838c8911fb211947f0ac1a07a2a72405873`。

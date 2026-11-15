@@ -25,3 +25,4 @@ bash "$stage/run.sbatch" FULL_FREEZE_COMMIT preflight
 
 - [codex] 2026-11-15 11:05（台北），Codex 已讀 `26572.json`。凍結版本 `5bff580`。
 - [codex] 2026-11-15 11:04（台北），獨立子代理已獨立讀取並複核同一份彙總。
+- [codex] 2026-11-15 12:13（台北），Codex 重讀 `26572.json` 的共有列彙總，核對兩套標籤分母與各自門檻。

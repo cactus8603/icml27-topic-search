@@ -123,3 +123,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 12:06 cancel 26613 rl-sparse-distill 合成試跑26612定位Triton缺setuptools，撤已無法滿足相依的正式作業 7a4fa04
 [codex] 2026-11-15 12:09 submit 26620 rl-sparse-distill 26612已定位Triton缺setuptools，固定wheel並以完整封存CPU runtime預檢重送合成試跑 0ea7e89
 [codex] 2026-11-15 12:09 submit 26621 rl-sparse-distill 依賴已補Triton套件的同版合成試跑 26620，成功才開始772題正式配對A 0ea7e89
+[codex] 2026-11-15 12:17 submit 26622 chameleon-defense CPU固定1174共同乾淨列/公開probe/一致門檻換標籤，四合成測試與封存預檢通過 3606083
+[codex] 2026-11-15 12:19 submit 26628 multifidelity-attribution 固定原十方向與EK-FAC因子，12新查詢補空間對齊和同列置換，封存預檢四測試及Astra幾何複核通過 6d8344a

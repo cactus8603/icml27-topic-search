@@ -22,3 +22,7 @@ sbatch --parsable --dependency="afterok:$smoke" "$stage/run.sbatch" "$freeze" ru
 ```
 
 合成 smoke 的 Slurm 日誌保留完整引擎輸出。引擎初始化未完成時，每八秒列一份 Python 堆疊。正式作業的日誌只保留階段和彙總指紋。`26607` 在初始化結束前收到 SIGKILL。同設定診斷 `26612` 顯示 CUDA V1 worker 匯入 `triton.runtime.build` 時缺 `setuptools`，引擎收到 worker 的致命訊號後終止主程序。CPU 已重現同一匯入錯誤。隔離環境補 `setuptools 80.9.0`，預檢直接測該匯入並核對環境指紋，生成與引擎參數沿用原設定。
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 12:14（台北），Codex 和 Astra 子代理獨立讀取 `26621.json`，凍結版本 `0ea7e896d68e238a360402607a1573185430c2d2`。
