@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 09:45（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 09:52（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -12,7 +12,7 @@
 | 兩個時鐘 | `26523` 完成，`26559` 只比唯一本數 | 三臂回播 `26523` **2.41 GiB、35 分 41 秒**，主機 RAM 約 **33.85 GiB**。正式評估 `26383` **2.87 GiB、57 分 7 秒**。 | **同類作業可先試 24 GB 顯存，主機 RAM 另計。** 新兩臂在 H200 估 **45–70 分鐘**，暫存 checkpoint 估 **6.5 GiB**。CIFAR 依預登記暫緩。[新對照](experiments/two-clocks-count/PREREG.md) |
 | Inoculation 防禦漏出預測 Λ | `26562`／`26563` 路徑修正後重跑作者訓練 | Phase A v2 7B FP32 梯度與有限差分 `26397` 為 **71.7 GiB**。作者 LoRA VRAM 待量。鎖版環境實佔 **5.9 GiB 磁碟**。 | **訓練與生成先留 H200。** BF16 7B 權重約 14 GB，訓練另需活化、梯度和 optimizer 狀態。訓練每臂估 **45 分鐘**，兩個 LoRA 合計估 **1.20 GiB 磁碟**。生成估 **15–45 分鐘**。複核材料與 GCD 信度評分用 CPU，複核材料估低於 10 MiB。[作者訓練](experiments/lambda-author-training/README.md) · [複核流程](experiments/lambda-author-review/README.md) |
 | 多保真度資料歸因 | 新方向比較 `26517` 完成，`26535` 重測獨立 seed | `26517` **126.45 GiB、28 分 28 秒**，含 JAX 預留，系統 RAM 約 **6.76 GiB**。CPU 評分 `26449` 3 秒。 | **精確探針留 H200，評分用 CPU。** `26535` 含 100 次重訓，單卡估 **65–80 分鐘**、暫存約 **0.8 GiB**。24 GB 需另量未預留峰值。[新軌跡協定](experiments/multifidelity-second-seed/PROTOCOL.md) |
-| Neural Chameleons 防禦 | 完成 CPU 資料來源稽核，準備比較兩個 clean 面板 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 抽取使用 eager attention 和 batch 16，收集多層激活。若要改用 24 GB，先用含長序列的小批試跑，逐例核對分數與檢出判定。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) |
+| Neural Chameleons 防禦 | `26571`／`26572` 比較兩個 clean 面板 | BF16 Gemma 2 9B 全量抽取 `26391` 為 **115.0 GiB**，快取重分析 `26392` 為 **0.98 GiB**。 | **核對用 CPU，快取分析可試 24 GB，原配置重抽留 H200。** 新 clean-only 試驗估 **25–40 GiB、2–8 分鐘**，硬上限 20 分鐘，試跑含最長 352-token 序列，現有估算先留 H200。[抽取程式](../killtests/chameleon-defense/scripts/extract_acts.py) · [快取分析](../killtests/chameleon-defense/slurm/03_analyze.sbatch) · [清潔面板對照](experiments/chameleon-clean-panel/PREREG.md) |
 | RL 稀疏決策蒸餾 | `26569` 等待文字停止配對診斷 | B 正確性 `26499` **12.73 GiB、32 秒**。B 16K `26500` 約 **127 GiB**，兩臂分別 **10 分 28 秒／3 分 46 秒**，含預留。CPU `26525` **11 秒**，無 GPU。 | **單模型低併發可試 24 GB，現有長批與雙模型介入留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。雙模型各批 256 條且近 3,000 token 時，KV 約 41 GiB。`26569` 留 H200，上限 30 分鐘、估暫存低於 2 GiB。[新停止診斷](experiments/rl-author-stop/PROTOCOL.md) |
 | 文生圖罕見失敗 | `26570` 以人工圖案量三偵測器資源 | `26516` **36.14 GiB、1 小時 31 分 18 秒**，單卡 30,000 張約 **5.48 張／秒**，含 CLIP。完整 SDv1.4 bench `26288` **52.9 GiB**，batch 32 **5.09 張／秒**、batch 64 **5.25 張／秒**。 | **現有 batch 32 留 H200。** 依完整 SDv1.4 batch 32 實測換算階段 1 約 **9.17 GPU 小時**，六模型吞吐待量。`26570` 的隔離診斷上限 15 分鐘。24 GB 縮批須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) · [候選修復核對](experiments/t2i-gate-repair/README.md) · [偵測器資源診斷](experiments/t2i-detector-probe/README.md) |
 | 大型平行解碼提交集合 | `26530` 完成 640 題，暫停此版規則 | LLaDA-8B 全程 `26530` **16.58 GiB、18 分 39 秒**。兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。 | **同配置有望用 24 GB。** 權重約 14.93 GiB。H200 已覆蓋本輪完整面板，換卡的顯存及執行時間待實測。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |

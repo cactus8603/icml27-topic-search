@@ -1,6 +1,6 @@
 # ICML 2027 十題研究進度
 
-[codex] 2026-11-15 09:45（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
+[codex] 2026-11-15 09:52（台北）。現象是問題能否重現，訊號是可用量測能否高於雜訊，空間是現有基線距離指定上限有多遠。前置閘門失敗記為「未能測試」。第一版方法與基線的差異另列，正式判定依機械輸出、獨立審查及使用者定案。 [現行 shortlist](../../shortlist.md) · [共同判準](../../reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](../../killtests/SUBMITTED.log)
 
 | 題目 | 現象 | 訊號 | 空間 |
 |---|---|---|---|
@@ -72,7 +72,8 @@
 * **原作輸入核對。** 完整合成測試資料已與作者 minimal 版逐位元核對。正式評估另需原版 `merged_probe.pkl` 或 `probe.pkl` 及其 `metadata.json` 來建立判讀母體，也缺歷史訓練權重與公開 HF snapshot 的明確對應。原作使用乾淨負例的 1% FPR 門檻與分層 bootstrap，每次重估門檻。這些來源補齊後才能判斷正式基準落差。 [作者評估流程](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/docs/PIPELINE_GUIDE.md)
 * **歷史 concept probe 的重建。** 公開的訓練材料兩份吻合，作者列第 12 層 logistic。訓練入口只設 Python RNG，線性層使用 PyTorch 的隨機初始化，無相應初始化紀錄。原論文指名的基座版本也尚無歷史 revision 對應。本地已微調權重可支援原有描述；重建歷史 probe 仍需原權重及 metadata，或可核對的原基座版本與有效初始化。概念 probe 和另行訓練的 test-time monitor 各自核對。 [原論文模型與 probe 設定](https://arxiv.org/html/2512.11949#A3) · [作者概念探針訓練入口](https://github.com/mgm52/neural-chameleons/blob/261e6547f2042385c95c47ad25860aacedb6aa73/experiments/training/train_concept_probes.py#L179)
 
-* **公開面板的來源差異。** CPU 稽核依作者發布規則重建每類前 1,000 筆，全部可回連原始索引。和本地同標籤的精確重合為 605 負、512 正。另有 57 筆在作者規則為正、本地為負。這說明面板大小相同仍有母體與標籤差。原歷史面板及探測器的對應待作者提供，下一步用同一公開探測器測兩個可重建的清潔面板。彙總 SHA-256 `69c03803cb7681e132f1149ca665684668226a0ad1012ad197727f76465f04b6`。 [來源稽核](../experiments/chameleon-source-audit/PROTOCOL.md)
+* **公開面板的來源差異。** CPU 稽核依作者發布規則重建每類前 1,000 筆，全部可回連原始索引。和本地同標籤的精確重合為 605 負、512 正。另有 57 筆在作者規則為正、本地為負。這說明面板大小相同仍有母體與標籤差。原歷史面板及探測器的對應待作者提供。彙總 SHA-256 `69c03803cb7681e132f1149ca665684668226a0ad1012ad197727f76465f04b6`。 [來源稽核](../experiments/chameleon-source-audit/PROTOCOL.md)
+* **清潔面板對照。** `26571`／`26572` 已送出。用同一個公開 probe 對兩面板的 2,826 筆去重聯集各做一次 clean 前向，依各面板原標籤回填。同一來源若同時出現在兩面板，保留同一分數及共用重抽次數。各用原作者經驗 1% FPR 規則回報 TPR、實際 FPR 及區間。兩個面板的母體和標籤共同變化，歷史重現仍等原始證據。 [清潔面板預登記](../experiments/chameleon-clean-panel/PREREG.md)
 
 ## RL 稀疏決策蒸餾
 
@@ -97,7 +98,7 @@
 * **新種子代理重驗。** `26516` 完成，三個提示各 10,000 筆。B1 的凍結 0.99 門檻有 220 命中與 9,978 個相異分數，是唯一符合兩項條件的組合，機械判為通過。Astra 確認這支持新流程有足夠解析度，且至少一個代理設定可量。這批只保留彙總，原 Gate B 的修復定案、正式現象和盲標仍待各自核對。彙總 SHA-256 `e51ebd48167cbf9d7805c54107ab6b64b4d452e7606e642d2d153a317ed56f26`。 [新種子重驗](../experiments/t2i-gate-b-precision/PREREG.md)
 * **候選修復憑證。** CPU 已依 Slurm、預登記、提交紀錄、固定版本、三段覆蓋與計數可行性獨立重算。新種子範圍遵循原門檻，B1 命中率 2.20%。同一作業平均每秒 5.48 張，按此換算原 168,000 張階段 1 約 8.5 GPU 小時。另用原完整 SDv1.4 基準換算約 9.17 GPU 小時。六模型實際吞吐待量，原 50 GPU 小時總上限沿用。 [候選修復驗證](../experiments/t2i-gate-repair/README.md)
 
-* **偵測器獨立操作。** `26570` 已送出，以固定人造圖案測 batch 32／64，補三個偵測器的個別與合併時間、峰值顯存。CPU 用離線資產實際跑完三個偵測器，並核對原 Stage 1 的六個模型和 168,000 張面板。正式生成尚待採用候選修復，正式盲標的百分比對照最低命中率也須事前凍結。 [操作與資產預檢](../experiments/t2i-detector-probe/README.md)
+* **偵測器獨立操作。** `26570` 已送出，以固定人造圖案測 batch 32／64，補三個偵測器的個別與合併時間、峰值顯存。CPU 用離線資產實際跑完三個偵測器，並核對原 Stage 1 的六個模型和 168,000 張面板。正式生成尚待採用候選修復，正式盲標的百分比對照最低命中率也須事前凍結。 [操作與資產預檢](../experiments/t2i-detector-probe/README.md) · [候選 Stage 1 入口](../experiments/t2i-stage1-candidate/README.md)
 
 ## 大型平行解碼提交集合
 

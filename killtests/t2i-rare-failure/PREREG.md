@@ -219,3 +219,5 @@
 
 - [codex] 已讀 `icml/runs/t2irare/clip-precision/26503.json`，2026-11-15 07:05。獨立複核與整合核對。原 Gate B 門檻及既有判讀沿用。
 - [codex] 2026-11-15 08:50 主代理已讀 `icml/runs/t2irare/gate-b-precision/26516.json`。Astra 隨後複核機械彙總與範圍，另一子代理於 08:54 讀取原彙總並核對來源。凍結版 `2b1c7f6`，前瞻新種子技術修復對照，原 Gate B 與下游取樣沿用原協定。
+
+- [codex] 2026-11-15 09:49–09:54（台北），候選 Stage 1 的預檢再次讀取同一份 `gate-b-precision/26516.json`，並核對原 Gate (a) 與 bench。啟用決策待使用者定案。
