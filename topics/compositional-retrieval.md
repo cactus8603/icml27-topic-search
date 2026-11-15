@@ -24,13 +24,15 @@
 
 **診斷**　一起看 Recall@50、前 50 名全無正例的查詢數，以及把既有名單內標註正例全部移到前面可得到的 mAP。三項可看出落差出在候選漏找，還是已入池的圖沒有排好。
 
-**下一個決定**　作業 `26806` 已提交。若候選召回與端到端排名都有收益，再到互斥的新圖庫複驗，並計入額外索引的總成本。[提交紀錄](../killtests/SUBMITTED.log) · [獨立面板前置](../codex/experiments/retrieval-independent-panel/PREREG.md) · [比分與固定前 50 名上限](../codex/reports/2026-11-15-three-frozen-readbacks-codex.md#後續的固定前-50-名驗證)
+**最新結果**　作業 `26806` 以同樣 50 次重排完成。交錯候選的 Recall@50 多 **0.25 點**，全庫 mAP 低 **0.44 點**（95% 區間 −3.84 至 +2.93 點），依預登記判為未定。[獨立複核](../codex/reports/2026-11-16-retrieval-recall-budget-codex.md)
+
+**下一個決定**　已封存互斥圖庫的查詢與標註清冊。後續比較需驗收候選圖，並把額外索引成本計入總預算。 · [獨立面板前置](../codex/experiments/retrieval-independent-panel/PREREG.md) · [比分與固定前 50 名上限](../codex/reports/2026-11-15-three-frozen-readbacks-codex.md#後續的固定前-50-名驗證)
 
 ### 信心、潛力與資源
 
 - **證據信心 4/5**　兩個評估面板都量到可改善的差距，獨立圖庫也量到現有重排的實際收益。
 - **研究潛力 4/5**　如果同樣重排成本能找回原先漏掉的相關圖片，且在新圖庫重現，就能提出可實際部署的改進。
-- **下一個實驗與資源**　已提交的 `26806` 估計 1 張 H200 跑 8–18 分鐘，約 0.13–0.30 GPU 小時，不含排隊。沿用約 1.3 GiB 的圖庫快取，新輸出小於 256 KiB。新圖庫的獨立查詢及標註清冊已封存，後續須取得候選圖並驗收。[資源估算](../codex/experiments/retrieval-recall-budget/PREREG.md) · [硬體實測](../codex/HARDWARE.md)
+- **下一個實驗與資源**　`26806` 實測 1 張 H200 跑 6 分 15 秒，約 0.10 GPU 小時，不含排隊。沿用約 1.3 GiB 的圖庫快取，新輸出小於 256 KiB。新圖庫的獨立查詢及標註清冊已封存，後續須取得候選圖並驗收。[資源估算](../codex/experiments/retrieval-recall-budget/PREREG.md) · [硬體實測](../codex/HARDWARE.md)
 
 ### 深入調查
 

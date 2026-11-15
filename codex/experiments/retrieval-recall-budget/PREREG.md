@@ -25,3 +25,8 @@ sbatch --parsable "$stage/run.sbatch" FULL_FREEZE_COMMIT
 ```
 
 正式輸出至 `icml/runs/retrieval-recall-budget/<job-id>/`。`summary.json` 綁定來源、執行版本與 `per_query.json` 的雜湊。結果完成後按協作規則查核與登記首次讀取。
+
+## 讀取紀錄
+
+- [codex] 2026-11-16 00:16（台北）。獨立複核已讀 `/work/ChihChungHsu/cactus8603/icml/runs/retrieval-recall-budget/26806/summary.json`，SHA-256 `fcdfe5b17f2e1ce6a3b5a720dd9249ee9f521922713273e4766291a1f525dffd`。凍結 `569b6c053f0f06006b7eab01ab64b815cd136702`，Slurm `26806`。
+- [codex] 2026-11-16 00:16（台北）。獨立複核已讀 `/work/ChihChungHsu/cactus8603/icml/runs/retrieval-recall-budget/26806/per_query.json`，SHA-256 `6cf1125ab87cafc9dfa67a15e50c8e438a4df60e0c753e589d87b53693870a3c`。凍結 `569b6c053f0f06006b7eab01ab64b815cd136702`，Slurm `26806`。
