@@ -3,6 +3,7 @@
 import argparse
 from collections import defaultdict
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -42,11 +43,18 @@ def time_groups(work, rate, remaining_seconds):
     total_rows = sum(rows for _, rows in work)
     if total_rows == 0:
         return []
-    groups = defaultdict(list)
-    for index, rows in work:
-        minutes = min(int(2 * rows / REGISTERED_RATE / 60), remaining_seconds * rows // (total_rows * 60))
-        if rows / rate > minutes * 60:
+    maxima = [int(2 * rows / REGISTERED_RATE / 60) for _, rows in work]
+    required = [math.ceil(rows / rate / 60) for _, rows in work]
+    proposed = [min(maximum, remaining_seconds * rows // (total_rows * 60))
+                for (_, rows), maximum in zip(work, maxima, strict=True)]
+    if any(limit < need for limit, need in zip(proposed, required, strict=True)):
+        # Proportional rounding can strand enough minutes to fund a short tail.
+        if sum(required) * 60 > remaining_seconds or any(
+                need > maximum for need, maximum in zip(required, maxima, strict=True)):
             return None
+        proposed = required
+    groups = defaultdict(list)
+    for (index, rows), minutes in zip(work, proposed, strict=True):
         groups[(rows, minutes)].append(index)
     return [{"images_per_task": rows, "minutes_per_task": minutes, "indices": indices}
             for (rows, minutes), indices in sorted(groups.items(), reverse=True)]

@@ -183,3 +183,9 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 18:01 submit 26830 inoculation-lambda 四族51格正式行為訓練、漏出和ID；5封存測試及真資料校驗，等清冊、技術檢查與全部事前分數，逐格核初始權重 30993b8c8b762be6c23df8127349d8a06f33d1ee
 [codex] 2026-11-15 18:01 submit 26831 inoculation-lambda 四族行為CPU驗收，依賴26830完整51格；核步0及訓練指紋後算漏出上下界、ID和信度 30993b8c8b762be6c23df8127349d8a06f33d1ee
 [codex] 2026-11-15 18:08 submit 26836 inoculation-lambda GCD整家族Λ/PHM/事前基線最終CPU比較，同樣本排名和選擇損失；9封存測試，依賴兩陣列與全部上游成功 c9471fe6e7efd9c383fd57a3e0a1dc910d6eef31
+[codex] 2026-11-15 18:17 cancel 26836 inoculation-lambda 待排時發現PHM正式作業名不符；由修正凍結重排 c9471fe6e7efd9c383fd57a3e0a1dc910d6eef31
+[codex] 2026-11-15 18:17 cancel 26831 inoculation-lambda 待排時更新相依的正式訓練版本 30993b8c8b762be6c23df8127349d8a06f33d1ee
+[codex] 2026-11-15 18:17 cancel 26830 inoculation-lambda 待排時重現隔離訓練子程序無法載入本地模組 30993b8c8b762be6c23df8127349d8a06f33d1ee
+[codex] 2026-11-15 18:17 submit 26859 inoculation-lambda 替代26830；修復隔離訓練子程序，封存測試及實際CLI啟動通過，原51格與相依不變 2b04482255ee1942969ba41ef2ffdc3af6a77187
+[codex] 2026-11-15 18:17 submit 26860 inoculation-lambda 替代26831；驗收新版正式訓練陣列26859全51格 2b04482255ee1942969ba41ef2ffdc3af6a77187
+[codex] 2026-11-15 18:17 submit 26861 inoculation-lambda 替代26836；以Slurm實際工作名驗PHM，九測試通過，等26859全51格及26860 2b04482255ee1942969ba41ef2ffdc3af6a77187
