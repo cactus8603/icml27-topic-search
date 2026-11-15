@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 10:17（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 10:25（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -17,7 +17,7 @@
 | 文生圖罕見失敗 | `26570` 量三偵測器資源，`26582` 用 CPU 測評分同分 | `26516` **36.14 GiB、1 小時 31 分 18 秒**，單卡 30,000 張約 **5.48 張／秒**，含 CLIP。完整 SDv1.4 bench `26288` **52.9 GiB**，batch 32 **5.09 張／秒**、batch 64 **5.25 張／秒**。 | **現有 batch 32 留 H200。** 依完整 SDv1.4 batch 32 實測換算階段 1 約 **9.17 GPU 小時**，六模型吞吐待量。`26570` 隔離診斷上限 15 分鐘。`26582` 的 Slurm 請求無 GPU，上限 5 分鐘。24 GB 縮批須同時通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) · [候選修復核對](experiments/t2i-gate-repair/README.md) · [偵測器資源診斷](experiments/t2i-detector-probe/README.md) |
 | 大型平行解碼提交集合 | `26530` 完成 640 題，暫停此版規則 | LLaDA-8B 全程 `26530` **16.58 GiB、18 分 39 秒**。兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。 | **同配置有望用 24 GB。** 權重約 14.93 GiB。H200 已覆蓋本輪完整面板，換卡的顯存及執行時間待實測。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
 | 不完美驗證器 | `26565` 使用同一面板重跑真實開發診斷 | `26484` **110.44 GiB、5 分 45 秒**，含 vLLM 預留。短合成作業 `26520` 的 Slurm 取樣峰值 **19.46 GiB、1 分 7 秒**，可能漏掉瞬間尖峰。 | **整個推論作業留 H200。** 0.6B 單獨有望用 24 GB。強端權重約 18 GiB，現行 0.78 顯存比例在 24 GiB 約給 18.72 GiB，另需 KV cache 和運行資源。開發作業上限 60 分鐘，CPU 已核對每端 4,494 個唯一請求。CPU 評估用正式面板大小的合成資料實測 **7.20 秒、約 122 MiB RAM**。[開發預登記](experiments/fallible-verifier/real_holdout/PREREG_dev_likelihood.md) |
-| Attention gate × optimizer | `26521` 四段 48 個新 seed，前兩段完成，第三段正在跑。`26522` 等四段的 CPU 彙總 | 首段 `26521_0` **3.72 GiB、18 分 7 秒**。獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量近似，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
+| Attention gate × optimizer | `26521` 四段 48 個新 seed，前三段完成。`26522` 等第四段再做 CPU 彙總 | 第三段 `26521_2` **3.72 GiB、18 分 11 秒**，主機 RAM 約 **2.04 GiB**。獨立驗證 `26502` **3.72 GiB、18 分 18 秒**。 | **優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。每段工作量近似，換卡需量吞吐。[48 種子驗證](experiments/gate-optimizer/round3/PREREG.md) |
 
 已送出的工作依原 Slurm 佇列執行。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
 
