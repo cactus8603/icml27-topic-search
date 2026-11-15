@@ -14,3 +14,7 @@ stage=codex/experiments/retrieval-multipositive
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 sbatch --parsable "$stage/run.sbatch" FULL_FREEZE_COMMIT
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 15:17（台北）已讀 `icml/runs/retrieval-multipositive/26679/summary.json`。Slurm 成功，摘要 SHA-256 與執行紀錄相符，凍結版 `a84de2f`。

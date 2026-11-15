@@ -22,3 +22,7 @@ stage=codex/experiments/fallible-verifier/gsm1k-replication
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 sbatch --parsable "$stage/run.sbatch" FULL_FREEZE_COMMIT
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 15:17（台北）已讀 `icml/runs/fallible-verifier/gsm1k-replication/26669/summary.json`。Slurm 成功，摘要及四份評分收據 SHA-256 核對，凍結版 `229cdcf`。
