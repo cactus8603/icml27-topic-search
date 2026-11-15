@@ -13,7 +13,7 @@ arXiv 2025-03-26 的 Table 4 已列 Oat-Zero-1.5B 的 MATH500 74.2% 和 Minerva 
 
 ## 離線執行
 
-使用隔離的 shared `envs/oat-vllm072`，官方 Linux x86_64 vLLM 0.7.2 wheel SHA-256 為 `51fcb7d60149f75ec85d457fab6ccd88a2b1a6344c28aad46b0f8776b29e9d47`。Torch 2.5.1 Linux CPython 3.10 wheel SHA-256 為 `71328e1bbe39d213b8721678f9dcac30dfc452a46d586f1d514a6aa0a99d4744`。安裝時先核 wheel，再保存 `uv pip freeze` 為環境內 `installed-packages.txt`。安排一張 H200、48 GiB 主記憶體、8 CPU、30 分鐘上限。現有資料與權重只讀，JSON 寫入共享 `icml/runs/rsd-pair-a-v1-engine/`，本次成果預期小於 1 MiB，不存逐題資料。 [vLLM 0.7.2 PyPI](https://pypi.org/project/vllm/0.7.2/#files) · [Torch 2.5.1 PyPI](https://pypi.org/project/torch/2.5.1/#files)
+使用隔離的 shared `envs/oat-vllm072`，官方 Linux x86_64 vLLM 0.7.2 wheel SHA-256 為 `51fcb7d60149f75ec85d457fab6ccd88a2b1a6344c28aad46b0f8776b29e9d47`。Torch 2.5.1 Linux CPython 3.10 wheel SHA-256 為 `71328e1bbe39d213b8721678f9dcac30dfc452a46d586f1d514a6aa0a99d4744`。安裝時先核 wheel，再保存 `uv pip freeze` 為環境內 `installed-packages.txt`。執行時實際清單的 SHA-256 為 `c49872e678c0d7cdfbd3d17f3d2521b40b28ce036a445872a97598830d00f2eb`。143 個套件的版本清單把本機 vLLM wheel 路徑換成版本號。安排一張 H200、8 CPU、30 分鐘上限，主記憶體用量見硬體實測。現有資料與權重只讀，JSON 寫入共享 `icml/runs/rsd-pair-a-v1-engine/`，本次成果預期小於 1 MiB，不存逐題資料。 [套件版本清單](requirements.lock) · [硬體實測](../../HARDWARE.md) · [vLLM 0.7.2 PyPI](https://pypi.org/project/vllm/0.7.2/#files) · [Torch 2.5.1 PyPI](https://pypi.org/project/torch/2.5.1/#files)
 
 凍結後依序執行資產、推論環境 CPU 預檢，接兩筆合成題 GPU smoke。兩面板作業等待 smoke 成功並核同凍結、同 inventory 的 receipt。
 
