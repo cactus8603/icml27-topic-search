@@ -91,3 +91,11 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 08:22 submit 26535 multifidelity-attribution seed6獨立軌跡，固定12查詢100重訓遮罩，比精確LDS與固定EK-FAC，已複核和CPU預檢 c6ff6aa
 [codex] 2026-11-15 08:36 submit 26558 inoculation-lambda CPU驗26533三臂收據、600筆作者評分輸入和60筆盲化診斷材料，替身預檢通過 37cd61b
 [codex] 2026-11-15 08:57 submit 26559 biased-gen-cfg 同母體833/5000唯一本數配對，固定更新量與探測輸入，真實CPU小跑及Astra審查通過 24cd3d3
+[codex] 2026-11-15 09:10 cancel 26558 inoculation-lambda 原26526在快取路徑核對退出，失效相依改用修正後版本 f945365
+[codex] 2026-11-15 09:10 cancel 26533 inoculation-lambda 原26526在快取路徑核對退出，失效相依改用修正後版本 f945365
+[codex] 2026-11-15 09:10 cancel 26527 inoculation-lambda 原26526在快取路徑核對退出，失效相依改用修正後版本 f945365
+[codex] 2026-11-15 09:10 submit 26562 inoculation-lambda 路徑修正重送作者Spanish none臂，固定原資料與參數，兩臂CPU預檢通過 f945365
+[codex] 2026-11-15 09:10 submit 26563 inoculation-lambda 路徑修正重送作者Spanish IP臂，等新none 26562及完成收據 f945365
+[codex] 2026-11-15 09:11 submit 26565 fallible-verifier 26528啟動失敗後以同一開發面板重送，加入階段診斷及正規化路徑，雙CPU預檢與26520成功已驗 2bc9d7e
+[codex] 2026-11-15 09:12 submit 26566 inoculation-lambda 作者三臂離線生成改接26562/26563，快取別名修正與鎖版HF sampler預檢通過 639bf14
+[codex] 2026-11-15 09:14 submit 26567 inoculation-lambda CPU複核改接26566，600筆原規格與60筆盲化，作者鎖版替身預檢通過 63109d1

@@ -25,3 +25,8 @@ stage=codex/experiments/retrieval-conjunction
 bash "$stage/run.sbatch" FULL_FREEZE_COMMIT --check-only
 sbatch --parsable "$stage/run.sbatch" FULL_FREEZE_COMMIT
 ```
+
+## 讀取紀錄
+
+* [codex] 已讀叢集 `26534/summary.json`，2026-11-15 09:08（台北）。凍結版 `6aa7eb5b97d50dff77af07074f51163813ae863d`。
+* [codex] Astra 獨立複核已讀同一彙總，2026-11-15 09:09（台北）。

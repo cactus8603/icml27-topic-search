@@ -8,15 +8,15 @@
 
 | 題目 | 前期分工 | 目前接手 | 下一步 |
 |---|---|---|---|
-| [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 完成 anchor 對照，凍結新的雙條件排序 | `26534` 在新庫比較雙條件、整句基線及前 50 名重排上限 |
+| [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 完成 anchor 對照、新庫排序及前 50 名上限診斷 | 另建新留出池，比較實際重排器與原 CORE 整句排名 |
 | [條件擴散的兩個時鐘](#條件擴散的兩個時鐘) | Claude 做第一週訓練與評估 | Codex 完成正式評估與三臂共同網格 | `26559` 固定母體、條件策略與更新量，隔離新資料的唯一本數 |
-| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 備妥作者環境、離線複核和 GCD 信度程式 | 重跑作者訓練，通過後生成並準備盲化與作者評分材料 |
+| [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 備妥作者環境、離線複核和 GCD 信度程式 | `26562`／`26563` 重跑作者訓練，通過後生成並準備盲化與作者評分材料 |
 | [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成精確診斷及新方向對照 | `26535` 用獨立訓練種子重測最佳便宜方法與精確參照的排序落差 |
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 核對乾淨基準與作者訓練入口 | 核對作者歷史探測器、初始化紀錄與基座版本 |
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成 B 的 16K 重現、新題模板對照與配對 A 同輸出重評 | 核對生成規格和候補權重的原作依據，短預算資格暫緩 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理與 CLIP 新種子重驗 | 定案是否採用已核對的修復憑證，再評估正式生成與盲標 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪及新選擇規則的 GPU 試跑 | `26530` 驗證用既有前兩名分數差能否超過原 confidence |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結官方 GSM8K 獨立留出及開發診斷 | 修復開發診斷的啟動失敗，再用真實候選測格式與排序 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 凍結官方 GSM8K 獨立留出及開發診斷 | `26565` 重跑真實開發候選的格式與排序診斷 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成 12 個保留種子的壓力試驗 | `26521`／`26522` 用 48 個全新種子重驗訊號 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
@@ -30,7 +30,7 @@
 - **現象**看多條件圖片檢索能否把完整、基準、半真三種描述排對。
 - **訊號**看完整描述能否勝過半真描述，再檢查基準描述的分數偏高或偏低。
 - **現有方法**比較 CS-CLIP、CORE-EMBED-2B、SigLIP2、CLIC 的固定索引分數，另以 CORE-RERANKER-2B 作跨編碼比較。
-- **上限**固定每列的完整與半真分數時，事後調整基準分數的最高三句排序率等於完整勝半真的比例。新查詢的全候選池 mAP 另行量測。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#多條件檢索) · [新排名預登記](killtests/compositional-retrieval/PREREG_prospective_rank.md)
+- **上限**同圖比較可事後調整基準描述分數，最高三句排序率等於完整勝半真的比例。跨圖檢索另用已標註的相關圖設定前 50 名內的理想順序，固定候選成員和名單外排序。[逐題證據](codex/reports/2026-11-15-topic-status-codex.md#多條件檢索) · [新庫預登記](codex/experiments/retrieval-conjunction/PREREG.md)
 
 ### 條件擴散的兩個時鐘
 
