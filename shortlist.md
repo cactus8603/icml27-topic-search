@@ -4,16 +4,16 @@
 
 ## 已通過入池判準
 
-- [多條件檢索](topics/compositional-retrieval.md)的同圖三句排序通過。跨圖的新召回方法由各自的實驗設計驗證。
+- [多條件檢索](topics/compositional-retrieval/)的同圖三句排序通過。跨圖的新召回方法由各自的實驗設計驗證。
 
 ## 優先完成現象與訊號
 
-1. [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda.md)
-2. [文生圖罕見失敗的機率估計](topics/t2i-rare-failure.md)
+1. [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)
+2. [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)
 
 ## 其他候選的原排程順序
 
-1. [多保真度資料歸因](topics/multifidelity-attribution.md)
-2. [RL 稀疏決策蒸餾](topics/rl-sparse-distill.md)
+1. [多保真度資料歸因](topics/multifidelity-attribution/)
+2. [RL 稀疏決策蒸餾](topics/rl-sparse-distill/)
 
-後續探針與判讀更新在各題設計卡。GPU 作業依協作規則與當前佇列安排。
+後續探針與判讀更新在各題資料夾。GPU 作業依協作規則與當前佇列安排。

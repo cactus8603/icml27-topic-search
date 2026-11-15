@@ -1,6 +1,6 @@
 # GCD 五臂漏出與訓練前 Λ 的判讀
 
-[codex] 2026-11-15（台北）。範圍為合成最大公因數任務、同一 Qwen2.5-7B-Instruct 快照、五個提示配置及三個初始化。15 個訓練格、CPU 行為評分 `26739`、步 0 梯度 `26744` 與配對 `26745` 均成功。獨立複核逐一核對 15 份行為收據、45 格梯度，以及全數 4,500 筆評分。 [行為預登記](../experiments/lambda-offline-confirmation/PROTOCOL.md) · [訊號預登記](../experiments/lambda-gcd-signal/PROTOCOL.md)
+[codex] 2026-11-15（台北）。範圍為合成最大公因數任務、同一 Qwen2.5-7B-Instruct 快照、五個提示配置及三個初始化。15 個訓練格、CPU 行為評分 `26739`、步 0 梯度 `26744` 與配對 `26745` 均成功。獨立複核逐一核對 15 份行為收據、45 格梯度，以及全數 4,500 筆評分。 [行為預登記](../../topics/inoculation-lambda/code/experiments/lambda-offline-confirmation/PROTOCOL.md) · [訊號預登記](../../topics/inoculation-lambda/code/experiments/lambda-gcd-signal/PROTOCOL.md)
 
 ## 現象與訊號
 
@@ -16,7 +16,7 @@
 
 - **現象未建立。** 四個防禦臂漏出全距的保守下界為 **0.00 個百分點**，原門檻為 20 點。ICC(1,1) 下界為 **−0.50**，精確值未定，仍容許常數面板；原要求 ICC 至少 0.80 且排除常數面板。各臂實際漏出仍落在上表的寬區間。
 - **訊號方向未定。** 四個有防禦的臂共六對，全數沒有可確定的漏出次序。合併結果和三個初始化的同向減反向對數均為 **[−6, +6]**，Spearman 未能估計。
-- **配置差距未定。** 未知回答允許的四臂全距為 **0–38.89 個百分點**。這是固定面板的漏出差範圍。現有方法距信度上限的差，以及 Λ 相對 PHM 的設定選擇收益，待四家族同設定比較。 [四家族評估](../experiments/lambda-gcd-family-design/evaluation/README.md)
+- **配置差距未定。** 未知回答允許的四臂全距為 **0–38.89 個百分點**。這是固定面板的漏出差範圍。現有方法距信度上限的差，以及 Λ 相對 PHM 的設定選擇收益，待四家族同設定比較。 [四家族評估](../../topics/inoculation-lambda/code/experiments/lambda-gcd-family-design/evaluation/README.md)
 
 Astra 複核判定，現有未知率使這批無法識別排序、方向及重現性。四家族結果須先報可判定率與獨立 ID 學習，再檢查所涵蓋家族的排序優勢和所選配置的實際漏出差。
 

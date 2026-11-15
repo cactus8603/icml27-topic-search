@@ -23,7 +23,7 @@ CPU 作業 `26443` 彙總 `26441` 的 480 題擬合和 `26442` 的 1,000 題鎖�
 - **現象。** 466/946 道合格題跨過信心切點，49.26%（95% 區間 46.08%–52.44%），高於 15% 門檻。固定競爭 token 後，430/946 道同時有至少 1 nat 的高階殘差，屬機制診斷。
 - **訊號。** 已擬合 Joint 相對已擬合 Doubleton 的等成本候選排序差為 **−2.59 個百分點**（95% 區間 −5.93 至 +0.56）。區間上界低於 +5 門檻，仍涵蓋零。兩臂平均各 61.366 次 forward。全題答對率 Joint 27.0%、Doubleton 27.4%、原 confidence 29.7%，屬方法比較。
 - **改善空間。** Doubleton 有 156/1,000 題答錯且同池存在正解，15.60 個百分點（95% 區間 13.48–17.98），高於 +4 門檻。相對全題最強實測 confidence 的 29.7%，固定三候選的事後上限為 43.0%，差 **13.3 個百分點**。這個上限的候選池、第一次合格位置及續跑預算均固定。
-- **處置。** 依預登記暫停這版等成本 Joint 特徵。若要繼續候選選擇器方向，先檢驗較便宜的特徵能否在新留出跨過原 confidence；確認品質收益後才量整段實際延遲。 [第二輪預登記](../experiments/large-commit-sets/round2/PREREG.md)
+- **處置。** 依預登記暫停這版等成本 Joint 特徵。若要繼續候選選擇器方向，先檢驗較便宜的特徵能否在新留出跨過原 confidence；確認品質收益後才量整段實際延遲。 [第二輪預登記](../../topics/large-commit-sets/code/experiments/large-commit-sets/round2/PREREG.md)
 
 ## 多條件檢索
 
@@ -38,7 +38,7 @@ CPU 作業 `26443` 彙總 `26441` 的 480 題擬合和 `26442` 的 1,000 題鎖�
 
 兩個主比較的區間上界均低於預登記的 +2 個百分點，這個規則在該固定庫 **FAIL**。同圖完整描述勝過錯誤描述的訊號還在，CS-CLIP 在有合法文字 foil 的 173 個新查詢為 89.60%；它和全庫 mAP 的母體及問題不同。原候選池 GO 判的是固定索引的同圖三句排序，仍依前一輪的範圍解讀。
 
-若繼續做固定候選庫排名，以 CORE-EMBED-2B 原整句作較強基線。先查 COCO 未標註的真陽性、單正例查詢與成對訊號在全庫排序中失效的位置，再用新查詢／候選庫凍結一版方法。現有三句排序 oracle 不能換算成全庫 mAP 上限。 [新排名預登記](../../killtests/compositional-retrieval/PREREG_prospective_rank.md) · [原三句排序診斷](../retrieval-anchor-audit/REPORT.md)
+若繼續做固定候選庫排名，以 CORE-EMBED-2B 原整句作較強基線。先查 COCO 未標註的真陽性、單正例查詢與成對訊號在全庫排序中失效的位置，再用新查詢／候選庫凍結一版方法。現有三句排序 oracle 不能換算成全庫 mAP 上限。 [新排名預登記](../../topics/compositional-retrieval/code/killtest/PREREG_prospective_rank.md) · [原三句排序診斷](../../topics/compositional-retrieval/code/experiments/retrieval-anchor-audit/REPORT.md)
 
 Astra 複核確認 +2 個百分點的失敗限於這套凍結的跨影像排序。若續做，在獨立題組為每個正例配上物件相同、但關係或屬性不符的影像難負例，以真 anchor 相對打亂 anchor 的正負影像分差變化作預先指定的主比較。同步量同圖三句排序。這樣能直接驗證成對訊號是否也能區分跨影像的組合錯誤。
 
@@ -51,7 +51,7 @@ Astra 複核確認 +2 個百分點的失敗限於這套凍結的跨影像排序�
 | `26568`，4,095 張圖、104 條查詢 | CORE 交叉編碼把 mAP 從 50.95% 提到 **66.74%**，增加 **15.79 點**（群集 95% 區間 +6.78 至 +24.79） | **84.59%**，距重排 **17.85 點** | Recall@50 為 84.39%，14 條查詢沒有正例入選 |
 | `26601`，8,191 張圖、136 條查詢 | CORE 整句重排 **54.53%**。加入真 anchor 為 52.75%，差 −1.78 點（校正區間 −6.68 至 +2.76） | **74.02%**，距最佳實測 **19.50 點**（依未取整數值） | Recall@50 為 73.77%，31 條查詢沒有正例入選 |
 
-目前有直接證據支持 CORE 重排能提升全池 mAP。真 anchor 的附加收益仍未定。`26806` 在第二個圖池等量重排 50 張，檢查新候選入口能否改善召回並提高 mAP。第三個圖池的獨立前置已封存，待候選圖齊備後才能驗收。 [獨立重排](../experiments/retrieval-rerank/PREREG.md) · [固定前 50 名與 anchor](../experiments/retrieval-anchor-rerank/PREREG.md) · [排名預算對照](../experiments/retrieval-recall-budget/PREREG.md) · [新池前置](../experiments/retrieval-independent-panel/PREREG.md)
+目前有直接證據支持 CORE 重排能提升全池 mAP。真 anchor 的附加收益仍未定。`26806` 在第二個圖池等量重排 50 張，檢查新候選入口能否改善召回並提高 mAP。第三個圖池的獨立前置已封存，待候選圖齊備後才能驗收。 [獨立重排](../../topics/compositional-retrieval/code/experiments/retrieval-rerank/PREREG.md) · [固定前 50 名與 anchor](../../topics/compositional-retrieval/code/experiments/retrieval-anchor-rerank/PREREG.md) · [排名預算對照](../../topics/compositional-retrieval/code/experiments/retrieval-recall-budget/PREREG.md) · [新池前置](../../topics/compositional-retrieval/code/experiments/retrieval-independent-panel/PREREG.md)
 
 ## 輸出指紋
 

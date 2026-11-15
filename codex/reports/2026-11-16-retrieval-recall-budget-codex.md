@@ -1,6 +1,6 @@
 # 固定 50 次重排的召回對照
 
-[codex] 2026-11-16（台北）。獨立複核作業 `26806` 的來源、逐查詢數字與 10,000 次配對重抽樣。136 條查詢分成 118 群。兩組每題都重排 50 張。交錯候選另用一次全庫向量搜尋。 [預登記與來源雜湊](../experiments/retrieval-recall-budget/PREREG.md)
+[codex] 2026-11-16（台北）。獨立複核作業 `26806` 的來源、逐查詢數字與 10,000 次配對重抽樣。136 條查詢分成 118 群。兩組每題都重排 50 張。交錯候選另用一次全庫向量搜尋。 [預登記與來源雜湊](../../topics/compositional-retrieval/code/experiments/retrieval-recall-budget/PREREG.md)
 
 | 指標 | CORE | CORE／CS-CLIP 交錯候選 | 差值的 95% 區間 |
 |---|---:|---:|---:|

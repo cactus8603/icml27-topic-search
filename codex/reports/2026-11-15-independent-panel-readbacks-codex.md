@@ -12,7 +12,7 @@
 
 現有候選池含可救回的題。使用目前可辨識的狀態時，留出面板只剩 0.50 點可改善。若要利用逐題選擇的較大空間，下一次驗證須有提交前可取得的新訊號，再在固定運算量下測試。
 
-[第二輪正式複核](2026-11-15-three-frozen-readbacks-codex.md#大型平行解碼提交集合) · [免額外運算分析](../experiments/large-commit-sets/observable-selector/PREREG.md#讀取紀錄) · [獨立 640 題對照](../experiments/large-commit-sets/top-two-selector/PREREG.md#讀取紀錄)
+[第二輪正式複核](2026-11-15-three-frozen-readbacks-codex.md#大型平行解碼提交集合) · [免額外運算分析](../../topics/large-commit-sets/code/experiments/large-commit-sets/observable-selector/PREREG.md#讀取紀錄) · [獨立 640 題對照](../../topics/large-commit-sets/code/experiments/large-commit-sets/top-two-selector/PREREG.md#讀取紀錄)
 
 ## 強驗證器與少量金標
 
@@ -26,4 +26,4 @@
 
 兩個正式面板的共同誤收區間都跨過 50% 門檻。在弱端判決已知時，強端讓 GSM8K 的 Brier 誤差相對下降 **41.95%**，ASDiv-A 下降 **6.35%**。重新分配 GSM8K 暖機預算後，通過六項風險條件的實測省費為 **11.70%**，距同面板的事後點風險上限 **48.29%** 有 **36.59 點**。ASDiv-A 尚無通過同一風險條件的部署收益。在絕對誤收與誤拒的保守點上界各為 11% 時，事後可查強端的策略比事後只用金標的策略多省 **13.21%**。跨題群的效果需固定策略並用新金標題組驗證。
 
-[公開資料探索重播](2026-11-15-rebuttal-pilot-results-codex.md#強驗證器與稀疏金標) · [GSM8K 正式留出](../experiments/fallible-verifier/real_holdout/PREREG.md#留出彙總讀取紀錄) · [GSM8K 暖機分配](../experiments/fallible-verifier/gsm8k-nested-audit/PREREG.md#讀取紀錄) · [ASDiv-A 正式留出](../experiments/fallible-verifier/asdiv-replication/PREREG.md#讀取紀錄) · [ASDiv-A 點風險上限](../experiments/fallible-verifier/asdiv-point-risk-ceiling/PREREG.md#讀取紀錄)
+[公開資料探索重播](2026-11-15-rebuttal-pilot-results-codex.md#強驗證器與稀疏金標) · [GSM8K 正式留出](../../topics/fallible-verifier/code/experiments/fallible-verifier/real_holdout/PREREG.md#留出彙總讀取紀錄) · [GSM8K 暖機分配](../../topics/fallible-verifier/code/experiments/fallible-verifier/gsm8k-nested-audit/PREREG.md#讀取紀錄) · [ASDiv-A 正式留出](../../topics/fallible-verifier/code/experiments/fallible-verifier/asdiv-replication/PREREG.md#讀取紀錄) · [ASDiv-A 點風險上限](../../topics/fallible-verifier/code/experiments/fallible-verifier/asdiv-point-risk-ceiling/PREREG.md#讀取紀錄)

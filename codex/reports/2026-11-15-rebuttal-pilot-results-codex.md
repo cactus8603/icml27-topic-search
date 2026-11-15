@@ -20,7 +20,7 @@
 
 **下一步。** 用未參與此次先導的 GSM8K 題目，分開選擇器訓練與鎖定測試。固定第一個合格位置、三候選、每輪寫入八個 token、續跑預算和回退規則。兩臂共用廉價特徵與單點訊號，將聯合臂的額外 forward 與固定雙點探測的對照配平，另記整體推論延遲。本輪每介入位置的單點與聯合探測分別使用 9–10 次和 24 次 forward。以全題配對答題差與同池 oracle 比較。建議在估算所需樣本數後，預先登記配對正確率差 95% 下界達 +4 個百分點的晉級條件，並報相對原規則的淨增益。
 
-[凍結判準](../experiments/large-commit-sets/PREREG.md) · [機械判讀](../experiments/large-commit-sets/results/verdict-26376.json) · [Astra 原文](../astra-reviews/rebuttal-pilot-large-commit-sets-result.json)
+[凍結判準](../../topics/large-commit-sets/code/experiments/large-commit-sets/PREREG.md) · [機械判讀](../../topics/large-commit-sets/code/experiments/large-commit-sets/results/verdict-26376.json) · [Astra 原文](../astra-reviews/rebuttal-pilot-large-commit-sets-result.json)
 
 ## 強驗證器與稀疏金標
 
@@ -34,7 +34,7 @@
 
 **下一步。** 用新題做等暖機預算的 32B 試驗。實驗臂用約 35% 強查詢和 10% 金標，對照臂把等額預算全用於約 13.5% 金標；兩邊共用便宜特徵與政策類別，依實際查詢定價配平，將解析失敗轉專家的支出算入。按題切分、重複稀疏抽樣及政策擬合，預先鎖定部署量與攤銷方式。建議沿用兩類風險上限，事先規定聯合區間，檢驗攤銷後省費下界能否達 20%。主資料以公開最終答案標示金標，且門檻選擇參考過同來源的初步資料，這輪屬探索性重播。
 
-[凍結判準](../experiments/fallible-verifier/PREREG.md) · [重播彙總](../experiments/fallible-verifier/results/replay.26371.json) · [Astra 原文](../astra-reviews/rebuttal-pilot-fallible-verifier-result.json)
+[凍結判準](../../topics/fallible-verifier/code/experiments/fallible-verifier/PREREG.md) · [重播彙總](../../topics/fallible-verifier/code/experiments/fallible-verifier/results/replay.26371.json) · [Astra 原文](../astra-reviews/rebuttal-pilot-fallible-verifier-result.json)
 
 ## Attention gate × optimizer
 

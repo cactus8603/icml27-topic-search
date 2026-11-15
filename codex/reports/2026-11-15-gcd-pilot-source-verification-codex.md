@@ -8,4 +8,4 @@
 
 現象未建立。1,429/4,500 筆未知，防禦臂漏出率全距保守界為 0.00–38.89 點，仍容許常數面板，ICC 保守下界 −0.50。訊號方向未定，六對皆無法排序。
 
-[行為預登記](../experiments/lambda-offline-confirmation/PROTOCOL.md) · [訊號預登記](../experiments/lambda-gcd-signal/PROTOCOL.md)
+[行為預登記](../../topics/inoculation-lambda/code/experiments/lambda-offline-confirmation/PROTOCOL.md) · [訊號預登記](../../topics/inoculation-lambda/code/experiments/lambda-gcd-signal/PROTOCOL.md)
