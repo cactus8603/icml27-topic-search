@@ -1,0 +1,23 @@
+{
+  "source_commit": "599469e3faf5dec7aae854cc929c6d265bdd706f",
+  "kronfluence_commit": "19088a899dd333aae086fe82213a972db5e6c493",
+  "source_sha256": {
+    "configs/stage0.json": "b2133b3e78407b0bc51f4db13017fc1445abed85c7f7b7c5b9371537df40a255",
+    "configs/criteria.json": "2786a2279bae2de27ebabedd84f36cc3bb8a8cbcac9053b3b410e0bd0258a210",
+    "scripts/common.py": "f9c128f26954fe892943525ac6afc05be754b7b4ca5d5a247447044cb2e0d49f",
+    "scripts/mf_core.py": "de80095d5dc6a7dcf3694a0cb516d500a4ae6cd5434c1634bcd94e59da32c954",
+    "scripts/cheap_torch.py": "b116c803536b0f84184635c8fda3589bcef46ba3b970014bf69ec3e1082b7830"
+  },
+  "train_seed": 6,
+  "exact_chunks": [[118, 124], [268, 274]],
+  "cifar_queries": [5230, 5962, 8019, 4949, 720, 6272, 5041, 149, 7328, 1082, 6461, 8511],
+  "mask_start": 100,
+  "mask_end": 200,
+  "mask_sha256": "8ec96c3b166f5118e8c0ca39559386845bb98a8d7d3ce3c9b99fc11b6f8555ec",
+  "no_removal_repeats": 2,
+  "ekfac_damping": 1e-8,
+  "factor_seed": 2026111506,
+  "bootstrap_seed": 2026111507,
+  "bootstrap_resamples": 10000,
+  "versions": {"jax": "0.12.0.1", "torch": "2.5.1"}
+}
