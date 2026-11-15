@@ -162,3 +162,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 16:29 submit 26738 inoculation-lambda 修正運算節點暫存路徑兩側比對後重送同件獨立GCD面板，封存CPU預檢通過 883c9ff16677884d7eb3a2a579a25d4770efbe39
 [codex] 2026-11-15 16:29 submit 26739 inoculation-lambda 獨立GCD陣列26738全通過後驗收據及量漏出信度；無效相依自動結束 883c9ff16677884d7eb3a2a579a25d4770efbe39
 [codex] 2026-11-15 16:30 cancel 26737 large-commit-sets 共用CPU配額排隊，改同封存單核本機備援 b3507617caae44d0a5b64bed9599c7b76fd04194
+[codex] 2026-11-15 16:35 submit 26743 t2i-rare-failure formal-stage=1 26663六十塊重驗證通過，原六模型84格逐格2000種子；封存預檢通過且每任務103分鐘 040dfbc5b14febb89420519fd6cc15e1bf48576d
+[codex] 2026-11-15 16:35 submit 26744 inoculation-lambda 獨立GCD同五臂、三初始化計Λ，封存CPU已核200目標、權重、遮罩及正負梯度 0e5f9d43a68e8bf410906352a538ebfaef104298
+[codex] 2026-11-15 16:35 submit 26745 inoculation-lambda 等26739/26744都成功後，核對做答和梯度收據並依固定臂配對量訊號 0e5f9d43a68e8bf410906352a538ebfaef104298
