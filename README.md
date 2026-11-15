@@ -17,7 +17,7 @@
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成原種子 CLIP 修復重播、同分次鍵與偵測器資源診斷 | `26663` 通過原代理門檻。正式第一段 `26743` 已送，後續依雙偵測器分數選格與盲標 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪、零額外 forward 新題測試及同狀態上限重播 | 現象通過。免額外 forward 的固定狀態上限只多 0.8 點，低於 4 點參考線。續驗需不同訊號 |
 | [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K、GSM1k 與 ASDiv-A 留出，Astra 複核 | ASDiv-A 誤收重現、條件訊號低於門檻。同點風險下，查強端的事後最優比直接決策再省 13.21%。下一步若續驗，需固定策略後測獨立題群 |
-| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
+| [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成壓力、正常排程及 96 種子加密探針，Astra 複核 | 正常排程損傷可重現但少見。寫入訊號點估低於門檻，局部回退只回收 2.07%。續驗須看其他排程或模型的事件率 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
 
