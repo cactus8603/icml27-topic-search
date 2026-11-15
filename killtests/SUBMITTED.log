@@ -104,3 +104,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 09:41 submit 26570 t2i-rare-failure 合成圖案量原三偵測器batch32/64吞吐和顯存，無生成與事件計數，Astra與CPU預檢通過 0d86f96
 [codex] 2026-11-15 09:50 submit 26571 chameleon-defense 同一公開probe的clean試跑，16筆含最長序列，不存分數，Astra與封存CPU預檢通過 5bff580
 [codex] 2026-11-15 09:50 submit 26572 chameleon-defense 2826去重clean列評分，兩面板原標籤各自門檻及配對區間，依賴同凍結smoke 26571 5bff580
+[codex] 2026-11-15 10:04 submit 26574 multifidelity-attribution CPU比對0/6兩seed固定12查詢同100遮罩四格排序，依賴26535，Astra及封存預檢通過 4beacb2
