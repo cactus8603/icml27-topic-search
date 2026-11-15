@@ -16,7 +16,11 @@ Stage 0 的補空間餘弦 `ρ⊥` 落灰區。方向覆蓋 `26517` 量的是精
 
 ## 執行與成本
 
-依序跑 JAX 12 個新精確查詢、PyTorch 新 query Gram 及同 factors 的 EK-FAC、CPU 聚合。一張 H200，JAX 含預留約 126 GiB。原兩組六欄精確回播約 13 分鐘；本次預估總 15–25 分鐘，作業上限 45 分鐘。EK-FAC 讀既有 675 MiB factors，不複製、不重擬。新 Y、C 各約 2.4 MB；含庫自身的 pairwise 檔及收據估低於 50 MiB。CPU 合成、資產 SHA 與 NPY header 預檢使用 NumPy，2 CPU、8 GiB RAM 足夠。
+`26628` 已完成兩組 JAX 精確回播，後續在 PyTorch 校準 Gram 的重播核對停止。續跑先核對 `26628` 的 `exact.npz` 雜湊 `9e5f1a090cb8d3150fe6bf5021eb2c697f117454a01fda71c869507631311fc7`、原凍結 `6d8344ab0fd355dea6b80c3ccf14685c6359f1f0`、完整輸入身分、陣列形狀及原三項技術界線。複製的精確矩陣保留原作業身分。精確回播沿用首次執行產物。
+
+原 Stage 0 以 400 筆一起算逐樣本梯度與完整 Gram，EK-FAC 也以一批 400 筆算 query 梯度。`26628` 的逐樣本梯度每批 8 筆。續跑改用歷史批次形狀，依序放原前 388 筆和已凍結的 12 筆新查詢。ResNet-9 在 eval 模式使用凍結 BN 統計，查詢彼此獨立。歷史前 50 筆的 Gram 與前 4 筆 EK-FAC 欄沿用原重播誤差上限。完整矩陣僅擷取前 50 對末 12 的交叉 Gram 及末 12 欄新 EK-FAC。投影仍以歷史 Gram 選十個方向。
+
+續跑用一張 H200 計算 PyTorch Gram、沿用 675 MiB factors 算 EK-FAC，再以 CPU 聚合。作業上限 45 分鐘。400 × 50,000 的 EK-FAC pairwise 檔約 80 MB，放在作業 bundle，結束清除。保留的精確與廉價矩陣各約 2.4 MB，另含小型收據。CPU 合成、資產與精確輸入核對使用 NumPy，2 CPU、8 GiB RAM 足夠。
 
 ```bash
 stage=codex/experiments/multifidelity-complement

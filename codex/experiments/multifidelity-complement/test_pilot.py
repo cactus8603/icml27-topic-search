@@ -5,7 +5,8 @@ import unittest
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pilot import PERM_SEED, coordinates, cosine, summarize
+from pilot import (CAL, EXACT_SOURCE_FREEZE, EXACT_SOURCE_JOB, HISTORICAL_QUERY_COUNT, PERM_SEED, TARGET_IDS,
+                   coordinates, cosine, exact_identity, summarize, torch_query_batch)
 
 
 class ComplementTests(unittest.TestCase):
@@ -48,6 +49,22 @@ class ComplementTests(unittest.TestCase):
             coordinates(np.eye(3), np.ones((3, 2)), 2)
         with self.assertRaises(ValueError):
             cosine(np.zeros((4, 3)), np.ones((4, 3)))
+
+    def test_historical_torch_batch_only_replaces_the_unused_suffix(self):
+        historical = np.arange(HISTORICAL_QUERY_COUNT) + 10_000
+        ids = {"calibration_query_ids": historical[:CAL].tolist(), "target_query_ids": list(TARGET_IDS)}
+        batch, target_rows = torch_query_batch(historical, ids)
+        self.assertEqual(len(batch), HISTORICAL_QUERY_COUNT)
+        self.assertEqual(batch[:target_rows.start], historical[:target_rows.start].tolist())
+        self.assertEqual(batch[target_rows], list(TARGET_IDS))
+        with self.assertRaises(ValueError):
+            torch_query_batch(historical[::-1], ids)
+
+    def test_reused_exact_identity_keeps_the_original_producer(self):
+        ids = {"freeze": "current", "slurm_job_id": 999, "target_query_ids": list(TARGET_IDS)}
+        result = exact_identity(ids)
+        self.assertEqual(result, {**ids, "freeze": EXACT_SOURCE_FREEZE, "slurm_job_id": EXACT_SOURCE_JOB})
+        self.assertEqual(ids["freeze"], "current")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
 from zoneinfo import ZoneInfo
 
@@ -27,7 +28,12 @@ GRAD_GRAM = BASE / "cheap/gram_query_grads.npy"
 CHEAP = BASE / "cheap/ekfac_1e-8.npy"
 FACTORS = BASE / "cheap/kron/ekfac/factors_ekfac"
 Y_PATHS = tuple(BASE / f"exact/Y_{i}_{i+10}.npy" for i in range(0, 50, 10))
+EXACT_SOURCE_JOB = 26628
+EXACT_SOURCE_FREEZE = "6d8344ab0fd355dea6b80c3ccf14685c6359f1f0"
+EXACT_SOURCE_SHA256 = "9e5f1a090cb8d3150fe6bf5021eb2c697f117454a01fda71c869507631311fc7"
+EXACT_SOURCE = RUNS / "complement" / str(EXACT_SOURCE_JOB) / "exact.npz"
 N = 50_000
+HISTORICAL_QUERY_COUNT = 400
 CAL = 50
 B = 10
 TARGET = np.arange(436, 448)
@@ -137,58 +143,45 @@ def relative_l2(actual, reference, axis=None):
     return np.linalg.norm(actual - reference, axis=axis) / denominator
 
 
-def normalized_rmse(actual, reference):
-    return float(np.sqrt(np.square(actual - reference).mean()) / max(float(np.std(reference)), 0.1))
-
-
 def metadata(archive, expected):
     require(json.loads(archive["identity"].item()) == expected, "Producer identity differs from the frozen panel")
 
 
-def produce_exact(run, cfg, ids):
-    import jax
-    import jax.numpy as jnp
-    from mf_core import ResNet9, Trainer, load_cifar
+def exact_identity(ids):
+    return {**ids, "freeze": EXACT_SOURCE_FREEZE, "slurm_job_id": EXACT_SOURCE_JOB}
 
-    device, = jax.devices()
-    require(device.platform == "gpu" and "H200" in device.device_kind, "Exact replay requires the designated H200")
-    xtr, labels, xte, yte = load_cifar(cfg["n_train"])
-    trainer = Trainer(ResNet9(cfg["width"]), xtr, labels, cfg["hp"])
-    weights = jnp.ones(N, dtype=jnp.float32)
-    all_queries = [*ids["calibration_query_ids"], *ids["target_query_ids"]]
-    images, y = jnp.asarray(xte[all_queries]), jnp.asarray(yte[all_queries])
-    keep = cfg["ckpt_every"]
-    result, checkpoints = trainer.train(weights, ids["train_seed"], keep_every=keep)
-    params, _, buffers = result
-    with np.load(CHECKPOINT, allow_pickle=False) as previous:
-        tree = [{n: {k: jnp.asarray(previous[f"{kind}.{n}.{k}"]) for k in leaves}
-                 for n, leaves in prototype.items()} for kind, prototype in (("p", params), ("b", buffers))]
-        old_losses = finite(previous["query_loss"], (400,), "old losses")[:CAL]
-    reference = np.asarray(trainer.query_losses(result, images, y), dtype=np.float64)
-    cal_error = normalized_rmse(reference[:CAL], old_losses)
-    old_flat = jax.tree_util.tree_leaves(tuple(tree))
-    new_flat = jax.tree_util.tree_leaves((params, buffers))
-    numerator = sum(float(jnp.vdot(a - b, a - b)) for a, b in zip(new_flat, old_flat, strict=True))
-    denominator = sum(float(jnp.vdot(a, a)) for a in old_flat)
-    state_error = float(np.sqrt(numerator / denominator))
-    require(0 <= cal_error < REPLAY_RMSE_MAX and 0 <= state_error <= TECHNICAL_REPLAY_TOL,
-            "Full-weight replay does not match the frozen seed-0 state")
-    arrays, losses = [], []
-    for start in range(0, len(TARGET), 6):
-        part = slice(CAL + start, CAL + start + 6)
-        exact, end_loss = trainer.metagrad(weights, ids["train_seed"], images[part], y[part],
-                                           keep, (result, checkpoints))
-        arrays.append(finite(exact.T.astype(np.float32), (N, 6), "new exact block"))
-        losses.append(finite(end_loss, (6,), "new checkpoint replay loss"))
-        print(f"Exact held-out block {start}:{start + 6} completed", flush=True)
-    replay_error = normalized_rmse(np.concatenate(losses), reference[CAL:])
-    require(0 <= replay_error < REPLAY_RMSE_MAX, "New exact reverse replay lost forward alignment")
-    with jax.default_matmul_precision("highest"):
-        orig_logits = np.asarray(trainer.m.apply(*tree, images, False)[0])
-    np.savez(run / "exact.npz", exact=np.column_stack(arrays), replay_error=replay_error,
-             old_calibration_error=cal_error, replayed_state_relative_l2=state_error,
-             frozen_highest_logits=finite(orig_logits, (len(all_queries), 10), "frozen logits"),
-             identity=json.dumps(ids, sort_keys=True))
+
+def check_exact_artifact(path, ids):
+    require(path.is_file() and not path.is_symlink() and sha(path) == EXACT_SOURCE_SHA256,
+            "Exact producer artifact does not match the frozen SHA")
+    with np.load(path, allow_pickle=False) as archive:
+        metadata(archive, exact_identity(ids))
+        finite(archive["exact"], (N, len(TARGET)), "existing exact target columns")
+        finite(archive["frozen_highest_logits"], (CAL + len(TARGET), 10), "existing frozen logits")
+        require(0 <= archive["old_calibration_error"].item() < REPLAY_RMSE_MAX
+                and 0 <= archive["replay_error"].item() < REPLAY_RMSE_MAX
+                and 0 <= archive["replayed_state_relative_l2"].item() <= TECHNICAL_REPLAY_TOL,
+                "Existing exact producer fails its original technical bounds")
+
+
+def reuse_exact(run, ids):
+    check_exact_artifact(EXACT_SOURCE, ids)
+    destination = run / "exact.npz"
+    with EXACT_SOURCE.open("rb") as source, destination.open("xb") as output:
+        shutil.copyfileobj(source, output)
+    check_exact_artifact(destination, ids)
+    print(f"Reused exact artifact from job {EXACT_SOURCE_JOB}: {EXACT_SOURCE_SHA256}", flush=True)
+
+
+def torch_query_batch(historical_ids, ids):
+    start = HISTORICAL_QUERY_COUNT - len(TARGET)
+    require(len(historical_ids) == HISTORICAL_QUERY_COUNT
+            and list(historical_ids[:CAL]) == ids["calibration_query_ids"],
+            "Historical query batch differs from the frozen calibration")
+    query_ids = [*historical_ids[:start], *ids["target_query_ids"]]
+    require(len(query_ids) == HISTORICAL_QUERY_COUNT and len(set(query_ids)) == len(query_ids),
+            "Padded query batch repeats or omits a row")
+    return query_ids, slice(start, HISTORICAL_QUERY_COUNT)
 
 
 def produce_cheap(run, cfg, ids):
@@ -199,7 +192,7 @@ def produce_cheap(run, cfg, ids):
     from kronfluence.arguments import ScoreArguments
     from kronfluence.task import Task
     from cheap_torch import Grads, load_model, to_t
-    from common import load_cifar
+    from common import load_cifar, query_indices
 
     require(torch.cuda.is_available(), "EK-FAC and full gradients require CUDA")
     archive = Path(os.environ["MULTIFID_KRON_ARCHIVE"]).resolve()
@@ -219,52 +212,54 @@ def produce_cheap(run, cfg, ids):
     model, stored = load_model(cfg["width"], CHECKPOINT)
     stored.close()
     xtr, labels, xte, yte = load_cifar(cfg["n_train"])
-    query_ids = [*ids["calibration_query_ids"], *ids["target_query_ids"]]
+    query_ids, target_rows = torch_query_batch(query_indices(cfg), ids)
     query_x = to_t(xte[query_ids])
     query_y = torch.as_tensor(yte[query_ids], dtype=torch.long)
+    check_exact_artifact(run / "exact.npz", ids)
     with np.load(run / "exact.npz", allow_pickle=False) as exact:
-        metadata(exact, ids)
         high_precision = exact["frozen_highest_logits"]
+    fidelity_rows = [*range(CAL), *range(target_rows.start, target_rows.stop)]
     with torch.no_grad():
-        estimate = model(query_x.cuda()).cpu().numpy()
+        estimate = model(query_x[fidelity_rows].cuda()).cpu().numpy()
     export_error = float(np.max(np.abs(estimate - high_precision)))
     require(0 <= export_error < ids["export_fidelity_limit"], "Frozen JAX/PyTorch export differs")
     gradient = Grads(model)
-    gradient_rows = torch.cat([gradient.flat("ce", query_x[i:i+8].cuda(), query_y[i:i+8].cuda()).detach()
-                               for i in range(0, len(query_ids), 8)])
-    cal, targets = gradient_rows[:CAL], gradient_rows[CAL:]
-    new_gram = (cal @ cal.T).cpu().numpy().astype(np.float64)
+    gradient_rows = gradient.flat("ce", query_x.cuda(), query_y.cuda())
+    gram = (gradient_rows @ gradient_rows.T).cpu().numpy()
+    new_gram = gram[:CAL, :CAL].astype(np.float64)
     old_gram = np.load(GRAD_GRAM, allow_pickle=False, mmap_mode="r")[:CAL, :CAL].astype(np.float64)
     gram_error = float(relative_l2(new_gram, old_gram))
+    print(f"Calibration Gram replay relative L2: {gram_error:.9g}", flush=True)
     require(gram_error <= TECHNICAL_REPLAY_TOL, "Calibration Gram replay differs")
-    cross_gram = (cal @ targets.T).cpu().numpy().astype(np.float64)
-    del gradient_rows, gradient, cal, targets
+    cross_gram = gram[:CAL, target_rows].astype(np.float64)
+    del gradient_rows, gradient
     torch.cuda.empty_cache()
 
     task = CrossEntropy()
-    output = run / "kron"
+    output = Path(os.environ["MULTIFID_KRON_OUTPUT"])
     scorer = Analyzer(analysis_name="ekfac", model=prepare_model(model, task), task=task, output_dir=str(output))
     factor_link = scorer.factors_output_dir(factors_name="ekfac")
     factor_link.parent.mkdir(parents=True, exist_ok=True)
     factor_link.symlink_to(FACTORS, target_is_directory=True)
-    keep = [*range(REPLAY), *range(CAL, len(query_ids))]
     train = torch.utils.data.TensorDataset(to_t(xtr), torch.tensor(labels, dtype=torch.long))
-    query = torch.utils.data.TensorDataset(query_x[keep], query_y[keep])
+    query = torch.utils.data.TensorDataset(query_x, query_y)
     scorer.compute_pairwise_scores(
         scores_name="ekfac_1e-8", factors_name="ekfac", train_dataset=train, query_dataset=query,
-        per_device_query_batch_size=len(keep), per_device_train_batch_size=256,
+        per_device_query_batch_size=HISTORICAL_QUERY_COUNT, per_device_train_batch_size=256,
         score_args=ScoreArguments(damping_factor=DAMPING), overwrite_output_dir=False,
     )
     cheap = -scorer.load_pairwise_scores("ekfac_1e-8")["all_modules"].float().cpu().numpy().T
-    finite(cheap, (N, len(keep)), "EK-FAC columns")
+    finite(cheap, (N, HISTORICAL_QUERY_COUNT), "EK-FAC columns")
     old = np.load(CHEAP, allow_pickle=False, mmap_mode="r")
     err = relative_l2(cheap[:, :REPLAY].astype(np.float64), old[:, :REPLAY].astype(np.float64), axis=0)
-    require(np.max(err) <= TECHNICAL_REPLAY_TOL, "Historical EK-FAC factors did not reproduce the frozen baseline")
+    ekfac_error = float(np.max(err))
+    print(f"EK-FAC calibration replay max relative L2: {ekfac_error:.9g}", flush=True)
+    require(ekfac_error <= TECHNICAL_REPLAY_TOL, "Historical EK-FAC factors did not reproduce the frozen baseline")
     for name in FACTORS.iterdir():
         require(sha(name) == ids["input_sha256"][str(name)], "Source factors changed during scoring")
-    np.savez(run / "cheap.npz", cheap=cheap[:, REPLAY:], cross_gram=cross_gram, gram_relative_l2=gram_error,
-             ekfac_replay_relative_l2_max=float(np.max(err)), export_max_abs=export_error,
-             exact_sha256=sha(run / "exact.npz"), identity=json.dumps(ids, sort_keys=True))
+    np.savez(run / "cheap.npz", cheap=cheap[:, target_rows], cross_gram=cross_gram, gram_relative_l2=gram_error,
+             ekfac_replay_relative_l2_max=ekfac_error, export_max_abs=export_error, exact_sha256=EXACT_SOURCE_SHA256,
+             identity=json.dumps(ids, sort_keys=True))
 
 
 def coordinates(gram, cross, budget):
@@ -327,9 +322,9 @@ def score(run, ids):
     ycal = np.column_stack([np.load(p, allow_pickle=False) for p in Y_PATHS]).astype(np.float64)
     ccal = np.load(CHEAP, allow_pickle=False, mmap_mode="r")[:, :CAL].astype(np.float64)
     g = np.load(GRAD_GRAM, allow_pickle=False, mmap_mode="r")[:CAL, :CAL].astype(np.float64)
+    check_exact_artifact(run / "exact.npz", ids)
     artifacts = {name: sha(run / name) for name in ("exact.npz", "cheap.npz")}
     with np.load(run / "exact.npz", allow_pickle=False) as a, np.load(run / "cheap.npz", allow_pickle=False) as c:
-        metadata(a, ids)
         metadata(c, ids)
         require(c["exact_sha256"].item() == artifacts["exact.npz"], "EK-FAC receipt points to a different replay")
         technical = {key: float(z[key].item()) for z, fields in (
@@ -347,6 +342,8 @@ def score(run, ids):
         stats = summarize(*data)
     require(all(sha(run / name) == digest for name, digest in artifacts.items()), "Producer artifacts changed")
     receipt = {"identity": ids, "artifact_sha256": artifacts, "technical": technical, "metrics": stats,
+               "exact_source": {"slurm_job_id": EXACT_SOURCE_JOB, "freeze": EXACT_SOURCE_FREEZE,
+                                "sha256": EXACT_SOURCE_SHA256},
                "exploratory_only": True,
                "completed_at_taipei": datetime.now(ZoneInfo("Asia/Taipei")).isoformat(timespec="seconds")}
     pending = run / "summary.partial"
@@ -359,12 +356,13 @@ def score(run, ids):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("preflight", "exact", "cheap", "score"))
+    parser.add_argument("phase", choices=("preflight", "reuse-exact", "cheap", "score"))
     parser.add_argument("--freeze")
     parser.add_argument("--run", type=Path)
     args = parser.parse_args()
     cfg, versions, ids = check_inputs()
     if args.phase == "preflight":
+        check_exact_artifact(EXACT_SOURCE, ids)
         print(json.dumps(ids, sort_keys=True))
         return
     job = os.environ.get("SLURM_JOB_ID", "")
@@ -372,12 +370,10 @@ def main():
     require(re.fullmatch(r"[1-9][0-9]*", job) and re.fullmatch(r"[a-f0-9]{40}", args.freeze or "")
             and args.run == expected, "Use the frozen Slurm launcher for every producer")
     ids |= {"freeze": args.freeze, "slurm_job_id": int(job)}
-    if args.phase in ("exact", "cheap"):
-        package = "jax" if args.phase == "exact" else "torch"
-        require(version(package) == versions[package], f"Unexpected {package} version")
-    if args.phase == "exact":
-        produce_exact(args.run, cfg, ids)
+    if args.phase == "reuse-exact":
+        reuse_exact(args.run, ids)
     elif args.phase == "cheap":
+        require(version("torch") == versions["torch"], "Unexpected torch version")
         produce_cheap(args.run, cfg, ids)
     else:
         score(args.run, ids)
