@@ -148,3 +148,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 14:54 submit 26678 rl-sparse-distill 固定128道全新數學題單一token局部分叉；Astra已核對限縮，依賴同凍結合成試跑26677 1a80f08
 [codex] 2026-11-15 14:56 submit 26679 compositional-retrieval 123獨立左右群、246查詢各4正4反全排行；14測試、984 JPEG封存收據及Astra方法核對通過 a84de2f
 [codex] 2026-11-15 15:30 submit 26684 fallible-verifier 只在原250暖機題比較Base加長與短提示，原雙端上下文和嚴格解析；六測試、封存CPU預檢及Astra方法核對通過 bc762a1
+[codex] 2026-11-15 15:53 submit 26703 multifidelity-attribution 固定Exact/EK-FAC在64個新遮罩的seed0/7 LDS轉移，七測試、封存預檢及Astra核對通過 a4c1ce1
+[codex] 2026-11-15 15:53 submit 26704 fallible-verifier 250暖機題指令模型替代Base，合計1,000候選之原解析與雙端長度；九測試、封存預檢及Astra核對通過 dbc60ce
+[codex] 2026-11-15 15:57 submit 26707 fallible-verifier 26704暖機技術資格通過；正式新ASDiv-A 250/747、雙映射與原省費風險門檻，十測試與封存CPU預檢通過 885ac70

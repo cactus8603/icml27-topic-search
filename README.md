@@ -11,12 +11,12 @@
 | [多條件檢索](#多條件檢索) | Claude 做第一階段與第二個探針 | Codex 完成固定前 50 名與多正例左右關係四臂，Astra 複核 | 保留 CORE 強基線。新增排名方法須在完整多正例候選組獨立驗證 |
 | [條件擴散的兩個時鐘](#條件擴散的兩個時鐘) | Claude 做第一週訓練與評估 | Codex 完成正式評估、唯一本數與條件資訊對照，Astra 複核 | 若要外推機制，依逐題報告決定是否更換母體重驗 |
 | [Inoculation 防禦漏出預測 Λ](#inoculation-防禦漏出預測-λ) | Claude 做初版 Phase A；Codex 在交接前做小步長診斷 | Codex 完成全樣本離線語言對照與原評分的 Batch 離線轉接 | 正式重現待指定模型的 600 筆原生評分 |
-| [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成獨立種子、補空間對照與新遮罩 LDS | 保留固定 EK-FAC 基線，續做混合前先提出新的可驗證規則 |
+| [多保真度資料歸因](#多保真度資料歸因) | Claude 建立第 0 階段訓練、重訓與精確歸因流程 | Codex 完成獨立種子、補空間對照與新遮罩 LDS | `26703` 用新遮罩驗固定精確歸因相對 EK-FAC 的跨軌跡優勢 |
 | [Neural Chameleons 防禦](#neural-chameleons-防禦) | Claude 實作判準、完成第一次激活抽取 | Codex 完成公開探測器與固定門檻的乾淨標籤對照 | 等歷史選樣、合併探測器與 checkpoint 對應 |
 | [RL 稀疏決策蒸餾](#rl-稀疏決策蒸餾) | Claude 實作判準並送出配對 A | Codex 完成短預算截斷對照、公開 32K 交叉重播及單 token 診斷，Astra 複核 | 正式短預算仍需截斷可比的配對，單 token 收益的停止行為待分離 |
 | [文生圖罕見失敗](#文生圖罕見失敗) | Claude 實作判準、吞吐測試與篩選閘門 | Codex 完成尾端代理、同分次鍵與偵測器資源診斷 | `26663` 正以原種子重驗 CLIP 修復。Stage 1 待前置證據定案 |
 | [大型平行解碼提交集合](#大型平行解碼提交集合) | Codex 深查並實作 LLaDA 先導 | Codex 完成第二輪與零額外 forward 的新題測試 | 暫停此版規則，保留固定候選池上限和成本作參照 |
-| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K 正式留出、策略上限、GSM1k 複驗及暖機配置比較，Astra 複核 | 已備妥 ASDiv-A 新面板。先找可達金標覆蓋規格的作答器，再驗共同誤收與等風險省費 |
+| [強驗證器與少量金標](#強驗證器與少量金標) | Codex 深查並用公開資料做 CPU 重播 | Codex 完成 GSM8K 正式留出、策略上限、GSM1k 複驗及暖機配置比較，Astra 複核 | 指令作答器通過暖機資格，`26707` 用 ASDiv-A 新面板驗共同誤收、條件訊號與等風險省費 |
 | [Attention gate × optimizer](#attention-gate--optimizer) | Codex 深查並實作強基線先導 | Codex 完成人工壓力及正常排程對照，Astra 複核 | `26673`／`26674` 用新種子的加密探針驗正常排程的事件覆蓋、寫入訊號與局部回收 |
 
 [逐題進度與結果](codex/reports/2026-11-15-topic-status-codex.md) · [兩個時鐘、平行解碼、檢索正式複核](codex/reports/2026-11-15-three-frozen-readbacks-codex.md) · [共同判準](reports/2026-11-14-60-phenomenon-signal-headroom-criteria.md) · [Slurm 提交紀錄](killtests/SUBMITTED.log)
