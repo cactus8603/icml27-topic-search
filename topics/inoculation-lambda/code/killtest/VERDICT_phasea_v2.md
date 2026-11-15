@@ -9,8 +9,8 @@
 | 合併斜率 | 0.9999908264 | 描述 |
 | 西語 | Pearson 0.9999999731，斜率 1.0001722713 | 描述 |
 
-所有擾動符合 0.01 步長上限，七份輸出有相同的作業與輸入憑證。已核對凍結啟動腳本、Qwen 模型快照及各 PPS 向量 SHA-256。原始 JSON 的未執行外部參考含有 `NaN`，嚴格 JSON 讀取器需要略過或轉換這些描述欄位。有限差分欄位均為有限值。
+所有擾動符合 0.01 步長上限，七份輸出有相同的作業與輸入憑證。已核對凍結啟動腳本、Qwen 模型快照及各 PPS 向量 SHA-256。公開 JSON 的未執行外部參考用 `null` 表示。來源憑證記載原始檔案的雜湊，有限差分數字維持原值。
 
 這次確認等權 IP 的單步數值一致性。Phase B 的訓練後漏出、排序訊號及與既有預測量的差距仍待測量。原排程已跑完的參考工作使用舊版估計，維持描述用途。
 
-[獨立跑次的機械輸出](results/phasea_v2/gate-d7e8421/aggregate_phaseA_v2_gate.json) · [預登記](PREREG.md)
+[獨立跑次的機械輸出](results/phasea_v2/gate-d7e8421/aggregate_phaseA_v2_gate.json) · [來源憑證](results/phasea_v2/gate-d7e8421/provenance.json) · [預登記](PREREG.md)

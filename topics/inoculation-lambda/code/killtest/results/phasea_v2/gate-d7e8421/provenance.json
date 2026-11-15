@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "job": {
+    "id": "26397",
+    "name": "lam_phasea_v2",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "01:32:03"
+  },
+  "run_id": "gate-d7e8421",
+  "freeze_commit": "d7e84211ff5ca23261a13b084b7c3bd2da6668d6",
+  "independent_review_commit": "ca8252971d720586b8426cd49ffc0290606293e5",
+  "criteria_sha256": "188d6f4c0f842dd6565c45d0e03df0e26ff50643cedf72a6be3f1979851554e4",
+  "launcher_sha256": "4617677d526be9701b2e8071b58ee2a606760cefba034082f9c53676221c8b39",
+  "original_artifacts_sha256": {
+    "aggregate_phaseA_v2_gate.json": "8ad3448ae3f0bb9e0e1beb4c3569fe48f01f42ac00db6859da148bdb8d854bdf",
+    "run_v2.json": "2d315659265316e1bb9267b9b493985056eac57ea18eb32d8ca77c393e48aed7",
+    "inputs_v2.json": "7895e22f65aa18b8b808649d992f4f8437790f5e7e5270d84f4b89b3db140326"
+  },
+  "published": {
+    "file": "aggregate_phaseA_v2_gate.json",
+    "sha256": "9203c382b827fc1611855112171cfaed5a36a800234932deb495f5dc0b05e683",
+    "serialization": "Strict JSON. Non-finite values of unexecuted external references are represented by null.",
+    "nonfinite_to_null": [
+      "reference_only.grant.G1_table13_retained_fraction.rho",
+      "reference_only.pg_chunks.A_ratio_pooled_bottom_top.rho",
+      "reference_only.pg_chunks.A_rawLambdaOOD_pooled.rho"
+    ]
+  }
+}

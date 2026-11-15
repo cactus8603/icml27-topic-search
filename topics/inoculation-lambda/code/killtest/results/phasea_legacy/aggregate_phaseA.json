@@ -1,0 +1,102 @@
+{
+ "criteria_version": "2026-11-14-b",
+ "gate1": {
+  "status": "PASS",
+  "pearson_pooled": 0.9999999960618055,
+  "per_config": {
+   "grant_evil_qwen7b_fd": 0.9999999996796638,
+   "grant_sycophantic_qwen7b_fd": 0.9999999880675026,
+   "grant_hallucinating_qwen7b_fd": 0.9999999996873593,
+   "grant_pirate_qwen7b_fd": 0.9999999989683392,
+   "grant_spanish_qwen7b_fd": 0.9999999609688008,
+   "grant_allcaps_qwen7b_fd": 0.9999999690136482,
+   "grant_optimistic_qwen7b_fd": 0.9999999998570533
+  },
+  "slope_true_on_pred": 0.9999879388554628,
+  "n": 34,
+  "threshold": 0.9,
+  "descriptive": {
+   "per_trait": {
+    "grant_evil_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999996796638,
+     "slope_true_on_pred": 0.9999594185748242,
+     "min_abs_pred_dtau": 0.006063229421075443
+    },
+    "grant_sycophantic_qwen7b_fd": {
+     "n": 16,
+     "pearson": 0.9999999880675026,
+     "slope_true_on_pred": 1.0000051580055187,
+     "min_abs_pred_dtau": 0.007630161834840399
+    },
+    "grant_hallucinating_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999996873593,
+     "slope_true_on_pred": 0.9999232636679161,
+     "min_abs_pred_dtau": 0.007798395175872044
+    },
+    "grant_pirate_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999989683392,
+     "slope_true_on_pred": 0.9999877679780171,
+     "min_abs_pred_dtau": 0.0004580985806414698
+    },
+    "grant_spanish_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999609688008,
+     "slope_true_on_pred": 1.0001671695894978,
+     "min_abs_pred_dtau": 4.62869947331842e-05
+    },
+    "grant_allcaps_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999690136482,
+     "slope_true_on_pred": 0.9995792583648191,
+     "min_abs_pred_dtau": 0.0034677545412492823
+    },
+    "grant_optimistic_qwen7b_fd": {
+     "n": 3,
+     "pearson": 0.9999999998570533,
+     "slope_true_on_pred": 0.9999348230323248,
+     "min_abs_pred_dtau": 0.00030305399460404405
+    }
+   },
+   "min_abs_pred_dtau_all": 4.62869947331842e-05,
+   "note": "\u53ea\u63cf\u8ff0\uff0c\u4e0d\u53c3\u8207\u9598\u9580 1 \u5224\u5b9a\uff08PASS/FAIL \u53ea\u770b pooled Pearson\uff09"
+  }
+ },
+ "reference_only": {
+  "grant": {
+   "G1_table13_retained_fraction": {
+    "rho": -0.020229827643539276,
+    "n": 14,
+    "skipped_lambda_none_nonpositive": []
+   },
+   "G2_table10_all_arms": {
+    "rho": 0.4241758241758242,
+    "n": 14
+   },
+   "G2_table10_nine_singles": {
+    "rho": 0.45,
+    "n": 9,
+    "baseline_g20_rho": 0.65,
+    "baseline_paper_reported": 0.65
+   }
+  },
+  "pg_chunks": {
+   "A_ratio_pooled_bottom_top": {
+    "rho": 0.6655001449214291,
+    "n_points": 12,
+    "n_cells": 6
+   },
+   "A_rawLambdaOOD_pooled": {
+    "rho": -0.7005264683383463
+   },
+   "direction_agreement": {
+    "k": 5,
+    "n": 6
+   },
+   "within_cell_depth_rho_median": -0.6,
+   "within_cell_depth_rho_note": "\u8ad6\u6587\uff1a49/50 \u689d\u66f2\u7dda\u659c\u7387\u5c0d\u6df1\u5ea6\u70ba\u8ca0\u79e9\u76f8\u95dc\uff1b\u6b64\u8655\u671f\u671b\u70ba\u8ca0"
+  }
+ }
+}

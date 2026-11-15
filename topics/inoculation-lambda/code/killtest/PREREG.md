@@ -148,3 +148,7 @@
 - 2026-11-14（閘門 1 於 GPU FAIL 後的程式修正，job 26261：pooled r=-0.579、n=34、斜率 -7.58；門檻 0.9 未動）。原因：有限差分的步長 eta 由 none 防禦校準到預測 Δτ=0.01 nats，對低 cos 的 trait（spanish none cos=0.16、optimistic 0.10，Λ 僅 0.14／0.07）得到很大的 eta（0.073／0.141），步長 eta·‖gL‖ 達 0.14–0.25（其餘 trait 僅 0.003–0.01）；spanish 的 pps_eps2 梯度範數為 none 的 14 倍（25.6 vs 1.89），步長 1.85，落入強非線性區（預測 -0.032，實測中央差分 +0.833），單點即把 pooled r 拉成負值。其餘 5 個 trait（evil、sycophantic、allcaps、pirate、hallucinating）預測與實測相符到 1–3 位有效數字，Λ 的實作與符號慣例無誤。修正：`compute_lambda.py` 的 `fd_apply` 加步長上限 `eta ← min(eta, fd_max_step/‖gL‖)`，`criteria.yaml` 新增 `gate1.fd_max_step: 0.01`（線性區信賴半徑，不是判準門檻；其餘 trait 的步長本來 ≤0.011 不受影響）。判定仍用全部 7 個 trait。
 - [codex] 2026-11-14 23:42：依使用者新原則與報告 60 §2、通用條文 G，在 Phase B 主判準結果產生前改用 §3 三項判定，並保留舊強訊號門檻與基線差為描述量。只以合成資料核對 Phase B，未讀取 Phase B 結果。Phase A 與 26333–26336 的判準、程式與排程沿用原版。
 - [codex] 2026-11-14 23:55：補 Phase B 獨立審核的三項資料檢查，統一三個 LoRA seed 的 Λ、以完整 L2 統計觸發 L3，以及允許原始 Λ 統計無法估計時依既定規則進入 L3。判準數字與 Phase A 未更動。
+
+- [codex] 2026-11-16 01:56（台北）為發布的獨立核對重讀 `results/phasea_v2/gate-d7e8421/aggregate_phaseA_v2_gate.json`、`run_v2.json` 及 `inputs_v2.json`。先核 26397、固定提交 `d7e8421` 和原始三檔 SHA-256，再比對既有判讀。
+- [codex] 2026-11-16 02:01（台北）為核對歷史來源，已讀備份 `dirty-files.tar` 中的舊版 `results/aggregate_phaseA.json` （SHA-256 `23d2a452a4db0ade99d091e67807c7ecb81d91383cfdfabacac79bdf02464213`）。已核 26336、當時記錄的 `cc05d75` 及同次文字輸出。獨立 v2 仍以作業 26397 為準。
+- [codex] 2026-11-16 02:02（台北）為發布舊版快照，已讀同一備份中的 `results/aggregate_phaseA.txt` 和 `results/aggregate_phaseA_gate1.txt`，比對原 26336 與 26333 作業文字輸出。

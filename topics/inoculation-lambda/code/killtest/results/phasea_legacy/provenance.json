@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "method": "Phase A v1 pooled-token estimator",
+  "jobs": [
+    {
+      "stage": "gate",
+      "id": "26333",
+      "recorded_runtime_git_head": "23e94b0b24e4aa0036c5354ecbfafb06eb448fd3",
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    },
+    {
+      "stage": "grant_reference",
+      "id": "26334",
+      "recorded_runtime_git_head": "cc05d7509047543182b282d99e2133578cf9fa9f",
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    },
+    {
+      "stage": "pg_reference",
+      "id": "26335",
+      "recorded_runtime_git_head": "cc05d7509047543182b282d99e2133578cf9fa9f",
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    },
+    {
+      "stage": "aggregate",
+      "id": "26336",
+      "recorded_runtime_git_head": "cc05d7509047543182b282d99e2133578cf9fa9f",
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    }
+  ],
+  "archive_sha256": "c9a8d659fb0bec870520e82d0760eb87a23180cc8c0ca625ca2cbdca94601b9d",
+  "archive_runlog_member_sha256": "d152aa3a491845c7acba66ea47f3524b1fbdd9b63c6ed9ef23006dee90b98d18",
+  "original_artifacts_sha256": {
+    "aggregate_phaseA.json": "23d2a452a4db0ade99d091e67807c7ecb81d91383cfdfabacac79bdf02464213",
+    "aggregate_phaseA.txt": "888a9cf100d5741a88e617ad6768a01d991f7b883c765cd82385b6b81fd2e8ec",
+    "aggregate_phaseA_gate1.txt": "d8bc9a4d9486dbf250c63cbd199ab59f4b7ee01c6ebbe9b3f1d053f9c1e8010b"
+  },
+  "published_artifacts_sha256": {
+    "aggregate_phaseA.json": "23d2a452a4db0ade99d091e67807c7ecb81d91383cfdfabacac79bdf02464213",
+    "aggregate_phaseA.txt": "888a9cf100d5741a88e617ad6768a01d991f7b883c765cd82385b6b81fd2e8ec",
+    "aggregate_phaseA_gate1.txt": "d8bc9a4d9486dbf250c63cbd199ab59f4b7ee01c6ebbe9b3f1d053f9c1e8010b"
+  },
+  "serialization": {
+    "json": "Original strict JSON bytes retained.",
+    "nonfinite_to_null": [],
+    "text": "Original bytes retained."
+  },
+  "source_checks": {
+    "aggregate_phaseA.txt": "Byte-identical to the 26336 stdout after its opening Git/job line.",
+    "aggregate_phaseA_gate1.txt": "Byte-identical to the final 17 lines of the 26333 stdout."
+  }
+}

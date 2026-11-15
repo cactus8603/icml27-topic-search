@@ -1,0 +1,96 @@
+{
+  "criteria_version": "2026-11-14-b",
+  "gate1": {
+    "status": "PASS",
+    "pearson_pooled": 0.9999999957569878,
+    "per_config": {
+      "grant_evil_qwen7b_fd": 0.9999999999407996,
+      "grant_sycophantic_qwen7b_fd": 0.999999985798033,
+      "grant_hallucinating_qwen7b_fd": 0.9999999999957582,
+      "grant_pirate_qwen7b_fd": 0.9999999989446202,
+      "grant_spanish_qwen7b_fd": 0.9999999730665298,
+      "grant_allcaps_qwen7b_fd": 0.9999999721725141,
+      "grant_optimistic_qwen7b_fd": 0.9999999983556063
+    },
+    "slope_true_on_pred": 0.9999908264077889,
+    "n": 34,
+    "threshold": 0.9,
+    "descriptive": {
+      "per_trait": {
+        "grant_evil_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999999407996,
+          "slope_true_on_pred": 0.9999574047681689,
+          "min_abs_pred_dtau": 0.006063273696570186
+        },
+        "grant_sycophantic_qwen7b_fd": {
+          "n": 16,
+          "pearson": 0.999999985798033,
+          "slope_true_on_pred": 0.9999864788230473,
+          "min_abs_pred_dtau": 0.007630161628111756
+        },
+        "grant_hallucinating_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999999957582,
+          "slope_true_on_pred": 0.9999319742769899,
+          "min_abs_pred_dtau": 0.007798394276121016
+        },
+        "grant_pirate_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999989446202,
+          "slope_true_on_pred": 0.9999915216119203,
+          "min_abs_pred_dtau": 0.00045747563400903396
+        },
+        "grant_spanish_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999730665298,
+          "slope_true_on_pred": 1.000172271301781,
+          "min_abs_pred_dtau": 4.671115242788945e-05
+        },
+        "grant_allcaps_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999721725141,
+          "slope_true_on_pred": 0.9995626576587496,
+          "min_abs_pred_dtau": 0.0034677562657551278
+        },
+        "grant_optimistic_qwen7b_fd": {
+          "n": 3,
+          "pearson": 0.9999999983556063,
+          "slope_true_on_pred": 0.9998904069743471,
+          "min_abs_pred_dtau": 0.00030282614058259793
+        }
+      },
+      "min_abs_pred_dtau_all": 4.671115242788945e-05,
+      "note": "只描述，不參與閘門 1 判定（PASS/FAIL 只看 pooled Pearson）"
+    }
+  },
+  "reference_only": {
+    "grant": {
+      "G1_table13_retained_fraction": {
+        "rho": null,
+        "n": 0,
+        "skipped_lambda_none_nonpositive": []
+      }
+    },
+    "pg_chunks": {
+      "A_ratio_pooled_bottom_top": {
+        "rho": null,
+        "n_points": 0,
+        "n_cells": 0
+      },
+      "A_rawLambdaOOD_pooled": {
+        "rho": null
+      },
+      "direction_agreement": {
+        "k": 0,
+        "n": 0
+      },
+      "within_cell_depth_rho_median": null,
+      "within_cell_depth_rho_note": "論文：49/50 條曲線斜率對深度為負秩相關；此處期望為負"
+    }
+  },
+  "estimator": "equal_prompt_token_fold_v2",
+  "reference_group": "gate",
+  "origin_gate_job": "26397",
+  "input_manifest_sha256": "7895e22f65aa18b8b808649d992f4f8437790f5e7e5270d84f4b89b3db140326"
+}
