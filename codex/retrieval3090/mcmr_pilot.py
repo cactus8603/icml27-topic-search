@@ -232,7 +232,7 @@ def build_panel(pilot, candidate_rows, receipt, images, *, verify_images=True, e
             "candidate_order": "existing fixed pilot manifest order"}
 
 
-def prepare(args, policy):
+def prepare(args, policy=None):
     data, images, out = safe(args.data), safe(args.images), safe(args.out)
     for name, expected in RAW_SHA.items():
         if sha(data / name) != expected:
@@ -255,10 +255,14 @@ def prepare(args, policy):
     panel["source_files"]["extraction.json"] = sha(images / "extraction.json")
     out.mkdir(parents=True, exist_ok=True)
     fixed_json(out / "panel.json", panel)
-    fixed_json(out / "policy.json", policy)
+    if policy is not None:
+        fixed_json(out / "policy.json", policy)
+    elif (out / "policy.json").exists():
+        raise ValueError("A method-independent index directory must not contain a policy")
     atomic_json(out / "prepare-status.json", {"stage": "prepared", "scope": SCOPE,
                 "candidates": len(panel["candidates"]), "queries": len(panel["queries"]),
-                "panel_sha256": sha(out / "panel.json"), "policy_sha256": sha(out / "policy.json"),
+                "panel_sha256": sha(out / "panel.json"),
+                "policy_sha256": sha(out / "policy.json") if policy is not None else None,
                 "clauses": {str(k): sum(len(q["clauses"]) == k for q in panel["queries"])
                             for k in sorted({len(q["clauses"]) for q in panel["queries"]})}})
     return panel
@@ -301,9 +305,9 @@ def script_sources(require_committed=False):
     return result
 
 
-def snapshots(config, policy, *, verify_weights=True):
+def snapshots(config, policy=None, *, verify_weights=True, required=None):
     hf = safe(os.environ.get("HF_HOME", ROOT / "hf_home"))
-    wanted = {"core_embed", "core_reranker"} | ({"cs_clip"} if policy["backbone"] == "cs_clip" else set())
+    wanted = required if required is not None else {"core_embed", "core_reranker"} | ({"cs_clip"} if policy["backbone"] == "cs_clip" else set())
     receipt_path = ROOT / "dl/retrieval3090/public-download-receipt.json"
     receipt = read_json(receipt_path) if verify_weights else {}
     paths = {}
@@ -520,14 +524,136 @@ def environment():
             return None
     if not torch.cuda.is_available():
         raise ValueError("GPU stages require an allocated CUDA device")
+    gpu = torch.cuda.get_device_name(0)
+    capability = list(torch.cuda.get_device_capability(0))
+    if "RTX 3090" not in gpu or capability != [8, 6]:
+        raise ValueError("This development index/cache is restricted to RTX 3090 capability 8.6")
+    drivers = sorted(set(line.strip() for line in subprocess.check_output(
+        ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"], text=True).splitlines() if line.strip()))
+    if len(drivers) != 1:
+        raise ValueError("A single verified NVIDIA driver version is required")
+    def sdpa_option(name):
+        getter = getattr(torch.backends.cuda, name, None)
+        return getter() if callable(getter) else None
     return {"python": sys.version, "torch": torch.__version__, "cuda": torch.version.cuda,
             "transformers": package("transformers"), "open_clip_torch": package("open_clip_torch"),
-            "numpy": np.__version__, "device": torch.cuda.get_device_name(0),
-            "capability": list(torch.cuda.get_device_capability(0)), "visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+            "torchvision": package("torchvision"), "Pillow": package("Pillow"), "tokenizers": package("tokenizers"),
+            "numpy": np.__version__, "device": gpu, "capability": capability,
+            "driver": drivers[0], "cudnn": torch.backends.cudnn.version(),
             "attention": "sdpa", "dtype": "bfloat16 CORE; float32 CS-CLIP",
             "matmul_allow_tf32": torch.backends.cuda.matmul.allow_tf32,
             "cudnn_allow_tf32": torch.backends.cudnn.allow_tf32,
-            "deterministic_algorithms": torch.are_deterministic_algorithms_enabled()}
+            "bf16_reduced_precision_reduction": torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction,
+            "sdpa_backends": {key: sdpa_option(key) for key in (
+                "flash_sdp_enabled", "math_sdp_enabled", "mem_efficient_sdp_enabled", "cudnn_sdp_enabled",
+                "fp16_bf16_reduction_math_sdp_allowed")},
+            "float32_matmul_precision": torch.get_float32_matmul_precision(),
+            "cudnn_benchmark": torch.backends.cudnn.benchmark, "cudnn_deterministic": torch.backends.cudnn.deterministic,
+            "deterministic_algorithms": torch.are_deterministic_algorithms_enabled(),
+            "actual_cpu_threads": {"intraop": torch.get_num_threads(), "interop": torch.get_num_interop_threads()},
+            "kernel_environment": {key: os.environ.get(key) for key in (
+                "CUBLAS_WORKSPACE_CONFIG", "NVIDIA_TF32_OVERRIDE", "CUDA_MODULE_LOADING", "CUDA_LAUNCH_BLOCKING",
+                "CUDA_DEVICE_MAX_CONNECTIONS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}}
+
+
+def placement():
+    """Recorded for scheduling/audit; same-model 3090 placements may share an index."""
+    import torch
+    return {"visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+            "logical_device": 0, "uuid": str(getattr(torch.cuda.get_device_properties(0), "uuid", "unavailable"))}
+
+
+def processor_metadata(processor):
+    image = processor.image_processor
+    return {"class": type(processor).__name__, "tokenizer_class": type(processor.tokenizer).__name__,
+            "padding_side": processor.tokenizer.padding_side, "image_class": type(image).__name__,
+            "image_backend": getattr(image, "backend", None),
+            "image_config": json.loads(json.dumps(image.to_dict(), default=str))}
+
+
+def index_identity(args, panel, config, snapshot, execution_environment, processor, sources):
+    """Everything that determines shared forward inputs/outputs, with no policy."""
+    return {"schema": "mcmr-core-shared-index-v1", "source": SOURCE, "official_CORE_code": CORE_CODE,
+            "sources": sources, "model_config_sha256": CONFIG_SHA, "model_revision": snapshot.name,
+            "panel_sha256": digest(panel),
+            "candidate_inputs_sha256": digest(panel["candidates"]),
+            "query_inputs_sha256": digest([q["text"] for q in panel["queries"]]),
+            "candidates": len(panel["candidates"]), "queries": len(panel["queries"]), "embedding_dim": 2048,
+            "candidate_system": config["core_embed"]["image_system"],
+            "query_system": config["core_embed"]["text_system"], "max_tokens": 4096,
+            "image_pixels": {k: v for k, v in config["core_embed"].items() if "pixels" in k},
+            "batch_sizes": {"joint_image": args.joint_batch, "text": config["batch_size"]["embed_text"]},
+            "processor": processor, "environment": execution_environment}
+
+
+def read_shared_index(directory, expected):
+    directory = safe(directory)
+    with (directory / "writer.lock").open("r") as lock:
+        fcntl.flock(lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        if (directory / "policy.json").exists():
+            raise ValueError("Shared index must be independent of a selected policy")
+        meta = read_json(directory / "index-meta.json")
+        if (meta.get("state") != "COMPLETE" or meta.get("identity") != expected
+                or meta.get("index_sha256") != sha(directory / "index.npz")):
+            raise ValueError("Shared index is incomplete or source/data/model/environment/batch differs")
+        with np.load(directory / "index.npz", allow_pickle=False) as arrays:
+            if set(arrays.files) != {"core_embed_image", "core_embed_full"}:
+                raise ValueError("Shared index may only contain policy-independent CORE vectors")
+            vectors = {key: np.array(arrays[key], copy=True) for key in arrays.files}
+        image = unit_vectors(vectors["core_embed_image"], expected["candidates"])
+        full = unit_vectors(vectors["core_embed_full"], expected["queries"])
+        if image.shape[1] != expected["embedding_dim"] or full.shape[1] != expected["embedding_dim"]:
+            raise ValueError("Shared index embedding dimensions differ")
+        return vectors, {"path": str(directory), "meta_sha256": sha(directory / "index-meta.json"),
+                         "index_sha256": meta["index_sha256"], "read_only_reuse": True}
+
+
+def run_index(args, panel):
+    """Encode only immutable candidate + baseline query vectors, without a policy."""
+    import torch
+    config = frozen_config()
+    execution_environment = environment()
+    paths = snapshots(config, required={"core_embed"})
+    sources = script_sources(require_committed=True)
+    frozen = frozen_module("mcmr_frozen_index_models", MODEL_PATH)
+    model = JointAdapter(frozen, "core_embed", paths["core_embed"], config)
+    expected = index_identity(args, panel, config, paths["core_embed"], execution_environment,
+                              processor_metadata(model.inner.processor), sources)
+    out, images = safe(args.out), safe(args.images)
+    cp = out / "index-checkpoints"
+    cp.mkdir(exist_ok=True)
+    fixed_json(cp / "provenance.json", expected)
+    helper = checkpoint_helpers()
+    def stage(name, items, batch, compute):
+        return helper.batches(cp / (name+".npy"), items, batch, compute,
+                              expected | {"stage": name, "items_sha256": digest(items)}, status=out/"progress.json")
+    def joint(rows):
+        from PIL import Image
+        inputs = []
+        for index in rows:
+            candidate = panel["candidates"][index]
+            with Image.open(images / candidate["image"]) as image:
+                inputs.append((candidate["text"], image.convert("RGB")))
+        return model.run(inputs)
+    began = monotonic()
+    image = stage("core_joint", list(range(len(panel["candidates"]))), args.joint_batch, joint)
+    full = stage("core_full", [q["text"] for q in panel["queries"]], config["batch_size"]["embed_text"], model.inner.encode)
+    unit_vectors(image, len(panel["candidates"]))
+    unit_vectors(full, len(panel["queries"]))
+    if image.shape[1] != 2048 or full.shape[1] != 2048:
+        raise ValueError("Frozen CORE index must have 2048-dimensional vectors")
+    del model
+    gc.collect(); torch.cuda.empty_cache()
+    pending = out / "index.partial.npz"
+    np.savez(pending, core_embed_image=image, core_embed_full=full)
+    pending.replace(out / "index.npz")
+    atomic_json(out / "index-meta.json", {"state": "COMPLETE", "identity": expected,
+                "scope": "Method-independent fixed MCMR pilot candidate joint index and baseline full-query vectors; no policy or research metric",
+                "index_sha256": sha(out / "index.npz"), "active_wall_seconds": monotonic()-began,
+                "placement": placement(),
+                "commit": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()})
+    atomic_json(out / "progress.json", {"stage": "index_complete", "candidates": len(panel["candidates"]),
+                                        "queries": len(panel["queries"]), "research_metrics": False})
 
 
 def run_gpu(args, panel, policy, *, smoke=False):
@@ -538,6 +664,18 @@ def run_gpu(args, panel, policy, *, smoke=False):
     paths = snapshots(config, policy)
     sources = script_sources(require_committed=True)
     out, images = safe(args.out), safe(args.images)
+    execution_environment = environment()
+    shared_vectors, shared_receipt = {}, None
+    if getattr(args, "index", None):
+        if smoke:
+            raise ValueError("Smoke must exercise the adapter directly; do not supply --index")
+        from transformers import AutoProcessor
+        processor = AutoProcessor.from_pretrained(paths["core_embed"], local_files_only=True, trust_remote_code=False)
+        processor.tokenizer.padding_side = "left"
+        expected = index_identity(args, panel, config, paths["core_embed"], execution_environment,
+                                  processor_metadata(processor), sources)
+        shared_vectors, shared_receipt = read_shared_index(args.index, expected)
+        del processor
     identity = {"schema": 1, "scope": SCOPE, "source": SOURCE, "official_CORE_code": CORE_CODE,
                 "commit": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
                 "sources": sources, "panel_sha256": sha(out / "panel.json"), "policy_sha256": sha(out / "policy.json"),
@@ -552,7 +690,7 @@ def run_gpu(args, panel, policy, *, smoke=False):
                             "batch_changes_from_COCO": {"joint_image": [config["batch_size"]["embed_image"], args.joint_batch],
                                                         "cross": [config["batch_size"]["cross_pair"], args.cross_batch]},
                             "CS_candidate_input": "image only; additional cheap index without metadata" if policy["backbone"] == "cs_clip" else None},
-                "environment": environment()}
+                "environment": execution_environment, "shared_index": shared_receipt}
     cp = out / ("smoke-checkpoints" if smoke else "checkpoints")
     cp.mkdir(exist_ok=True)
     fixed_json(cp / "provenance.json", identity)
@@ -569,22 +707,24 @@ def run_gpu(args, panel, policy, *, smoke=False):
     queries = [q["text"] for q in panel["queries"]]
     plain, condition_texts = text_table(panel, policy)
     index = list(range(min(2, len(panel["candidates"])))) if smoke else list(range(len(panel["candidates"])))
-    vectors = {}
+    vectors = shared_vectors
     began = monotonic()
-    model = JointAdapter(frozen, "core_embed", paths["core_embed"], config)
-    # Each compute call validates total image+text tokens before its forward.
-    vectors["core_embed_image"] = stage("core_joint", index, args.joint_batch,
-        lambda rows: model.run([(panel["candidates"][i]["text"], open_image(i)) for i in rows]))
     texts = queries[:2] if smoke else queries
-    vectors["core_embed_full"] = stage("core_full", texts, config["batch_size"]["embed_text"], model.inner.encode)
-    if policy["backbone"] == "core_embed" and policy["needs_conditions"]:
-        encoded = stage("core_condition", condition_texts[:2] if smoke else condition_texts,
-                        config["batch_size"]["embed_text"], model.inner.encode)
-        if not smoke and policy["needs_templates"]:
-            encoded = encoded.reshape(len(plain), 4, -1).mean(axis=1)
-        vectors["core_embed_condition"] = encoded
-    del model
-    gc.collect(); torch.cuda.empty_cache()
+    if not shared_vectors or (policy["backbone"] == "core_embed" and policy["needs_conditions"]):
+        model = JointAdapter(frozen, "core_embed", paths["core_embed"], config)
+        if not shared_vectors:
+            # Each compute call validates total image+text tokens before its forward.
+            vectors["core_embed_image"] = stage("core_joint", index, args.joint_batch,
+                lambda rows: model.run([(panel["candidates"][i]["text"], open_image(i)) for i in rows]))
+            vectors["core_embed_full"] = stage("core_full", texts, config["batch_size"]["embed_text"], model.inner.encode)
+        if policy["backbone"] == "core_embed" and policy["needs_conditions"]:
+            encoded = stage("core_condition", condition_texts[:2] if smoke else condition_texts,
+                            config["batch_size"]["embed_text"], model.inner.encode)
+            if not smoke and policy["needs_templates"]:
+                encoded = encoded.reshape(len(plain), 4, -1).mean(axis=1)
+            vectors["core_embed_condition"] = encoded
+        del model
+        gc.collect(); torch.cuda.empty_cache()
     if policy["backbone"] == "cs_clip":
         # Frozen ClipEncoder imports common lazily. Avoid mutating a live COCO module.
         previous = sys.modules.get("common")
@@ -627,12 +767,14 @@ def run_gpu(args, panel, policy, *, smoke=False):
     gc.collect(); torch.cuda.empty_cache()
     if smoke:
         atomic_json(out / "smoke.json", {"state": "PASS", "research_metrics": False, "pairs": len(pairs),
-                                       "unit_vectors": all(unit_vectors(v) is not None for v in vectors.values()), "identity": identity})
+                                       "unit_vectors": all(unit_vectors(v) is not None for v in vectors.values()),
+                                       "identity": identity, "placement": placement()})
         return
     pending = out / "cache.partial.npz"
     np.savez(pending, **vectors, cross=cross, pairs=np.asarray(pairs, dtype=np.int64))
     pending.replace(out / "cache.npz")
     atomic_json(out / "meta.json", {"state": "COMPLETE", "identity": identity,
+                                   "placement": placement(),
                                    "cache_sha256": sha(out / "cache.npz"), "offline_union_pairs": len(pairs),
                                    "active_wall_seconds": monotonic()-began,
                                    "cross_admission_dependency": False, "scope": SCOPE})
@@ -642,10 +784,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("data", "images", "out"):
         parser.add_argument("--" + name, required=True, type=Path)
-    parser.add_argument("--policy", required=True)
+    parser.add_argument("--policy")
     parser.add_argument("--depth", type=int, choices=(100, 200))
     parser.add_argument("--lcse-calibration", type=Path)
-    parser.add_argument("--stage", required=True, choices=("prepare", "smoke", "cache", "analyze"))
+    parser.add_argument("--stage", required=True, choices=("prepare", "index", "smoke", "cache", "analyze"))
+    parser.add_argument("--index", type=Path, help="Read-only reuse of a completed, exactly matching method-independent index")
     parser.add_argument("--joint-batch", type=int, default=1)
     parser.add_argument("--cross-batch", type=int, default=1)
     args = parser.parse_args()
@@ -653,13 +796,27 @@ def main():
         parser.error("Batch sizes must be positive and no larger than frozen COCO batches")
     for name in ("data", "images", "out"):
         setattr(args, name, safe(getattr(args, name)))
+    if args.index:
+        args.index = safe(args.index)
+        if args.index == args.out:
+            parser.error("Index and policy output must use separate directories")
+    if args.stage == "index":
+        if args.policy is not None or args.lcse_calibration is not None or args.index is not None or args.depth is not None:
+            parser.error("Method-independent index stage must not specify policy/calibration/depth/another index")
+    elif args.policy is None:
+        parser.error("This stage requires a frozen --policy")
     calibration = read_json(args.lcse_calibration) if args.lcse_calibration else None
-    policy = parse_policy(args.policy, args.depth, calibration)
+    policy = parse_policy(args.policy, args.depth, calibration) if args.policy is not None else None
     if args.out == args.data or args.out == args.images or args.out in args.images.parents or args.out in args.data.parents:
         parser.error("Output must have its own run directory, separate from source metadata/images")
     if args.lcse_calibration:
         policy["calibration_sha256"] = sha(args.lcse_calibration)
     with writer(args.out):
+        if args.stage == "index":
+            panel = prepare(args)
+            run_index(args, panel)
+            print(json.dumps({"stage": "index_complete", "out": str(args.out), "research_metrics": False}), flush=True)
+            return
         if args.stage == "prepare":
             prepare(args, policy)
             print(json.dumps(read_json(args.out / "prepare-status.json")), flush=True)

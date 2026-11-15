@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import sys
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -31,6 +32,60 @@ class FakeClock:
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_missing_platform_opt_in_preserves_original_replay_gate(self):
+        self.assertIsNone(B.validate_benchmark_context(Path("cache"), {"replay": {"state": "PASS"}}))
+        with self.assertRaisesRegex(ValueError, "must pass replay"):
+            B.validate_benchmark_context(Path("cache"), {"replay": {"state": "MISMATCH"}})
+        with self.assertRaisesRegex(ValueError, "together"):
+            B.validate_benchmark_context(Path("cache"), {"replay": {"state": "MISMATCH"}}, Path("plan"), None)
+
+    def test_platform_context_binds_runtime_supplements_and_resume_study(self):
+        environment = {"torch": "synthetic-runtime", "device": "synthetic-device"}
+        context = {"mode": "platform-relative-exploration", "formal_evidence": False,
+            "published_reproduction": {"state": "MISMATCH", "metrics": {"map_pp": 1.}},
+            "platform_consistency": "VALID_LOCAL", "plan_sha256": "a" * 64,
+            "receipt_sha256": "b" * 64, "environment": environment,
+            "baseline": {"map_pp": 1.}, "supplementary_artifacts": [{"sha256": "c" * 64}]}
+        called = []
+        def validate(cache, plan, receipt, *, supplementary_paths):
+            called.append((cache, plan, receipt, supplementary_paths))
+            return context
+        validator = SimpleNamespace(validate_context=validate, runtime_environment=lambda: dict(environment))
+        meta = {"replay": {"state": "MISMATCH"}}
+        with patch.dict(sys.modules, {"platform_context": validator}):
+            actual = B.validate_benchmark_context(Path("cache"), meta, Path("plan"), Path("receipt"),
+                supplementary_paths=(Path("lcse.npz"), Path("calibration.json")))
+        self.assertIs(actual, context)
+        self.assertEqual(called[0][3], (Path("lcse.npz").resolve(), Path("calibration.json").resolve()))
+        self.assertEqual(meta["replay"]["state"], "MISMATCH")
+        study = B.study_identity(actual)
+        self.assertFalse(study["formal_evidence"])
+        self.assertEqual(study["platform_context"], context)
+        self.assertEqual(study["platform_plan_sha256"], "a" * 64)
+        self.assertEqual(study["platform_receipt_sha256"], "b" * 64)
+        self.assertIn("local-relative", study["comparison_scope"])
+        directory = Path(__file__).resolve().parents[2] / "hf_home/tmp"
+        directory.mkdir(parents=True, exist_ok=True)
+        with TemporaryDirectory(dir=directory) as temporary:
+            B.Store(temporary, {"study": study})
+            changed = dict(study, platform_receipt_sha256="d" * 64)
+            with self.assertRaisesRegex(ValueError, "provenance"):
+                B.Store(temporary, {"study": changed})
+
+    def test_platform_runtime_mismatch_or_absent_validation_cannot_bypass_gate(self):
+        context = {"mode": "platform-relative-exploration", "formal_evidence": False,
+            "platform_consistency": "VALID_LOCAL", "published_reproduction": {"state": "MISMATCH"},
+            "environment": {"torch": "planned"}}
+        validator = SimpleNamespace(validate_context=lambda *a, **k: context,
+                                    runtime_environment=lambda: {"torch": "different"})
+        with patch.dict(sys.modules, {"platform_context": validator}):
+            with self.assertRaisesRegex(ValueError, "runtime"):
+                B.validate_benchmark_context(Path("cache"), {"replay": {"state": "MISMATCH"}}, Path("plan"), Path("receipt"))
+        validator.validate_context = lambda *a, **k: None
+        with patch.dict(sys.modules, {"platform_context": validator}):
+            with self.assertRaisesRegex(ValueError, "must pass replay"):
+                B.validate_benchmark_context(Path("cache"), {"replay": {"state": "MISMATCH"}}, Path("plan"), Path("receipt"))
+
     def test_label_free_vector_alignment_rejects_bad_indexes_and_scaling(self):
         cache, index = synthetic()
         panel = {"ids": list(range(220)), "queries": [{}] * 10,

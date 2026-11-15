@@ -17,7 +17,7 @@ elif entry in {'test', 'analyze', 'analyze2', 'smoke', 'diagnostics'}:
               'smoke': 'smoke.py', 'diagnostics': 'diagnostics.py'}[entry]
     sys.argv = [str(HERE / script), *args]
     runpy.run_path(sys.argv[0], run_name='__main__')
-elif entry in {'preflight', 'cache', 'cache2', 'supplement', 'benchmark', 'parity'}:
+elif entry in {'preflight', 'cache', 'cache2', 'supplement', 'benchmark', 'parity', 'platform-cache'}:
     import cache_scores as cache
     score = cache.score
     frozen_preflight = score.preflight
@@ -60,7 +60,8 @@ elif entry in {'preflight', 'cache', 'cache2', 'supplement', 'benchmark', 'parit
         cache.main()
     else:
         script = {'cache2': 'cache_v2.py', 'supplement': 'supplement.py',
-                  'benchmark': 'benchmark.py', 'parity': 'parity_probe.py'}[entry]
+                  'benchmark': 'benchmark.py', 'parity': 'parity_probe.py',
+                  'platform-cache': 'platform_cache.py'}[entry]
         sys.argv = [str(HERE / script), *args]
         runpy.run_path(sys.argv[0], run_name='__main__')
 else:

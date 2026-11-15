@@ -280,6 +280,48 @@ def driver_version():
         return None
 
 
+def validate_benchmark_context(cache_dir, meta, platform_plan=None, platform_receipt=None,
+                               *, supplementary_paths=()):
+    """Explicit opt-in to a separately committed local-platform cost study.
+
+    This never changes the original replay result. Without the paired opt-in,
+    the historical PASS requirement remains exactly as before.
+    """
+    if bool(platform_plan) != bool(platform_receipt):
+        raise ValueError("Platform plan and consistency receipt must be supplied together")
+    context = None
+    if platform_plan is not None:
+        from platform_context import validate_context, runtime_environment
+        context = validate_context(safe(cache_dir), safe(platform_plan), safe(platform_receipt),
+            supplementary_paths=tuple(safe(path) for path in supplementary_paths))
+        if context is not None:
+            if (context.get("mode") != "platform-relative-exploration"
+                    or context.get("formal_evidence") is not False
+                    or context.get("platform_consistency") != "VALID_LOCAL"
+                    or context.get("published_reproduction", {}).get("state") != "MISMATCH"
+                    or meta.get("replay", {}).get("state") != "MISMATCH"):
+                raise ValueError("Platform cost context must retain the original reproduction MISMATCH")
+            if runtime_environment() != context["environment"]:
+                raise ValueError("Current benchmark runtime differs from the committed platform environment")
+    if context is None and meta.get("replay", {}).get("state") != "PASS":
+        raise ValueError("Cache baseline must pass replay before cost benchmarking without a validated platform opt-in")
+    return context
+
+
+def study_identity(context):
+    """JSON fields shared by the resume identity and final cost report."""
+    if context is None:
+        return {"mode": "published-replay-gated-cost-benchmark", "formal_evidence": False,
+                "published_reproduction": {"state": "PASS"}, "comparison_scope": "component costs only"}
+    return {"mode": context["mode"], "formal_evidence": False,
+            "published_reproduction": context["published_reproduction"],
+            "comparison_scope": "local-relative; original published reproduction remains MISMATCH",
+            "platform_consistency": context["platform_consistency"],
+            "platform_plan_sha256": context["plan_sha256"],
+            "platform_receipt_sha256": context["receipt_sha256"],
+            "platform_context": dict(context)}
+
+
 def main():
     import torch
     import cache_scores as legacy
@@ -290,10 +332,14 @@ def main():
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--lcse-vectors", type=Path)
     parser.add_argument("--lcse-calibration", type=Path)
+    parser.add_argument("--platform-plan", type=Path)
+    parser.add_argument("--platform-receipt", type=Path)
     parser.add_argument("--policy")
     args = parser.parse_args()
     if bool(args.lcse_vectors) != bool(args.lcse_calibration):
         parser.error("The LCSE vectors and calibration artifact must be provided together")
+    if bool(args.platform_plan) != bool(args.platform_receipt):
+        parser.error("--platform-plan and --platform-receipt must be supplied together")
     cache_dir, out = safe(args.cache), safe(args.out)
     out.mkdir(parents=True, exist_ok=True)
     with (out / "writer.lock").open("a+") as lock:
@@ -302,8 +348,9 @@ def main():
         frozen_panel, config, snapshots, context = legacy.score.preflight()
         panel = json.loads((cache_dir / "panel.json").read_text())
         meta = json.loads((cache_dir / "meta.json").read_text())
-        if meta.get("replay", {}).get("state") != "PASS":
-            raise ValueError("Cache baseline must pass replay before cost benchmarking")
+        platform_context = validate_benchmark_context(cache_dir, meta, args.platform_plan, args.platform_receipt,
+            supplementary_paths=tuple(path for path in (args.lcse_vectors, args.lcse_calibration) if path is not None))
+        study = study_identity(platform_context)
         if (panel["ids"] != frozen_panel["ids"]
                 or [(q["text"], q["key"]) for q in panel["queries"]] != [(q["text"], q["key"]) for q in frozen_panel["queries"]]
                 or meta.get("revisions") != context["revisions"]
@@ -345,7 +392,8 @@ def main():
         identity = {"seed": SEED, "repetitions": REPETITIONS, "sampled_queries": sampled,
             "inputs": inputs, "environment": environment, "config": config,
             "source": os.environ["DEV_SOURCE"], "freeze": os.environ["DEV_FREEZE"],
-            "commit": os.environ["DEV_COMMIT"], "dirty": os.environ["DEV_DIRTY"], "policy": args.policy}
+            "commit": os.environ["DEV_COMMIT"], "dirty": os.environ["DEV_DIRTY"], "policy": args.policy,
+            "study": study}
         if identity["dirty"] != "0":
             raise ValueError("Cost measurements require committed source")
         store = Store(out, identity)
@@ -426,6 +474,7 @@ def main():
             gc.collect()
             torch.cuda.empty_cache()
         report = {"schema": 1, "scope": "component cost measurements only; no retrieval effectiveness evaluated",
+            "study": study, "formal_evidence": False, "published_reproduction": study["published_reproduction"],
             "identity": identity, "model_loads_and_startup": store.data["loads"], "measurements": store.data["records"],
             "indexed_storage_bytes": {name: int(value.nbytes) for name, value in cache.items()},
             "boundary": "Fresh encoding is measured separately; CPU search/admission and reranking retain frozen cached-vector candidates. "

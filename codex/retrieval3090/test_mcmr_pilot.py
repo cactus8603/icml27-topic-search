@@ -277,6 +277,7 @@ class MCMRPilotTests(unittest.TestCase):
             names = {name: Path(name)/("a"*40) for name in ("core_embed", "core_reranker")}
             with patch.dict(sys.modules, {"torch": fake_torch}), patch.object(M, "JointAdapter", FakeAdapter), \
                  patch.object(M, "snapshots", return_value=names), patch.object(M, "environment", return_value={"synthetic": True}), \
+                 patch.object(M, "placement", return_value={"synthetic": True}), \
                  patch.object(M, "script_sources", return_value={"synthetic": "b"*64}):
                 M.run_gpu(args, panel, policy)
                 first_count = len(calls)
@@ -290,6 +291,132 @@ class MCMRPilotTests(unittest.TestCase):
                 report = M.analyze_arrays(panel, arrays, policy, arrays["pairs"].tolist(), arrays["cross"], draws=20)
             self.assertEqual(report["queries"], 2)
             self.assertLessEqual(report["cost"]["offline_union_pairs"], 200)
+
+    def shared_fixture(self, directory):
+        panel, vectors = synthetic(q=2)
+        expected = M.index_identity(SimpleNamespace(joint_batch=1), panel, M.frozen_config(), Path("a"*40),
+                                    {"torch": "synthetic", "driver": "synthetic"}, {"class": "synthetic"},
+                                    {"mcmr_pilot.py": "b"*64})
+        expected["embedding_dim"] = 16
+        with M.writer(directory):
+            np.savez(directory/"index.npz", core_embed_image=vectors["core_embed_image"], core_embed_full=vectors["core_embed_full"])
+            M.atomic_json(directory/"index-meta.json", {"state": "COMPLETE", "identity": expected,
+                          "index_sha256": M.sha(directory/"index.npz"), "placement": {"visible_devices": "0", "uuid": "synthetic-card-A"}})
+        return panel, vectors, expected
+
+    def test_shared_index_reuses_only_policy_independent_core_vectors(self):
+        with self.temporary() as temporary:
+            directory = Path(temporary)
+            panel, vectors, expected = self.shared_fixture(directory)
+            actual, receipt = M.read_shared_index(directory, expected)
+            self.assertEqual(set(actual), {"core_embed_image", "core_embed_full"})
+            np.testing.assert_array_equal(actual["core_embed_image"], vectors["core_embed_image"])
+            self.assertTrue(receipt["read_only_reuse"])
+            self.assertNotIn("policy", json.dumps(expected))
+            # Placement differs between physical 3090s but never enters identity.
+            meta = M.read_json(directory/"index-meta.json")
+            meta["placement"] = {"visible_devices": "6", "uuid": "synthetic-card-B"}
+            M.atomic_json(directory/"index-meta.json", meta)
+            M.read_shared_index(directory, expected)
+
+    def test_shared_index_rejects_changed_source_environment_batch_and_inputs(self):
+        with self.temporary() as temporary:
+            directory = Path(temporary)
+            panel, vectors, expected = self.shared_fixture(directory)
+            for field, value in (("source", "f"*40), ("model_revision", "f"*40),
+                                 ("candidate_inputs_sha256", "f"*64), ("query_inputs_sha256", "f"*64),
+                                 ("environment", {"torch": "changed"}), ("batch_sizes", {"joint_image": 2, "text": 32}),
+                                 ("processor", {"class": "changed"}), ("sources", {"mcmr_pilot.py": "f"*64})):
+                with self.assertRaisesRegex(ValueError, "differs", msg=field):
+                    M.read_shared_index(directory, expected | {field: value})
+            changed_panel = deepcopy(panel)
+            changed_panel["candidates"][0]["text"] += " price: 10"
+            args = SimpleNamespace(joint_batch=1)
+            original = M.index_identity(args, panel, M.frozen_config(), Path("a"*40), {}, {}, {})
+            changed = M.index_identity(args, changed_panel, M.frozen_config(), Path("a"*40), {}, {}, {})
+            self.assertNotEqual(original["candidate_inputs_sha256"], changed["candidate_inputs_sha256"])
+
+    def test_shared_index_cannot_import_a_nonfinal_policy_or_cross_scores(self):
+        with self.temporary() as temporary:
+            directory = Path(temporary)
+            _, vectors, expected = self.shared_fixture(directory)
+            M.atomic_json(directory/"policy.json", {"policy_id": "temporary placeholder"})
+            with self.assertRaisesRegex(ValueError, "independent"):
+                M.read_shared_index(directory, expected)
+            (directory/"policy.json").unlink()
+            np.savez(directory/"index.npz", core_embed_image=vectors["core_embed_image"],
+                     core_embed_full=vectors["core_embed_full"], cross=np.zeros(2))
+            meta = M.read_json(directory/"index-meta.json")
+            meta["index_sha256"] = M.sha(directory/"index.npz")
+            M.atomic_json(directory/"index-meta.json", meta)
+            with self.assertRaisesRegex(ValueError, "only contain"):
+                M.read_shared_index(directory, expected)
+
+    def test_shared_index_rejects_incomplete_or_modified_array_bytes(self):
+        with self.temporary() as temporary:
+            directory = Path(temporary)
+            _, _, expected = self.shared_fixture(directory)
+            meta = M.read_json(directory/"index-meta.json")
+            M.atomic_json(directory/"index-meta.json", meta | {"state": "PARTIAL"})
+            with self.assertRaisesRegex(ValueError, "incomplete"):
+                M.read_shared_index(directory, expected)
+            M.atomic_json(directory/"index-meta.json", meta)
+            with (directory/"index.npz").open("ab") as stream:
+                stream.write(b"synthetic corruption")
+            with self.assertRaisesRegex(ValueError, "differs"):
+                M.read_shared_index(directory, expected)
+
+    def test_index_then_policy_cache_reuses_model_independent_forward_outputs(self):
+        from PIL import Image
+        calls = []
+        def embeddings(texts):
+            result = []
+            for text in texts:
+                rng = np.random.default_rng(int(M.digest(str(text))[:8], 16))
+                value = rng.normal(size=2048)
+                result.append(value/np.linalg.norm(value))
+            return np.asarray(result)
+        processor = SimpleNamespace(tokenizer=SimpleNamespace(padding_side="left"))
+        class FakeAdapter:
+            def __init__(self, frozen, name, snapshot, config):
+                self.name = name
+                self.inner = SimpleNamespace(encode=embeddings, processor=processor)
+            def run(self, rows):
+                calls.append(self.name)
+                if self.name == "core_embed":
+                    return embeddings([text for text, image in rows])
+                return np.array([len(text) for query, text, image in rows], dtype=float)
+        fake_torch = SimpleNamespace(cuda=SimpleNamespace(empty_cache=lambda: None))
+        fake_transformers = SimpleNamespace(AutoProcessor=SimpleNamespace(from_pretrained=lambda *a, **kw: processor))
+        panel, _ = synthetic(q=2)
+        policy = M.parse_policy("core")
+        with self.temporary() as temporary:
+            root = Path(temporary)
+            images, index, out = root/"images", root/"shared-index", root/"policy-cache"
+            images.mkdir(); index.mkdir(); out.mkdir()
+            for candidate in panel["candidates"]:
+                Image.new("RGB", (2, 2)).save(images/candidate["image"])
+            for directory in (index, out):
+                M.atomic_json(directory/"panel.json", panel)
+            M.atomic_json(out/"policy.json", policy)
+            names = {name: Path(name)/("a"*40) for name in ("core_embed", "core_reranker")}
+            with patch.dict(sys.modules, {"torch": fake_torch, "transformers": fake_transformers}), \
+                 patch.object(M, "JointAdapter", FakeAdapter), patch.object(M, "snapshots", return_value=names), \
+                 patch.object(M, "environment", return_value={"synthetic-kernel": True}), \
+                 patch.object(M, "placement", return_value={"visible_devices": "0"}), \
+                 patch.object(M, "processor_metadata", return_value={"synthetic-processor": True}), \
+                 patch.object(M, "script_sources", return_value={"synthetic": "b"*64}):
+                with M.writer(index):
+                    M.run_index(SimpleNamespace(out=index, images=images, joint_batch=8), panel)
+                self.assertFalse((index/"policy.json").exists())
+                self.assertEqual(M.read_json(index/"index-meta.json")["state"], "COMPLETE")
+                core_calls = calls.count("core_embed")
+                with M.writer(out):
+                    M.run_gpu(SimpleNamespace(out=out, images=images, joint_batch=8, cross_batch=4, index=index), panel, policy)
+                self.assertEqual(calls.count("core_embed"), core_calls)
+            meta = M.read_json(out/"meta.json")
+            self.assertTrue(meta["identity"]["shared_index"]["read_only_reuse"])
+            self.assertEqual(meta["offline_union_pairs"], 100)
 
 
 if __name__ == "__main__":

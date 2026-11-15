@@ -1,5 +1,6 @@
 """Synthetic integrity tests; never read a research result or validation panel."""
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
 from tempfile import TemporaryDirectory
@@ -11,6 +12,13 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import diagnostics as d
+
+
+def local_context():
+    return {"mode": "platform-relative-exploration", "formal_evidence": False,
+            "platform_consistency": "VALID_LOCAL", "plan_sha256": "a"*64, "receipt_sha256": "b"*64,
+            "published_reproduction": {"state": "MISMATCH", "metrics": {"map_pp": -123.456}},
+            "baseline": {"map_pp": -123.456}}
 
 
 class DiagnosticTests(unittest.TestCase):
@@ -116,6 +124,20 @@ class DiagnosticTests(unittest.TestCase):
             for row in rows:
                 with Image.open(root / "audit/review" / row["image"]) as image:
                     self.assertFalse(image.info)
+            meta = json.loads((cache / "meta.json").read_text())
+            meta["replay"]["state"] = "MISMATCH"
+            (cache / "meta.json").write_text(json.dumps(meta))
+            args = SimpleNamespace(cache=cache, image_root=images, out=root/"platform-audit", samples=3, seed=123,
+                                   platform_plan=root/"plan.json", platform_receipt=root/"receipt.json")
+            with patch.dict(sys.modules, {"platform_context": SimpleNamespace(validate_context=lambda *a, **k: local_context())}):
+                d.blind_export(args)
+            private = json.loads((root/"platform-audit/private/key.json").read_text())
+            self.assertEqual(private["evaluation_context"]["comparison_scope"], "local-relative")
+            self.assertFalse(private["formal_evidence"])
+            for name in ("index.html", "labels.csv"):
+                public = (root/"platform-audit/review"/name).read_text()
+                for hidden in ("MISMATCH", "map_pp", "-123.456", "annotation_positive", "platform_consistency"):
+                    self.assertNotIn(hidden, public)
 
     def test_mcmr_keeps_candidate_metadata_separate_from_gold(self):
         candidates, queries = d.normalize_mcmr(
@@ -133,6 +155,73 @@ class DiagnosticTests(unittest.TestCase):
         meta["replay"]["state"] = "MISMATCH"
         with self.assertRaises(ValueError):
             d.validate_cache_meta(meta)
+
+    def test_diagnostic_platform_requires_explicit_complete_opt_in_and_valid_context(self):
+        meta = {"replay": {"state": "PASS"}, "model_config_sha256": d.MODEL_CONFIG_SHA,
+                "revisions": dict(d.MODEL_REVISIONS)}
+        self.assertEqual(d.diagnostic_context(SimpleNamespace(), Path("cache"), meta)["published_reproduction"], "PASS")
+        meta["replay"]["state"] = "MISMATCH"
+        with self.assertRaisesRegex(ValueError, "baseline replay"):
+            d.diagnostic_context(SimpleNamespace(), Path("cache"), meta)
+        with self.assertRaisesRegex(ValueError, "together"):
+            d.diagnostic_context(SimpleNamespace(platform_plan=Path("plan")), Path("cache"), meta)
+        args = SimpleNamespace(platform_plan=Path("plan"), platform_receipt=Path("receipt"))
+        for rejected in (None, {}, dict(local_context(), formal_evidence=True)):
+            with patch.dict(sys.modules, {"platform_context": SimpleNamespace(validate_context=lambda *a, **k: rejected)}):
+                with self.assertRaisesRegex(ValueError, "valid explicit"):
+                    d.diagnostic_context(args, Path("cache"), meta)
+        with patch.dict(sys.modules, {"platform_context": SimpleNamespace(validate_context=lambda *a, **k: local_context())}):
+            context = d.diagnostic_context(args, Path("cache"), meta)
+            self.assertEqual(context["comparison_scope"], "local-relative")
+            self.assertEqual(meta["replay"]["state"], "MISMATCH")
+            meta["model_config_sha256"] = "changed"
+            with self.assertRaisesRegex(ValueError, "configuration"):
+                d.diagnostic_context(args, Path("cache"), meta)
+
+    def test_d3_platform_binds_supplement_and_keeps_default_replay_gate(self):
+        design = d.make_d3(*self.fixture(), seed=123)
+        temp_root = Path(__file__).resolve().parents[2]/"hf_home/tmp"
+        temp_root.mkdir(parents=True, exist_ok=True)
+        with TemporaryDirectory(dir=temp_root) as temporary:
+            root = Path(temporary)
+            cache = root/"cache"
+            cache.mkdir()
+            design_path = root/"design.json"
+            design_path.write_text(json.dumps(design))
+            meta = {"replay": {"state": "MISMATCH"}, "model_config_sha256": d.MODEL_CONFIG_SHA,
+                    "revisions": dict(d.MODEL_REVISIONS), "bundle": {"source": "1"*40, "freeze": "2"*40}}
+            (cache/"meta.json").write_text(json.dumps(meta))
+            (cache/"panel.json").write_text(json.dumps({"ids": design["gallery_ids"]}))
+            rng = np.random.default_rng(53)
+            def unit(shape):
+                values = rng.normal(size=shape)
+                return values/np.linalg.norm(values, axis=1, keepdims=True)
+            text_rows = [row["text"] for row in design["texts"]]
+            vectors = {name+"_image": unit((len(design["gallery_ids"]), 8)) for name in ("core_embed", "cs_clip")}
+            texts = {name+"_text": unit((len(text_rows), 8)) for name in ("core_embed", "cs_clip")}
+            encoding = {"schema": "d3-holistic-encodings-v1", "design_sha256": d.file_sha(design_path),
+                        "texts_sha256": design["texts_sha256"], "gallery_ids_sha256": design["gallery_ids_sha256"],
+                        "normalization": "unit_l2", "model_revisions": d.MODEL_REVISIONS,
+                        "model_config_sha256": d.MODEL_CONFIG_SHA, "source": "1"*40, "freeze": "2"*40, "commit": "3"*40}
+            embeddings = root/"d3_embeddings.npz"
+            np.savez(cache/"vectors.npz", **vectors)
+            np.savez(embeddings, **texts, texts=np.asarray(text_rows), metadata_json=np.asarray(json.dumps(encoding)))
+            args = SimpleNamespace(design=design_path, cache=cache, embeddings=embeddings, out=root/"report.json")
+            with self.assertRaisesRegex(ValueError, "baseline replay"):
+                d.analyze_d3(args)
+            self.assertFalse(args.out.exists())
+            args.platform_plan, args.platform_receipt = root/"plan.json", root/"receipt.json"
+            called = []
+            def validate(*positional, supplementary_paths):
+                called.append((positional, supplementary_paths))
+                return local_context()
+            with patch.dict(sys.modules, {"platform_context": SimpleNamespace(validate_context=validate)}):
+                d.analyze_d3(args)
+            self.assertEqual(called[0][1], (embeddings.resolve(),))
+            report = json.loads(args.out.read_text())
+            self.assertEqual(report["evaluation_context"]["published_reproduction"]["state"], "MISMATCH")
+            self.assertEqual(report["comparison_scope"], "local-relative")
+            self.assertFalse(report["formal_evidence"])
 
     def test_supplemental_embeddings_are_bound_to_full_design_and_models(self):
         design = d.make_d3(*self.fixture(), seed=123)

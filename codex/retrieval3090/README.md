@@ -10,11 +10,19 @@
 - Python 3.12、PyTorch 2.6.0+cu124、torchvision 0.21.0+cu124、Transformers 5.20.2、open_clip_torch 2.32.0。此組合適用目前 NVIDIA 550.163.01 驅動；不需更動系統驅動。
 - `requirements-lock.txt` 記錄完整依賴；`setup_env.sh` 優先使用它重裝。建立環境時可用 `PYTHON3_12` 指定現有 Python 3.12 解譯器，預設使用這台主機既有的 3.12 解譯器。只在新的 venv 裝套件。
 
+另有同代 PyTorch 對照環境 `dl/retrieval3090/envs/retrieval3090-torch214/bin/python`：PyTorch 2.14.0+cu126、torchvision 0.29.0+cu126，其餘模型端主要套件版本保持相同。它使用官方 CUDA 12.6 wheel，在現有驅動上先做實際運算驗證；技術相容不等於原研究數字已重現。完整依賴見 `requirements-torch214-lock.txt`。兩套環境分開保存，快取禁止交叉混用。
+
 以下命令從 repo 根目錄執行：
 
 ```bash
 bash codex/retrieval3090/setup_env.sh
 dl/retrieval3090/envs/retrieval3090/bin/python -B codex/retrieval3090/download_assets.py --include-reconstruction-inputs
+
+# 安裝同代框架的獨立對照環境；不覆蓋原環境。
+RETRIEVAL_ENV_PROFILE=torch214 bash codex/retrieval3090/setup_env.sh
+# 其他入口以 PYTHON 指向所需環境。
+PYTHON="$PWD/dl/retrieval3090/envs/retrieval3090-torch214/bin/python" \
+  bash codex/retrieval3090/run.sh preflight
 ```
 
 下載器僅從官方公開來源取得三個固定 revision 的模型、COCO 標註與重建舊面板所需的 Half-Truths parquet，驗證來源檔案的大小及 SHA。收據在執行根目錄內。
@@ -89,3 +97,22 @@ python3 -B codex/retrieval3090/resources.py cleanup-cache "$PWD/dl/retrieval3090
 ```
 
 清理只刪已驗證、可由最終輸出取代的逐批重複陣列；保留原分數、向量、資料、模型、timing、來源與清理收據。失敗或仍在執行的工作保留續跑檔，不以時間或大小決定刪除。
+
+## 獨立的本機平台開發
+
+原基線未重現時，預設分析入口繼續拒絕執行。只有 [條件式平台協定](platform_plan.json) 規定的同代環境也未通過原驗收，才可另建 `platform-cache`。它保留原 `replay=MISMATCH`，核對已提交協定、來源檔案、同環境的固定批次重複及候選順序，再續算其餘候選。產物附 `platform-receipt.json`，不當作叢集重現或正式證據。
+
+消費該快取時，`analyze2`、`benchmark`、`diagnostics d3-analyze`／`blind-export` 必須成對指定 `--platform-plan` 與 `--platform-receipt`；補充向量也必須通過同環境與完整檔案核驗。報告只比較相對同一本機CORE的差值。禁止把歷史指標與本機方法混比。
+
+MCMR可先建與方法無關的原生圖文商品索引，再在固定政策的新輸出中指定 `--index` 復用；兩步使用同一套環境。索引不讀入池政策或重排分數：
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  dl/retrieval3090/envs/retrieval3090-torch214/bin/python -B \
+  codex/retrieval3090/mcmr_pilot.py --stage index \
+  --data dl/retrieval3090/data/mcmr \
+  --images dl/retrieval3090/data/mcmr/pilot-images \
+  --out dl/retrieval3090/runs/mcmr-shared-index-new
+```
+
+以上GPU步驟仍由前述共用卡排程器啟動；可換同型同平台3090，實際卡號另記，不必占住原卡。

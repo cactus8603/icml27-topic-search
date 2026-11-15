@@ -334,10 +334,35 @@ def validate_design(design):
 def validate_cache_meta(meta):
     if meta.get("replay", {}).get("state") != "PASS":
         raise ValueError("Full development cache must pass baseline replay before diagnostics")
+    validate_cache_models(meta)
+
+
+def validate_cache_models(meta):
+    """Model identity remains mandatory under either explicitly selected context."""
     if meta.get("model_config_sha256") != MODEL_CONFIG_SHA:
         raise ValueError("Development cache model configuration changed")
     if any(meta.get("revisions", {}).get(key) != value for key, value in MODEL_REVISIONS.items()):
         raise ValueError("Development cache model revision changed")
+
+
+def diagnostic_context(args, cache_dir, meta, *, supplementary_paths=()):
+    plan, receipt = getattr(args, "platform_plan", None), getattr(args, "platform_receipt", None)
+    if bool(plan) != bool(receipt):
+        raise ValueError("--platform-plan and --platform-receipt must be supplied together")
+    if plan is None:
+        validate_cache_meta(meta)
+        return {"mode": "published-replay-gated-development", "published_reproduction": "PASS",
+                "comparison_scope": "exposed-development", "formal_evidence": False}
+    validate_cache_models(meta)
+    from platform_context import validate_context
+    context = validate_context(safe(cache_dir), safe(plan), safe(receipt),
+                               supplementary_paths=tuple(safe(path) for path in supplementary_paths))
+    if (not isinstance(context, dict) or context.get("mode") != "platform-relative-exploration"
+            or context.get("formal_evidence") is not False or context.get("platform_consistency") != "VALID_LOCAL"
+            or context.get("published_reproduction", {}).get("state") != "MISMATCH"
+            or meta.get("replay", {}).get("state") != "MISMATCH"):
+        raise ValueError("A valid explicit local platform context with preserved MISMATCH is required")
+    return dict(context, comparison_scope="local-relative")
 
 
 def validate_embedding_meta(meta, design, design_sha, cache_meta=None):
@@ -373,7 +398,7 @@ def analyze_d3(args):
     validate_design(design)
     cache = safe(args.cache)
     cache_meta = json.loads((cache / "meta.json").read_text())
-    validate_cache_meta(cache_meta)
+    context = diagnostic_context(args, cache, cache_meta, supplementary_paths=(args.embeddings,))
     cache_panel = json.loads((cache / "panel.json").read_text())
     if cache_panel["ids"] != design["gallery_ids"]:
         raise ValueError("D3 gallery order differs from cached image vector order")
@@ -386,6 +411,7 @@ def analyze_d3(args):
         if texts != [row["text"] for row in design["texts"]]:
             raise ValueError("New holistic embeddings do not match the frozen D3 text order")
         report = {"scope": "exposed-data diagnostic, not a formal test", "design_sha256": file_sha(args.design),
+                  "evaluation_context": context, "comparison_scope": context["comparison_scope"], "formal_evidence": False,
                   "embedding_sha256": file_sha(args.embeddings), "encoding_metadata": encoding_meta,
                   "primary_contrast": "CORE holistic standardized pair margin: k4 minus k1, image-component bootstrap",
                   "models": {}}
@@ -441,7 +467,7 @@ def blind_export(args):
     from PIL import Image
 
     cache, out, image_root = safe(args.cache), safe(args.out), safe(args.image_root)
-    validate_cache_meta(json.loads((cache / "meta.json").read_text()))
+    context = diagnostic_context(args, cache, json.loads((cache / "meta.json").read_text()))
     panel = json.loads((cache / "panel.json").read_text())
     with np.load(cache / "cross.npz", allow_pickle=False) as scores:
         strata = audit_candidates(panel, scores["core_order"], scores["cross"])
@@ -489,8 +515,10 @@ def blind_export(args):
         '<p>Check whether every requested object is visibly present. Mark yes/no/uncertain in labels.csv. '
         'Judge visible content; note tiny or occluded objects. Do not infer from filenames.</p>' + "\n".join(cards))
     write_json(private / "key.json", {"seed": args.seed, "cache_panel_sha256": file_sha(cache / "panel.json"),
+                                     "evaluation_context": context, "formal_evidence": False,
                                      "cases": key_rows, "sampling": "diagnostic stratified sample, not a population PPV estimate"})
     write_json(out / "status.json", {"state": "AWAITING_HUMAN_LABELS", "exported": len(public_rows),
+                                    "comparison_scope": context["comparison_scope"], "formal_evidence": False,
                                     "public_package": str(public), "private_mapping": str(private),
                                     "human_labels_completed": 0, "instructions": "Share review/ only; never give annotators private/"})
     print(json.dumps({"state": "AWAITING_HUMAN_LABELS", "cases": len(public_rows), "review": str(public)}))
@@ -667,6 +695,8 @@ def main():
     analyse.add_argument("--cache", required=True, type=Path)
     analyse.add_argument("--embeddings", required=True, type=Path)
     analyse.add_argument("--out", required=True, type=Path)
+    analyse.add_argument("--platform-plan", type=Path)
+    analyse.add_argument("--platform-receipt", type=Path)
     analyse.set_defaults(run=analyze_d3)
     audit = sub.add_parser("blind-export")
     audit.add_argument("--cache", required=True, type=Path)
@@ -674,6 +704,8 @@ def main():
     audit.add_argument("--out", required=True, type=Path)
     audit.add_argument("--samples", type=int, default=150)
     audit.add_argument("--seed", type=int, default=SEED)
+    audit.add_argument("--platform-plan", type=Path)
+    audit.add_argument("--platform-receipt", type=Path)
     audit.set_defaults(run=blind_export)
     mcmr = sub.add_parser("mcmr-prepare")
     mcmr.add_argument("--out", required=True, type=Path)
@@ -688,6 +720,8 @@ def main():
     extract.add_argument("--out", required=True, type=Path)
     extract.set_defaults(run=extract_mcmr)
     args = parser.parse_args()
+    if bool(getattr(args, "platform_plan", None)) != bool(getattr(args, "platform_receipt", None)):
+        parser.error("--platform-plan and --platform-receipt must be supplied together")
     args.run(args)
 
 

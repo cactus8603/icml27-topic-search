@@ -366,7 +366,8 @@ def describe_strata(base, alternate, positives, groups, *, draws):
     return output
 
 
-def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, calibration=None, logic_vectors=None):
+def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, calibration=None, logic_vectors=None,
+            evaluation_context=None):
     core, cross, relevance = validate_cache(cache, panel)
     groups = np.asarray([q["group"] for q in panel["queries"]])
     connected_groups = connected_query_groups(panel["queries"])
@@ -378,7 +379,20 @@ def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, cali
     positives = relevance.sum(axis=1)
     base_order = A.final_order(core, core[:, :K], cross[:, :K])
     base = measure(base_order, relevance, K)
-    replay = require_replay(base, meta, published)
+    if evaluation_context is None:
+        replay = require_replay(base, meta, published)
+        evaluation = {"mode": "published-replay", "published_reproduction": "PASS", "formal_evidence": False}
+    else:
+        if published is not None:
+            raise ValueError("A platform study cannot replace the published reference metrics")
+        from platform_context import require_baseline
+        actual = {"map_pp": float(np.mean(base["ap_pp"])),
+                  "oracle_map_pp": float(np.mean(base["admission_oracle_ap_pp"])),
+                  # Preserve the producer's aggregate arithmetic for exact receipt equality.
+                  "recall_pp": float(100 * np.mean(base["hits_at_50"] / positives)),
+                  "queries_without_hit": int(np.sum(base["hits_at_50"] == 0))}
+        replay = require_baseline(actual, meta, evaluation_context)
+        evaluation = dict(evaluation_context)
     logic_parameters = {}
     if logic is not None:
         if calibration is None or logic_vectors is None:
@@ -495,7 +509,9 @@ def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, cali
     random_controls = [rows[name]["paired_against_core50"]["ap_pp"]["point_pp"]
                        for name in methods if name.startswith("control/m2/")]
     kind = A.kinds(panel["image_categories"], panel["ids"], panel["queries"])
-    report = {"schema": 2, "scope": "exposed development panel; no independent confirmation",
+    report = {"schema": 2, "scope": ("local-relative platform exploration; published reproduction MISMATCH; no independent confirmation"
+              if evaluation_context is not None else "exposed development panel; no independent confirmation"),
+        "evaluation_context": evaluation, "formal_evidence": False,
         "baseline_replay": replay, "queries": len(groups), "groups": len(set(groups)), "pool": len(panel["ids"]),
         "fold_assignment": folds.tolist(), "fold_seed": FOLD_SEED,
         "original_sentinel_fold_assignment": original_folds.tolist(),
@@ -520,7 +536,8 @@ def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, cali
                    "Original sentinel-group intervals may retain shared-positive dependence; connected OOF groups remove that image overlap but not every category dependence.",
                    "M1 OOF selects only exact 50-call policies; M2 remains a separate exploratory batch allocation.",
                    "Fixed-budget reranking is a cost reference, never an oracle or ceiling."]}
-    per_query = {"schema": 2, "queries": [{"index": i, "key": q["key"], "text": q["text"],
+    per_query = {"schema": 2, "evaluation_context": evaluation, "formal_evidence": False,
+                 "queries": [{"index": i, "key": q["key"], "text": q["text"],
                   "group": int(q["group"]), "connected_group": int(connected_groups[i]),
                   "fold": int(folds[i]), "positives": int(positives[i])}
                   for i, q in enumerate(panel["queries"])],
@@ -529,8 +546,11 @@ def analyse(cache, panel, meta, *, published=None, draws=DRAWS, logic=None, cali
 
 
 def markdown(report):
+    evaluation = report.get("evaluation_context", {})
+    replay_text = ("Published reproduction remains MISMATCH. Local-relative platform exploration only; not formal evidence."
+                   if evaluation.get("mode") == "platform-relative-exploration" else "Baseline replay passed.")
     lines = ["# Retrieval development analysis v2", "", "[codex] Exposed panel; development estimates only.", "",
-             "Baseline replay passed. Fixed Recall@50 and admission Recall@budget are reported separately.", "",
+             replay_text + " Fixed Recall@50 and admission Recall@budget are reported separately.", "",
              "| method | mAP | ΔmAP [95%] | Recall@50 | admission recall | calls/query |",
              "|---|---:|---:|---:|---:|---:|"]
     names = ["core50", "oof/m1_single_selector"] + [f"reference/rerank{b}" for b in REFERENCE_BUDGETS]
@@ -561,14 +581,24 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--lcse-calibration", type=Path)
     parser.add_argument("--lcse-vectors", type=Path)
+    parser.add_argument("--platform-plan", type=Path)
+    parser.add_argument("--platform-receipt", type=Path)
     args = parser.parse_args()
     if bool(args.lcse_calibration) != bool(args.lcse_vectors):
         parser.error("--lcse-calibration and --lcse-vectors must be supplied together")
+    if bool(args.platform_plan) != bool(args.platform_receipt):
+        parser.error("--platform-plan and --platform-receipt must be supplied together")
     cache_dir, out = safe_path(args.cache), safe_path(args.out)
     if out.exists():
         raise FileExistsError(out)
     cache, panel = A.load(cache_dir)
     meta = json.loads((cache_dir / "meta.json").read_text())
+    evaluation_context = None
+    if args.platform_plan:
+        from platform_context import validate_context
+        supplementary = (args.lcse_calibration, args.lcse_vectors) if args.lcse_calibration else ()
+        evaluation_context = validate_context(cache_dir, args.platform_plan, args.platform_receipt,
+                                              supplementary_paths=supplementary)
     calibration, logic, logic_vectors = None, None, None
     if args.lcse_calibration:
         path = safe_path(args.lcse_calibration)
@@ -576,7 +606,8 @@ def main():
         calibration = json.loads(path.read_text())
         logic_vectors = dict(np.load(vectors_path, allow_pickle=False))
         import logic_baselines as logic
-    report, per_query = analyse(cache, panel, meta, logic=logic, calibration=calibration, logic_vectors=logic_vectors)
+    report, per_query = analyse(cache, panel, meta, logic=logic, calibration=calibration, logic_vectors=logic_vectors,
+                                evaluation_context=evaluation_context)
     if calibration is not None:
         report["lcse_calibration"] = {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "artifact": calibration}
         report["lcse_vectors"] = {"path": str(vectors_path), "sha256": hashlib.sha256(vectors_path.read_bytes()).hexdigest(),

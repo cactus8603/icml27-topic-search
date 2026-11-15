@@ -37,9 +37,13 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16，固定前僅讀既有公開VERDICT／報告、來源與設計，未讀本輪新研究結果或封存資料。新增研究結果的讀取在此逐項追加時間與路徑；判準內容不隨結果改寫。
 - [codex] 2026-11-16 04:21–04:23，root已讀 `dl/retrieval3090/runs/supplement-20261116-v2/lcse_calibration.json` 作機械來源與同參數重現校驗；已讀 `dl/retrieval3090/runs/dev-20261116-v2/baseline-early-audit.json` 的top50早期重現結果。未通過原驗收，僅作版本差異診斷，未跑或解讀M1/M2/D3模型效果。授權setup_review讀同早期重現檔協助查因。原容差及未通過停止方法分析的規則不改。
 - [codex] 2026-11-16 04:25–04:27，setup_review/root已讀相同開發快取的 `checkpoints/core_embed_image.npy`、`core_embed_full.npy`、`cross_top50.npy` 及 `parity-cpu-threads-20261116.json`，僅作原基線重現差異診斷與輸入對齊核驗，未讀政策或封存結果。
+- [codex] 2026-11-16 04:38–04:43，root/setup_review已讀 `dl/retrieval3090/runs/parity-torch214-20261116/probe.json` 及 `parity-torch26-20261116/probe.json`，只作固定batch的向量、輸入雜湊與重排分數技術對照。literature_check於04:40–04:43讀前者與 `dev-20261116-v2/baseline-early-audit.json` 獨立複核基線閘門；沒有讀M1/M2/D3或封存資料。新環境全池基線執行提交固定為 `4c5c20188e3db6f9aeef5e1f9ef77c4dd7f9eb52`。
 
 ## 前置完整性修正
 
 - [codex] 2026-11-16 04:06，僅檢查公開標註群分割、未看本輪任何M1／M2／D3結果時，發現原sentinel群仍可能共享其他正例。因此OOF選法改用「同原群或共享任一正例」的連通群，同一seed/hash規則；原基線比較仍保留原群bootstrap以便對照，OOF另按連通群估計。另加四模板原向量、文字順序、模型revision及來源指紋驗證。這些是結果讀取前的完整性補強。
 - [codex] 2026-11-16，依使用者新增要求：後續GPU工作只選有足夠餘裕的卡（預設至少14 GiB空閒且整體util不高、連續兩次檢查）；無卡持續排隊等待。完整輸出驗證成功且無writer時，清除可由最終NPZ逐位驗證的重複batch中間陣列，保留來源、timing、raw scores、分析與清理收據。
 - [codex] 2026-11-16 04:33，原基線重現未通過後，只作版本查因，不變更接受容差。新增同代Torch 2.14.0+cu126／torchvision0.29.0對照環境，其他模型／資料／查詢／batch／Pillow／Transformer設定保持，先以原batch的前16圖、前32查詢及8個既存重排pair做技術差異測試。僅版本與driver相容測試，不依M1結果挑環境。原環境與原結果保留。後續全池重現改成前50完成立即驗收，未過不再計51–200。
+- [codex] 2026-11-16 04:48，仍未讀取任何M1／M2／D3方法效果，torch214全池基線尚在執行時，另外固定條件式 [本機平台開發協定](platform_plan.json)。原重現流程與原容差不變；僅當這一次同代框架重現也失敗時，另開新輸出與明示入口，保留原 `MISMATCH`，通過來源、逐值重複、完整快取及同環境驗證後才做相對本機CORE的探索比較。不是把失敗改為PASS，也不是原H200結果的確認。算法、seed、控制組、OOF與正式驗證要求沿用原已凍結設定；不再為湊基線搜尋版本或backend。
+- [codex] 2026-11-16 04:51–04:55，root已讀 `dl/retrieval3090/runs/supplement-torch214-20261116/lcse_calibration.json` 及相應原始校準向量，僅核對train-only來源、cosine指紋及重新擬合結果，確認後清理可重建的重複中間陣列。未讀取政策或D3效果。
+- [codex] 2026-11-16 04:55–04:58，root已讀 `dl/retrieval3090/runs/dev-torch214-20261116/candidate-replay-only.json`，只檢查原候選召回與oracle重現。條件式平台協定於04:48起草；本次提交前已知原候選閘門未過，但仍未計算或讀取任何M1／M2／D3效果。正式採用新平台流程須本次提交後，另一次明示啟動、完整來源／逐值重複驗證及獨立審查。
