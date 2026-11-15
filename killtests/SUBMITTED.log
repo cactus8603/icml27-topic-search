@@ -175,3 +175,11 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 17:32 cancel 26804 biased-gen-cfg 原CPU佇列數小時，改同封存單核備援 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
 [codex] 2026-11-15 17:32 cancel 26805 fallible-verifier 原CPU佇列數小時，改同封存單核備援 d2e8487a53e0248e307d733d5d7d8cfad8d069ed
 [codex] 2026-11-15 17:38 submit 26817 inoculation-lambda GCD整家族續驗PHM技術試跑，合成算術驗中層residual、padding與batch一致性，四測試及離線快取預檢通過 e9bbcd07137812c2da6ac710af5a0c8947da25b9
+[codex] 2026-11-15 17:46 submit 26821 inoculation-lambda CPU封存GCD四族17臂51配置及互斥題庫，四測試與同雜湊預檢通過 e2112f881606a131be1545e9c7a3d12ed0cbd851
+[codex] 2026-11-15 17:46 submit 26822 inoculation-lambda GCD適配PHM的四族訓前前綴分數，依賴CPU清冊26821與GPU技術驗收26817，清冊SHA預綁 e9bbcd07137812c2da6ac710af5a0c8947da25b9
+[codex] 2026-11-15 17:49 submit 26823 inoculation-lambda GCD四族LoRA初始化與梯度技術檢查，原作者51組設定與PEFT/PPS測試通過，依賴資料清冊26821 95dced852795feea5d9626192f62f4ccf7bb000e
+[codex] 2026-11-15 17:59 submit 26826 inoculation-lambda 四族51格訓前Λ與基線、6封存測試通過；等26821/26823，啟動後驗收據及初始值 67d8e6349267721052e61ce95054a2ea2cd04733
+[codex] 2026-11-15 17:59 submit 26827 inoculation-lambda 訓前Λ及基線CPU驗收，依賴26826全51格，驗初始化憑證後產單一比較清冊 67d8e6349267721052e61ce95054a2ea2cd04733
+[codex] 2026-11-15 18:01 submit 26830 inoculation-lambda 四族51格正式行為訓練、漏出和ID；5封存測試及真資料校驗，等清冊、技術檢查與全部事前分數，逐格核初始權重 30993b8c8b762be6c23df8127349d8a06f33d1ee
+[codex] 2026-11-15 18:01 submit 26831 inoculation-lambda 四族行為CPU驗收，依賴26830完整51格；核步0及訓練指紋後算漏出上下界、ID和信度 30993b8c8b762be6c23df8127349d8a06f33d1ee
+[codex] 2026-11-15 18:08 submit 26836 inoculation-lambda GCD整家族Λ/PHM/事前基線最終CPU比較，同樣本排名和選擇損失；9封存測試，依賴兩陣列與全部上游成功 c9471fe6e7efd9c383fd57a3e0a1dc910d6eef31
