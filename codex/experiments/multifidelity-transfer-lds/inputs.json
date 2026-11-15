@@ -1,0 +1,35 @@
+{
+  "source_sha256": {
+    "killtests/multifidelity-attribution/configs/stage0.json": "b2133b3e78407b0bc51f4db13017fc1445abed85c7f7b7c5b9371537df40a255",
+    "killtests/multifidelity-attribution/scripts/common.py": "f9c128f26954fe892943525ac6afc05be754b7b4ca5d5a247447044cb2e0d49f",
+    "killtests/multifidelity-attribution/scripts/mf_core.py": "de80095d5dc6a7dcf3694a0cb516d500a4ae6cd5434c1634bcd94e59da32c954",
+    "codex/experiments/multifidelity-heldout-lds/pilot.py": "8d78434aecb99e7c29294e7af46c55ae6952dbe4937c54b8c7c1d69324df3c92"
+  },
+  "data_sha256": {
+    "data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+    "data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+    "data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+    "data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+    "data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+    "test_batch": "f53d8d457504f7cff4ea9e021afcf0e0ad8e24a91f3fc42091b8adef61157831"
+  },
+  "run_sha256": {
+    "stage0/exact/Y_0_10.npy": "0d646001a031bc2abed42680c680185a609aeb28a5949be73c0381aa1b4cbdb8",
+    "stage0/exact/Y_10_20.npy": "784976607f05c8567e71200f2b0456544a1fa0d4b5ac762728b640ba4022fa59",
+    "stage0/exact/Y_20_30.npy": "3352ac7f595d3ef0ad902b831c8a45310843095c2a2644e45c52b44491f90fe8",
+    "stage0/exact/Y_30_40.npy": "248334edb5e3fec357bc9e03fe3baf97aefa6c1a63db996e1e69f9e9c8af1f92",
+    "stage0/exact/Y_40_50.npy": "de931f16be275cb8fc7a6361409e4faee1a24fcf0a120818038f7a6b69658ee2",
+    "stage0/cheap/ekfac_1e-8.npy": "fdcd79ead5393ea3415ab71dfefe01ee28ac24b6322c18f1ddce0c69b197234d",
+    "stage0/retrain/loss_100.npy": "19a778e15d8fd4e998a0b0a5a70703fee29e583746652b420ea169cd9399b411",
+    "stage0/retrain/loss_101.npy": "7bfb5c9a7235d5ca332544df7a8dd5a2af30ba736b6dff9995c24e2294422c13"
+  },
+  "query_ids_i64_sha256": "542691d82fcf18511d2d9411ce1ef6d82f9ae9f7cc05a42f3740c1e2186cdc31",
+  "heldout_mask_sha256": "43bd69704fa733c116769373e7944bc9459d04e44eec4892275f42b7f76bb42a",
+  "packages": {
+    "jax": "0.12.0.1",
+    "jax-cuda13-plugin": "0.12.0.1",
+    "jax-cuda13-pjrt": "0.12.0.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  }
+}
