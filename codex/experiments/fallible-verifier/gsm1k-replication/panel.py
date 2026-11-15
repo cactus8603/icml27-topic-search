@@ -10,7 +10,7 @@ import sys
 
 
 TOPIC = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(TOPIC))
+sys.path[:0] = [str(Path(__file__).resolve().parent), str(TOPIC)]
 from real_holdout.prepare import (
     CANONICAL, CANONICAL_SHA256, PRIOR, ROUND2, ROUND2_CONFIG_SHA256,
     ROUND2_PROTOCOL_SHA256, canonical_gold, jsonl_bytes, prior_questions,

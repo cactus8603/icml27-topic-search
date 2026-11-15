@@ -3,9 +3,11 @@
 import hashlib
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from evaluate import index_gold, make_split, manifest_sha, read_role, score
 from receipt_contract import MODEL_PINS
 
