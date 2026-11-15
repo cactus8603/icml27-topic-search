@@ -139,3 +139,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-15 13:46 submit 26665 inoculation-lambda 原三臂600筆盲語言診斷，五單測、八合成控制及封存CPU預檢通過 ac12f76
 [codex] 2026-11-15 13:59 cancel 26664 rl-sparse-distill 已以同一封存規格本機CPU完成並由Astra複核，撤重複等候 24b976b
 [codex] 2026-11-15 14:02 cancel 26665 inoculation-lambda 同一封存600筆已以本機CPU完成並由Astra核對，撤重複等候 bf44236
+[codex] 2026-11-15 14:06 submit 26666 fallible-verifier 同250/747面板的點風險策略省費上限，七測試、封存來源及Astra方法核對通過 454e3d7
+[codex] 2026-11-15 14:08 cancel 26666 fallible-verifier 同一封存點風險上限已以本機單核完成且Astra核對，撤重複等候 454e3d7

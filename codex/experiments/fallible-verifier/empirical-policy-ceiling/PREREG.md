@@ -22,3 +22,8 @@ bash codex/experiments/fallible-verifier/empirical-policy-ceiling/run.sbatch FUL
 sbatch codex/experiments/fallible-verifier/empirical-policy-ceiling/run.sbatch FULL_FREEZE_COMMIT
 bash codex/experiments/fallible-verifier/empirical-policy-ceiling/run.sbatch FULL_FREEZE_COMMIT --local
 ```
+
+## 讀取紀錄
+
+- [codex] 2026-11-15 14:06（台北，14:06:54）。已讀 `empirical-policy-ceiling/local-V9Cs70mV/summary.json`，凍結 `454e3d7`。 [詳細判讀](../../../reports/2026-11-15-topic-status-codex.md#強驗證器與稀疏金標)
+- [codex] 2026-11-15 14:06（台北，14:06:52）。Astra 獨立讀取同一份彙總。

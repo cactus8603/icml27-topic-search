@@ -1,6 +1,6 @@
 # 實驗硬體與顯存紀錄
 
-涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 14:01（台北）。歷史表保留 04:38 的現場紀錄。
+涵蓋本輪已建立實驗的 10 題。下一步的設備判斷更新至 2026-11-15 14:07（台北）。歷史表保留 04:38 的現場紀錄。
 
 ## 下一步用 24 GB 還是 H200
 
@@ -16,7 +16,7 @@
 | RL 稀疏決策蒸餾 | 配對 A 的 0.8.4 `26621`、0.7.2 `26652` 與短預算 `26658` 及公開計數 CPU 重播已完成 | `26621` **126.30 GiB、2 分 17 秒**、主機 RAM 約 **2.61 GiB**。`26652` **126.64 GiB、2 分 47 秒**、主機 RAM 約 **58.77 GiB**。`26658` **127.08 GiB、4 分 11 秒**、主機 RAM 約 **9.36 GiB**。三次均含 vLLM 預留。0.8.4 獨立環境約 **7.4 GiB 磁碟**。配對 B 的 16K 診斷 `26593` **126.84 GiB、2 分 52 秒**。 | **單模型低併發可試 24 GB，原作者設定與長批留 H200。** 1.5B BF16 權重約 2.9 GiB，每條近 16K 的 BF16 KV cache 約 0.44 GiB。小配置 `26499` H200 實測 **12.73 GiB、32 秒**。32K 公開計數本機重播 **1.24 秒、44.1 MiB RAM**。[32K 公開計數](experiments/rl-external-passk-local/PREREG.md) · [首版推論診斷](experiments/rl-oat-v1-engine/PROTOCOL.md) · [短預算截斷診斷](experiments/rl-a-short-stop/PREREG.md) |
 | 文生圖罕見失敗 | 三偵測器資源診斷、CPU 次鍵對照完成，原種子精度重播 `26663` 已送 | `26516` **36.14 GiB、1 小時 31 分 18 秒**，約 **5.48 張／秒**，含 CLIP。完整 SDv1.4 `26288` **52.9 GiB**。獨立三偵測器 `26570` 共 **12 秒**，batch 32／64 的 PyTorch 保留峰值 **1.50／2.13 GiB**、約 **94.9／97.1 張／秒**，NudeNet 用 CPU。CPU `26585` **1 秒、25.4 MiB RAM**。 | **現有生成 batch 32 留 H200，單獨偵測器可試 24 GB。** 完整 SDv1.4 batch 32 實測換算階段 1 約 **9.17 GPU 小時**，六模型吞吐待量。原種子重播估 **1.5 GPU 小時**、只存小於 **2 MiB** 的分數與收據。縮批需通過同種子翻轉率 ≤1% 和吞吐 ≥4.5 張／秒。[原種子重播](experiments/t2i-gate-b-original-replay/PREREG.md) · [重驗預登記](experiments/t2i-gate-b-precision/PREREG.md) · [候選修復](experiments/t2i-gate-repair/README.md) · [偵測器資源診斷](experiments/t2i-detector-probe/README.md) |
 | 大型平行解碼提交集合 | `26530` 完成 640 題，暫停此版規則 | LLaDA-8B 全程 `26530` **16.58 GiB、18 分 39 秒**。兩題 `26529` **15.10 GiB PyTorch 已配置、15.22 GiB 已保留、23 秒**。 | **同配置有望用 24 GB。** 權重約 14.93 GiB。H200 已覆蓋本輪完整面板，換卡的顯存及執行時間待實測。CPU 可彙總。[新試驗預登記](experiments/large-commit-sets/top-two-selector/PREREG.md) |
-| 不完美驗證器 | 開發校準、暖機、747 題留出與 CPU 判讀均完成 | 開發校準 `26595` **110.15 GiB、1 分 45 秒**，留出 `26598` **110.24 GiB、3 分 4 秒**，含 vLLM 預留，留出主機 RAM 約 **3.28 GiB**。CPU 判讀 `26599` **4 秒、約 98 MiB RAM**。 | **現行兩模型推論留 H200，評估用 CPU。** 0.6B 單獨有望用 24 GB。強端約 18 GiB 權重，另需 KV cache。[開發校準和留出](experiments/fallible-verifier/holdout-scoring/README.md) |
+| 不完美驗證器 | 開發校準、暖機、747 題留出與 CPU 策略上限均完成 | 開發校準 `26595` **110.15 GiB、1 分 45 秒**，留出 `26598` **110.24 GiB、3 分 4 秒**，含 vLLM 預留，留出主機 RAM 約 **3.28 GiB**。CPU 判讀 `26599` **4 秒、約 98 MiB RAM**。策略上限本機單核 **5.70 秒、約 98.3 MiB RAM**。 | **現行兩模型推論留 H200，評估用 CPU。** 0.6B 單獨有望用 24 GB。強端約 18 GiB 權重，另需 KV cache。[開發校準和留出](experiments/fallible-verifier/holdout-scoring/README.md) · [策略上限](experiments/fallible-verifier/empirical-policy-ceiling/PREREG.md) |
 | Attention gate × optimizer | 壓力試驗與正常排程探針都完成 | 正常排程 `26594` **3.29 GiB、41 分 6 秒**，主機 RAM 約 **2.05 GiB**。壓力試驗四段各 **3.72 GiB、約 18 分鐘**。 | **同配置可優先試 24 GB，估約 4–6 GiB。** 序列 256、microbatch 8。正常排程暫存估 **0.04 GiB**，作業結束清除。[48 種子壓力試驗](experiments/gate-optimizer/round3/PREREG.md) · [正常排程](experiments/gate-optimizer-nominal/PREREG.md) |
 
 已送出的工作依原 Slurm 佇列執行。24 GB 試跑先核對同一份權重、資料、精度與輸出，並記錄目標卡的取樣峰值和耗時。只有縮批或降併發才放得下的階段，須確認配置仍符合該題的預登記，並另驗吞吐。[逐題進度](reports/2026-11-15-topic-status-codex.md) · [Slurm 提交紀錄](../killtests/SUBMITTED.log)
