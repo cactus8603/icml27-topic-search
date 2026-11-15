@@ -1,5 +1,7 @@
 # biased-gen-cfg：「條件擴散模型偏差泛化的兩個時鐘」第 1 週停損實驗
 
+**已淘汰。** 以下是原實驗的執行紀錄。[歷史程式與設定](https://github.com/cactus8603/icml27-topic-search/tree/ed59264408851afa1e4b9689aa2a1660f079b3ee/killtests/biased-gen-cfg)
+
 對應回報：`reports/2026-11-14-53-deepcheck-biased-generalization-cfg.md`（題目、原判準）、`reports/2026-11-14-52-relaxed-icml-scan.md` 候選 2、
 `reports/2026-11-14-56-killtest-criteria-review.md` 第 1 節（判準審查，**以此為準**）。凍結判準見 `PREREG.md`；數字集中在 `configs/criteria_week1.json`。
 原作：arXiv 2603.03469，程式 github.com/davide-beltrame/biased-generalization（clone 於 `/work/ChihChungHsu/cactus8603/icml/ext/biased-generalization`，含 `wdmdm` 子模組；未改動）。

@@ -36,6 +36,10 @@
 
 [GSM8K 暖機分配與結果](../codex/experiments/fallible-verifier/gsm8k-nested-audit/PREREG.md#讀取紀錄) · [ASDiv-A 複驗](../codex/experiments/fallible-verifier/asdiv-replication/PREREG.md#讀取紀錄) · [ASDiv-A 點風險上限](../codex/experiments/fallible-verifier/asdiv-point-risk-ceiling/PREREG.md#讀取紀錄)
 
+### 程式入口
+
+[ASDiv-A 重現作業](../codex/experiments/fallible-verifier/asdiv-replication/run.sbatch) · [重現設定與判準](../codex/experiments/fallible-verifier/asdiv-replication/PREREG.md)
+
 ### 深入調查
 
 Selective Auditing 已研究何時請專家複查，AM-PPI 也已研究如何分配模型判分與金標預算。我們重算過公開判決資料，在其中一組模型配對裡，只抽查意見相左的答案會漏掉多數共同誤收。 [公開資料重算](../codex/reports/2026-11-14-deepcheck-verifier-replay-data.md)

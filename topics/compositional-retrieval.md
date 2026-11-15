@@ -34,6 +34,10 @@
 - **研究潛力 4/5**　如果同樣重排成本能找回原先漏掉的相關圖片，且在新圖庫重現，就能提出可實際部署的改進。
 - **下一個實驗與資源**　`26806` 實測 1 張 H200 跑 6 分 15 秒，約 0.10 GPU 小時，不含排隊。沿用約 1.3 GiB 的圖庫快取，新輸出小於 256 KiB。新圖庫的獨立查詢及標註清冊已封存，後續須取得候選圖並驗收。[資源估算](../codex/experiments/retrieval-recall-budget/PREREG.md) · [硬體實測](../codex/HARDWARE.md)
 
+### 程式入口
+
+[固定 50 次重排的作業](../codex/experiments/retrieval-recall-budget/run.sbatch) · [獨立圖庫的資料準備](../codex/experiments/retrieval-independent-panel/prepare.py)
+
 ### 深入調查
 
 Half-Truths 已提出同一張圖上比較完整、基準與錯誤描述的測法。CORE 也已把部分符合與完全符合區分開來，讓檢索模型學習更細的排序。

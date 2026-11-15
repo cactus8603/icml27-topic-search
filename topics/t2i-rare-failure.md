@@ -34,6 +34,10 @@
 - **研究潛力 4/5**　若實際生成也能在保持準確度下大幅減少取樣，就能降低生成模型安全稽核的成本。
 - **下一個實驗與資源**　已提交的首段估約 9.17 H200 GPU 小時。每分段一張、最多同時兩張，估約 4.6 小時，不含排隊。後兩段仍待首段選格。若都選滿，按基準吞吐粗估約 38 GPU 小時，兩張卡約 19 小時。加上首段與既有作業，總用量可能超過 50 GPU 小時上限，每段提交前會重算。整題磁碟上限 35 GB，含權重與環境。盲評至少需人工看 150 張，估每 150 張約 1–2 小時。[硬體實測](../codex/HARDWARE.md) · [取樣及成本上限](../codex/experiments/t2i-formal-replay/PREREG.md) · [原磁碟規劃](../killtests/t2i-rare-failure/PREREG.md)
 
+### 程式入口
+
+[正式取樣作業](../codex/experiments/t2i-formal-replay/run.sbatch) · [分段取樣與盲評流程](../codex/experiments/t2i-formal-replay/PREREG.md)
+
 ### 深入調查
 
 Least-Action Auditing 已在 Stable Diffusion 上比較哪些設定較容易失敗。論文在簡化模擬核對過絕對機率，在實際生圖模型上驗證的是風險排序。

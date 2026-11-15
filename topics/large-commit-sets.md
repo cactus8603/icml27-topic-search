@@ -37,6 +37,10 @@
 
 [等成本聯合探測](../codex/experiments/large-commit-sets/round2/PREREG.md) · [免額外運算與兩種上限](../codex/experiments/large-commit-sets/observable-selector/PREREG.md#讀取紀錄)
 
+### 程式入口
+
+[固定候選集合的 CPU 重播](../codex/experiments/large-commit-sets/observable-selector/run.sbatch) · [重播設定與判準](../codex/experiments/large-commit-sets/observable-selector/PREREG.md)
+
 ### 深入調查
 
 SetCommit 已比較同一步換上等大的填詞組合後，最終能多答對多少題。Measured Coupling 也已量到多個詞一起填的影響，有時會偏離兩兩影響的加總。

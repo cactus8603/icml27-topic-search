@@ -1,6 +1,6 @@
 # 三組同 cohort 的早期時鐘對照
 
-接續 u833 單臂早期診斷 `26513`，這次把 K=6c0、K=1c0（u5000）及 u833c0 放在同一組六個訓練 pick、同一份類別 0 評估樣本及同一時間網格。這是已知原 26383 結果後的探索性對照，用來觀察共同加密網格是否改變既有正對照的可判讀性。原 26383 判定、訊號、入池紀錄及正式門檻沿用原文件。 [單臂診斷設計](../two-clocks-prefix/PROTOCOL.md) · [原判準](../../../killtests/biased-gen-cfg/configs/criteria_week2.json)
+接續 u833 單臂早期診斷 `26513`，這次把 K=6c0、K=1c0（u5000）及 u833c0 放在同一組六個訓練 pick、同一份類別 0 評估樣本及同一時間網格。這是已知原 26383 結果後的探索性對照，用來觀察共同加密網格是否改變既有正對照的可判讀性。原 26383 判定、訊號、入池紀錄及正式門檻沿用原文件。 [單臂診斷設計](../two-clocks-prefix/PROTOCOL.md) · [原判準](https://github.com/cactus8603/icml27-topic-search/blob/ed59264408851afa1e4b9689aa2a1660f079b3ee/killtests/biased-gen-cfg/configs/criteria_week2.json)
 
 ## 來源及前置條件
 

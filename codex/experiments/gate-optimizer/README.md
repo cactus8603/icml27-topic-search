@@ -1,6 +1,8 @@
 # Attention gate × optimizer 實驗
 
-執行順序是固定資料切分、開發 seed 調 LR、正式 seed 產生共用 checkpoint、各自分叉正常和壓力排程、機械彙整。判讀定義在 [PREREG.md](PREREG.md)，參數在 [config.json](config.json)。
+**已淘汰。** 以下是原實驗的執行紀錄。[歷史程式與設定](https://github.com/cactus8603/icml27-topic-search/tree/ed59264408851afa1e4b9689aa2a1660f079b3ee/codex/experiments/gate-optimizer)
+
+執行順序是固定資料切分、開發 seed 調 LR、正式 seed 產生共用 checkpoint、各自分叉正常和壓力排程、機械彙整。判讀定義在 [PREREG.md](PREREG.md)，參數在 [歷史設定](https://github.com/cactus8603/icml27-topic-search/blob/ed59264408851afa1e4b9689aa2a1660f079b3ee/codex/experiments/gate-optimizer/config.json)。
 
 - `data.py` 讀取已在共用環境的 OpenWebText Parquet 與 GPT-2 tokenizer。兩者都核對 SHA-256。
 - `model.py` 實作 tied embedding 的 causal GQA decoder。
