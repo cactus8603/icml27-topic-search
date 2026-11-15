@@ -26,3 +26,7 @@ bash "$stage/run.sbatch" "$freeze" --judge "$array"
 ```
 
 精確作者路線可另用 `26567` 的封存 600 筆請求取得指定快照的原生回覆，再走現有匯入與獨立核對。離線的西語詞比例量測沿用既有診斷。 [Batch 匯入](../lambda-author-batch/README.md) [本地西語對照](../lambda-language-panel/PREREG.md)
+
+## 修改紀錄
+
+- [codex] 2026-11-15 18:53（台北），獨立複核首次讀取 `gcd-offline-confirmation-26738/summary.json`。15 個訓練格及評分 `26739` 均成功後，核對收據並重評全部回答。 [正式判讀與來源雜湊](../../reports/2026-11-15-gcd-pilot-verdict-codex.md)

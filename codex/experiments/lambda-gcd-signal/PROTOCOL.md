@@ -20,3 +20,7 @@ bash "$stage/run.sbatch" "$freeze" --join "$gradient_job" "$gradient_sha" \
 ```
 
 跨家族離線續驗可用同一數學評分器，先凍結全新而互斥的訓練、Λ 與評估數對。在相同基礎模型上比較文字 IP、按訓練資料分層的 IP、限制訓練層及只用獨立資料估的激活 steering。每家族需多個固定強度或配置，事先指定可比的訓練學習品質，再做整家族留出。完整原研究還需另外核對 Spanish＋ALL-CAPS 的訓練覆蓋與 MBPP 的六族評估。 [原家族與信度定義](../../../killtests/inoculation-lambda/PREREG.md#3-phase-b-現象訊號與空間閘門-13-皆過才判)
+
+## 修改紀錄
+
+- [codex] 2026-11-15 18:53（台北），獨立複核首次讀取 `gcd-signal-26744/paired-26738.json`。梯度 `26744` 與配對 `26745` 均成功後，核對來源雜湊並獨立重算排序。 [正式判讀與來源雜湊](../../reports/2026-11-15-gcd-pilot-verdict-codex.md)
