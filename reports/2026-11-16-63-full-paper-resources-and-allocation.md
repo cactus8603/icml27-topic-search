@@ -18,7 +18,8 @@
 | 磁碟 | 群組配額 1536G，已用 1425G，**只剩約 111G**（`quota -g -s` 實測） |
 | GPU | 最多 4 張 H200（共享），另有一張開發用 3090 |
 | 截止 | ICML 2027 截稿為 2027 年 1 月底 |
-| 本機空殼 | `hf_home/hub` 裡的 Qwen3-4B、Qwen3-8B-AWQ、Qwen2.5-VL-7B、gpt2-large 都只有 12K，沒有權重，**不能算已有** |
+| 本機空殼 | Qwen3-4B、Qwen3-8B-AWQ、Qwen2.5-VL-7B 三個只有 refs 的空殼，已依使用者指示刪除（2026-11-16）。gpt2-large 有 tokenizer 與 config（2.8M），`killtests/neon-lm/scripts/mauve_eval.py` 會用到，所以保留；它沒有權重 |
+| gated 資源 | 依使用者指示（2026-11-16），需要申請或登入同意的資源**一律降為低優先**。必備清單只放不需申請的替代品，gated 項目只在確實必要時才申請 |
 
 ---
 
@@ -28,8 +29,8 @@
 |---|---|---|---|---|---|
 | [多條件檢索](../topics/compositional-retrieval/) | 4/5、4/5 | 22–25G | 主線 5–15；加蒸餾版 +30–70 | CORE、ConstraintMatch、Flow-CLIP、LCSE | 只有加分項的 Winoground |
 | [多保真度歸因](../topics/multifidelity-attribution/) | 3/5、4/5 | 2–9G | 60–90 | MAGIC、Spell（程式未公開） | 無（避開 Gemma 和 Llama 即可） |
-| [Λ 漏出預測](../topics/inoculation-lambda/) | 2/5、4/5 | 55–85G | 150–350 | Shifting the Gradient、PHM、NIP | Llama-3.1-8B（manual） |
-| [文生圖罕見失敗](../topics/t2i-rare-failure/) | 2/5、4/5 | 20–30G（題目上限 35G） | 300–400 | Least-Action Auditing（2611.10106） | Ring-A-Bell、MMA prompt 集（auto） |
+| [Λ 漏出預測](../topics/inoculation-lambda/) | 2/5、4/5 | 55–85G | 150–350 | Shifting the Gradient、PHM、NIP | Llama-3.1-8B（manual），已降為低優先，改用 OLMo |
+| [文生圖罕見失敗](../topics/t2i-rare-failure/) | 2/5、4/5 | 20–30G（題目上限 35G） | 300–400 | Least-Action Auditing（2611.10106） | Ring-A-Bell、MMA prompt 集（auto），已降為低優先，先用 I2P 與 UnlearnDiffAtk |
 | [強驗證器](../topics/fallible-verifier/) | 3/5、3/5 | 45–50G（可減到約 30G） | 30–60 | AM-PPI、Selective Auditing | 無 |
 | [RL 稀疏蒸餾](../topics/rl-sparse-distill/) | 2/5、3/5 | 約 45G | 500–800 | Reasoning Restored by a Few Decision Tokens（ICML'26）、Sparse but Critical（ICLR'26） | 加分項的 GPQA、Llama-3.2-3B |
 
@@ -213,7 +214,7 @@
 | | 必備 | 加分 |
 |---|---|---|
 | 任務資料 | GCD（**有**）；MBPP（**有** `data/mbpp`；`evalplus/mbppplus` Apache）；trait 資料（**有** `ext/shifting_the_gradient/data`；persona_vectors 為 Apache）；EM insecure code（GitHub，MIT） | `longtermrisk/school-of-reward-hacks`（CC-BY-4.0，1.6MB）；`CEBaB/CEBaB`（授權未確認）；Model Organisms 的醫療／財務資料（授權未確認） |
-| 7–8B 主力 | Qwen2.5-7B-Instruct（15GB，**有**）；Qwen3-4B-Instruct-2507（8GB）；Llama-3.1-8B-Instruct（約 16GB，**gated manual**） | OLMo-3-7B-Instruct（14.6GB，Apache）；gemma-4-12B-it（24GB，Apache，不 gated） |
+| 7–8B 主力 | Qwen2.5-7B-Instruct（15GB，**有**）；Qwen3-4B-Instruct-2507（8GB）；OLMo-3-7B-Instruct（14.6GB，Apache，不 gated，作第二家族） | gemma-4-12B-it（24GB，Apache，不 gated）；低優先：Llama-3.1-8B-Instruct（約 16GB，**gated manual**） |
 | 大尺寸（擇一） | Qwen2.5-14B-Instruct（29.6GB）或 Qwen3.6-27B-FP8（30.9GB，與 NIP 對齊） | Qwen3.6-27B bf16（55.6GB）；gemma-4-31B-it（62.6GB）；Olmo-3.1-32B（64.5GB） |
 | 評審 | Qwen3-32B-AWQ（19GB，**有**） | Llama-3.3-70B（約 141GB，gated，**放不下**） |
 
@@ -229,7 +230,7 @@
 | 合計 | | 150–350 |
 
 **風險**
-- Llama 要人工申請。也可以改用 OLMo 或 Gemma-4。
+- Llama 要人工申請，已降為低優先；第二家族改用 OLMo-3-7B，第三家族可用 Gemma-4。
 - 論文多用 GPT-4o／4.1 當評審，那需要付費 API；改用本地評審就要另做校準。
 - 必備模型下載約 55–85GB，會佔掉剩餘磁碟的大半。
 - 目前的 51 格試驗遇過多次套件與搬遷問題，見 SUBMITTED.log，有工程風險。
@@ -272,7 +273,7 @@
 |---|---|---|---|---|---|
 | 必備 prompt | I2P（4,703 個） | `AIML-TUDA/i2p` | 13MB | MIT | 無 |
 | 必備 prompt | UnlearnDiffAtk prompts | GitHub `OPTML-Group/Diffusion-MU-Attack` | 極小 | 未確認 | 無 |
-| 必備 prompt | Ring-A-Bell 裸露 | `Chia15/RingABell-Nudity` | 69KB | **gated（auto）** | 無 |
+| 低優先（gated） | Ring-A-Bell 裸露 | `Chia15/RingABell-Nudity` | 69KB | **gated（auto）** | 無 |
 | 必備生成器 | SD v1.4 | `CompVis/stable-diffusion-v1-4` | 本機 4.0G | OpenRAIL-M | **有** |
 | 必備 eraser | UCE、ESD、SalUn、RECE（nudity） | `siyich/ijd-unlearned-checkpoints` | 本機 13G | CC-BY-NC-4.0，第三方整理 | **有** |
 | 必備 eraser | FMN、SPM、EraseDiff、Scissorhands、STEREO | 同上 | 共約 16G | 同上 | 要下載 |
@@ -455,11 +456,11 @@
 | 並行 | 文生圖、Λ 繼續完成目前的 kill test，等現象與訊號結果出來，再決定誰升級成第二或第三題 | — | — |
 | 暫停擴展 | 驗證器、RL 只維持目前規模，不下載擴展權重 | — | — |
 | 若升級文生圖 | | +20–30G | +300–400 |
-| 若升級 Λ | 必須先清空間，或只挑一個 7–8B 家族加一個 27B FP8 | — | — |
+| 若升級 Λ | 必須先清空間，或只挑一個 7–8B 家族（OLMo-3-7B）加一個 27B FP8 | — | — |
 
 ### 下載前要先做的事
 
 1. 列出 `icml/` 底下佔用最大的目錄。清掉已結束 kill test 的 run 和快取時，要先確認 Codex 沒有在用。
-2. 刪掉四個空殼快取，或確認它們不會被誤用。
+2. 三個空殼快取已刪除（2026-11-16）；gpt2-large 只有 tokenizer，用到權重時要另外下載。
 3. 下載時只抓 safetensors 或 fp16 子集；fp32 的 repo（SimpleRL-Zoo、DeepScaleR）要特別注意大小。
-4. gated 資源（Llama、Winoground、Ring-A-Bell、MMA、GPQA）由使用者決定是否申請；代理不會登入。
+4. gated 資源（Llama、Winoground、Ring-A-Bell、MMA、GPQA）一律低優先，必備清單已改用不需申請的替代品。真的需要時由使用者決定是否申請；代理不會登入。
