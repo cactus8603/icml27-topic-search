@@ -50,3 +50,5 @@
 - 17:19 取消 T1 時使用者是否清楚知道是哪個工作：主對話 17:02 曾向使用者問「你要我取消它嗎？」，17:19 使用者回「停掉吧」；是否指這個工作，只能依主對話的理解（未確認）。
 
 [codex] 2026-11-17 00:22 使用者要求暫停以統整 repo；已停止唯一中央的新派工（exact parent PID 2921085 SIGSTOP，worker／model 保留），子代理已停筆。已確認數字、資料範圍、34任務快照、WIP與接續任務見 codex/reports/2026-11-17-retrieval-paused-numbers-next-tasks-codex.md；來源 icml27-topic-search@f69b876213f98d1aa53788a62ecb6c67a9f233e0，中央 icml27-topic-search@f6780742ec62d7e50773054ea747c3692fce43dc。目標已由使用者清除；待其明示恢復。
+
+[codex] 2026-11-17 03:28 P2 dev-only 恢復預檢停止：原中央身分、singleton、四張 lease 及四份完成收據相符；題目 repo P2 入口錯把舊中樞 SHA／資產當成本 repo，來源預檢 exit128。舊中央／候選含本輪禁跑 test，未直接恢復，未新送 GPU。依使用者明示停止條件更新 HOLDS 請求與 P2 狀態；dev 指標尚未量測。報告：[icml27-compositional-retrieval@127b8e1063cc2f20c13d2d6462ec9e93bfb7dfa7](https://github.com/cactus8603/icml27-compositional-retrieval/blob/127b8e1063cc2f20c13d2d6462ec9e93bfb7dfa7/codex/reports/2026-11-17-p2-dev-baselines-codex.md)。
