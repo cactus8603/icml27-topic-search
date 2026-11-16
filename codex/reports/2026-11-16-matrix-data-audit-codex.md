@@ -1,6 +1,6 @@
 # [codex] 報告 64 公開資料取得與 MCMR 全量資料獨立稽核
 
-時間：2026-11-16 20:26（台北）。本報告僅涉及資料來源、切分、檔案身份與可用性；沒有模型推論、研究結果讀取或自建 panel test 內容存取。
+時間：2026-11-16 20:26（台北），後續來源稽核補於文末。本報告僅涉及資料來源、切分、檔案身份與可用性；沒有模型推論或研究結果讀取，未開自建 panel test 查詢或影像。後續依 root 指示，僅比對 test gallery 中的影像 ID，以查資料集交疊。
 
 ## 已完成的公開評估資料
 
@@ -58,3 +58,15 @@
 ## 執行邊界
 
 本輪只使用 CPU 與公開、無須登入的下載來源；沒有新增 GPU 工作、登入帳號、代替使用者申請資料或同意額外條款。按 root 的凍結要求，四個 `codex/retrieval_matrix` 取得程式／文件在指定時間後保持不變；最終實際狀態以本報告及 ignored `dl/` 的完成收據為準，root 可在首批 P0 的 clean-tree 閘門後刷新機械來源表。
+
+## 後續：否定 dev v1 與資料交疊的獨立稽核
+
+root 在凍結 commit `e6b0172` 後產生 `coco-negation-dev-v1`。本代理事前只讀審查 `SPEC.md`／builder／三個 CPU tests，未見阻斷；產生後完全未 import builder，另用 set 狀態與 Apriori 頻繁項目集交會重建全部候選，再依固定 hash／k round-robin 重播選題。
+
+結果為邏輯／程式完整性 **PASS**：[獨立稽核 JSON](/ssd4/cactus8603/icml/dl/retrieval-matrix/data/coco-negation-dev-v1/independent-audit.json)。完整 20,000 圖、244 題（k2／3／4＝119／89／36）、dev-small 204；候選池 593／694／238 及最終選題身份與獨立重算完全一致。244 題逐題驗完整正例與 ignore 集、正例跨題不重疊、hard negatives 數量、模板原字串與反向 category 解析、small hash 子集全部符合規格。正例數為 1–20、hard negatives 為 5–50、ignore 數為 0–292。沒有改規則湊 1,000 題，不以此宣稱能檢出 2 pp 或各題完全獨立。
+
+但另外的影像交疊稽核支持 root 新開 dev v2：PACO 的 7,921 圖＝6,063 train2017＋1,858 val2017，其中與原 conjunction-v1 dev20k 重疊 **1,044 圖**、與 test20k 重疊 **1,010 圖**。僅核原始 COLA 影像路徑與 gallery ID，未開 test queries 或影像；證據在 [PACO 交疊稽核](/ssd4/cactus8603/icml/dl/retrieval-matrix/data/cola/paco-panel-image-overlap-audit.json)。因此否定 v1 的邏輯 PASS 不代表和 COLA test 的影像隔離 PASS；root 將保留原 v1，另凍結排除 PACO train 與原 test gallery 的 COCO dev v2。
+
+## 後續：原始 Karpathy COCO 身份
+
+應 matrix_runner 的只讀來源查證，從已驗 SHA 的 Karpathy 原 archive 另取 `dataset_coco.json`。其原 test 5,000 圖和目前 COCO val2017 的 5,000 圖僅 **593 圖**重疊，各有 4,407 張不同；不能以 CORE 的 COCO val2017 輸入宣稱其他文獻 Karpathy test 的 exact reproduction。原始 JSON SHA256 為 `2fd999220673258012acfb411a4e7e66af7d488050b2519b0badcc49b7600b8d`，證據在 `dl/retrieval-matrix/data/karpathy-original/coco-split-overlap.json`。Flickr 的影像相同但 caption 差異仍如前述保留。
