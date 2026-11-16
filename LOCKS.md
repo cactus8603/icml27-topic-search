@@ -4,3 +4,4 @@
 
 
 
+[codex] HOLDS.md、killtests/SUBMITTED.log、log.md；JPEG P2 唯一中央追加移交（codex-p2-jpeg-20261117） 2026-11-17 04:22 預計 2026-11-17 05:10
