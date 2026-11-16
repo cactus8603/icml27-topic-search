@@ -1,0 +1,35 @@
+{
+  "owner": "[codex]",
+  "split_source": {
+    "url": "https://cs.stanford.edu/people/karpathy/deepimagesent/caption_datasets.zip",
+    "archive_sha256": "4cfd70132527b80933105e5829dc9034eaab9573482e2e680abbab6130244817",
+    "member": "dataset_coco.json",
+    "member_sha256": "2fd999220673258012acfb411a4e7e66af7d488050b2519b0badcc49b7600b8d",
+    "selection": "Original order, split=test; all raw captions retained",
+    "expected_images": 5000,
+    "expected_raw_captions": 25010
+  },
+  "official_image_identity": {
+    "archive_url": "http://images.cocodataset.org/zips/val2014.zip",
+    "archive_bytes": 6645013297,
+    "archive_etag": "3925cc4d50eb68d47bf2d6324a012d20-793",
+    "archive_last_modified": "Wed, 11 Jul 2018 05:04:19 GMT",
+    "download_scope": "64KB ZIP tail plus 4505750-byte central directory; no complete archive download",
+    "central_directory_offset": 6640507449,
+    "central_directory_sha256": "cd282f9bd992a327931de58ff2c8ed38f36ae341e701e12e4ca8ba12ce659b2c",
+    "validation": "Every original JPEG, including reused COCO2017 cache, must match official COCO2014 archive uncompressed bytes/CRC32, JPEG format and official annotation dimensions; record complete SHA256 locally",
+    "missing_image_url_template": "http://images.cocodataset.org/val2014/COCO_val2014_<12-digit-cocoid>.jpg"
+  },
+  "official_image_metadata": {
+    "url": "http://images.cocodataset.org/annotations/annotations_trainval2017.zip",
+    "sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268",
+    "members": ["annotations/instances_train2017.json", "annotations/instances_val2017.json"],
+    "fields_used": ["images.id", "images.width", "images.height", "images.flickr_url"]
+  },
+  "official_protocol_context": {
+    "tfds_coco_captions": "https://www.tensorflow.org/datasets/catalog/coco_captions",
+    "qualification": "This raw source does not imply all baselines use identical caption strings or first5 policy. UniME author HF captions and CORE val2017 remain separate protocols."
+  },
+  "output": "dl/retrieval-matrix/data/karpathy-original/coco-test/",
+  "new_model_outputs_produced": false
+}

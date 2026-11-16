@@ -61,3 +61,12 @@ P0未通過的模型仍需保留完整失敗／差異紀錄，不按test效果�
 - 主計畫資料已齊；額外原生CLIP資格需要的Karpathy COCO test5k版本尚在補圖：目前可重用2,125張，補缺2,875張。原始25,010句與UniME作者HF／前5句協定分開；不把CORE val2017的5k與此版本混用。
 - MCMR完整MMEB-V3 archive已驗官方LFS SHA，其query／candidates與原來源逐byte一致。六模型原生融合adapter、完整context稽核與104,981商品／103,176圖片loader已齊，官方renderer逐筆獨立核對一致。CORE轉檔原腳本未公開，仍標非strict CORE exact。v2在首次GPU前修正一維逐列topk呼叫形狀與磁碟chunk64（模型逐商品batch1不變），9項CPU測試通過，兩plan待最終review／freeze。
 - 目前仍無本輪正式GPU模型分數；P0效果及獨立重算、完整P2／P3／P4均未完成。未push。
+
+## 2026-11-16 21:34 更新
+
+- 中央排程已實際啟動：PID `2451282`，凍結commit `726115dc4b49c399473971a84421c029df6a7093`，狀態／事件位於 `dl/retrieval-matrix-dispatch/central-v1/`。14個作業包含原6個embedding各3集、CORE2／8完整MCQ、六模型完整MCMR。各命令保持其原模型凍結commit；所有工作共用global cap2與每卡1個本輪工作限制。
+- 原八個queue均已確認`waiting/child=None`後退休，全部terminal cancelled，逐筆登記；中央與14個task也已登記，LOCKS已釋放。單一scheduler本身存活不等於模型已啟動；21:34快照14個仍pending。現在允許非空卡、utilization不限，容量足夠但已有≥2個compute PID的卡仍跳過，以符合避免多方爭搶的要求。
+- `65f4f4850a82adf283b34dfddc319b72657562e6` 已凍結MCMR final v2與兩環境plan，source gate通過；一維topk、storage chunk64／實際模型batch1、完整context與metadata身分均已獨立驗收。Qwen2影像token上界已依真正runtime修正，VLM4463／GME保守19175、Qwen3 4072皆fit；舊audit與原tokenizer統計保留。
+- 原Karpathy COCO補圖也已完成：5,000張、25,010原caption、820,306,454 bytes，2,125張復用＋2,875張官方新下載，零失敗。全圖另核官方ZIP中央目錄CRC／bytes、尺寸／JPEG／SHA及原caption/列序，4項來源完整性CPU測試root獨立重跑通過；不把此文字版本冒充UniME作者指定HF版。
+- 額外12模型來源與接口正在非實作者審查；原生SigLIP2等兩benchmark資格計畫、通用CLIP資格schema與P3接線仍在各自新目錄CPU準備。UniME方向／數值路線及CLIC缺轉檔來源等差異未被當作PASS；P3仍須一個合格MLLM加一個合格CLIP，不能暗用兩個MLLM代替。
+- 尚未產生正式P0分數或宣稱完整矩陣完成。未push。
