@@ -2,7 +2,7 @@
 
 我們用小規模實驗確認研究現象、可用訊號，以及相較現有方法的改善空間。點進題目資料夾可看介紹、設計、結果、程式，以及資料集、環境和執行方式。
 
-本 repo 是**中樞**：放協作規則、選題、GPU 送件紀錄與跨題目報告。每個題目都有題目 repo（`icml27-<題目>`），**題目 repo 是正本**；本 repo 的 `topics/`、`codex/retrieval*/`、`paper/` 只是封存。本機 checkout 放在 `/ssd4/cactus8603/icml27-repos/`。規則見 [協作規則第 0 節](COORDINATION.md#0-repo-結構中樞與題目-repo)。
+本 repo 是**中樞**：放協作規則、選題、GPU 送件紀錄與跨題目報告。進行中與候選題目都有題目 repo（`icml27-<題目>`），**題目 repo 是正本**；本 repo 對應的 `topics/`、`codex/retrieval*/`、`paper/` 只是封存。暫緩與淘汰的題目不建 repo，正本留在本 repo 的 `topics/`。本機 checkout 放在 `/ssd4/cactus8603/icml27-repos/`。規則見 [協作規則第 0 節](COORDINATION.md#0-repo-結構中樞與題目-repo)。
 
 ## 優先完成現象與訊號
 
@@ -18,7 +18,7 @@
 
 ## 暫停與淘汰
 
-- [大型平行解碼提交集合](topics/large-commit-sets/)　[repo `icml27-large-commit-sets`](https://github.com/cactus8603/icml27-large-commit-sets)（已搬）　論文潛力降為 **2/5**，暫停。
+- [大型平行解碼提交集合](topics/large-commit-sets/)　論文潛力降為 **2/5**，暫停。
 - [注意力寫入與最佳化器](topics/gate-optimizer.md)　論文潛力 **2/5**，本輪淘汰。
 - [條件擴散的兩個時鐘](topics/biased-gen-cfg.md)　論文潛力 **2/5**，本輪淘汰。
 

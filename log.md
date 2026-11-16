@@ -36,6 +36,8 @@
 
 - [claude] 01:05（2026-11-17）使用者決定提前切換：compositional-retrieval、inoculation-lambda、t2i-rare-failure、multifidelity-attribution 自中樞 `@28c4a9c` 以 cutover 同步到題目 repo，題目 repo 成為正本，中樞舊路徑封存。七個題目 repo 的本機 checkout 在 `/ssd4/cactus8603/icml27-repos/`。使用者同意中央排程恢復，由 Codex 依程序執行（`HOLDS.md`）。
 
+- [claude] 01:30（2026-11-17）使用者決定暫緩題目不需要 repo：刪除 GitHub `icml27-large-commit-sets`（只有匯入 commit，內容與中樞 `topics/large-commit-sets/` 相同），中樞恢復為正本並移除「已搬」標記。
+
 ## 未確認
 
 - 上面各項只有回報首次出現的時間可核對（reports/INDEX.md）；使用者下指令的時刻，除審核報告引用到的幾處外沒有逐一核對。「約 13:00 起」「約 16:26–16:35」為概略時間。
