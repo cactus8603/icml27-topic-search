@@ -1,0 +1,19 @@
+# [codex] 修復後 MLLM P0→P2 source 契約稽核
+
+本輪僅讀已凍結panel、99431594893bba94337b3befd10a7a483ba7374f修復來源與P0plan metadata，及獨立CPU subprocess合成探針；沒有讀真qualification、模型arrays／report／效果、建立正式P2plan或GPU／程序／排程操作。本人為部分原runner實作者，本報告不是正式獨立數值審查。
+
+確定阻擋如下。
+
+1. Qwen2 runtime-fix只接受embedding／mcmr，無panel模式。contracts.validate把models、datasets、settings、dependencies、phase、gate、fixed_baseline_test逐項等於原P0，P2改phase即報Runtime repair must preserve original phase，改dev資料或單模型集合亦拒。先裝embedding修復再import panel雖能把gate/runtime巢狀接起來，仍會在此驗證拒P2。不能以跳過修復validate冒充可執行。
+2. 原panel/run.sh直呼原panel runner，不經CORE compatible class，也未加Qwen2 einops overlay；CORE修復run.sh只支援P0／MCMR，不支援panelphase。原panel launcher還是五參數family API，和中央四參數API不同。原腳本不能作修復後P2正式launcher。
+3. CORE全新process先corefix.install('panel')正確：panel.BaseModel捕獲CompatibleOfficialModel，panel.base_gate／base_environment分別捕獲修復gate／runtime。但panel若先import，再首次import corefix，compat.BaseOfficialModel會是panel改入的function，定義subclass即TypeError。如果先import corefix module，再import panel，再install('panel')，importcache不重跑panel，R.source_gate被修復gate覆蓋，panel資格／dev audit gate消失，panel.BaseModel仍是先捕獲的未修原class。不可把此副作用鏈當通用接口。
+4. Qwen2若先import panel再install修復embedding，舊Qwen2 runner頂層patch覆蓋panel gate/model factory，資格／data gate亦消失。相反順序仍遇第1點的嚴格P0phase驗證。新接線不應import這兩個有全局patch副作用的runner來拼接。
+5. CORE validate_repair在P2phase不核settings/datasets等於qualified parent；CPU記憶體探針將seed改999仍通過。原panel Q.admit只接model_spec，builder沒有硬核回傳receipt.p0_plan等於正在延伸的baseplan。完整spec相同仍不能推出同runtime修復、parent plan、settings與qualification來源。
+
+七個獨立CPU探針確認：全新CORE panel順序成立；panel先載corefix首次import直接TypeError；先載corefix再panel再install會失去panelgate；P2改seed通過原corefix validator；Qwen2無panelmode；P2phase被Qwen2拒絕；兩種Qwen2／panel載入順序的gate捕獲／覆寫如上。每個成功probe最後assert CUDA未initialized，沒有模型建構。初輪遇預期外的panel-first TypeError後中止，補以正確分開的載入順序再核，不將兩種情形混為同一結果。
+
+最小新folder接線建議：固定兩個9943159 family descriptor，canonical parentplan／SHA／fullref／完整model集合明列；先真正原panel.Q.admit，再核qualified parentplan entry、fullspec、原settings、各benchmark相同processor signature及實際runtime。只有這些成立才讀devv2／COLA metadata。私有matrix engine使用獨立models namespace，不import有頂層patch的原panel或Qwen2 runner；CORE只復用已釘compat class，Qwen2只復用已釘DoRA adapter class，資料／COLA函式沿用原frozen data介面。source與依賴全SHA、modulepath/version、固定overlay、中央assignment、新output、完整devv2 audit均須gate。無真Q不產P2plan；候選仍需新review／freeze。P3不在範圍。
+
+不可追溯補造的界限：原main／994修復runtime沒有設定或記錄torch seed與TF32／matmul實際profile；plan seed為宣告值。新P2可保留同完整settings與原runtime語義、模組／CUDA及processor收據，但不能聲稱驗證原P0未記錄的狀態。任何新增實際profile要求須另P0，不在P2悄改或補造舊收據。
+
+root已授權在新 `codex/retrieval_matrix_panel_runtime_next/` 實作上述最小接線；原live／frozen folder完全不改。本報告保留稽核發現，不用新實作改寫原歷史。
