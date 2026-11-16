@@ -1,0 +1,741 @@
+{
+  "adoption": {
+    "retire_pending": [
+      "embedding-core8",
+      "embedding-qwen8",
+      "mcmr-core8",
+      "mcmr-qwen8"
+    ],
+    "runtime": "/ssd4/cactus8603/icml/dl/retrieval-matrix-dispatch/central-v2",
+    "schedule": {
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_batches/central-v2.json",
+      "sha256": "199cfd9fd64d062f483a65fd532a3ebadcd58dcf4516815e3006233d41cf972c"
+    }
+  },
+  "confirmation_seconds": 5,
+  "controller": "adopt-reviewed-repair-v3",
+  "controller_sources": {
+    "codex/retrieval_matrix_dispatch_v3/PREREG.md": "c1219ce1e2bd26129a8df96b4aa56cc7ed14de1de0aeb86221a32b23a69a598a",
+    "codex/retrieval_matrix_dispatch_v3/build_schedule.py": "9ab559f84700f7a431f87c775c44bbc7a8b722bd975cc0a3a15acb20670ad324",
+    "codex/retrieval_matrix_dispatch_v3/controller.py": "e73c69f279a5addb650d43163e30d240cd06936e5a8fb2694a135f0f390dc8ae",
+    "codex/retrieval_matrix_dispatch_v3/test_controller.py": "7c61e5234d345881fe7feca7524d1034eae8c5dcd44c570b3a1adaed6871a395"
+  },
+  "extension": "One native SigLIP2 P0 task; fixed full FP32 image4/text32; conservative20GiB admission; no GPU analysis or automatic retries",
+  "gpu_lock_dir": "/ssd4/cactus8603/icml/dl/retrieval3090/runs/.gpu-locks",
+  "legacy_queues": [
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core2-queue.json",
+    "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core8-queue.json"
+  ],
+  "max_existing_compute_pids": 1,
+  "max_live": 2,
+  "migration_policy": "Only retire the exact old central process after stopping it briefly and proving all fourteen tasks remain pending, no attempts or workers. Otherwise resume the old scheduler and defer migration. Preserve its state/events and record every action.",
+  "owner": "[codex]",
+  "parent_schedule": {
+    "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch/schedule.json",
+    "sha256": "efa709f5f0259ec569addbeaf3b773daf4e90cdc7ac0c144ebe0ce7869da6498"
+  },
+  "policy": "Preserve live original workers/receipts/inherited GPU leases, all terminal history, globalcap2/perGPU1. Failed tasks never replay; new explicitly frozen repair tasks use new IDs, refs and outputs.",
+  "resource_disclosure": "SigLIP2 full FP32 weights are4.55GB;12GiB admission retains substantial activation/workspace margin for fixed384/image4/text32. Model settings do not change; GPU smoke records actual peak and never falls back.",
+  "schema": 1,
+  "shared_log": "/ssd4/cactus8603/icml/killtests/SUBMITTED.log",
+  "state": "FROZEN",
+  "supersedes_runtime": "/ssd4/cactus8603/icml/dl/retrieval-matrix-dispatch/central-v1",
+  "tasks": [
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+        "c26b7f9f2a942f34480a0715762814d6697c1205",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+        "core2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "c26b7f9f2a942f34480a0715762814d6697c1205",
+      "id": "embedding-core2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+      "launcher_sha256": "2246d3a2f667948ec08b9a2a94248f62c9b8a42e7634d5b1422bc34253b92e50",
+      "min_free_mib": 8192,
+      "model": "core2",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2-queue.json",
+      "original_queue_pid": 2226876,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+      "plan_sha256": "f4d5c65bdb95c5d858b2b0cbc1af8a78a297709e648a753c67deeb6759fcfc23",
+      "priority": 0
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+        "c26b7f9f2a942f34480a0715762814d6697c1205",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+        "qwen2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "c26b7f9f2a942f34480a0715762814d6697c1205",
+      "id": "embedding-qwen2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+      "launcher_sha256": "2246d3a2f667948ec08b9a2a94248f62c9b8a42e7634d5b1422bc34253b92e50",
+      "min_free_mib": 8192,
+      "model": "qwen2",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2-queue.json",
+      "original_queue_pid": 2226878,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+      "plan_sha256": "f4d5c65bdb95c5d858b2b0cbc1af8a78a297709e648a753c67deeb6759fcfc23",
+      "priority": 1
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/run.sh",
+        "1c328a2c35c486f1768e9e9fea1c51f98dbb226d",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/p0-qwen2-batch1.json",
+        "gme2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "1c328a2c35c486f1768e9e9fea1c51f98dbb226d",
+      "id": "embedding-gme2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/run.sh",
+      "launcher_sha256": "feea4b673ecfb6519e32bb1083a9a9e3945cd8ec9597fe5dcf60bb37d12c41b6",
+      "min_free_mib": 8192,
+      "model": "gme2",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2-queue.json",
+      "original_queue_pid": 2264834,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/gme2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/p0-qwen2-batch1.json",
+      "plan_sha256": "bc4f0d14d365b5250f1147a5920b81dbab6afe20a82df5495ca6346da1752c37",
+      "priority": 4
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/run.sh",
+        "1c328a2c35c486f1768e9e9fea1c51f98dbb226d",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/p0-qwen2-batch1.json",
+        "vlm2vec2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "1c328a2c35c486f1768e9e9fea1c51f98dbb226d",
+      "id": "embedding-vlm2vec2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/run.sh",
+      "launcher_sha256": "feea4b673ecfb6519e32bb1083a9a9e3945cd8ec9597fe5dcf60bb37d12c41b6",
+      "min_free_mib": 8192,
+      "model": "vlm2vec2",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2-queue.json",
+      "original_queue_pid": 2264835,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen2-batch1-20261116/vlm2vec2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2/p0-qwen2-batch1.json",
+      "plan_sha256": "bc4f0d14d365b5250f1147a5920b81dbab6afe20a82df5495ca6346da1752c37",
+      "priority": 5
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/run_core.sh",
+        "25f7bd515875a0c698202d0047d7b7952fd6846b",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/plan.core-mcq.v1.json",
+        "core2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core2/main/complete.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "25f7bd515875a0c698202d0047d7b7952fd6846b",
+      "id": "mcq-core2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/run_core.sh",
+      "launcher_sha256": "877146978d7b94b3fa228f67f56a346ed2fce254d8d4cfd355612c8b2286cd3a",
+      "min_free_mib": 8192,
+      "model": "core2",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core2-queue.json",
+      "original_queue_pid": 2344674,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/plan.core-mcq.v1.json",
+      "plan_sha256": "276ee0e88ded86f41b539df437ac4c718dac329be6d054f3702379e5594e3c8e",
+      "priority": 6
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+        "c26b7f9f2a942f34480a0715762814d6697c1205",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+        "core8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "c26b7f9f2a942f34480a0715762814d6697c1205",
+      "id": "embedding-core8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+      "launcher_sha256": "2246d3a2f667948ec08b9a2a94248f62c9b8a42e7634d5b1422bc34253b92e50",
+      "min_free_mib": 20480,
+      "model": "core8",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8-queue.json",
+      "original_queue_pid": 2226877,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/core8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+      "plan_sha256": "f4d5c65bdb95c5d858b2b0cbc1af8a78a297709e648a753c67deeb6759fcfc23",
+      "priority": 2
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+        "c26b7f9f2a942f34480a0715762814d6697c1205",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+        "qwen8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "c26b7f9f2a942f34480a0715762814d6697c1205",
+      "id": "embedding-qwen8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix/run.sh",
+      "launcher_sha256": "2246d3a2f667948ec08b9a2a94248f62c9b8a42e7634d5b1422bc34253b92e50",
+      "min_free_mib": 20480,
+      "model": "qwen8",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8-queue.json",
+      "original_queue_pid": 2226879,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-qwen3-batch1-20261116/qwen8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix/p0-qwen3-batch1.json",
+      "plan_sha256": "f4d5c65bdb95c5d858b2b0cbc1af8a78a297709e648a753c67deeb6759fcfc23",
+      "priority": 3
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/run_core.sh",
+        "25f7bd515875a0c698202d0047d7b7952fd6846b",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/plan.core-mcq.v1.json",
+        "core8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core8/main/complete.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "25f7bd515875a0c698202d0047d7b7952fd6846b",
+      "id": "mcq-core8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/run_core.sh",
+      "launcher_sha256": "877146978d7b94b3fa228f67f56a346ed2fce254d8d4cfd355612c8b2286cd3a",
+      "min_free_mib": 20480,
+      "model": "core8",
+      "original_queue": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core8-queue.json",
+      "original_queue_pid": 2344675,
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/runs/p0-core-mcq-batch1-20261116/core8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/plan.core-mcq.v1.json",
+      "plan_sha256": "276ee0e88ded86f41b539df437ac4c718dac329be6d054f3702379e5594e3c8e",
+      "priority": 7
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_p0/central_task.sh",
+        "387d4fa5293967705b93aeba235cb9ffe643cc42",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_p0/p0-siglip2.json",
+        "siglip2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/runs/p0-siglip2-v1-20261116"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/runs/p0-siglip2-v1-20261116/coco/index/receipt.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/runs/p0-siglip2-v1-20261116/flickr/index/receipt.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "387d4fa5293967705b93aeba235cb9ffe643cc42",
+      "id": "native-siglip2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_p0/central_task.sh",
+      "launcher_sha256": "0a7a8ddb79dd847e8e877fe4a014fa189d97ec163f33515a9e4131796bf20a81",
+      "min_free_mib": 12288,
+      "model": "siglip2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/runs/p0-siglip2-v1-20261116",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_p0/p0-siglip2.json",
+      "plan_sha256": "c62a50a646938173a1fa76221b7181fd53fe037abcb56248f41db0304d44b329",
+      "priority": 14
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+        "core2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-core2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 8192,
+      "model": "core2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+      "plan_sha256": "55b7414beca72b0da2a621dec67ed75a9b3209f01235bf380cc0870b84a718db",
+      "priority": 8
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+        "qwen2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-qwen2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 8192,
+      "model": "qwen2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+      "plan_sha256": "55b7414beca72b0da2a621dec67ed75a9b3209f01235bf380cc0870b84a718db",
+      "priority": 9
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+        "core8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core8/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-core8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 20480,
+      "model": "core8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/core8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+      "plan_sha256": "55b7414beca72b0da2a621dec67ed75a9b3209f01235bf380cc0870b84a718db",
+      "priority": 10
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+        "qwen8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen8/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-qwen8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 20480,
+      "model": "qwen8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/qwen8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen3-v2.json",
+      "plan_sha256": "55b7414beca72b0da2a621dec67ed75a9b3209f01235bf380cc0870b84a718db",
+      "priority": 11
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen2-v2.json",
+        "gme2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/gme2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/gme2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-gme2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 8192,
+      "model": "gme2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/gme2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen2-v2.json",
+      "plan_sha256": "862fd348ce673ea9e7156f1a36743900f94560d384d58046c37c5129fd8cc2e7",
+      "priority": 12
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+        "65f4f4850a82adf283b34dfddc319b72657562e6",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen2-v2.json",
+        "vlm2vec2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/vlm2vec2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/vlm2vec2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "65f4f4850a82adf283b34dfddc319b72657562e6",
+      "id": "mcmr-vlm2vec2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/run.sh",
+      "launcher_sha256": "ce1803bcad2c5adf1e551de46a90354e77bb6da97fa00428a07ec97460fdae43",
+      "min_free_mib": 8192,
+      "model": "vlm2vec2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix/runs/p0-mcmr-native-v2-20261116/vlm2vec2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_mcmr/p0-mcmr-qwen2-v2.json",
+      "plan_sha256": "862fd348ce673ea9e7156f1a36743900f94560d384d58046c37c5129fd8cc2e7",
+      "priority": 13
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+        "core2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-core2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 8192,
+      "model": "core2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+      "plan_sha256": "0f74cb526e08952e05cc178e9fc2fba91d773701db7d92049a71661a142049b1",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+        "qwen2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-qwen2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 8192,
+      "model": "qwen2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+      "plan_sha256": "0f74cb526e08952e05cc178e9fc2fba91d773701db7d92049a71661a142049b1",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+        "core8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core8/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core8/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core8/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-core8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 20480,
+      "model": "core8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/core8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+      "plan_sha256": "0f74cb526e08952e05cc178e9fc2fba91d773701db7d92049a71661a142049b1",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+        "qwen8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen8/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen8/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen8/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-qwen8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 20480,
+      "model": "qwen8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/p0-v1-20261116/qwen8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-qwen3-fixed-v1.json",
+      "plan_sha256": "0f74cb526e08952e05cc178e9fc2fba91d773701db7d92049a71661a142049b1",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-qwen2-einops-v1.json",
+        "gme2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/gme2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/gme2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/gme2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/gme2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-gme2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+      "launcher_sha256": "d603ddec31f8bc95423ccf8505ca6a8325e32e333f671fd5e332a9db68b42abb",
+      "min_free_mib": 8192,
+      "model": "gme2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/gme2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-qwen2-einops-v1.json",
+      "plan_sha256": "07a9b6859e17d12e99a00439327381655ec22b1369e2d27a9fa4a5f8a5ea3053",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-qwen2-einops-v1.json",
+        "vlm2vec2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/vlm2vec2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/vlm2vec2/coco/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/vlm2vec2/negbench/index-meta.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/vlm2vec2/flickr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-embedding-vlm2vec2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+      "launcher_sha256": "d603ddec31f8bc95423ccf8505ca6a8325e32e333f671fd5e332a9db68b42abb",
+      "min_free_mib": 8192,
+      "model": "vlm2vec2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/p0-v1-20261116/vlm2vec2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-qwen2-einops-v1.json",
+      "plan_sha256": "07a9b6859e17d12e99a00439327381655ec22b1369e2d27a9fa4a5f8a5ea3053",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+        "core2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-core2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 8192,
+      "model": "core2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+      "plan_sha256": "8d6024bb0b8ffb2cb96dde56d60738c719fac0770ad3b70e12e508430d202f59",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+        "qwen2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-qwen2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 8192,
+      "model": "qwen2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+      "plan_sha256": "8d6024bb0b8ffb2cb96dde56d60738c719fac0770ad3b70e12e508430d202f59",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+        "core8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core8/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-core8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 20480,
+      "model": "core8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/core8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+      "plan_sha256": "8d6024bb0b8ffb2cb96dde56d60738c719fac0770ad3b70e12e508430d202f59",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+        "qwen8",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen8"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen8/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-qwen8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/run.sh",
+      "launcher_sha256": "3d947db7d9c5a1cc25fe4c1c985833ab542715a4b8b1bf4c098e1dd2256f4f8c",
+      "min_free_mib": 20480,
+      "model": "qwen8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-core-runtime-fix/runs/mcmr-v1-20261116/qwen8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_core_runtime_fix/p0-mcmr-qwen3-fixed-v1.json",
+      "plan_sha256": "8d6024bb0b8ffb2cb96dde56d60738c719fac0770ad3b70e12e508430d202f59",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-mcmr-qwen2-einops-v1.json",
+        "gme2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/gme2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/gme2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-gme2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+      "launcher_sha256": "d603ddec31f8bc95423ccf8505ca6a8325e32e333f671fd5e332a9db68b42abb",
+      "min_free_mib": 8192,
+      "model": "gme2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/gme2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-mcmr-qwen2-einops-v1.json",
+      "plan_sha256": "2e525b5698782f2abd89ded3042e3416886a3c666b4d470c77bf888fc8dbb9a0",
+      "priority": 20
+    },
+    {
+      "command": [
+        "bash",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+        "99431594893bba94337b3befd10a7a483ba7374f",
+        "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-mcmr-qwen2-einops-v1.json",
+        "vlm2vec2",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/vlm2vec2"
+      ],
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/vlm2vec2/mcmr/index-meta.json"
+      ],
+      "cwd": "/ssd4/cactus8603/icml",
+      "freeze_commit": "99431594893bba94337b3befd10a7a483ba7374f",
+      "id": "fixed-mcmr-vlm2vec2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/central_task.sh",
+      "launcher_sha256": "d603ddec31f8bc95423ccf8505ca6a8325e32e333f671fd5e332a9db68b42abb",
+      "min_free_mib": 8192,
+      "model": "vlm2vec2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/runs/mcmr-v1-20261116/vlm2vec2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_qwen2_runtime_fix/p0-mcmr-qwen2-einops-v1.json",
+      "plan_sha256": "2e525b5698782f2abd89ded3042e3416886a3c666b4d470c77bf888fc8dbb9a0",
+      "priority": 20
+    }
+  ],
+  "utilization_limit": null
+}
