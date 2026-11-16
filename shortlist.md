@@ -2,6 +2,11 @@
 
 [題目狀態、介紹與設計](README.md) · [共同判準](criteria.md) · [作業紀錄](killtests/SUBMITTED.log)
 
+## 主攻（2026-11-17）
+
+1. [多條件檢索](topics/compositional-retrieval/)　第一主攻，本機 3090。
+2. [多保真度資料歸因](topics/multifidelity-attribution/)　H200 第一順位跑多種子期望真值停損（約 8–10 H200 小時）；現象與空間都 PASS 後升為 H200 主線，排在 Λ 與文生圖之前。
+
 ## 已通過入池判準
 
 - [多條件檢索](topics/compositional-retrieval/)的同圖三句排序通過。跨圖的新召回方法由各自的實驗設計驗證。
@@ -10,10 +15,6 @@
 
 1. [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)
 2. [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)
-
-## 其他候選的原排程順序
-
-1. [多保真度資料歸因](topics/multifidelity-attribution/)
 
 ## 暫停
 

@@ -11,7 +11,7 @@
 | 題目 | 現象 | 訊號 | 改善空間 | 證據／潛力 | 目前作業 |
 |---|---|---|---|---|---|
 | [多條件檢索](https://github.com/cactus8603/icml27-compositional-retrieval) | ✅ 已入池。CS-CLIP 嚴格三句排序只有 58.15%；左右顛倒句只判對 49.59% | ✅ CORE 重排前 50 名，獨立圖庫 mAP +15.79 點 | ✅ 距標註上限 12.87 點，固定前 50 名差 19.50 點；31/136 查詢前 50 名沒有正例 | 4/5、4/5 | 基線矩陣（P0–P4）在本機 3090 排隊；交錯召回 `26806` 判為未定（+0.25 點 Recall@50） |
-| [多保真度歸因](https://github.com/cactus8603/icml27-multifidelity-attribution) | ✅ 同一軌跡下 EK-FAC 0.150 LDS，精確參考 0.953 LDS | ✅ 剩餘方向餘弦 0.206，通過門檻與置換控制；混合法比 Spell 高 0.041 LDS | ◐ 同軌跡差 0.80 LDS；換初始化只剩 0.019 LDS（區間跨 0），可轉移性未定 | 3/5、4/5 | `27191` 64 個新移除批次確認（排隊） |
+| [多保真度歸因](https://github.com/cactus8603/icml27-multifidelity-attribution) | ✅ 同一軌跡下 EK-FAC 0.150 LDS，精確參考 0.953 LDS | ✅ 剩餘方向餘弦 0.206，通過門檻與置換控制；混合法比 Spell 高 0.041 LDS | ◐ 同軌跡差 0.80 LDS；換初始化只剩 0.019 LDS（區間跨 0），可轉移性未定 | 3/5、4/5 | `27191` 判未定（+0.042，區間跨 0）；預算曲線完成；下一步為多種子期望真值停損（約 8–10 H200 小時，PREREG 待寫） |
 | [Λ 漏出預測](https://github.com/cactus8603/icml27-inoculation-lambda) | ◐ 語言漏出成立（無防禦 17/20 含西語，其他 0/20）；GCD 各臂差異未建立 | ◐ 一步近似通過數值檢查；51/51 組事前評分完成；方向待行為結果 | — 還缺重訓信度上限與 PHM 對照 | 2/5、4/5 | `27112` 行為試驗 51 格（38 格完成、1 格執行中）→ `27113` 驗收 → `27162` 比較 |
 | [文生圖罕見失敗](https://github.com/cactus8603/icml27-t2i-rare-failure) | ◐ CLIP 前置檢查通過；正式雙偵測器事件率待測 | ◐ 代理設定 213/10,000 命中；正式訊號待人工盲評 | ◐ 高斯模擬省 88 倍（10⁻⁵）、13 倍（10⁻⁴）；實際生圖待量 | 2/5、4/5 | `27190` 第二段 11 格（執行中）→ `27512` 第二段 b 選格 |
 | [強驗證器](https://github.com/cactus8603/icml27-fallible-verifier) | ◐ 強模型誤收 23.32%（GSM8K）、57.29%（ASDiv-A）；共同誤收未確立 | ◐ GSM8K Brier −41.95% 通過；ASDiv-A −6.35% 未過 15% 門檻 | ✅ 省 11.70%，事後最佳 48.29%，差 36.59 點 | 3/5、3/5 | 閒置 |
@@ -46,6 +46,11 @@
 - **主機 RAM**：大部分 H200 作業申請 170 GiB，實際峰值 2–29 GiB。
 - **六題合計**：完整論文約需 1,100–1,800 H200 GPU 時、190–250G 新磁碟，不可能全做。分配建議見[報告 63](reports/2026-11-16-63-full-paper-resources-and-allocation.md#分配建議供使用者決定)。
 
+## 主攻（2026-11-17）
+
+- [多條件影像檢索](topics/compositional-retrieval/)　[repo `icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)　**第一主攻**，在本機 3090 上進行。
+- [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)　**第二，H200 第一順位跑停損**。主張改為：在種子雜訊主導的設定下，以多種子期望重訓效果為目標，用便宜集成當低雜訊先驗，加上少數種子的精確 replay 做收縮校正。停損實驗約 8–10 H200 小時；現象與空間都 PASS 後升為 H200 主線，排在 Λ 與文生圖之前。[文獻與 SOTA（報告 65）](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-65-sota-and-literature.md) · [判定（報告 66）](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-66-go-no-go-expected-lds.md)
+
 ## 優先完成現象與訊號
 
 - [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)　[repo `icml27-inoculation-lambda`](https://github.com/cactus8603/icml27-inoculation-lambda)（已搬）　補完四類防禦的漏出差異，檢查 Λ 能否預測哪種設定比較容易漏出。
@@ -53,8 +58,6 @@
 
 ## 其他候選
 
-- [多條件影像檢索](topics/compositional-retrieval/)　[repo `icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)（已搬）
-- [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)（已搬）
 - [強驗證器與少量金標](topics/fallible-verifier/)　[repo `icml27-fallible-verifier`](https://github.com/cactus8603/icml27-fallible-verifier)（已搬）
 
 ## 暫停與淘汰
