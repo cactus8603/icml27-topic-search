@@ -36,3 +36,8 @@
 - oracle_audit：只實作 CPU 分析與合成資料測試。
 - sota_check：官方資產與輸入、程式／結果獨立核對，不修改執行實作。
 - 凍結前已讀既有平台報告與先前公開指標；只對舊 cache 取 SHA／形狀作來源查核。未產生或讀取本輪新的模型指標，未碰封存資料。研究輸出首次讀取後在此追加具體時間與路徑，判讀規則不隨結果變動。
+
+- [codex] 2026-11-16 17:32:02（台北），完整 GPU 作業 completed/0、COMPLETE 十檔收據通過後，依凍結版分析機械讀取 `dl/retrieval3090/runs/core-scaling-20261116/index/{2b,8b}_order.npy` 與 `cross/{e2_r2,e2_r8,e8_r2,e8_r8}.npy`，產出 `results/analysis/report.json`／`per_query.json`。未修改判讀設定；主代理尚未檢視數值。
+- [codex] 2026-11-16 17:32:42（台北），root首次檢視 `dl/retrieval3090/runs/core-scaling-20261116/results/analysis/report.json` 全四格與區間；原判準維持。已授權未實作主分析的 sota_check 進行獨立重算，讀取時間另記。
+- [codex] 2026-11-16 17:32:39（台北），sota_check 在 root 明示授權後首次讀取本輪 `results/analysis/report.json`、`per_query.json` 與 canonical 陣列，以不引用主分析函式的 CPU 驗證器獨立重算；原判準不變。
+- [codex] 2026-11-16 17:35（台北），root 首次檢視 `dl/retrieval3090/runs/core-scaling-20261116/results/independent-review.json`；17:36 閱讀 `codex/reports/2026-11-16-core-scaling-review-codex.md`。將已核對機械輸出原樣保存到兩個 Codex 模組的 `results/` 供版本追溯；原判準不變。
