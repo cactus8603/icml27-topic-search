@@ -1,0 +1,10 @@
+# [codex] Paired official provenance
+
+- CLIC 作者 release：`AmitPeleg/CLIC` 固定 `3afb945fd3e88162b73c2febc313c58904e4f611`；`dl/retrieval-matrix-extra/sources/clic/source-receipt.json` 記逐檔 Git blob 與 SHA256。主要協定在 `eval/general_eval.py` 的 text_retrieval、sugarcrepe_evaluate、sugarcrepe_pp_evaluate；原始 normalization/image/tokenizer呼叫在 `eval/eval_utils.py`；HF/OpenCLIP模型路由在 models.py；CLIPS 特殊 tokenization 在 clips/factory.py、clips/tokenizer.py、clips/vocab.txt。
+- [CLIC paper v2](https://arxiv.org/html/2505.24424v2)：已封存 `clic-paper.html` SHA `b181241cdc39986fadfee78d71705b9cc90b69f8aea30a687287bf52e1faacde`。B32 固定 Table1 的 CLIC-LAION；L14 為 Table3 第一段 CLIC-LAION（OpenAI CLIP）；CLIPS L14 為 Table3 最後一段 CLIC-LAION。不是 Table5／Table26 的 CLIC-RedCaps，也不是三次 seed 平均。每個主要方向及 macro grouping 在 plan 明列。
+- 官方權重作者 `nmndeep` modelcards明示使用 CogVLM 重新標註的 1M LAION 訓練，repo/revision／完整必要 payload由已凍結 extra registry 固定。B32 `7b6ca58a0375837bcaf847ba6343269dd8c24ae4`，L14 `57a65a0588b517a400605b319486dc609d5fede9`，CLIPS L14 `75717eef78af067ba30ab33ad65eadc0675cb77b`。本模組保留原 acquisition spec digest，只在新 task spec明示 paired batch1/raw/tokenizer政策。
+- [SugarCrepe 官方資料與程式](https://github.com/RAIVNLab/sugar-crepe)：固定 revision `0047054b243992f0fad63d6f64f7544862daf846`，七個原始 JSON與README/LICENSE/main_eval.py逐檔 Git blob及SHA256記於 `dl/retrieval-matrix-paired-p0/sources/sugarcrepe/source-receipt.json`。本模組評估 CLIC paper 的作者版本（elementwise dot），不是悄悄改成資料作者 main_eval.py 的 GEMM。
+- [SugarCrepe++ 作者資料](https://huggingface.co/datasets/Aman-J/SugarCrepe_pp/tree/dea2a1b6f9e1069c609f676aa55ec61e9b65fb61)：重用已下載五個原始 JSON，source_api含固定 revision、Git blob、檔案大小；原始 README/LICENSE及逐檔／影像收據皆在 `dl/retrieval-matrix/data/sugarcrepe_pp/`。本模組不重新生成 caption2，也不拿 SugarCrepe 原句覆蓋其已修改句子。
+- 完整本機影像重用收據：`dl/retrieval-matrix-paired-p0/image-receipt.jsonl` 與 data-audit.json。所有題目的 COCO val2017 圖檔皆已存在；取得程式只下載小型官方 JSON，不重複下載 COCO archive。圖片開啟與完整 byte/SHA核驗均為 CPU資料稽核，不是模型評分。
+
+完整資料、variant、raw text、原生兩方向定義已可核對。已知環境／cache呼叫順序／training seed映射界限在 PREREG.md明示；任何新發現的 identity 或協定缺口都必須在 GPU前 fail closed，不能以名稱相似或技術 forward成功替代資格。

@@ -1,0 +1,387 @@
+{
+  "data": {
+    "counts": {
+      "coco_mcq": 5914,
+      "cola": 210,
+      "replace_att": 788,
+      "replace_obj": 1652,
+      "replace_rel": 1406,
+      "swap_att": 666,
+      "swap_obj": 245,
+      "voc_mcq": 5031
+    },
+    "data_reference": {
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank/plan.core-mcq.v1.json",
+      "sha256": "276ee0e88ded86f41b539df437ac4c718dac329be6d054f3702379e5594e3c8e"
+    },
+    "examples": 15912,
+    "pairs": 58891,
+    "unique_images": 9425
+  },
+  "owner": "[codex]",
+  "qualification_rule": "All3 distinct MCQ benchmarks retained; >=2 exact variant/protocol published targets within1pp; independent nonproducer raw-array recomputation mandatory. Missing targets never qualify.",
+  "schema": 1,
+  "sources": {
+    "CORE_main.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core/main.py",
+      "sha256": "050783d3ff29f7fe165e0fab34fe05473d203753eefb8066e91f7666c5f96e6e",
+      "url": "https://github.com/Alibaba-NLP/core-emb/blob/400cf919838ceeecf4c94e3ac178a4270abcc4c5/main.py"
+    },
+    "CORE_models/load_models.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core/models/load_models.py",
+      "sha256": "f11e50b628b3714ef3406b188daecead5c28f2bffa5f925ede18f282c7b84941",
+      "url": "https://github.com/Alibaba-NLP/core-emb/blob/400cf919838ceeecf4c94e3ac178a4270abcc4c5/models/load_models.py"
+    },
+    "CORE_paper": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+      "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+      "url": "https://arxiv.org/html/2609.04083v1"
+    },
+    "CORE_tasks/cola.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core/tasks/cola.py",
+      "sha256": "79c5d782fda6aa49d6433bd1e46d010dc68c533a1c69dbb11e4faa90a160d68e",
+      "url": "https://github.com/Alibaba-NLP/core-emb/blob/400cf919838ceeecf4c94e3ac178a4270abcc4c5/tasks/cola.py"
+    },
+    "CORE_tasks/negbench.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core/tasks/negbench.py",
+      "sha256": "3d9d7471f811dd922800a7cc5b1b56602c6fb48fb72e88573564d58860dcab84",
+      "url": "https://github.com/Alibaba-NLP/core-emb/blob/400cf919838ceeecf4c94e3ac178a4270abcc4c5/tasks/negbench.py"
+    },
+    "CORE_tasks/scpp.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core/tasks/scpp.py",
+      "sha256": "216c257598f7836b25e4297076fc053227e80040093bbffa79e12226682541aa",
+      "url": "https://github.com/Alibaba-NLP/core-emb/blob/400cf919838ceeecf4c94e3ac178a4270abcc4c5/tasks/scpp.py"
+    },
+    "MCMR_paper": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/sources/mcmr-paper-v1.html",
+      "sha256": "dc98de028ba08de3dd78c82e180249045394e898af7ee1095bc3a3506a9a81d7",
+      "url": "https://arxiv.org/html/2603.01082v1"
+    },
+    "jina_code": {
+      "path": "/ssd4/cactus8603/icml/hf_home/hub/models--jinaai--jina-reranker-m0/snapshots/94bfe0aeb2d4dd7978362699cddd5893d4e0adc8/modeling.py",
+      "sha256": "f775475ec152f685f257ba71bd629a889e2d040c35c045325f0a057113130921",
+      "url": "https://huggingface.co/jinaai/jina-reranker-m0/blob/94bfe0aeb2d4dd7978362699cddd5893d4e0adc8/modeling.py"
+    },
+    "jina_m0_card": {
+      "path": "/ssd4/cactus8603/icml/hf_home/hub/models--jinaai--jina-reranker-m0/snapshots/94bfe0aeb2d4dd7978362699cddd5893d4e0adc8/README.md",
+      "sha256": "1481577a183b5a76ffd2153ec15aa53c7c59e68f6b9ae2ed073d1033239448a5",
+      "url": "https://huggingface.co/jinaai/jina-reranker-m0/blob/94bfe0aeb2d4dd7978362699cddd5893d4e0adc8/README.md"
+    },
+    "qwen_instruct8_card": {
+      "path": "/ssd4/cactus8603/icml/hf_home/hub/models--Qwen--Qwen3-VL-8B-Instruct/snapshots/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/README.md",
+      "sha256": "6d5d06e0c3f069097002445d30dce9ee107db3afaf15563f09e6df49b8dcb4d7",
+      "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/blob/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/README.md"
+    },
+    "qwen_instruct8_code": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/sources/mcmr/eval/rerank/qwen3_pointwise.py",
+      "sha256": "dce636de090a7e022f9227fc3aafd639b4259c07c74c61b8676161edf0cb3ce7",
+      "url": "https://github.com/EIT-NLP/MCMR/blob/8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0/eval/rerank/qwen3_pointwise.py"
+    },
+    "qwen_native2_card": {
+      "path": "/ssd4/cactus8603/icml/hf_home/hub/models--Qwen--Qwen3-VL-Reranker-2B/snapshots/4bd860ac4f15ad1897a214615cccc700f8f71818/README.md",
+      "sha256": "f5b8fb5e489fffb19561a523e081d28d2d46187079199ba2326c374efa662272",
+      "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B/blob/4bd860ac4f15ad1897a214615cccc700f8f71818/README.md"
+    },
+    "qwen_native2_code": {
+      "path": "/ssd4/cactus8603/icml/hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--src__models__qwen3_vl_reranker.py",
+      "sha256": "7f55d5598d0e93585dcd9de7cad522756bb9eed7b1e783a66f8d53a1f7f47e6c",
+      "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/src/models/qwen3_vl_reranker.py"
+    },
+    "qwen_native8_card": {
+      "path": "/ssd4/cactus8603/icml/hf_home/hub/models--Qwen--Qwen3-VL-Reranker-8B/snapshots/b212dc8c91a8164aef1ea2de9c1a867611e75c04/README.md",
+      "sha256": "eca95cdabe4e9e31b7f8bbd701ca2cd06a3cba933d47be5359a016ce71eb8d88",
+      "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/blob/b212dc8c91a8164aef1ea2de9c1a867611e75c04/README.md"
+    }
+  },
+  "state": "SOURCE_VERIFIED_NOT_RUN",
+  "variants": {
+    "jina_m0": {
+      "adaptations": [
+        "Pinned official current checkpoint revision; historical paper revision not specified. Released call groups preserved."
+      ],
+      "backend": "jina_native",
+      "cola_rule": "cola_image_choice",
+      "protocol_state": "PUBLISHED_TARGETS_AVAILABLE_REQUIRES_REVIEW",
+      "request": "Jina unchanged compute_score(max_length=2048,doc_type=image), native sigmoid(pooled-2.65)",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "jina_m0",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.714,
+          "verified_protocol_match": true
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "jina_m0",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.417,
+          "verified_protocol_match": true
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "jina_m0",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.842,
+          "verified_protocol_match": true
+        }
+      },
+      "variant": "Jina-released-native"
+    },
+    "qwen2": {
+      "adaptations": [
+        "Public ms-swift4.0.0 selected; exact paper Swift version not specified. Full engine batch32 retained."
+      ],
+      "backend": "swift_released",
+      "cola_rule": "cola_text_choice",
+      "protocol_state": "PUBLISHED_TARGETS_AVAILABLE_REQUIRES_REVIEW",
+      "request": "CORE released system instruction; user original caption; assistant <image>; FP16 native content[0]",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen2",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.686,
+          "verified_protocol_match": true
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen2",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.315,
+          "verified_protocol_match": true
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen2",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.818,
+          "verified_protocol_match": true
+        }
+      },
+      "variant": "CORE-released-Swift"
+    },
+    "qwen8": {
+      "adaptations": [
+        "Public ms-swift4.0.0 selected; exact paper Swift version not specified. Full engine batch32 retained."
+      ],
+      "backend": "swift_released",
+      "cola_rule": "cola_text_choice",
+      "protocol_state": "PUBLISHED_TARGETS_AVAILABLE_REQUIRES_REVIEW",
+      "request": "CORE released system instruction; user original caption; assistant <image>; FP16 native content[0]",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen8",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.767,
+          "verified_protocol_match": true
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen8",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.261,
+          "verified_protocol_match": true
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "",
+          "metric": "macro_accuracy",
+          "row": "qwen8",
+          "source": {
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/sources/core-paper.html",
+            "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+            "url": "https://arxiv.org/html/2609.04083v1"
+          },
+          "table": "Table8",
+          "target": 0.856,
+          "verified_protocol_match": true
+        }
+      },
+      "variant": "CORE-released-Swift"
+    },
+    "qwen_instruct8": {
+      "adaptations": [
+        "No product metadata in these MCQ tasks: Candidate remains empty. Original e-commerce prompt and two True/False forwards retained. No MCQ target transferred from MCMR NDCG. Fail on missing image; never copy original silent skips."
+      ],
+      "backend": "mcmr_pointwise",
+      "cola_rule": "cola_text_choice",
+      "protocol_state": "TARGETS_INCOMPLETE",
+      "request": "Unchanged MCMR system e-commerce judge; Query caption; Candidate empty; True/False branch full logprob(two forwards); native FP32 branch softmax",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "MCMR publishes one top50 fused product NDCG benchmark; this image-only MCQ True/False adaptation has no verified MCQ published targets.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "MCMR publishes one top50 fused product NDCG benchmark; this image-only MCQ True/False adaptation has no verified MCQ published targets.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "MCMR publishes one top50 fused product NDCG benchmark; this image-only MCQ True/False adaptation has no verified MCQ published targets.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        }
+      },
+      "variant": "MCMR-official-TrueFalse-image-only-adaptation"
+    },
+    "qwen_native2": {
+      "adaptations": [
+        "Fail if original vision helper replaces image by NULL before any model forward. Native MCQ instruction is a documented task adaptation; no Table8 target borrowed."
+      ],
+      "backend": "qwen_native",
+      "cola_rule": "cola_text_choice",
+      "protocol_state": "TARGETS_INCOMPLETE",
+      "request": "Qwen official process with original instruction/query/doc image; BF16 score_linear native sigmoid",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        }
+      },
+      "variant": "Qwen-official-native"
+    },
+    "qwen_native8": {
+      "adaptations": [
+        "Fail if original vision helper replaces image by NULL before any model forward. Native MCQ instruction is a documented task adaptation; no Table8 target borrowed."
+      ],
+      "backend": "qwen_native",
+      "cola_rule": "cola_text_choice",
+      "protocol_state": "TARGETS_INCOMPLETE",
+      "request": "Qwen official process with original instruction/query/doc image; BF16 score_linear native sigmoid",
+      "targets": {
+        "COLA": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "NegBench": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        },
+        "SugarCrepe++": {
+          "absolute_tolerance": 0.01,
+          "gap": "Official Qwen native BF16/context10240/image1800 differs from CORE Table8 active Swift FP16/context1500/image1200 route. No matching MCQ published targets verified.",
+          "metric": "macro_accuracy",
+          "row": null,
+          "source": null,
+          "table": null,
+          "target": null,
+          "verified_protocol_match": false
+        }
+      },
+      "variant": "Qwen-official-native"
+    }
+  }
+}
