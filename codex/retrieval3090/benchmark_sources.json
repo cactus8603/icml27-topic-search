@@ -1,0 +1,499 @@
+{
+  "core_pinned_models": [
+    {
+      "embedding_dim": 2048,
+      "family": "CORE",
+      "license": "cc-by-4.0",
+      "local_pin_source": "codex/retrieval_scaling/plan.json",
+      "model_url": "https://huggingface.co/Alibaba-NLP/core-emb-2b/tree/cc9870ea92d64ebd5f8f9fc368d1120453564158",
+      "pin_source_sha256": "600cecfae01096dff50470a4c8ce7c040c6a47d77a961e600aabfc10aa506402",
+      "plan_model_id": "embed2",
+      "repo": "Alibaba-NLP/core-emb-2b",
+      "revision": "cc9870ea92d64ebd5f8f9fc368d1120453564158",
+      "role": "embedding",
+      "scale_billion": 2,
+      "verification_scope": "copied from already-frozen scaling plan; no new model API query, weight download, result read or execution"
+    },
+    {
+      "embedding_dim": 4096,
+      "family": "CORE",
+      "license": "cc-by-4.0",
+      "local_pin_source": "codex/retrieval_scaling/plan.json",
+      "model_url": "https://huggingface.co/Alibaba-NLP/core-emb-8b/tree/123aef9e5e9e76fb686420f077fce3ef3b580c2b",
+      "pin_source_sha256": "600cecfae01096dff50470a4c8ce7c040c6a47d77a961e600aabfc10aa506402",
+      "plan_model_id": "embed8",
+      "repo": "Alibaba-NLP/core-emb-8b",
+      "revision": "123aef9e5e9e76fb686420f077fce3ef3b580c2b",
+      "role": "embedding",
+      "scale_billion": 8,
+      "verification_scope": "copied from already-frozen scaling plan; no new model API query, weight download, result read or execution"
+    },
+    {
+      "embedding_dim": null,
+      "family": "CORE",
+      "license": "cc-by-4.0",
+      "local_pin_source": "codex/retrieval_scaling/plan.json",
+      "model_url": "https://huggingface.co/Alibaba-NLP/core-reranker-2b/tree/64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+      "pin_source_sha256": "600cecfae01096dff50470a4c8ce7c040c6a47d77a961e600aabfc10aa506402",
+      "plan_model_id": "cross2",
+      "repo": "Alibaba-NLP/core-reranker-2b",
+      "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+      "role": "reranker",
+      "scale_billion": 2,
+      "verification_scope": "copied from already-frozen scaling plan; no new model API query, weight download, result read or execution"
+    },
+    {
+      "embedding_dim": null,
+      "family": "CORE",
+      "license": "cc-by-4.0",
+      "local_pin_source": "codex/retrieval_scaling/plan.json",
+      "model_url": "https://huggingface.co/Alibaba-NLP/core-reranker-8b/tree/d95d36a34300e34b87cc1793827ac798642c4488",
+      "pin_source_sha256": "600cecfae01096dff50470a4c8ce7c040c6a47d77a961e600aabfc10aa506402",
+      "plan_model_id": "cross8",
+      "repo": "Alibaba-NLP/core-reranker-8b",
+      "revision": "d95d36a34300e34b87cc1793827ac798642c4488",
+      "role": "reranker",
+      "scale_billion": 8,
+      "verification_scope": "copied from already-frozen scaling plan; no new model API query, weight download, result read or execution"
+    }
+  ],
+  "integrity": {
+    "api_payloads_cached": true,
+    "no_gpu_or_model_execution": true,
+    "no_private_or_sealed_data": true,
+    "official_git_files_git_blob_verified": true,
+    "small_hf_files_git_blob_verified": true,
+    "weight_hash_verification": "LFS SHA values are official advertised payload digests, not local payload recomputations",
+    "weight_size_meaning": "sum of actual .safetensors file bytes including file headers; not RAM/VRAM and not index metadata.total_size"
+  },
+  "owner": "[codex]",
+  "qwen_models": [
+    {
+      "api_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-2B--api.json",
+      "api_revision_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Embedding-2B/revision/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda?blobs=true",
+      "api_sha256": "c4a1ec017eea764130b3ee289977a86b92ce449014d7b1033c0213ca35b3c0fc",
+      "api_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Embedding-2B?blobs=true",
+      "config_summary": {
+        "architectures": [
+          "Qwen3VLForConditionalGeneration"
+        ],
+        "dtype": "bfloat16",
+        "model_type": "qwen3_vl",
+        "text_hidden_size": 2048
+      },
+      "family": "Qwen3-VL",
+      "license": "apache-2.0",
+      "model_url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B/tree/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda",
+      "repo": "Qwen/Qwen3-VL-Embedding-2B",
+      "retrieved_at_taipei": "2026-11-16T16:29:43+08:00",
+      "revision": "9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda",
+      "role": "embedding",
+      "safetensors_total_bytes": 4255140312,
+      "safetensors_total_gib": 3.9629082307219505,
+      "scale_billion": 2,
+      "small_files": [
+        {
+          "bytes": 1570,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-2B--config.json",
+          "git_blob_sha1": "e426469143f8255335f039fa32c959584558d1cc",
+          "path": "config.json",
+          "sha256": "9172f55b0b9cce70b7f67b10c58a408ccf3ec15c587e6efd4d5f41631237fded",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B/resolve/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda/config.json"
+        },
+        {
+          "bytes": 24249,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-2B--README.md",
+          "git_blob_sha1": "85aa7367947398b90add631415cf8e7b12a86cff",
+          "path": "README.md",
+          "sha256": "0c01437645b55e91c0145f7f3d9d414d0091cefe53c5f17938949f4c4baad0f2",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B/resolve/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda/README.md"
+        }
+      ],
+      "status": "metadata-pinned; not loaded or evaluated",
+      "weight_files": [
+        {
+          "blob_id": "c30edbc42ae8efaaef4ccccbaa139b10036a2228",
+          "bytes": 4255140312,
+          "lfs_sha256": "c73fa9caeddeb3ff831d46c085a7a5708343248ca777e90f2d486964464509c1",
+          "path": "model.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B/resolve/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda/model.safetensors"
+        }
+      ],
+      "weight_format": "safetensors",
+      "weights_downloaded_in_this_task": false
+    },
+    {
+      "api_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-8B--api.json",
+      "api_revision_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Embedding-8B/revision/2c4565515e0f265c6511776e7193b22c0968ddc7?blobs=true",
+      "api_sha256": "d9d54c63ccb8fa55483caf54e7f66ca12e60abe279ff1869d6e645d28e9f83b7",
+      "api_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Embedding-8B?blobs=true",
+      "config_summary": {
+        "architectures": [
+          "Qwen3VLForConditionalGeneration"
+        ],
+        "dtype": "bfloat16",
+        "model_type": "qwen3_vl",
+        "text_hidden_size": 4096
+      },
+      "family": "Qwen3-VL",
+      "license": "apache-2.0",
+      "model_url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/tree/2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "repo": "Qwen/Qwen3-VL-Embedding-8B",
+      "retrieved_at_taipei": "2026-11-16T16:29:43+08:00",
+      "revision": "2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "role": "embedding",
+      "safetensors_total_bytes": 16289679624,
+      "safetensors_total_gib": 15.17094636708498,
+      "scale_billion": 8,
+      "small_files": [
+        {
+          "bytes": 1539,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-8B--config.json",
+          "git_blob_sha1": "bbc95092cb9d1bccc2e2205eeaa2625bc385b59b",
+          "path": "config.json",
+          "sha256": "1eaa88d8d8824a47304e864c14101fe9efe3286607a7573f27eb723637f0d73d",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/config.json"
+        },
+        {
+          "bytes": 24166,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-8B--README.md",
+          "git_blob_sha1": "ee9692d0e176afb06792f0391845ec2ddb93ce5e",
+          "path": "README.md",
+          "sha256": "b8a3ff43064283b7d164df4e7bfb3d82ee8487e6f54d653ba57973d36bfc5f86",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/README.md"
+        },
+        {
+          "bytes": 67737,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding-8B--model.safetensors.index.json",
+          "git_blob_sha1": "8adc862dba2582b08afd3679524c100eb042f57b",
+          "path": "model.safetensors.index.json",
+          "sha256": "f8656aa4a0a666568f6f6befe980a2ba02d9702eb909bd4c211d6f5db1f980ea",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/model.safetensors.index.json"
+        }
+      ],
+      "status": "metadata-pinned; not loaded or evaluated",
+      "weight_files": [
+        {
+          "blob_id": "ab3cf6fec969b2e456396c13de427e646944cc18",
+          "bytes": 4998056552,
+          "lfs_sha256": "79ef275ec5f751d5fb59357c00d473268f9fd74abf5e38aa30137d268e7733c4",
+          "path": "model-00001-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/model-00001-of-00004.safetensors"
+        },
+        {
+          "blob_id": "be1cce5c368edc183a3666fcc5e069af20a933f1",
+          "bytes": 4915962464,
+          "lfs_sha256": "a4da61f512e84fc0f0b80bcb7bcc5137eb3bf25b658a7d55f84f4056078545f0",
+          "path": "model-00002-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/model-00002-of-00004.safetensors"
+        },
+        {
+          "blob_id": "5c9f5613e84bd921279351b43d6d1cf92f6e7fdb",
+          "bytes": 4915962496,
+          "lfs_sha256": "7fb17cf8f06d6fe5aaacf114e85c4e6d8318799f24b517f50d1ec154a8d47007",
+          "path": "model-00003-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/model-00003-of-00004.safetensors"
+        },
+        {
+          "blob_id": "d7931514bced06ef4a176d5181c34c64d8ca9b04",
+          "bytes": 1459698112,
+          "lfs_sha256": "000213b6d1d03ed9023fac23716da51ec4c5be221a04526c2f732d31d8fed1f5",
+          "path": "model-00004-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B/resolve/2c4565515e0f265c6511776e7193b22c0968ddc7/model-00004-of-00004.safetensors"
+        }
+      ],
+      "weight_format": "safetensors",
+      "weights_downloaded_in_this_task": false
+    },
+    {
+      "api_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-2B--api.json",
+      "api_revision_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Reranker-2B/revision/4bd860ac4f15ad1897a214615cccc700f8f71818?blobs=true",
+      "api_sha256": "0bacfb1e889988e7b1f071280e90091a9c1d807b6b54aa21c87b5b12005f4aef",
+      "api_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Reranker-2B?blobs=true",
+      "config_summary": {
+        "architectures": [
+          "Qwen3VLForConditionalGeneration"
+        ],
+        "dtype": "bfloat16",
+        "model_type": "qwen3_vl",
+        "text_hidden_size": 2048
+      },
+      "family": "Qwen3-VL",
+      "license": "apache-2.0",
+      "model_url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B/tree/4bd860ac4f15ad1897a214615cccc700f8f71818",
+      "repo": "Qwen/Qwen3-VL-Reranker-2B",
+      "retrieved_at_taipei": "2026-11-16T16:29:43+08:00",
+      "revision": "4bd860ac4f15ad1897a214615cccc700f8f71818",
+      "role": "reranker",
+      "safetensors_total_bytes": 4255140312,
+      "safetensors_total_gib": 3.9629082307219505,
+      "scale_billion": 2,
+      "small_files": [
+        {
+          "bytes": 1652,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-2B--config.json",
+          "git_blob_sha1": "5a1243ac0690555a8954aaafc4cfe5d720e5b0f1",
+          "path": "config.json",
+          "sha256": "82d38a8f803e38e13986fdd622114a6fec12a834adbd3cee9253d757a257d23d",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B/resolve/4bd860ac4f15ad1897a214615cccc700f8f71818/config.json"
+        },
+        {
+          "bytes": 13265,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-2B--README.md",
+          "git_blob_sha1": "bdd36d72422ea6109383d5ce4ad58ded6a88ae62",
+          "path": "README.md",
+          "sha256": "f5b8fb5e489fffb19561a523e081d28d2d46187079199ba2326c374efa662272",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B/resolve/4bd860ac4f15ad1897a214615cccc700f8f71818/README.md"
+        }
+      ],
+      "status": "metadata-pinned; not loaded or evaluated",
+      "weight_files": [
+        {
+          "blob_id": "ac4ebd07205f8ec05fc3384bc0b523727c81b368",
+          "bytes": 4255140312,
+          "lfs_sha256": "466ec01961061e9d7f804b4fb1625fb6f406106cd1567e026096d4736fa9d5b9",
+          "path": "model.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B/resolve/4bd860ac4f15ad1897a214615cccc700f8f71818/model.safetensors"
+        }
+      ],
+      "weight_format": "safetensors",
+      "weights_downloaded_in_this_task": false
+    },
+    {
+      "api_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-8B--api.json",
+      "api_revision_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Reranker-8B/revision/b212dc8c91a8164aef1ea2de9c1a867611e75c04?blobs=true",
+      "api_sha256": "437260ddf2855198b3f1f7e186060c3bc13edf1c898b4f0f530201e925957107",
+      "api_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-Reranker-8B?blobs=true",
+      "config_summary": {
+        "architectures": [
+          "Qwen3VLForConditionalGeneration"
+        ],
+        "dtype": "bfloat16",
+        "model_type": "qwen3_vl",
+        "text_hidden_size": 4096
+      },
+      "family": "Qwen3-VL",
+      "license": "apache-2.0",
+      "model_url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/tree/b212dc8c91a8164aef1ea2de9c1a867611e75c04",
+      "repo": "Qwen/Qwen3-VL-Reranker-8B",
+      "retrieved_at_taipei": "2026-11-16T16:29:43+08:00",
+      "revision": "b212dc8c91a8164aef1ea2de9c1a867611e75c04",
+      "role": "reranker",
+      "safetensors_total_bytes": 17534339488,
+      "safetensors_total_gib": 16.33012619614601,
+      "scale_billion": 8,
+      "small_files": [
+        {
+          "bytes": 1621,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-8B--config.json",
+          "git_blob_sha1": "fa26a3682b08f748dc3ab929be5fd25cbd69038b",
+          "path": "config.json",
+          "sha256": "5283059e91124c823d805fafc7636daa6978eba9fa1e206b00eabc03ec18c5e6",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/config.json"
+        },
+        {
+          "bytes": 13259,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-8B--README.md",
+          "git_blob_sha1": "933d78643da02290e3f7b6c8a5a2c2037d2f4be8",
+          "path": "README.md",
+          "sha256": "eca95cdabe4e9e31b7f8bbd701ca2cd06a3cba933d47be5359a016ce71eb8d88",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/README.md"
+        },
+        {
+          "bytes": 67795,
+          "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Reranker-8B--model.safetensors.index.json",
+          "git_blob_sha1": "6d4d74c934b05b8addb0744305eef3674650cd8b",
+          "path": "model.safetensors.index.json",
+          "sha256": "859146bff8db1d617fca8b457a5223edff963bb70076b3645f2189fe0540a147",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/model.safetensors.index.json"
+        }
+      ],
+      "status": "metadata-pinned; not loaded or evaluated",
+      "weight_files": [
+        {
+          "blob_id": "a3a6ad887969f915b3821935f89dee80743d53ac",
+          "bytes": 4998056552,
+          "lfs_sha256": "00db2779f4c81c18a551b05ee617a4012af2601ec47181c15629ae756ef367d6",
+          "path": "model-00001-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/model-00001-of-00004.safetensors"
+        },
+        {
+          "blob_id": "eb711c2fb2d1fc53cc3f735e1d618e080b855261",
+          "bytes": 4915962464,
+          "lfs_sha256": "6ef4ccabf1f72c42eed016adca6d46528e66875171268e5ff603c1df2f97fa3d",
+          "path": "model-00002-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/model-00002-of-00004.safetensors"
+        },
+        {
+          "blob_id": "4c8e17cb569e3237f57d0a488ef6b758b2b4d047",
+          "bytes": 4915962496,
+          "lfs_sha256": "f036e887d2b27b56a3b22fe200bbdd7e0c8f075100f87bd2b6653fa8fca02973",
+          "path": "model-00003-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/model-00003-of-00004.safetensors"
+        },
+        {
+          "blob_id": "f9ec9198a4eefa489874b6553f447ccccdba9e80",
+          "bytes": 2704357976,
+          "lfs_sha256": "723d600bc3947051da769a35fb7bb62419d60d558bee7e9c9bb15919ccc79190",
+          "path": "model-00004-of-00004.safetensors",
+          "sha256_provenance": "official Hugging Face API Git-LFS metadata; weight payload not downloaded or locally hash-verified",
+          "url": "https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B/resolve/b212dc8c91a8164aef1ea2de9c1a867611e75c04/model-00004-of-00004.safetensors"
+        }
+      ],
+      "weight_format": "safetensors",
+      "weights_downloaded_in_this_task": false
+    }
+  ],
+  "qwen_official_code": {
+    "commit_api_url": "https://api.github.com/repos/QwenLM/Qwen3-VL-Embedding/commits/main",
+    "entrypoints": {
+      "embedding": "src/models/qwen3_vl_embedding.py:Qwen3VLEmbedder.process",
+      "reranker": "src/models/qwen3_vl_reranker.py:Qwen3VLReranker.process"
+    },
+    "files": [
+      {
+        "bytes": 14682,
+        "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--src__models__qwen3_vl_embedding.py",
+        "git_blob_sha1": "a2d4a73349c4648c5d66633eccd57e02aea1279f",
+        "path": "src/models/qwen3_vl_embedding.py",
+        "sha256": "0e447b6a80e05527f3fd437ab4f1617a6e7d0df102b8164348bbce787a41b267",
+        "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/src/models/qwen3_vl_embedding.py"
+      },
+      {
+        "bytes": 14155,
+        "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--src__models__qwen3_vl_reranker.py",
+        "git_blob_sha1": "9f30da5b75e3bca205b73ad915bf72963170f3d5",
+        "path": "src/models/qwen3_vl_reranker.py",
+        "sha256": "7f55d5598d0e93585dcd9de7cad522756bb9eed7b1e783a66f8d53a1f7f47e6c",
+        "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/src/models/qwen3_vl_reranker.py"
+      },
+      {
+        "bytes": 11325,
+        "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--LICENSE",
+        "git_blob_sha1": "a4f863736a3c1ee5ab405cf31b73e098d4c27eb4",
+        "path": "LICENSE",
+        "sha256": "f08c07d73a60444803f8902b00f7b14c839647a48cc07fba59b3c1bda656ec3c",
+        "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/LICENSE"
+      },
+      {
+        "bytes": 22780,
+        "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--README.md",
+        "git_blob_sha1": "273604572610ef6596c489f1a277539e8f2de81a",
+        "path": "README.md",
+        "sha256": "c57c3c6c15d15b16a7a281fe5454a88bfe43f57b014d7398e59d37f8db3f36a9",
+        "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/README.md"
+      },
+      {
+        "bytes": 622,
+        "cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--pyproject.toml",
+        "git_blob_sha1": "a73789637e017d53889d57f8cf7a2c4c5fbbcabe",
+        "path": "pyproject.toml",
+        "sha256": "12c3726efcb3028dd9055c68f33bcbda6d6b9d379deeb920b0467b206675ffe3",
+        "url": "https://github.com/QwenLM/Qwen3-VL-Embedding/blob/393e2978d27852b0d0230d6994f37f9c15bed73c/pyproject.toml"
+      }
+    ],
+    "license": "apache-2.0",
+    "ref_observed": "main HEAD",
+    "repo": "QwenLM/Qwen3-VL-Embedding",
+    "repository_url": "https://github.com/QwenLM/Qwen3-VL-Embedding",
+    "retrieved_at_taipei": "2026-11-16T16:32:26+08:00",
+    "revision": "393e2978d27852b0d0230d6994f37f9c15bed73c",
+    "tree_api_url": "https://api.github.com/repos/QwenLM/Qwen3-VL-Embedding/git/trees/393e2978d27852b0d0230d6994f37f9c15bed73c?recursive=1",
+    "tree_truncated": false
+  },
+  "retrieved_at_taipei": "2026-11-16T16:32:26+08:00",
+  "schema": 1,
+  "scope": "Official public source and checkpoint metadata pinning only; no weights downloaded, GPU execution, or local model-effect reads",
+  "selection": {
+    "claim_boundary": "CORE paper Tables 1/2 compare specified compositional tasks, not all retrieval tasks; broader MMEB/document/agentic strength does not establish universal compositional dominance.",
+    "core_paper": "https://arxiv.org/html/2609.04083",
+    "excluded_from_matched_2b8b": [
+      {
+        "family": "WeMM",
+        "quality_judgment": false,
+        "reason": "no exact nominal 8B member in the screened official release",
+        "reported_scales_billion": [
+          2,
+          4,
+          9
+        ],
+        "source_urls": [
+          "https://github.com/Tencent/WeMM-Embedding",
+          "https://arxiv.org/abs/2608.24053"
+        ]
+      },
+      {
+        "family": "Jina-reranker-m0",
+        "quality_judgment": false,
+        "reason": "screened reranker is Qwen2-VL 2B; no matched 8B pair",
+        "reported_scales_billion": [
+          2
+        ],
+        "source_section": "Appendix B.2, Table 7 (root verified)",
+        "source_urls": [
+          "https://arxiv.org/html/2609.04083"
+        ]
+      },
+      {
+        "family": "GME",
+        "quality_judgment": false,
+        "reason": "screened public scales are 2B/7B, not exact nominal 2B/8B",
+        "reported_scales_billion": [
+          2,
+          7
+        ],
+        "source_section": "Appendix B.2, Table 7 (root verified)",
+        "source_urls": [
+          "https://arxiv.org/html/2609.04083"
+        ]
+      },
+      {
+        "family": "UniME",
+        "quality_judgment": false,
+        "reason": "screened public scales are 2B/7B, not exact nominal 2B/8B",
+        "reported_scales_billion": [
+          2,
+          7
+        ],
+        "source_section": "Appendix B.2, Table 7 (root verified)",
+        "source_urls": [
+          "https://arxiv.org/html/2609.04083"
+        ]
+      },
+      {
+        "family": "Nemotron Retriever 3.5",
+        "quality_judgment": false,
+        "reason": "screened public scales have 8B/1B rather than matched 2B/8B",
+        "reported_scales_billion": [
+          1,
+          8
+        ],
+        "source_urls": [
+          "https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval"
+        ]
+      }
+    ],
+    "inclusion_criteria": [
+      "official public embedding and reranker checkpoints",
+      "both nominal 2B and 8B scales",
+      "multimodal retrieval compatibility",
+      "relevant compositional evaluation or native multimodal retrieval sources"
+    ],
+    "primary_families": [
+      "CORE",
+      "Qwen3-VL"
+    ],
+    "qwen3_vl_paper": "https://arxiv.org/abs/2601.04720",
+    "screening_provenance": "Exclusion scale/source notes and CORE paper section interpretation supplied by root after primary-source web verification in this task; this agent independently pinned Qwen metadata and copied CORE frozen plan, and did not download more excluded-family metadata.",
+    "status": "primary families selected for a matched 2B/8B comparison; not an overall world top-two claim"
+  }
+}

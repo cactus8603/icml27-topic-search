@@ -1,0 +1,332 @@
+{
+  "schema": 1,
+  "owner": "[codex]",
+  "suite_id": "retrieval-public-dev-v1",
+  "suite_sha256": "dc990e521bd387faabb8bf78df2e5cd50e6bd72ef1ca64d541a63e414eb42d9f",
+  "generated_at_taipei": "2026-11-16T16:36:55.335223+08:00",
+  "formal_evidence": false,
+  "scope": "availability snapshot of reviewed pre-existing development outputs; not a full completed SOTA matrix",
+  "registry_verified": true,
+  "metric_unit": "percent, except explicitly raw equivalence score gaps",
+  "primary_matrix_complete": false,
+  "evidence": {
+    "cheap": {
+      "path": "dl/retrieval3090/runs/literature-dev-20261116/main/report.json",
+      "sha256": "7942b6d14fe28bc1c52d6a6f8eb6d6b56f3294e66d92ed9d55659cfe1d5ee6eb"
+    },
+    "cross": {
+      "path": "dl/retrieval3090/runs/literature-dev-20261116/main/cross-report.json",
+      "sha256": "57e39d7063ab494274300f2f0fba94bac3dcb53f3902ce0cc378cf5141cebf9f"
+    },
+    "cheap_review": {
+      "path": "codex/reports/2026-11-16-retrieval-literature-results-review-codex.md",
+      "sha256": "29b047b26d8900a166939c0bdbfcae6788e2862fc868606d91003c04293b1728"
+    },
+    "cross_review": {
+      "path": "codex/reports/2026-11-16-retrieval-core50-dev1000-review-codex.md",
+      "sha256": "527d844908108760878edb7ba2e2bda626ec31539a73150d40b45aa95cfdf485"
+    },
+    "legacy_reviewed_study": {
+      "path": "codex/reports/2026-11-16-retrieval-experiments-codex.md",
+      "sha256": "f8df4bc974b725d8ab89ee86dae6c5225d46bca2c647ba9d25c29b47056bc563"
+    }
+  },
+  "cells": [
+    {
+      "cell_id": "negbench-negated-dev1000__core-2b-embedding",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "existing frozen literature run; exact panel/model identity retained",
+      "metrics": {
+        "MRR": 65.16088071441946,
+        "R@1": 54.400000000000006,
+        "R@10": 85.3,
+        "R@5": 79.7,
+        "R@50": 96.89999999999999
+      },
+      "evidence_refs": [
+        "cheap",
+        "cheap_review"
+      ]
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__qwen3vl-2b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__core-2b-pipeline50",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "all 1000 queries and 50000 pairs independently reconstructed; source-image metrics only",
+      "metrics": {
+        "MRR": 55.99737125240218,
+        "R@1": 42.9,
+        "R@10": 82.39999999999999,
+        "R@5": 71.7,
+        "R@50": 96.89999999999999
+      },
+      "paired_vs_embedding": {
+        "MRR": {
+          "bootstrap_se_pp": 1.2031115837919737,
+          "ci95_pp": [
+            -11.496039248645419,
+            -6.782396188801477
+          ],
+          "delta_pp": -9.16350946201726
+        },
+        "R@1": {
+          "bootstrap_se_pp": 1.665544003406313,
+          "ci95_pp": [
+            -14.702499999999997,
+            -8.200000000000001
+          ],
+          "delta_pp": -11.5
+        },
+        "R@10": {
+          "bootstrap_se_pp": 1.1523405434040743,
+          "ci95_pp": [
+            -5.2,
+            -0.7000000000000001
+          ],
+          "delta_pp": -2.9000000000000004
+        },
+        "R@5": {
+          "bootstrap_se_pp": 1.3039323080384175,
+          "ci95_pp": [
+            -10.5,
+            -5.4
+          ],
+          "delta_pp": -8.0
+        },
+        "R@50": {
+          "bootstrap_se_pp": 0.0,
+          "ci95_pp": [
+            0.0,
+            0.0
+          ],
+          "delta_pp": 0.0
+        }
+      },
+      "evidence_refs": [
+        "cross",
+        "cross_review"
+      ]
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__qwen3vl-2b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__core-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__qwen3vl-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__core-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "negbench-negated-dev1000__qwen3vl-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-plain-dev1000__core-2b-embedding",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "existing frozen literature run; exact panel/model identity retained",
+      "metrics": {
+        "MRR": 66.21683900326649,
+        "R@1": 55.60000000000001,
+        "R@10": 87.2,
+        "R@5": 79.3,
+        "R@50": 97.2
+      },
+      "evidence_refs": [
+        "cheap",
+        "cheap_review"
+      ]
+    },
+    {
+      "cell_id": "negbench-plain-dev1000__qwen3vl-2b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-plain-dev1000__core-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "negbench-plain-dev1000__qwen3vl-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-negated-full__core-2b-embedding",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "existing frozen literature run; exact panel/model identity retained",
+      "metrics": {
+        "MRR": 65.29762633881808,
+        "R@1": 54.30376204373726,
+        "R@10": 85.91532403150362,
+        "R@5": 78.43521368888177,
+        "R@50": 97.1174989005717
+      },
+      "evidence_refs": [
+        "cheap",
+        "cheap_review"
+      ]
+    },
+    {
+      "cell_id": "negbench-negated-full__qwen3vl-2b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-negated-full__core-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "negbench-negated-full__qwen3vl-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-plain-full__core-2b-embedding",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "existing frozen literature run; exact panel/model identity retained",
+      "metrics": {
+        "MRR": 66.84425975260024,
+        "R@1": 56.072599344367156,
+        "R@10": 87.11121771807787,
+        "R@5": 79.99520268649556,
+        "R@50": 97.43343727512594
+      },
+      "evidence_refs": [
+        "cheap",
+        "cheap_review"
+      ]
+    },
+    {
+      "cell_id": "negbench-plain-full__qwen3vl-2b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "negbench-plain-full__core-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "negbench-plain-full__qwen3vl-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "factor-full__core-2b-embedding",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "holistic cosine only; not LCSE",
+      "metrics": {
+        "test_type:compound": {
+          "binary_accuracy_pct": 95.17241379310344,
+          "exact_ties": 0,
+          "gold_both": 0,
+          "items": 145,
+          "mean_abs_score_gap": 0.1306735414883186
+        },
+        "test_type:equivalence": {
+          "binary_accuracy_pct": null,
+          "exact_ties": 0,
+          "gold_both": 450,
+          "items": 450,
+          "mean_abs_score_gap": 0.02471658769581053
+        },
+        "test_type:operator": {
+          "binary_accuracy_pct": 63.0,
+          "exact_ties": 0,
+          "gold_both": 0,
+          "items": 1100,
+          "mean_abs_score_gap": 0.04673416655256667
+        }
+      },
+      "evidence_refs": [
+        "cheap",
+        "cheap_review"
+      ]
+    },
+    {
+      "cell_id": "factor-full__qwen3vl-2b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "factor-full__core-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "factor-full__qwen3vl-8b-embedding",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "legacy-and-dev136__core-2b-pipeline50",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "retained existing fixed-platform study; no new run or new confirmation; metrics remain in its original report",
+      "evidence_refs": [
+        "legacy_reviewed_study"
+      ]
+    },
+    {
+      "cell_id": "legacy-and-dev136__qwen3vl-2b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "legacy-and-dev136__core-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "legacy-and-dev136__qwen3vl-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "mcmr-native-dev128__core-2b-pipeline50",
+      "state": "INDEPENDENTLY_REVIEWED",
+      "reason": "retained existing fixed-platform study; no new run or new confirmation; metrics remain in its original report",
+      "evidence_refs": [
+        "legacy_reviewed_study"
+      ]
+    },
+    {
+      "cell_id": "mcmr-native-dev128__qwen3vl-2b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    },
+    {
+      "cell_id": "mcmr-native-dev128__core-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "target only; separate older-panel capacity job does not establish new1000/FACTOR/MCMR cell completion"
+    },
+    {
+      "cell_id": "mcmr-native-dev128__qwen3vl-8b-pipeline50",
+      "state": "NOT_RUN",
+      "reason": "official source/revisions/LFS metadata pinned only; weights not downloaded, no execution adapter or inference under this suite"
+    }
+  ],
+  "summary": {
+    "target_cells": 32,
+    "independently_reviewed": 8,
+    "not_run": 24
+  },
+  "note": "Current CORE50 deterioration is retained alongside embedding-only; a weaker rerank baseline must not be the sole comparator. Unexecuted target cells are not zero and cannot support win claims."
+}

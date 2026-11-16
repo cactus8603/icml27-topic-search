@@ -91,3 +91,13 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - [codex] 2026-11-16 15:08:29，setup_review完成新main canonical索引的payload/state/來源/processor/env技術驗收，未讀效果。literature_check依授權於15:09:18.482733首次讀 `runs/literature-dev-20261116/main/report.json`，15:09:18.483176讀 `per_query.json`，進行未實作該producer的獨立CPU計分／bootstrap複核；未讀cross效果與封存。
 - [codex] 2026-11-16 15:13:14，root首次讀獨立審查稿 `reports/2026-11-16-retrieval-literature-results-review-codex.md`；15:13:58.015611首次直接讀已完成的 `runs/literature-dev-20261116/main/report.json`，整合資料調查報告與實際執行狀態。未直接讀per_query，未讀cross效果或封存；沒有更改凍結算法、抽樣、seed、政策或判準。
 - [codex] 2026-11-16 15:15:25，setup_review首次讀本輪scale-data-survey與獨立cheap結果審查兩份報告，核對caption／來源群、MRR／Boolean mAP、FACTOR cosine／LCSE、已完成cheap／執行中精排的敘述邊界；文字審查通過。沒有讀cross效果、原始效果檔或封存；root依此完成報告整理，研究設定不變。
+- [codex] 2026-11-16 16:26:56.086501，literature_check首次讀已完成的 `main/cross-report.json`；同分段16:26:56.087042讀cross-per_query、16:26:56.089267讀cross-meta、16:26:56.089689讀cross50.state、16:26:56.105772讀cross-provenance。16:28:56.735425讀cross-pairs、16:28:56.769800首次解讀cross50.npy數值，按原已提交literature_plan作獨立CPU排名／指標／bootstrap及完整性核算。未改設定，未GPU、未讀8B／MCMR新效果或封存。
+- [codex] 2026-11-16 16:32:31.566857，root首次讀 `reports/2026-11-16-retrieval-core50-dev1000-review-codex.md`；16:32:31.566988首次直接讀已完成 `main/cross-report.json`，此前16:30前後已被動收到代理的核算摘要。這些結果屬14:41凍結後的公開開發比較。此次依使用者新增要求建立跨家族固定suite是版本化後續開發基準，不把既有觀察冒充新預先確認；原算法、樣本與評分不回寫。
+
+## 固定跨家族開發比較
+
+[codex] 2026-11-16 16:33（台北）。使用者要求固定方法×資料集，並以文獻可取得的2–3個強方法家族及2B／8B版本作後續基準。新增 `baseline_suite.json`、`benchmark_sources.json` 及 `BENCHMARKS.md` 作公開開發v1；先固定CORE與Qwen3-VL兩個具有完整官方2B／8B embedding／reranker的家族，embedding-only及同尺寸50-pair pipeline分開。CS-CLIP、M1／LCSE／M2保留輔助／歷史用途，不以本輪贏家事後改名單；新增權重／wrapper的執行與技術smoke另需提交設定。
+
+既有NegBench／FACTOR面板、舊AND與MCMR公開pilot只釘目前身份、角色與各自指標；未重抽、未加入正式確認或讀封存。固定資料版本不意味所有新格已有執行或驗收；缺格保持NOT_RUN，已完成可相容產物經獨立驗收後重用。新的方法需先凍結程式／設定再使用同一suite，成本按模型尺寸、額外編碼與50次配對分列，registry的技術PASS不等於方法效果PASS。新增suite凍結前已知的既有觀察如上述讀取紀錄，不作未見宣稱。
+
+- [codex] 2026-11-16 16:39:19.195456，literature_check首次讀 `results/2026-11-16-baseline-suite-inventory.json`，核既有已讀／已審查產物的轉錄、身份與待執行狀態；未讀任何8B效果或MCMR新效果。root於16:41讀 `reports/2026-11-16-retrieval-baseline-suite-review-codex.md`，整合獨立registry／來源／文字審查。14項合成測試及實際registry唯讀驗證均通過；不因此更改既有方法／指標，也不將未執行目標格稱已完成。

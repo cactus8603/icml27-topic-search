@@ -1,0 +1,1092 @@
+{
+  "schema": 1,
+  "owner": "[codex]",
+  "suite_id": "retrieval-public-dev-v1",
+  "created_at_taipei": "2026-11-16T16:34:51.586703+08:00",
+  "scope": "versioned public-development reference; not a new independent confirmation",
+  "formal_evidence": false,
+  "freeze_semantics": "Freeze identities/target matrix for subsequent methods; existing observations already read are logged in PREREG; not all target cells implemented or executed",
+  "selection": {
+    "required_primary_families": [
+      "CORE",
+      "Qwen3-VL"
+    ],
+    "size_labels_billion": [
+      2,
+      8
+    ],
+    "stages": [
+      "embedding",
+      "pipeline50"
+    ],
+    "family_count": 2,
+    "settings_count": 8,
+    "global_top_two_claim": false,
+    "auxiliary_only": [
+      "CS-CLIP",
+      "existing M1",
+      "existing LCSE AND adaptation",
+      "M2"
+    ],
+    "no_assumed_winner": true
+  },
+  "artifacts": {
+    "literature_plan": {
+      "path": "codex/retrieval3090/literature_plan.json",
+      "sha256": "f0685e544409d0082f642d3ad36ce5b85323465f7159c1880549f396093fb2e2",
+      "kind": "json",
+      "expect": {
+        "/state": "FROZEN",
+        "/formal_evidence": false,
+        "/cross_budget": 50
+      }
+    },
+    "source_registry": {
+      "path": "codex/retrieval3090/benchmark_sources.json",
+      "sha256": "f1ff97f362aca106eabb0fd6778b60d3780ee7be4e71a64bd398e73018222c54",
+      "kind": "json"
+    },
+    "legacy_platform_plan": {
+      "path": "codex/retrieval3090/platform_plan.json",
+      "sha256": "672d917e58029f1cfc9c1ee68b04f068c32bb761ba2b3bf75c71096265511b93",
+      "kind": "json",
+      "expect": {
+        "/formal_evidence": false,
+        "/counts/queries": 136,
+        "/counts/images": 8191
+      }
+    },
+    "core_scaling_plan": {
+      "path": "codex/retrieval_scaling/plan.json",
+      "sha256": "600cecfae01096dff50470a4c8ce7c040c6a47d77a961e600aabfc10aa506402",
+      "kind": "json",
+      "expect": {
+        "/formal_evidence": false,
+        "/data/queries": 136,
+        "/data/images": 8191
+      }
+    },
+    "public_preparation": {
+      "path": "dl/retrieval3090/data/literature-development/panels/preparation.json",
+      "sha256": "86814f40da7a74c7f606cc99ccc4d6bae0a7229ab1eb1008b884cb885638525a",
+      "kind": "json",
+      "expect": {
+        "/state": "COMPLETE",
+        "/selected_groups": 1000,
+        "/images": 5000,
+        "/factor_items": 1695
+      }
+    },
+    "source_groups": {
+      "path": "dl/retrieval3090/data/literature-development/panels/group-provenance.json",
+      "sha256": "3b1c86be0a55df1899a22ecd59a38e564b1bd0a2ca9e977b5310632338bab4ad",
+      "kind": "json"
+    },
+    "coco_gallery_manifest": {
+      "path": "dl/retrieval3090/data/literature-development/raw/coco-val2017-expected.json",
+      "sha256": "8d8cc61a9e94122c7c3be860f4492dc14bb6ce521c1afde72f69ac1fea1b4af5",
+      "kind": "json"
+    },
+    "negated_dev1000": {
+      "path": "dl/retrieval3090/data/literature-development/panels/negbench-negated-dev1000.json",
+      "sha256": "88614935863106442925fde00b3b1dcff94a0dc24c6776b08e1ffeebd83d4aab",
+      "kind": "json",
+      "expect": {
+        "/dataset": "NegBench",
+        "/variant": "negated",
+        "/subset": "dev1000",
+        "/formal_evidence": false,
+        "/seed": 2026111602
+      }
+    },
+    "plain_dev1000": {
+      "path": "dl/retrieval3090/data/literature-development/panels/negbench-plain-dev1000.json",
+      "sha256": "466facf9c9502a628d599084f31f5c3ad301bfbabc30fbcb52528fc894fc3154",
+      "kind": "json",
+      "expect": {
+        "/dataset": "NegBench",
+        "/variant": "plain",
+        "/subset": "dev1000",
+        "/formal_evidence": false,
+        "/seed": 2026111602
+      }
+    },
+    "negated_full": {
+      "path": "dl/retrieval3090/data/literature-development/panels/negbench-negated-full.json",
+      "sha256": "09ed232fcd1b578603c2759cb8b717691dccdc0c03f19a54dcb47dfb986623bf",
+      "kind": "json",
+      "expect": {
+        "/dataset": "NegBench",
+        "/variant": "negated",
+        "/subset": "full",
+        "/formal_evidence": false
+      }
+    },
+    "plain_full": {
+      "path": "dl/retrieval3090/data/literature-development/panels/negbench-plain-full.json",
+      "sha256": "41c9727168c97d105ad332e09f4f1f35f722822944798f9b5238b261afb71207",
+      "kind": "json",
+      "expect": {
+        "/dataset": "NegBench",
+        "/variant": "plain",
+        "/subset": "full",
+        "/formal_evidence": false
+      }
+    },
+    "factor_full": {
+      "path": "dl/retrieval3090/data/literature-development/panels/factor-full.json",
+      "sha256": "f5af9af305b50e6c4016c1974b67823cfa07d35d2a4e3caae8384269055bd0a9",
+      "kind": "json",
+      "expect": {
+        "/dataset": "FACTOR",
+        "/formal_evidence": false
+      }
+    },
+    "legacy_and_panel": {
+      "path": "dl/retrieval3090/runs/platform-torch214-20261116/panel.json",
+      "sha256": "0fe0ab0d9016e65baf8806e48d2214d077d3644d30333d51a1671f66e352206c",
+      "kind": "json"
+    },
+    "legacy_platform_receipt": {
+      "path": "dl/retrieval3090/runs/platform-torch214-20261116/platform-receipt.json",
+      "sha256": "6ac9449fe7a48f876ef2607402d2c3cf33cc9cb372d60e7ee628497992dc9f1e",
+      "kind": "json"
+    },
+    "legacy_and_images_manifest": {
+      "path": "dl/retrieval3090/data/coco2017-anchor-rerank/manifest.json",
+      "sha256": "8f43eedbcef31fe5057c26705e97bf9f213f162612d9a15b53da11bb9bacf78d",
+      "kind": "json"
+    },
+    "mcmr_pilot_panel": {
+      "path": "dl/retrieval3090/data/mcmr/pilot_manifest.json",
+      "sha256": "3939d973295631c3c843e8aa3c02c4acf847fe8d2ce70fdfbf7779d04d7331ce",
+      "kind": "json",
+      "expect": {
+        "/seed": 2026111664
+      }
+    },
+    "mcmr_preparation": {
+      "path": "dl/retrieval3090/data/mcmr/preparation.json",
+      "sha256": "54029eb0079b0be2405829964cfe607ba9532f9e999a0798bb0add3b58edc1a2",
+      "kind": "json",
+      "expect": {
+        "/pilot_candidates": 8320,
+        "/pilot_queries": 128,
+        "/dataset_revision": "12d53f4063804ee6a976024c7375ab2fbe4368c8"
+      }
+    }
+  },
+  "models": {
+    "core-embedding-2b": {
+      "family": "CORE",
+      "repo": "Alibaba-NLP/core-emb-2b",
+      "revision": "cc9870ea92d64ebd5f8f9fc368d1120453564158",
+      "role": "embedding",
+      "scale_billion": 2,
+      "license": "cc-by-4.0",
+      "embedding_dim": 2048
+    },
+    "core-embedding-8b": {
+      "family": "CORE",
+      "repo": "Alibaba-NLP/core-emb-8b",
+      "revision": "123aef9e5e9e76fb686420f077fce3ef3b580c2b",
+      "role": "embedding",
+      "scale_billion": 8,
+      "license": "cc-by-4.0",
+      "embedding_dim": 4096
+    },
+    "core-reranker-2b": {
+      "family": "CORE",
+      "repo": "Alibaba-NLP/core-reranker-2b",
+      "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+      "role": "reranker",
+      "scale_billion": 2,
+      "license": "cc-by-4.0"
+    },
+    "core-reranker-8b": {
+      "family": "CORE",
+      "repo": "Alibaba-NLP/core-reranker-8b",
+      "revision": "d95d36a34300e34b87cc1793827ac798642c4488",
+      "role": "reranker",
+      "scale_billion": 8,
+      "license": "cc-by-4.0"
+    },
+    "qwen3vl-embedding-2b": {
+      "family": "Qwen3-VL",
+      "repo": "Qwen/Qwen3-VL-Embedding-2B",
+      "revision": "9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda",
+      "role": "embedding",
+      "scale_billion": 2,
+      "license": "apache-2.0",
+      "embedding_dim": 2048
+    },
+    "qwen3vl-embedding-8b": {
+      "family": "Qwen3-VL",
+      "repo": "Qwen/Qwen3-VL-Embedding-8B",
+      "revision": "2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "role": "embedding",
+      "scale_billion": 8,
+      "license": "apache-2.0",
+      "embedding_dim": 4096
+    },
+    "qwen3vl-reranker-2b": {
+      "family": "Qwen3-VL",
+      "repo": "Qwen/Qwen3-VL-Reranker-2B",
+      "revision": "4bd860ac4f15ad1897a214615cccc700f8f71818",
+      "role": "reranker",
+      "scale_billion": 2,
+      "license": "apache-2.0"
+    },
+    "qwen3vl-reranker-8b": {
+      "family": "Qwen3-VL",
+      "repo": "Qwen/Qwen3-VL-Reranker-8B",
+      "revision": "b212dc8c91a8164aef1ea2de9c1a867611e75c04",
+      "role": "reranker",
+      "scale_billion": 8,
+      "license": "apache-2.0"
+    }
+  },
+  "datasets": {
+    "negbench-negated-dev1000": {
+      "panel_artifact": "negated_dev1000",
+      "task": "source-image-retrieval",
+      "role": "primary-development",
+      "raw_queries": 1000,
+      "eligible_queries": 1000,
+      "source_groups": 1000,
+      "gallery": 5000,
+      "primary_metric": "source-image-MRR-pct",
+      "secondary_metrics": [
+        "R@1",
+        "R@5",
+        "R@10",
+        "R@50"
+      ],
+      "model_inputs": [
+        "verbatim query.text",
+        "candidate image pixels"
+      ],
+      "grouping": "exact-source-JPEG SHA; paired image/caption_index with plain",
+      "ci_protocol": {
+        "unit": "source-image-JPEG group",
+        "draws": 10000,
+        "seed": 2026111602,
+        "paired": true
+      },
+      "formal_evidence": false
+    },
+    "negbench-plain-dev1000": {
+      "panel_artifact": "plain_dev1000",
+      "task": "source-image-retrieval",
+      "role": "embedding-retention-control",
+      "raw_queries": 1000,
+      "eligible_queries": 1000,
+      "source_groups": 1000,
+      "gallery": 5000,
+      "primary_metric": "source-image-MRR-pct",
+      "secondary_metrics": [
+        "R@1",
+        "R@5",
+        "R@10",
+        "R@50"
+      ],
+      "model_inputs": [
+        "verbatim query.text",
+        "candidate image pixels"
+      ],
+      "pairing": "same source/caption_index as negated-dev1000",
+      "ci_protocol": {
+        "unit": "source-image-JPEG group",
+        "draws": 10000,
+        "seed": 2026111602,
+        "paired": true
+      },
+      "formal_evidence": false
+    },
+    "negbench-negated-full": {
+      "panel_artifact": "negated_full",
+      "task": "source-image-retrieval",
+      "role": "full-embedding-coverage",
+      "raw_queries": 25014,
+      "eligible_queries": 25013,
+      "source_groups": 5000,
+      "gallery": 5000,
+      "primary_metric": "source-image-MRR-pct",
+      "secondary_metrics": [
+        "R@1",
+        "R@5",
+        "R@10",
+        "R@50"
+      ],
+      "excluded": "exact one source-empty caption; raw position retained",
+      "aggregation": "official per-eligible-caption descriptive mean; no CI in v1",
+      "model_inputs": [
+        "verbatim query.text",
+        "candidate image pixels"
+      ],
+      "formal_evidence": false
+    },
+    "negbench-plain-full": {
+      "panel_artifact": "plain_full",
+      "task": "source-image-retrieval",
+      "role": "full-embedding-control",
+      "raw_queries": 25014,
+      "eligible_queries": 25014,
+      "source_groups": 5000,
+      "gallery": 5000,
+      "primary_metric": "source-image-MRR-pct",
+      "secondary_metrics": [
+        "R@1",
+        "R@5",
+        "R@10",
+        "R@50"
+      ],
+      "aggregation": "official per-eligible-caption descriptive mean; no CI in v1",
+      "model_inputs": [
+        "verbatim query.text",
+        "candidate image pixels"
+      ],
+      "formal_evidence": false
+    },
+    "factor-full": {
+      "panel_artifact": "factor_full",
+      "task": "single-image-two-caption-matching",
+      "role": "logic-diagnostic",
+      "items": 1695,
+      "images": 1320,
+      "operator_items": 1100,
+      "compound_items": 145,
+      "equivalence_items": 450,
+      "metrics": [
+        "operator binary accuracy-pct and per-operator",
+        "compound binary accuracy-pct",
+        "equivalence absolute score-gap; not binary accuracy"
+      ],
+      "model_inputs": [
+        "verbatim caption a",
+        "verbatim caption b",
+        "given image pixels"
+      ],
+      "grouping": "source image; repeated items not IID",
+      "ci_protocol": "descriptive only; a new CI requires its own preregistration",
+      "formal_evidence": false
+    },
+    "legacy-and-dev136": {
+      "panel_artifact": "legacy_and_panel",
+      "task": "COCO-class-area-rule-all-match-retrieval",
+      "role": "legacy-compositional-development",
+      "queries": 136,
+      "gallery": 8191,
+      "connected_query_groups": 110,
+      "primary_metric": "full-ranking-mAP-pct under existing labels",
+      "secondary_metrics": [
+        "Recall@50",
+        "no-hit query count"
+      ],
+      "model_inputs": [
+        "verbatim full query",
+        "candidate image pixels"
+      ],
+      "grouping": "same original group OR shared labeled positive: connected components",
+      "ci_protocol": "existing committed platform/analysis protocol; no new statistical recipe in this registry",
+      "limitations": [
+        "small exposed panel",
+        "known annotation ambiguity; no human adjudication",
+        "not source-image-MRR"
+      ],
+      "formal_evidence": false
+    },
+    "mcmr-native-dev128": {
+      "panel_artifact": "mcmr_pilot_panel",
+      "task": "text-to-product-image-and-metadata",
+      "role": "cross-domain-development-extension",
+      "queries": 128,
+      "gallery": 8320,
+      "primary_metric": "source-product-MRR-pct",
+      "secondary_metrics": [
+        "Recall@50",
+        "no-hit query count"
+      ],
+      "model_inputs": [
+        "verbatim query",
+        "candidate image pixels",
+        "complete title",
+        "complete description",
+        "complete features",
+        "price",
+        "Date First Available"
+      ],
+      "grouping": "existing fixed product/source groups; shared JPEG aliases disclosed",
+      "ci_protocol": "existing committed MCMR pilot protocol; this exposed pilot is not confirmation",
+      "limitations": [
+        "subsampled 128/8320, not full 3997/104981",
+        "COCO/native product prompt adaptation must be disclosed"
+      ],
+      "formal_evidence": false
+    }
+  },
+  "methods": {
+    "core-2b-embedding": {
+      "family": "CORE",
+      "scale_billion_per_model": 2,
+      "stage": "embedding",
+      "embedding_model": "core-embedding-2b",
+      "reranker_model": null,
+      "cross_pairs_per_query": 0,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 2048,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "full-dimension normalized embedding cosine; numeric gallery order for exact ties"
+    },
+    "core-2b-pipeline50": {
+      "family": "CORE",
+      "scale_billion_per_model": 2,
+      "stage": "pipeline50",
+      "embedding_model": "core-embedding-2b",
+      "reranker_model": "core-reranker-2b",
+      "cross_pairs_per_query": 50,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 2048,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "family/scale own full-gallery embedding ranking; rerank its top50, stable score tie by incoming rank; unchanged retriever tail"
+    },
+    "core-8b-embedding": {
+      "family": "CORE",
+      "scale_billion_per_model": 8,
+      "stage": "embedding",
+      "embedding_model": "core-embedding-8b",
+      "reranker_model": null,
+      "cross_pairs_per_query": 0,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 4096,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "full-dimension normalized embedding cosine; numeric gallery order for exact ties"
+    },
+    "core-8b-pipeline50": {
+      "family": "CORE",
+      "scale_billion_per_model": 8,
+      "stage": "pipeline50",
+      "embedding_model": "core-embedding-8b",
+      "reranker_model": "core-reranker-8b",
+      "cross_pairs_per_query": 50,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 4096,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "family/scale own full-gallery embedding ranking; rerank its top50, stable score tie by incoming rank; unchanged retriever tail"
+    },
+    "qwen3vl-2b-embedding": {
+      "family": "Qwen3-VL",
+      "scale_billion_per_model": 2,
+      "stage": "embedding",
+      "embedding_model": "qwen3vl-embedding-2b",
+      "reranker_model": null,
+      "cross_pairs_per_query": 0,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 2048,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "full-dimension normalized embedding cosine; numeric gallery order for exact ties",
+      "adapter_status_at_registration": "not implemented/loaded/evaluated for this suite; official code/revision pinned only"
+    },
+    "qwen3vl-2b-pipeline50": {
+      "family": "Qwen3-VL",
+      "scale_billion_per_model": 2,
+      "stage": "pipeline50",
+      "embedding_model": "qwen3vl-embedding-2b",
+      "reranker_model": "qwen3vl-reranker-2b",
+      "cross_pairs_per_query": 50,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 2048,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "family/scale own full-gallery embedding ranking; rerank its top50, stable score tie by incoming rank; unchanged retriever tail",
+      "adapter_status_at_registration": "not implemented/loaded/evaluated for this suite; official code/revision pinned only"
+    },
+    "qwen3vl-8b-embedding": {
+      "family": "Qwen3-VL",
+      "scale_billion_per_model": 8,
+      "stage": "embedding",
+      "embedding_model": "qwen3vl-embedding-8b",
+      "reranker_model": null,
+      "cross_pairs_per_query": 0,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 4096,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "full-dimension normalized embedding cosine; numeric gallery order for exact ties",
+      "adapter_status_at_registration": "not implemented/loaded/evaluated for this suite; official code/revision pinned only"
+    },
+    "qwen3vl-8b-pipeline50": {
+      "family": "Qwen3-VL",
+      "scale_billion_per_model": 8,
+      "stage": "pipeline50",
+      "embedding_model": "qwen3vl-embedding-8b",
+      "reranker_model": "qwen3vl-reranker-8b",
+      "cross_pairs_per_query": 50,
+      "weight_class": "official-weights/local-evaluation-adaptation",
+      "training": "none in baseline evaluation",
+      "embedding_dimension": 4096,
+      "execution_profile": "existing literature_plan plus frozen core adapter for CORE2B; scaling plan for legacy CORE8B; a committed dataset/family adapter and technical smoke required before any new cell",
+      "availability": "method identity selected; implementation/run/review status is tracked separately",
+      "ranking": "family/scale own full-gallery embedding ranking; rerank its top50, stable score tie by incoming rank; unchanged retriever tail",
+      "adapter_status_at_registration": "not implemented/loaded/evaluated for this suite; official code/revision pinned only"
+    }
+  },
+  "cells": [
+    {
+      "id": "negbench-negated-dev1000__core-2b-embedding",
+      "dataset": "negbench-negated-dev1000",
+      "method": "core-2b-embedding",
+      "role": "primary-development",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-dev1000__qwen3vl-2b-embedding",
+      "dataset": "negbench-negated-dev1000",
+      "method": "qwen3vl-2b-embedding",
+      "role": "primary-development",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-embedding"
+    },
+    {
+      "id": "negbench-negated-dev1000__core-2b-pipeline50",
+      "dataset": "negbench-negated-dev1000",
+      "method": "core-2b-pipeline50",
+      "role": "primary-development",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-dev1000__qwen3vl-2b-pipeline50",
+      "dataset": "negbench-negated-dev1000",
+      "method": "qwen3vl-2b-pipeline50",
+      "role": "primary-development",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-pipeline50"
+    },
+    {
+      "id": "negbench-negated-dev1000__core-8b-embedding",
+      "dataset": "negbench-negated-dev1000",
+      "method": "core-8b-embedding",
+      "role": "primary-development",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-dev1000__qwen3vl-8b-embedding",
+      "dataset": "negbench-negated-dev1000",
+      "method": "qwen3vl-8b-embedding",
+      "role": "primary-development",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-embedding"
+    },
+    {
+      "id": "negbench-negated-dev1000__core-8b-pipeline50",
+      "dataset": "negbench-negated-dev1000",
+      "method": "core-8b-pipeline50",
+      "role": "primary-development",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-dev1000__qwen3vl-8b-pipeline50",
+      "dataset": "negbench-negated-dev1000",
+      "method": "qwen3vl-8b-pipeline50",
+      "role": "primary-development",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "negated_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-pipeline50"
+    },
+    {
+      "id": "negbench-plain-dev1000__core-2b-embedding",
+      "dataset": "negbench-plain-dev1000",
+      "method": "core-2b-embedding",
+      "role": "embedding-retention-control",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "plain_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-plain-dev1000__qwen3vl-2b-embedding",
+      "dataset": "negbench-plain-dev1000",
+      "method": "qwen3vl-2b-embedding",
+      "role": "embedding-retention-control",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "plain_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-embedding"
+    },
+    {
+      "id": "negbench-plain-dev1000__core-8b-embedding",
+      "dataset": "negbench-plain-dev1000",
+      "method": "core-8b-embedding",
+      "role": "embedding-retention-control",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "plain_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-plain-dev1000__qwen3vl-8b-embedding",
+      "dataset": "negbench-plain-dev1000",
+      "method": "qwen3vl-8b-embedding",
+      "role": "embedding-retention-control",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "plain_dev1000",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-embedding"
+    },
+    {
+      "id": "negbench-negated-full__core-2b-embedding",
+      "dataset": "negbench-negated-full",
+      "method": "core-2b-embedding",
+      "role": "full-embedding-coverage",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "negated_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-full__qwen3vl-2b-embedding",
+      "dataset": "negbench-negated-full",
+      "method": "qwen3vl-2b-embedding",
+      "role": "full-embedding-coverage",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "negated_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-embedding"
+    },
+    {
+      "id": "negbench-negated-full__core-8b-embedding",
+      "dataset": "negbench-negated-full",
+      "method": "core-8b-embedding",
+      "role": "full-embedding-coverage",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "negated_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-negated-full__qwen3vl-8b-embedding",
+      "dataset": "negbench-negated-full",
+      "method": "qwen3vl-8b-embedding",
+      "role": "full-embedding-coverage",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "negated_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-embedding"
+    },
+    {
+      "id": "negbench-plain-full__core-2b-embedding",
+      "dataset": "negbench-plain-full",
+      "method": "core-2b-embedding",
+      "role": "full-embedding-control",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "plain_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-plain-full__qwen3vl-2b-embedding",
+      "dataset": "negbench-plain-full",
+      "method": "qwen3vl-2b-embedding",
+      "role": "full-embedding-control",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "plain_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-embedding"
+    },
+    {
+      "id": "negbench-plain-full__core-8b-embedding",
+      "dataset": "negbench-plain-full",
+      "method": "core-8b-embedding",
+      "role": "full-embedding-control",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "plain_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "negbench-plain-full__qwen3vl-8b-embedding",
+      "dataset": "negbench-plain-full",
+      "method": "qwen3vl-8b-embedding",
+      "role": "full-embedding-control",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "plain_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-embedding"
+    },
+    {
+      "id": "factor-full__core-2b-embedding",
+      "dataset": "factor-full",
+      "method": "core-2b-embedding",
+      "role": "logic-diagnostic",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "factor_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "factor-full__qwen3vl-2b-embedding",
+      "dataset": "factor-full",
+      "method": "qwen3vl-2b-embedding",
+      "role": "logic-diagnostic",
+      "cost_class": "2b-embedding",
+      "artifact_refs": [
+        "factor_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-embedding"
+    },
+    {
+      "id": "factor-full__core-8b-embedding",
+      "dataset": "factor-full",
+      "method": "core-8b-embedding",
+      "role": "logic-diagnostic",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "factor_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "factor-full__qwen3vl-8b-embedding",
+      "dataset": "factor-full",
+      "method": "qwen3vl-8b-embedding",
+      "role": "logic-diagnostic",
+      "cost_class": "8b-embedding",
+      "artifact_refs": [
+        "factor_full",
+        "source_registry",
+        "literature_plan",
+        "public_preparation",
+        "source_groups",
+        "coco_gallery_manifest"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-embedding"
+    },
+    {
+      "id": "legacy-and-dev136__core-2b-pipeline50",
+      "dataset": "legacy-and-dev136",
+      "method": "core-2b-pipeline50",
+      "role": "legacy-compositional-development",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "legacy_and_panel",
+        "source_registry",
+        "legacy_platform_plan",
+        "legacy_platform_receipt",
+        "legacy_and_images_manifest",
+        "core_scaling_plan"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "legacy-and-dev136__qwen3vl-2b-pipeline50",
+      "dataset": "legacy-and-dev136",
+      "method": "qwen3vl-2b-pipeline50",
+      "role": "legacy-compositional-development",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "legacy_and_panel",
+        "source_registry",
+        "legacy_platform_plan",
+        "legacy_platform_receipt",
+        "legacy_and_images_manifest",
+        "core_scaling_plan"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-pipeline50"
+    },
+    {
+      "id": "legacy-and-dev136__core-8b-pipeline50",
+      "dataset": "legacy-and-dev136",
+      "method": "core-8b-pipeline50",
+      "role": "legacy-compositional-development",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "legacy_and_panel",
+        "source_registry",
+        "legacy_platform_plan",
+        "legacy_platform_receipt",
+        "legacy_and_images_manifest",
+        "core_scaling_plan"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "legacy-and-dev136__qwen3vl-8b-pipeline50",
+      "dataset": "legacy-and-dev136",
+      "method": "qwen3vl-8b-pipeline50",
+      "role": "legacy-compositional-development",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "legacy_and_panel",
+        "source_registry",
+        "legacy_platform_plan",
+        "legacy_platform_receipt",
+        "legacy_and_images_manifest",
+        "core_scaling_plan"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-pipeline50"
+    },
+    {
+      "id": "mcmr-native-dev128__core-2b-pipeline50",
+      "dataset": "mcmr-native-dev128",
+      "method": "core-2b-pipeline50",
+      "role": "cross-domain-development-extension",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "mcmr_pilot_panel",
+        "source_registry",
+        "mcmr_preparation"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "mcmr-native-dev128__qwen3vl-2b-pipeline50",
+      "dataset": "mcmr-native-dev128",
+      "method": "qwen3vl-2b-pipeline50",
+      "role": "cross-domain-development-extension",
+      "cost_class": "2b-pipeline50",
+      "artifact_refs": [
+        "mcmr_pilot_panel",
+        "source_registry",
+        "mcmr_preparation"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-2b-pipeline50"
+    },
+    {
+      "id": "mcmr-native-dev128__core-8b-pipeline50",
+      "dataset": "mcmr-native-dev128",
+      "method": "core-8b-pipeline50",
+      "role": "cross-domain-development-extension",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "mcmr_pilot_panel",
+        "source_registry",
+        "mcmr_preparation"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry"
+    },
+    {
+      "id": "mcmr-native-dev128__qwen3vl-8b-pipeline50",
+      "dataset": "mcmr-native-dev128",
+      "method": "qwen3vl-8b-pipeline50",
+      "role": "cross-domain-development-extension",
+      "cost_class": "8b-pipeline50",
+      "artifact_refs": [
+        "mcmr_pilot_panel",
+        "source_registry",
+        "mcmr_preparation"
+      ],
+      "execution_state": "TARGET_ONLY; consult independently reviewed result inventory, never infer completion from registry",
+      "baseline_for_comparison": "core-8b-pipeline50"
+    }
+  ],
+  "comparison_contract": {
+    "primary_development_dataset": "negbench-negated-dev1000",
+    "initial_anchor_methods": [
+      "core-2b-embedding",
+      "core-2b-pipeline50"
+    ],
+    "required_full_matrix_anchor": "all eight primary-dataset cells must be independently reviewed before claiming complete 2-family/2-scale comparison",
+    "candidate_method_registration": "commit config/source/inputs/support/budget/failure handling before producing or reading its effects; bind this suite SHA in run receipt",
+    "keep_both_stages": true,
+    "no_gold_for_admission_or_parsing": true,
+    "no_dataset_or_metric_changes_after_effects": true,
+    "do_not_claim_equal_cost_from_pair_count": true,
+    "cross_dataset_aggregate_score": false,
+    "allowed_cell_states": [
+      "NOT_RUN",
+      "TECHNICAL_FAILURE",
+      "EXECUTED_UNREVIEWED",
+      "INDEPENDENTLY_REVIEWED"
+    ],
+    "missing_cell_is_zero": false,
+    "result_locations": [
+      "codex/reports/",
+      "codex/retrieval3090/results/"
+    ],
+    "new_gpu_jobs_submitted_by_registry": false,
+    "formal_confirmation": "separate unseen protocol/data and independent review; no sealed data accessed"
+  },
+  "registry_verification_scope": "allowlisted file bytes and comparison references only; not model payload loading, metric recomputation, result review or future runner integration"
+}

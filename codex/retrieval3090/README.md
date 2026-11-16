@@ -147,3 +147,14 @@ python=dl/retrieval3090/envs/retrieval3090-torch214/bin/python
 ```
 
 整個流程依序做技術smoke、完整向量索引、CPU檢索分析、固定否定開發子集的CORE50、CPU重排分析。中斷後以相同清冊／設定／來源重跑即可續算；每個已完成batch保存state。四份向量NPY與重排分數是canonical產物，不再另存重複NPZ。完成與來源資訊由 `index-meta.json`／`cross-meta.json`記錄；結果只在報告位置保存，不能由技術smoke或執行中的進度推定研究效果。
+
+## 後續新方法的固定比較
+
+方法家族、尺寸、階段、固定資料與公平比較規則見 [公開開發基準v1](BENCHMARKS.md)。機械身份清冊為 `baseline_suite.json`，官方權重及程式釘版為 `benchmark_sources.json`。先以CORE及Qwen3-VL兩個家族，各自2B／8B、純向量及同尺寸50配對管線作目標矩陣；缺少實作、推論或獨立驗收的格子另列待完成，不因registry驗證通過就稱已完成baseline。
+
+```bash
+python3 -B codex/retrieval3090/benchmark_suite.py verify \
+  --suite codex/retrieval3090/baseline_suite.json
+```
+
+本命令只唯讀驗固定檔案SHA與矩陣引用，不啟動GPU或重算效果；既有執行入口的模型／處理／環境驗證仍需保留。新增方法不改v1面板或指標，先固定本輪新方法與計算預算，再用相同query配對比較。

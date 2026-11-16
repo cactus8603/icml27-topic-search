@@ -136,8 +136,25 @@ CS−CORE的MRR差為−11.80044百分點，來源群paired bootstrap95%CI［−
 
 目前CORE前50已包含969/1,000個來源圖，表示在這份source-image任務中，只增加候選數的入池Recall理論剩餘空間為3.1百分點；排序改善仍是另一個問題。這也說明大樣本開發可幫我們分辨入池與排序瓶頸。FACTOR的AND配對上CS較強，整體來源圖檢索卻較弱，兩種任務不可互相替代；FACTOR基準不是LCSE結果。
 
-**CORE50精排仍在執行，尚未讀取效果。** 固定1,000條否定query×50候選，共50,000配對，不依來源圖是否入池篩題。背景pipeline會在精排完成後自動產生 `cross-report.json`／`cross-per_query.json`，未完成前不稱其通過效果驗收。佇列狀態：`dl/retrieval3090/queues/literature-dev-20261116.json`；技術進度：`dl/retrieval3090/runs/literature-dev-20261116/main/progress.json`。本次實際選physical GPU3，啟動時20,792MiB空閒；依序載入模型、batch影像8／文字32／cross4，截至本節更新未見OOM。15:15快照為精排完成5,400/50,000配對，整卡used8,419MiB、free15,835MiB；這是含其他使用者的當下整卡快照，不是本模型peak量測。GPU准入仍為至少14GiB空閒且util≤20%、兩次確認，無合適卡即排隊。
+**15:15快照時，CORE50精排仍在執行、尚未讀取效果；其後16:15完成，見下一節驗收。** 固定1,000條否定query×50候選，共50,000配對，不依來源圖是否入池篩題。背景pipeline在精排完成後產生 `cross-report.json`／`cross-per_query.json`。佇列狀態：`dl/retrieval3090/queues/literature-dev-20261116.json`；技術進度：`dl/retrieval3090/runs/literature-dev-20261116/main/progress.json`。本次實際選physical GPU3，啟動時20,792MiB空閒；依序載入模型、batch影像8／文字32／cross4，未見OOM。15:15快照為精排完成5,400/50,000配對，整卡used8,419MiB、free15,835MiB；這是含其他使用者的當下整卡快照，不是本模型peak量測。GPU准入仍為至少14GiB空閒且util≤20%、兩次確認，無合適卡即排隊。
 
 本輪已清理驗收後的官方下載ZIP815,585,330 bytes，以及逐byte相同的smoke文字表複本3,918,306 bytes；保留原圖、原始資料、canonical向量／state、來源與清理收據。未刪可重用模型或其他研究產物。後續M1／LCSE或條件解析改編需在新一輪事前固定，再使用這份公開開發資料比較；目前沒有執行新增訓練。
 
 最後的測量邊界：NegBench只標來源圖；本輪不能檢驗所有其他圖是否同時滿足AND／NOT條件。若要主張多條件full-match檢索改善，仍需原本相應的全相關性標註／獨立確認資料，不能把本輪MRR替換成該mAP。所有公開caption已用於全量cheap評估；未抽中昂貴dev的其他caption也不能再稱完全未見。
+
+## CORE50已完成，以及固定跨家族基準v1
+
+[codex] 2026-11-16 16:36（台北）更新。原queue於16:15:08完成、returncode0；全50,000 pairs及後續CPU分析均完成。literature_check以不同演算法重建1,000條完整5,000圖排名、prefix／tail、全部配對與10,000次群bootstrap，核算通過；未另做GPU fresh forward。完整來源及首次讀取時間見[CORE50獨立審查](2026-11-16-retrieval-core50-dev1000-review-codex.md)。
+
+| 同一NegBench否定dev1000 | 來源圖MRR（%） | R@1（%） | R@50（%） |
+|---|---:|---:|---:|
+| CORE-EMBED-2B | 65.16088 | 54.40 | 96.90 |
+| CORE2B→CORE-RERANKER-2B、50候選 | 55.99737 | 42.90 | 96.90 |
+
+精排減向量的MRR差為−9.16351pp，配對來源群95%CI［−11.49604, −6.78240］。31條未入池來源query仍保留且名次不變；固定同一prefix內排序不會改R@50，因此其零差不是額外模型發現。這說明此處不能只拿較弱的精排管線當新方法唯一對照；也不能推論reranker在所有Boolean語義、其他資料或尺寸均無效。998條query在prefix內至少有一組exact分數tie，最高分tie為46條；事前固定stable按原cheap rank處理，沒有看到結果後換tie-break。
+
+使用者要求後續固定方法×資料集，並有文獻強方法的2B／8B對照。已建立[公開開發基準v1](../retrieval3090/BENCHMARKS.md)：CORE及Qwen3-VL兩個具有完整官方2B／8B embedding與reranker的家族，每族每尺寸保留純向量與同尺寸50候選pipeline，共八個設定。選擇依據是組合任務相關性、官方資產可得及尺寸匹配，不宣稱全球前二。CORE原paper也直接比較Qwen家族；新版WeMM的2／4／9B與GME／UniME的2／7B不改名塞進8B欄。
+
+`baseline_suite.json`釘17個來源／面板／協定artifact；目標矩陣共32格，其中包括主NegBench八格、全量及普通embedding控制、FACTOR、舊AND與MCMR延伸。這不是宣稱32格都已實跑。當前[可用性與結果清冊](../retrieval3090/results/2026-11-16-baseline-suite-inventory.json)保留8個已有獨立審查的相容舊產物，24格NOT_RUN；Qwen四權重只完成官方revision、LFS metadata與官方推論程式commit釘版，沒有下載權重、適配、smoke或推論。另案CORE8B的舊136題容量作業也不能冒充新1,000題的8B結果。
+
+Registry唯讀驗證與14項合成測試通過，僅保證資料／配置身份及同資料同成本引用，不是模型效果通過。新家族的適配與GPU執行設定須另提交、技術smoke與獨立驗收後再補格；新的方法則保留這份固定資料與比較表，不按本輪誰贏就換面板或基線。此次固定suite沒有新增GPU工作，沒有更動原協定、他人作業或封存資料。
