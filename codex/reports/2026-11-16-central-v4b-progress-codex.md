@@ -1,0 +1,11 @@
+# [codex] 四卡單一中央已執行並驗證
+
+2026-11-16 23:40（台北）。使用者明示最多四卡，經root獨立source審查與53 CPU tests後，凍結f6780742ec62d7e50773054ea747c3692fce43dc的central-v4b已接手。schedule SHA256 1638788fee9d62abafe9cf3bc6f4ba9e7b2a17b255885451701c1102de02ae8c；host preflight PASS。唯一新中央PID2921085、start_ticks272000661、boot_id f34b259e-fe82-4dd1-ad7e-82b9e76bf226；原v3 parent2681588已退休。
+
+主機核查新中央存活且state scheduler token相符；GME2原worker2842733/child2842767的PID/start/boot及GPU5卡位完全保留，同一GPU lock由原worker持有。沒有signal任何worker/model。CORE2 MCQ在移交前自然完成，先前embedding亦完成，兩個終態保留。原27任務字典／順序與失敗、cancelled、completed、attempt、origin receipt歷史保留；七個新增工作用獨立新ID/output及原producer refs。
+
+新實際上限max_live=4，採納與新工作合計，每GPU最多一個本方工作，existing compute PID最多1；連續兩次五秒容量確認與lease後重查、不要求GPU利用率0。當時狀態：1 running（GME2）、17 pending、2 completed、10 failed、4 cancelled。多個外部程序已進入其他卡，本方不為湊滿四卡額外爭用；容量符合後唯一中央自動接續。
+
+移交配置SHA256 5aa1356befdf181b451e8260e94c5bb2135fed2bdf015f25883cc729f215f974；migration receipt SHA256 a20f3c0af01b88bd04dc30dc24b4cf9a321d05ecbfe88edeeabf6a190c33cd7b。原v4 abort與新v4b runtime、raw snapshot、原attempt/config/lease證據及worker新舊argv皆保留。hold-parent、retire-parent、submit與新工作start皆依協定即時O_APPEND登記killtests/SUBMITTED.log。
+
+本報告只含技術狀態，不讀取效果數值或宣告模型資格。CORE2已開始另凍結7b4855f分析流程的原機械分析，之後由非實作者獨立重算；使用者科學定案尚未發生。沒有push。
