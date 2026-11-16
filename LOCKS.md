@@ -4,3 +4,4 @@
 
 
 
+[codex] HOLDS.md、killtests/SUBMITTED.log、log.md；CORE2 dev獨立核定紀錄（codex-p2-core2-results-20261117） 2026-11-17 04:56 預計 2026-11-17 05:10
