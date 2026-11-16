@@ -5,6 +5,7 @@
     ["paper/compositional-retrieval/*", "paper/compositional-retrieval/", "paper/"],
     ["codex/retrieval*/*", "codex/", "codex/"],
     ["codex/reports/2026-11-16-*", "codex/reports/", "codex/reports/"],
+    ["codex/reports/2026-11-17-*", "codex/reports/", "codex/reports/"],
     ["reports/2026-11-14-46-deepcheck-compositional-retrieval.md", "reports/", "reports/"],
     ["reports/2026-11-14-57-retrieval-fail-deep-judgment.md", "reports/", "reports/"],
     ["reports/2026-11-16-62-retrieval-3090-dev-plan.md", "reports/", "reports/"],
