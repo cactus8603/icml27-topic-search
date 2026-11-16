@@ -1,0 +1,60 @@
+{
+  "omitted": "Original paired54f544c entries intentionally excluded: missing einops in GPU-conditional FlashAttention import. Await separately reviewed paired runtime-fix ref/source/launcher/output.",
+  "owner": "[codex]",
+  "schema": 1,
+  "state": "CANDIDATE_NOT_SCHEDULED",
+  "tasks": [
+    {
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-runtime-fix/runs/p0-v1-20261116/siglip2/coco/index/receipt.json",
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-runtime-fix/runs/p0-v1-20261116/siglip2/flickr/index/receipt.json"
+      ],
+      "freeze_commit": "f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb",
+      "id": "native-siglip2-einops-v1",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/central_task.sh",
+      "min_free_mib": 12288,
+      "model": "siglip2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-runtime-fix/runs/p0-v1-20261116/siglip2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/p0-siglip2-einops-approved-v1.json"
+    },
+    {
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0/scores/complete.json"
+      ],
+      "completion_profile": "native-reranker-v1",
+      "freeze_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "id": "native-rerank-jina_m0",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/run.sh",
+      "min_free_mib": 8192,
+      "model": "jina_m0",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json"
+    },
+    {
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2/scores/complete.json"
+      ],
+      "completion_profile": "native-reranker-v1",
+      "freeze_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "id": "native-rerank-qwen2",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/run.sh",
+      "min_free_mib": 20480,
+      "model": "qwen2",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json"
+    },
+    {
+      "completion": [
+        "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8/scores/complete.json"
+      ],
+      "completion_profile": "native-reranker-v1",
+      "freeze_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "id": "native-rerank-qwen8",
+      "launcher": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/run.sh",
+      "min_free_mib": 20480,
+      "model": "qwen8",
+      "output": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8",
+      "plan": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json"
+    }
+  ]
+}

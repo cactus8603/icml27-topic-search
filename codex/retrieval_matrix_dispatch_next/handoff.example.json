@@ -1,0 +1,30 @@
+{
+  "new": {
+    "controller": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_next/controller.py",
+    "freeze_commit": "REPLACE_WITH_FULL_REVIEWED_NEXT_FREEZE_REF",
+    "python": "python3",
+    "runtime": "/ssd4/cactus8603/icml/dl/retrieval-matrix-dispatch/central-next",
+    "schedule": {
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_batches/central-next.json",
+      "sha256": "REPLACE_WITH_FROZEN_SCHEDULE_SHA256"
+    }
+  },
+  "old": {
+    "controller": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_v3/controller.py",
+    "expected_token": {
+      "boot_id": "REPLACE_WITH_HOST_PROVEN_TOKEN",
+      "pid": 0,
+      "start_ticks": 0
+    },
+    "freeze_commit": "665a5743c6c1308ae84d25dd450a625cb98fa3b4",
+    "python": "python3",
+    "runtime": "/ssd4/cactus8603/icml/dl/retrieval-matrix-dispatch/central-v3",
+    "schedule": {
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_batches/central-v3.json",
+      "sha256": "48f2794f6a5a771ed08c07496b2ed54435af33c7b16442e577d8fa61a6f8519c"
+    }
+  },
+  "owner": "[codex]",
+  "schema": 1,
+  "state": "TEMPLATE_NOT_EXECUTABLE"
+}
