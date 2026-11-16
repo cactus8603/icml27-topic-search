@@ -1,0 +1,39 @@
+{
+  "code": [
+    "codex/retrieval_matrix_panel/DEV_SPEC.md",
+    "codex/retrieval_matrix_panel/build_dev.py",
+    "codex/retrieval_matrix_panel/test_development.py",
+    "topics/compositional-retrieval/code/experiments/retrieval-conjunction-panel/build_panel.py",
+    "topics/compositional-retrieval/code/experiments/retrieval-conjunction-panel/fetch_images.py",
+    "codex/retrieval_matrix_devdata/build.py"
+  ],
+  "files": {
+    "codex/retrieval_matrix_devdata/build.py": "82add47c34032ea1f61fad9d7815c2ff4d4c43a9d5420c7ab4156f72ab6e6fdb",
+    "codex/retrieval_matrix_panel/DEV_SPEC.md": "b93b02a45b1974b36b0ab86a6b002817ff9e811a30f2b24c683a5c2b5d11dc5c",
+    "codex/retrieval_matrix_panel/build_dev.py": "5350d7fd386601554547d0c0f344ad34832bb71a27bc8884fa3d6736560591ca",
+    "codex/retrieval_matrix_panel/test_development.py": "3eafd3e0e055fc0e9b860d2edd53ff496d55c57011532ab7e82f3b90988fb4a9",
+    "dl/claude-panel/conj-panel-v1/dev/gallery.json": "47cedc97b553ad38e10cbe796a19ad5a3c3135ac4f959fbef1e2e2c80f108c5e",
+    "dl/claude-panel/conj-panel-v1/manifest.json": "c7ee5229236f4690bdfbc1ccde9c28f4f40f0656f05e313215fa67979e29f26b",
+    "dl/claude-panel/conj-panel-v1/test/gallery.json": "92199cc82378b3b2cb79d2db35929d885b8de3337cf6517ca5e0c9f2976fdd60",
+    "dl/retrieval-matrix/data/cola/upstream/data/COLA_singleobjects_benchmark_PACO.json": "658879945e552a91ea042452c3ecf741534123c99ab000c74183fa0236fdf754",
+    "dl/retrieval-matrix/data/karpathy-original/dataset_coco.json": "2fd999220673258012acfb411a4e7e66af7d488050b2519b0badcc49b7600b8d",
+    "dl/retrieval3090/data/coco2017/annotations_trainval2017.zip": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268",
+    "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/cc3m_qwen.parquet": "35f395a33ad4c2ef77942fab55923e3888785c4d9dbad8c7a6ff716677443cf3",
+    "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/coco_mistral.parquet": "105a88e0097b58a23064cc949a62ed2bed399b29ae705111d3e25a4fe91f6620",
+    "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/coco_qwen.parquet": "3f114f34790777eb59777e58c617621c602e50f3320138e92b415793f2f843a2",
+    "topics/compositional-retrieval/code/experiments/retrieval-conjunction-panel/build_panel.py": "5cb0958c7865f6a6b3acc8805e53cd45e0d57b95bd13ece6ca4364b9e20521cb",
+    "topics/compositional-retrieval/code/experiments/retrieval-conjunction-panel/fetch_images.py": "e4bf4fe2d6011bce0c37887188d5058b188b5051d1cf26d68a84e5f8106f4a1f"
+  },
+  "inputs": {
+    "annotations": "dl/retrieval3090/data/coco2017/annotations_trainval2017.zip",
+    "half_truths": [
+      "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/cc3m_qwen.parquet",
+      "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/coco_mistral.parquet",
+      "hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca/data/coco_qwen.parquet"
+    ],
+    "karpathy": "dl/retrieval-matrix/data/karpathy-original/dataset_coco.json",
+    "paco": "dl/retrieval-matrix/data/cola/upstream/data/COLA_singleobjects_benchmark_PACO.json"
+  },
+  "owner": "[codex]",
+  "policy": "No model results; no test queries; exclude all named benchmark image IDs before fixed gallery sampling."
+}
