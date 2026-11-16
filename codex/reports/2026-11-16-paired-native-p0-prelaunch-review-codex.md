@@ -30,3 +30,9 @@ plan與root獨立audit：
 - run.sh: `3ebb5904e6ce9c1d62be2808f7953adeb1ea2eec9a84cba6af99c6572d8f775f`。
 - runner.py: `4630e91943b94b9bfc61892fe736d5e53b4e7ea92b66f38f34903f118a319ff3`。
 - test_paired.py: `7ff464bde051df1ca3eb7ae9ef79db0c6c3d2e6f54797f313915b222fbe6f376`。
+
+## [codex] 後續依賴檢查更正（2026-11-16 22:57，台北）
+
+以上CPU/source/模型及資料驗收仍成立，但不應把它解讀為原paired runtime已可直接GPU。root新增直接production依賴探針，發現原9modules雖在CUDA hidden時全能import，直接from flash_attn.bert_padding import unpad_input仍缺einops。已讀固定Transformers4.51.3的is_flash_attn_2_available：它在torch.cuda.is_available為False時提早回False，令PEFT/Bloom未走GPU時才會觸發的flashpadding import，因此先前CPU完整imports未覆蓋此分支。沒有啟動paired GPU或產生模型效果。
+
+原54f544c source/plan保持不動，不以補裝到舊環境方式改凍結依賴。三個paired基線需另建可審的isolated einops runtime及新qualification scope，經root獨立複核與commit後才加入中央；原technical PASS不能替代該新runtime驗收。相同模型、原FP32/batch1/raw/tokenizer及兩benchmark協定維持。
