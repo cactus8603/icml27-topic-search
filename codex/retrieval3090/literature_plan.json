@@ -1,0 +1,48 @@
+{
+  "analysis": {
+    "block_queries": 128,
+    "bootstrap_draws": 10000,
+    "seed": 2026111602
+  },
+  "batch_sizes": {
+    "cross": 4,
+    "image": 8,
+    "text": 32
+  },
+  "cross_budget": 50,
+  "cross_panel": "negbench-negated-dev1000.json",
+  "data_policy": {
+    "group": "exact JPEG SHA; independently verified 5000 unique Flickr IDs",
+    "invalid_caption": "preserve raw position; exclude empty text before any model inference; report denominator",
+    "positive": "native source-image only; no gold-based query exclusion",
+    "public_data": "all panels are public development; remaining rows are not independent confirmation"
+  },
+  "data_preparation_sha256": "86814f40da7a74c7f606cc99ccc4d6bae0a7229ab1eb1008b884cb885638525a",
+  "dataset_sizes": {
+    "factor_items": 1695,
+    "gallery": 5000,
+    "negated_eligible_queries": 25013,
+    "negated_raw_queries": 25014,
+    "paired_development_queries_per_variant": 1000,
+    "plain_raw_queries": 25014
+  },
+  "formal_evidence": false,
+  "gpu_queue": {
+    "max_utilization": 20,
+    "min_free_mib": 14336,
+    "two_checks": true
+  },
+  "max_cross_pairs": 50000,
+  "model_family": "Existing local torch214 CORE-EMBED, CS-CLIP, CORE-RERANKER pinned revisions; no training",
+  "new_policy_search": false,
+  "schema": 1,
+  "scope": "public-literature-development-only; not independent formal confirmation",
+  "stages": [
+    "technical-smoke",
+    "full-cheap-index",
+    "full-cheap-analysis",
+    "dev1000-core50",
+    "dev1000-core50-analysis"
+  ],
+  "state": "FROZEN"
+}

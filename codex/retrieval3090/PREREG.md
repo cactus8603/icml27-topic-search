@@ -71,3 +71,18 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 
 [codex] 2026-11-16 13:39，使用者明確指定以本機重跑作baseline。後續研究採用已驗收torch214平台的CORE50；舊叢集重現對齊只作來源追溯，不以其是否成功判定本機研究可否進行。既有凍結產物與歷史狀態不回寫，保持同機／同資料／同評估的相對比較，方法與確認資料另先固定。
 - [codex] 2026-11-16 13:32–13:39，root重讀既有實驗報告、results摘要、主分析與LCSE程式、已曝光校準參數，用於使用者方法／CI說明；potential_audit於13:33:15重讀既有COCO report及per_query並另作連通群變異的讀後樣本量粗估；setup_review於13:35–13:37重讀指定方法摘要／CI及選法收據。未執行新GPU實驗、未讀封存或盲審私有檔，沒有改政策或原判準。規劃估算只放reports，不作新確認結果。
+
+## 擴大公開文獻資料的開發協定
+
+[codex] 2026-11-16 14:41（台北）。使用者授權先依相關論文選資料，再以3090可負擔的較大資料集開發。本節在任何新增GPU向量／主指標之前固定，屬新的公開開發任務；舊面板與封存協定不變。機械設定另存 `literature_plan.json`，與程式及資料準備清冊SHA一起commit後才執行研究GPU步驟。
+
+- **資料選擇。** 共用完整COCO val2017圖庫，使用NegBench官方普通／否定caption兩份CSV。公開原始位置全部保留；空caption標記不可送入模型，不補文字、不按模型效果篩題。原始CSV及FACTOR作者JSONL釘SHA，逐圖與已曝光的val2017固定fingerprint核對。所有檔案僅來源於val2017或既有公開資產，禁止讀 `retrieval-independent-panel` 的圖片、清冊、結果。
+- **開發抽樣。** seed固定 `2026111602`；先按JPEG SHA（及可核來源影像識別）合併來源群，再以穩定hash選1000群，每群選一張圖與一個普通／否定皆有效的共同caption位置。兩種描述保留來源ID與原索引，不按排序、難度或方法效果挑題；每條query仍搜尋完整圖庫。其餘公開來源不冒充未見的正式確認資料；同圖的所有caption與改寫為同群。
+- **輸入與真值。** 模型只接完整query文字和原圖；`positive_objects`、`negative_objects`、來源圖ID與正解只供資料驗收／計分，不能作query parser輸入或入池特徵。NegBench官方只標來源圖positive，故主指標為source-image Recall@1/5/10/50與MRR；單正例AP等於MRR，不稱完整Boolean相關性mAP。不能因來源圖未進top50就刪掉該query。
+- **階段與成本。** 第一階段重用固定CORE-EMBED／CS-CLIP建立全量普通／否定文字與共用影像索引，分塊在CPU算原生retrieval指標。第二階段僅對固定1000條否定query的CORE前50個候選使用同一CORE-RERANKER，恰50000個配對。普通描述先作cheap控制，不能拿它與昂貴否定結果做同成本因果比較。本輪不自動開全量25000級query的昂貴重排、不做大超參數搜尋；後續M1／解析／LCSE改編另先固定。
+- **模型與平台。** 沿用本機torch214、已固定revision的三個模型、原始image-only CORE prompt與前處理，batch影像8／文字32／cross4，模型依序載入。新runner與舊8191／136及128／8320入口分開，不能放寬歷史驗收門檻。所有快取綁plan、來源、資料、模型、processor、環境、batch與輸入順序；pure-doc commit不使相同來源快取失效，實際執行commit另留紀錄。
+- **統計與解讀。** 比較只對相同資料／處理階段；配對來源群bootstrap10000次，seed同上；全量多caption按來源群聚合，列raw／有效／跳過數與token截斷。這些是public-development條件式描述，不是新獨立確認、效果保證或停止門檻。普通／否定文字還含改寫差異，不把差值直接視為否定的單一因果效應。
+- **邏輯診斷。** FACTOR原始operator／compound二選一與equivalence的`both`分開；caption cosine匹配和oracle parse評分不混淆，不將其轉成全庫retrieval真值。Half-Truths只在既有固定公開資料與封存來源排除關係證明後才考慮，否則本輪延後；MCMR保留原生metadata，暫不擴昂貴計算。
+- **排程與清理。** 使用既有共享GPU排隊器，至少14336MiB空閒、util≤20%、連續兩次確認；沒有合適卡即等待，不取消他人作業。保留canonical逐batch向量／分數及state、來源、timing；不另存可避免的大份複本。下載壓縮包只在逐圖驗收與來源收據完成後，核擁有者、檔案SHA與連結數再刪。研究結果僅寫 `results/` 或 `reports/`，經未實作該部分的代理獨立複核後交使用者判讀。
+
+本輪分工：setup_review只實作 `literature_data.py`／資料測試；potential_audit只實作 `literature_dev.py`／runner測試；literature_check負責資料來源報告與取得驗收；root負責取得器、設定、整合、凍結、排隊及結果紀錄。各自不覆寫他人檔案，後續交叉審查另行分派。
