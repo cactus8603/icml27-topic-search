@@ -216,3 +216,11 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 20:37 submit local3090-2264835 compositional-retrieval P0-vlm2vec2 完整COCO/NegBench/Flickr三格；隔離環境21測試及DoRA420鍵驗收通過，20GiB/低使用率排隊 1c328a2c35c486f1768e9e9fea1c51f98dbb226d
 [codex] 2026-11-16 21:02 submit local3090-2344674 compositional-retrieval P0-MCQ-core2 完整COLA/SugarCrepe++/NegBenchCOCO與VOC，15912題58891pairs；10項CPUtests與獨立原始資料重建通過，20GiB/低使用率排隊 25f7bd515875a0c698202d0047d7b7952fd6846b
 [codex] 2026-11-16 21:02 submit local3090-2344675 compositional-retrieval P0-MCQ-core8 完整COLA/SugarCrepe++/NegBenchCOCO與VOC，15912題58891pairs；10項CPUtests與獨立原始資料重建通過，20GiB/低使用率排隊 25f7bd515875a0c698202d0047d7b7952fd6846b
+[codex] 2026-11-16 21:26 cancel local3090-2226876 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 21:26 cancel local3090-2226877 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 21:26 cancel local3090-2226878 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 21:26 cancel local3090-2226879 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 21:26 cancel local3090-2264834 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 1c328a2c35c486f1768e9e9fea1c51f98dbb226d
+[codex] 2026-11-16 21:26 cancel local3090-2264835 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 1c328a2c35c486f1768e9e9fea1c51f98dbb226d
+[codex] 2026-11-16 21:26 cancel local3090-2344674 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 25f7bd515875a0c698202d0047d7b7952fd6846b
+[codex] 2026-11-16 21:26 cancel local3090-2344675 compositional-retrieval 已確認waiting/child=None；依使用者放得下即可共享且避免多代理爭搶，改中央cap2接手相同frozen命令/輸出 25f7bd515875a0c698202d0047d7b7952fd6846b

@@ -49,3 +49,15 @@ P0未通過的模型仍需保留完整失敗／差異紀錄，不按test效果�
 - 244題只作否定診斷，不冒稱達到1,000群或2pp檢定力；正式開發主面板仍是既有1,127題連言dev-full。若後續需對否定效果作相同強度的正式開發判斷，另立較大版本，不能改這份v1規則以湊題數。
 - COLA與MCMR全量資料的獨立稽核已提交；舊MCMR pilot8,310圖逐SHA仍同原收據且沒有覆寫。Flickr提供CORE-HF原caption與Karpathy原caption兩份明確版本。
 - 重排器CPU環境、VOC資料與固定MCQ pair清冊正在獨立模組準備；其餘方法A的模型來源／權重取得亦並行處理。P2、P3、P4仍未取得完整研究結果，目標保持未完成。
+
+## 2026-11-16 21:19 更新
+
+- 使用者補充資源原則：記憶體放得下即可使用非完全空卡，但避免三、四個人同時爭搶。由root統一改中央排程，同張卡最多一個本輪工作、全局先限兩個；2B依歷史CORE peak4.72GiB留餘裕，排程門檻8GiB；8B暫留20GiB。另檢既有計算程序數，避免加入已塞多個程序的卡。模型／輸入／評分凍結版本不隨排程改變。
+- `25f7bd515875a0c698202d0047d7b7952fd6846b` 已凍結CORE2／8 MCQ：15,912原題、58,891 pairs、9,425圖片。root獨立從原始來源逐欄重建一致，10項CPU測試與實際payload SHA核對通過。舊佇列 `2344674/2344675` 與六個embedding等待佇列一併由中央接手；實際取消／新提交以SUBMITTED.log為準，不能把此處計畫當已執行。
+- COCO development v2事前凍結於`613dc3f0028c536d992ab0726580d32adcb01579`：完整20,000圖片已齊、連言1,089題（small252）、否定237題（small197，僅診斷）。排除PACO全部COCO IDs、Karpathy test5k IDs、Half-Truths COCO IDs及原自建test20k，對這四組的ID交集皆0。原v1 dev原先分別重疊PACO1,044／Karpathy767／Half-Truths254張，原資料保留歷史曝光；後續方法選擇改用v2。
+- v2的資料、選題、三值真值、20,000圖逐SHA／bytes／解碼尺寸均經非實作者獨立重建PASS。另比對Flickr原photo ID與COCO flickr_url，3張跨源交集均不在v2 dev；GQA VG→COCO官方映射尚缺，列unknown，不能宣稱跨源近重複已全部排除。
+- `17e990b` 已凍結P2接線：15項CPU測試、兩環境builder/factory與四份完整資料adapter獨立核對通過。資格收據必須保留COCO/Flickr/NegBench三欄、至少兩個不同dataset的native官方metric在1pp內、綁完整模型spec及非產生者的重算證據。**沒有產生假PASS或可執行P2正式plan**；等待真實P0結果。
+- 新增四個重排模型74檔41.232GiB全齊；額外embedding共12個獨立身份的實際payload／processor／權重鍵形狀CPU驗收完成，模型來源限制仍揭露。UniME原版未知checkpoint不以V2冒充；CLIC COCO轉檔來源缺口不隱藏。
+- 主計畫資料已齊；額外原生CLIP資格需要的Karpathy COCO test5k版本尚在補圖：目前可重用2,125張，補缺2,875張。原始25,010句與UniME作者HF／前5句協定分開；不把CORE val2017的5k與此版本混用。
+- MCMR完整MMEB-V3 archive已驗官方LFS SHA，其query／candidates與原來源逐byte一致。六模型原生融合adapter、完整context稽核與104,981商品／103,176圖片loader已齊，官方renderer逐筆獨立核對一致。CORE轉檔原腳本未公開，仍標非strict CORE exact。v2在首次GPU前修正一維逐列topk呼叫形狀與磁碟chunk64（模型逐商品batch1不變），9項CPU測試通過，兩plan待最終review／freeze。
+- 目前仍無本輪正式GPU模型分數；P0效果及獨立重算、完整P2／P3／P4均未完成。未push。

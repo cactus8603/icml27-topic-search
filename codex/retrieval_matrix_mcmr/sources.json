@@ -1,0 +1,67 @@
+{
+  "owner": "[codex]",
+  "fixed_renderer": "MMEB-V3 official labeled five-field newline renderer",
+  "CORE_exact_conversion": "unverified; original converter files absent from released CORE tree",
+  "official_source_files_verified_against_git_trees": [
+    {
+      "repo": "TIGER-AI-Lab/VLM2Vec",
+      "revision": "f658ebeb49704784330ffe9e68a10796698d75e3",
+      "path": "src/data/dataset/mcmr_dataset.py",
+      "local_path": "dl/retrieval-matrix/data/mmeb-mcmr/vlm2vec-source/src/data/dataset/mcmr_dataset.py",
+      "github_blob_sha1": "4461f1c68d2185fb118eb00c117c6c5616b9b139",
+      "sha256": "356e9cf511b173fe9f21fe2561042e190c18a49c4a9441d78b4a1c4c288f77da",
+      "primary_url": "https://github.com/TIGER-AI-Lab/VLM2Vec/blob/f658ebeb49704784330ffe9e68a10796698d75e3/src/data/dataset/mcmr_dataset.py"
+    },
+    {
+      "repo": "TIGER-AI-Lab/VLM2Vec",
+      "revision": "f658ebeb49704784330ffe9e68a10796698d75e3",
+      "path": "src/data/eval_dataset/mcmr_dataset.py",
+      "local_path": "dl/retrieval-matrix/data/mmeb-mcmr/vlm2vec-source/src/data/eval_dataset/mcmr_dataset.py",
+      "github_blob_sha1": "fcc6a33319f77423878dcdccedc5fea53e9fd85f",
+      "sha256": "820b19135ab36dbc6e99aeb392cf84002277d00c415b84b762722d945bfeca38",
+      "primary_url": "https://github.com/TIGER-AI-Lab/VLM2Vec/blob/f658ebeb49704784330ffe9e68a10796698d75e3/src/data/eval_dataset/mcmr_dataset.py"
+    },
+    {
+      "repo": "TIGER-AI-Lab/VLM2Vec",
+      "revision": "f658ebeb49704784330ffe9e68a10796698d75e3",
+      "path": "experiments/public/eval/image.yaml",
+      "local_path": "dl/retrieval-matrix/data/mmeb-mcmr/vlm2vec-source/experiments/public/eval/image.yaml",
+      "github_blob_sha1": "4434bca507fa8165689251731273768b6b2f4f4e",
+      "sha256": "989d04a13f369a08e60741bfe726cbe1428bef5e2ead26bccf5a04e6b841d45f",
+      "primary_url": "https://github.com/TIGER-AI-Lab/VLM2Vec/blob/f658ebeb49704784330ffe9e68a10796698d75e3/experiments/public/eval/image.yaml"
+    },
+    {
+      "repo": "EIT-NLP/MCMR",
+      "revision": "8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0",
+      "path": "eval/retrieval/gme.py",
+      "local_path": "dl/retrieval-matrix/data/mmeb-mcmr/gme.py",
+      "github_blob_sha1": "c525b1174d01707c6aca4c6831ad9f5c3d3d613c",
+      "sha256": "e02a4adb9d4baa053db7d4c0160efef2f88e35040e05153e942fd900a865e550",
+      "primary_url": "https://github.com/EIT-NLP/MCMR/blob/8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0/eval/retrieval/gme.py"
+    },
+    {
+      "repo": "EIT-NLP/MCMR",
+      "revision": "8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0",
+      "path": "eval/rerank/qwen3_pointwise.py",
+      "local_path": "dl/retrieval-matrix/data/mmeb-mcmr/qwen3_pointwise.py",
+      "github_blob_sha1": "bbb6ad942f886d6c99f17eb9ad4c37b7aae812f6",
+      "sha256": "dce636de090a7e022f9227fc3aafd639b4259c07c74c61b8676161edf0cb3ce7",
+      "primary_url": "https://github.com/EIT-NLP/MCMR/blob/8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0/eval/rerank/qwen3_pointwise.py"
+    }
+  ],
+  "mmeb_data": {
+    "repo": "VLM2Vec/MMEB-V3",
+    "revision": "4a5560b2b64384204b6fea8a82ea986eba51f5aa",
+    "path": "image_tasks/MCMR.tar.gz",
+    "size": 4576936692,
+    "sha256": "03eefcd923b88897da4efd1d25b759af53bd581109eb161505031070c786ea9c",
+    "full_archive_identity_receipt": "dl/retrieval-matrix/data/mmeb-mcmr/full-archive-identity.json"
+  },
+  "raw_original": {
+    "repo": "Lux1997/MCMR",
+    "revision": "12d53f4063804ee6a976024c7375ab2fbe4368c8",
+    "queries": 3997,
+    "candidate_ids": 104981
+  },
+  "text_comparison_receipt": "dl/retrieval-matrix/data/mcmr-mmeb-v3-native-v1/renderer_comparison.json"
+}
