@@ -1,3 +1,5 @@
+> **已搬到 [`icml27-fallible-verifier`](https://github.com/cactus8603/icml27-fallible-verifier)（2026-11-16，使用者決定）。** 此處是封存，不再修改；之後的工作一律在新 repo 進行。
+
 # 強驗證器與少量金標
 
 ## 介紹卡

@@ -1,3 +1,5 @@
+> **已搬到 [`icml27-large-commit-sets`](https://github.com/cactus8603/icml27-large-commit-sets)（2026-11-16，使用者決定）。** 此處是封存，不再修改；之後的工作一律在新 repo 進行。
+
 # 大型平行解碼提交集合
 
 **暫停**（2026-11-15）

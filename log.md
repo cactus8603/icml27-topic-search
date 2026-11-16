@@ -30,6 +30,10 @@
 - 17:38：派出三項：Neon 文字版停損實驗（Sonnet，目錄 `killtests/neon-lm/`）、完整版 Craftax 與 Dr-CiK 深查（Opus）、今日後段結果寫入 repo（Sonnet，即本次整理）。Neon 停損實驗與 Craftax、Dr-CiK 深查結果待補。
 - 本次補入的 reports 第 29–37 份的取得方式見 `reports/INDEX.md`。
 
+## 2026-11-16
+
+- [claude] 23:55 使用者定案「中樞＋題目 repo」：每題一個私有 repo，GPU 送件仍登記在中樞並共用同一排隊機制（`COORDINATION.md` 第 0 節、第 2 節第 7 點）。建立七個題目 repo；閒置三題自 `icml27-topic-search@6ee74ce` 搬入新 repo，中樞改封存；進行中四題先建空 repo，切換請求見 `HOLDS.md`。
+
 ## 未確認
 
 - 上面各項只有回報首次出現的時間可核對（reports/INDEX.md）；使用者下指令的時刻，除審核報告引用到的幾處外沒有逐一核對。「約 13:00 起」「約 16:26–16:35」為概略時間。
