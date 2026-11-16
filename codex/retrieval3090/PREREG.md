@@ -101,3 +101,5 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 既有NegBench／FACTOR面板、舊AND與MCMR公開pilot只釘目前身份、角色與各自指標；未重抽、未加入正式確認或讀封存。固定資料版本不意味所有新格已有執行或驗收；缺格保持NOT_RUN，已完成可相容產物經獨立驗收後重用。新的方法需先凍結程式／設定再使用同一suite，成本按模型尺寸、額外編碼與50次配對分列，registry的技術PASS不等於方法效果PASS。新增suite凍結前已知的既有觀察如上述讀取紀錄，不作未見宣稱。
 
 - [codex] 2026-11-16 16:39:19.195456，literature_check首次讀 `results/2026-11-16-baseline-suite-inventory.json`，核既有已讀／已審查產物的轉錄、身份與待執行狀態；未讀任何8B效果或MCMR新效果。root於16:41讀 `reports/2026-11-16-retrieval-baseline-suite-review-codex.md`，整合獨立registry／來源／文字審查。14項合成測試及實際registry唯讀驗證均通過；不因此更改既有方法／指標，也不將未執行目標格稱已完成。
+
+- [codex] 2026-11-17 00:09，root 為盤點尚缺的作者版 LCSE／額外基線來源，以 rg 搜尋 code 與 reports 時重讀既有 `codex/reports/2026-11-16-retrieval-literature-results-review-codex.md`、`2026-11-16-retrieval-mcmr-review-codex.md`、`2026-11-16-retrieval-experiments-codex.md`、`2026-11-16-retrieval-d3-review-codex.md`、`2026-11-16-retrieval-cost-review-codex.md` 的 LCSE／歷史結果片段，以及本 PREREG 既有讀取紀錄。這些皆為先前已曝光、已凍結並完成判讀的歷史結果；本次只作來源與缺口盤點，沒有新執行、調參、讀取封存資料或將歷史觀察作未見確認。未改舊科學判準或任何現行 producer source；新矩陣的主結果仍只依另凍結 analysis 的登記流程讀取。
