@@ -62,3 +62,5 @@
 [claude] 2026-11-17 05:10：H200 叢集逐題切換到題目 repo。multifidelity-attribution 的期望真值停損（smoke `27584`、陣列 `27590`、分析 `27591`）與 inoculation-lambda 的西語臂間停損（`27594`／`27595`）都從 `/work/ChihChungHsu/cactus8603/icml27-repos/` 的題目 repo checkout 送件。COORDINATION 第 0 節對照表已更新。使用者指示 H200 以多保真度為最優先：`27590` 最多同時 4 張；`27190_11` 重新排隊，給 Codex 的待辦見 `HOLDS.md`；Λ 排在多保真度之後。
 
 [codex] 2026-11-17 05:12:57+0800 Claude代使用者04:52定案：dev-clean為P2主要指標；原版dev補充、既讀歷史揭露。CLIC-B32已GPU完成並fresh逐題重算PASS；完整矩陣仍由唯一中央3934090執行。題目repo@20cd31f 凍結native P0 CPU接續，無新增GPU排程器。
+
+[codex] 2026-11-17 06:11:16+0800 三模型dev-clean fresh獨立PASS主表已發布8acaea7；GME2資格PASS、SigLIP2資格FAILED不放寬；唯一中央依來源/token/worker/lease兩次核對交接26290/c49d2d6。GPU0只本方小工作精確讓出給8B，原partial保留，Qwen8 batch1已running；完整矩陣持續，未跑自建test/下載。
