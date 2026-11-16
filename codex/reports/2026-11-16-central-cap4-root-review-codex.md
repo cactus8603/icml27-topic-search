@@ -11,3 +11,5 @@ root 重新執行 26 next、10 v3、10 base 共 46 CPU synthetic tests，全部 
 允許將已審 source/PREREG 凍結，接著建立及核對含原 27 tasks 與七個已凍結修復／原生任務的單一新 schedule。舊 task dictionary、相對順序與失敗歷史保留。SigLIP2 的 12GiB 例外只適用完整原 FP32 model spec；其他工作保留 8/20GiB。新排程不改 producer 科學設定、不自動 retry failed 工作，不以此賦予任何 P0 資格。
 
 來源 SHA256 同實作者交付表：controller f55362906d39c11a7dd6d91a938a5a7533cda1f2f1fb30143bcb2c1982d5a044；builder bd59276fcb996c171b0a81601f3fdfc1c7f1fb93955b72372e474b3d593cbff9；handoff 5ea076fb1bd82a7393e2e02831cdb81eb25053bc749e9f3031a726f2b35dedbf；tests 8234b4a34396456c0ef2c356918e45e0ec36672e583d33386071d1e5d75cb8f5；PREREG aa284731afa9e89a306fcb8c7c0c0b83554f3f5ceb6604f50caf887a4ce8fc55。
+
+root 在 source freeze 83cd20a 後建立 central-v4，逐一核七個新 plan 為 FROZEN/reviewed、launcher/plan bytes 等於各自 full commit，七個新 output 皆不存在；原 27 task dictionary 與相對順序完全相同。正式候選共 34 tasks，max_live=4，schedule SHA256 9ff2b29a231a97e70b27f7e1127a23d96a05a4e0cca9a329b495a5e9992771ea。C.validate PASS；正式切換仍待此 schedule/input commit 與 source preflight。
