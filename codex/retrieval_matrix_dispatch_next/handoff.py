@@ -22,6 +22,20 @@ from codex.retrieval_matrix_dispatch_next.build_schedule import frozen
 B = C.B
 ALLOWED_CONTROLLERS = {ROOT/"codex/retrieval_matrix_dispatch/dispatch.py",
     ROOT/"codex/retrieval_matrix_dispatch_v3/controller.py", C.HERE/"controller.py"}
+QWEN2_FIX = ROOT/"codex/retrieval_matrix_qwen2_runtime_fix"
+QWEN2_FIX_REF = "99431594893bba94337b3befd10a7a483ba7374f"
+QWEN2_WRAPPER_SHA = "d603ddec31f8bc95423ccf8505ca6a8325e32e333f671fd5e332a9db68b42abb"
+QWEN2_RUN_SHA = "ba7089ca60866ef7e94589333524934d333a94135100f5a42be25ae1faaeae9d"
+QWEN2_PROFILES = {
+    "embedding": {"plan": "p0-qwen2-einops-v1.json", "phase": "P0-Qwen2", "run": "p0-v1-20261116",
+        "sha256": "07a9b6859e17d12e99a00439327381655ec22b1369e2d27a9fa4a5f8a5ea3053",
+        "models": {"gme2": "a31457c566b6c5324c4c4188d7a98eb888df47f6da828d1fe210706b2f6ef8b6",
+            "vlm2vec2": "3057cfe45138907fb53e463c84a00863a6fa2ee4e170dad3bd3d1007d1a16855"}},
+    "mcmr": {"plan": "p0-mcmr-qwen2-einops-v1.json", "phase": "MCMR-native-MMEB-v2", "run": "mcmr-v1-20261116",
+        "sha256": "2e525b5698782f2abd89ded3042e3416886a3c666b4d470c77bf888fc8dbb9a0",
+        "models": {"gme2": "2434132e0733fb983665c7ca1691d1bf4bf0df3d1fb54df2debc1f1fdc946bf4",
+            "vlm2vec2": "7f4b6c856f3cbbc590e5da06e70efecd911f5ea70c4bdd08d9924fada58ff45b"}},
+}
 
 
 def parent_command(side):
@@ -146,6 +160,51 @@ def receipt_identity(row, key, old_schedule_sha):
         "schedule_sha256": row.get("adopted_schedule_sha256", old_schedule_sha)}
 
 
+def child_command_proof(task, actual, host):
+    """Accept exact argv, or four literal frozen Qwen2 wrapper execs only.
+
+    This is a source allowlist, not a shell parser. Process PID/start/boot is
+    checked by Host.command before this function; receipt and GPU lease checks
+    remain in capture for both paths.
+    """
+    evidence = {"dispatch_command": copy.deepcopy(task["command"]),
+        "child_command": copy.deepcopy(actual), "launcher_expansion": None}
+    if actual == task["command"]:
+        return evidence
+    error = "Original model child command differs from exact argv or the frozen Qwen2 wrapper expansion"
+    wrapper, run = QWEN2_FIX/"central_task.sh", QWEN2_FIX/"run.sh"
+    matches = [(mode, spec) for mode, spec in QWEN2_PROFILES.items()
+        if task.get("plan") == str(QWEN2_FIX/spec["plan"])]
+    if len(matches) != 1:
+        raise ValueError(error)
+    mode, profile = matches[0]
+    model, plan_path = task.get("model"), QWEN2_FIX/profile["plan"]
+    output = ROOT/"dl/retrieval-matrix-qwen2-runtime-fix/runs"/profile["run"]/str(model)
+    original = ["bash", str(wrapper), QWEN2_FIX_REF, str(plan_path), model, str(output)]
+    expanded = ["bash", str(run), mode, QWEN2_FIX_REF, str(plan_path), model, str(output)]
+    if (model not in profile["models"] or task.get("id") != "fixed-"+mode+"-"+str(model)
+            or task.get("freeze_commit") != QWEN2_FIX_REF or task.get("launcher") != str(wrapper)
+            or task.get("cwd") != str(ROOT) or task.get("output") != str(output)
+            or task.get("launcher_sha256") != QWEN2_WRAPPER_SHA
+            or task.get("plan_sha256") != profile["sha256"]
+            or task["command"] != original or actual != expanded):
+        raise ValueError(error)
+    for path, sha in ((wrapper, QWEN2_WRAPPER_SHA), (run, QWEN2_RUN_SHA), (plan_path, profile["sha256"])):
+        host.freeze(path, task["freeze_commit"])
+        if B.sha(path) != sha:
+            raise ValueError("Frozen Qwen2 wrapper/run/plan bytes differ from the literal allowlist")
+    plan = json.loads(plan_path.read_text())
+    if (plan.get("state") != "FROZEN" or plan.get("reviewed") is not True
+            or plan.get("phase") != profile["phase"] or plan.get("runtime_fix", {}).get("mode") != mode
+            or {key: C.digest(value) for key, value in plan.get("models", {}).items()} != profile["models"]):
+        raise ValueError("Frozen Qwen2 phase/mode or complete model specifications differ")
+    evidence["launcher_expansion"] = {"kind": "literal-qwen2-runtime-fix-exec-v1", "mode": mode,
+        "freeze_commit": task["freeze_commit"], "wrapper": C.entry(wrapper), "run_script": C.entry(run),
+        "plan": C.entry(plan_path), "phase": plan["phase"], "model": model,
+        "model_spec_sha256": profile["models"][model]}
+    return evidence
+
+
 def capture(config, previous, runtime, host, *, prior_proofs=None):
     """Validate original receipts, including workers from earlier handoffs.
 
@@ -206,14 +265,13 @@ def capture(config, previous, runtime, host, *, prior_proofs=None):
                 or not worker_command[7].isdigit()):
             raise ValueError("Original worker command differs from its frozen origin")
         host.freeze(worker_command[2], proof["freeze_commit"])
-        if host.command(row["child"]) != old_tasks[key]["command"]:
-            raise ValueError("Original model child command differs")
+        child_proof = child_command_proof(old_tasks[key], host.command(row["child"]), host)
         lock = ROOT/"dl/retrieval3090/runs/.gpu-locks"/(row["gpu"]["uuid"]+".lock")
         lease = host.lease(row["worker"], worker_command[7], lock)
         proofs[key] = {"status": "running", "worker": row["worker"], "child": row["child"],
             "receipt": str(path), "receipt_sha256_at_snapshot": B.sha(snapshot),
             "worker_config": C.entry(config_path), "worker_command": worker_command,
-            "child_command": old_tasks[key]["command"], "gpu_lock": str(lock), "lease": lease}
+            **child_proof, "gpu_lock": str(lock), "lease": lease}
         row.update(receipt)
     return proofs
 

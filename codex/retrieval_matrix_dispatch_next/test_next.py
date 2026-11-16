@@ -326,7 +326,120 @@ class FakeHost:
         self.logs.append(args)
 
 
+class FrozenLauncherExpansion(unittest.TestCase):
+    """Only frozen source metadata is read; no original output or process."""
+    def tasks(self):
+        source = ROOT/"codex/retrieval_matrix_dispatch_batches/central-v3.json"
+        return [task for task in json.loads(source.read_text())["tasks"]
+            if task["id"] in {"fixed-"+mode+"-"+model for mode in ("embedding", "mcmr")
+                for model in ("gme2", "vlm2vec2")}]
+
+    def expanded(self, task):
+        mode = "mcmr" if task["id"].startswith("fixed-mcmr-") else "embedding"
+        return ["bash", str(H.QWEN2_FIX/"run.sh"), mode, *task["command"][2:]]
+
+    def test_all_four_exact_frozen_wrapper_execs_and_source_evidence(self):
+        self.assertEqual(len(self.tasks()), 4)
+        for task in self.tasks():
+            with self.subTest(task=task["id"]):
+                host = H.Host()
+                with patch.object(host, "freeze", wraps=S.frozen) as freeze:
+                    actual = self.expanded(task)
+                    proof = H.child_command_proof(task, actual, host)
+                self.assertEqual(proof["dispatch_command"], task["command"])
+                self.assertEqual(proof["child_command"], actual)
+                self.assertEqual(proof["launcher_expansion"]["model"], task["model"])
+                self.assertEqual(proof["launcher_expansion"]["freeze_commit"], task["freeze_commit"])
+                self.assertEqual([call.args for call in freeze.call_args_list], [
+                    (H.QWEN2_FIX/"central_task.sh", H.QWEN2_FIX_REF),
+                    (H.QWEN2_FIX/"run.sh", H.QWEN2_FIX_REF),
+                    (Path(task["plan"]), H.QWEN2_FIX_REF)])
+
+    def test_ordinary_exact_command_keeps_original_rule_without_expansion(self):
+        task = {"command": ["bash", "/synthetic/ordinary.sh", "unchanged"]}
+        host = SimpleNamespace(freeze=lambda *args: self.fail("No wrapper expansion for an exact command"))
+        proof = H.child_command_proof(task, task["command"], host)
+        self.assertIsNone(proof["launcher_expansion"])
+        with self.assertRaisesRegex(ValueError, "child command"):
+            H.child_command_proof(task, ["bash", "/synthetic/run.sh", "unchanged"], host)
+
+    def test_wrong_expanded_mode_model_ref_plan_output_or_script_is_rejected(self):
+        for task in self.tasks():
+            actual = self.expanded(task)
+            changes = {1: "/another/run.sh", 2: "mcmr" if actual[2] == "embedding" else "embedding",
+                3: "0"*40, 4: "/another/plan.json", 5: "core2", 6: task["output"]+"-other"}
+            for index, value in changes.items():
+                with self.subTest(task=task["id"], index=index):
+                    bad = actual.copy(); bad[index] = value
+                    with self.assertRaisesRegex(ValueError, "child command"):
+                        H.child_command_proof(task, bad, H.Host())
+            for bad in (actual+["extra"], ["/bin/bash", *actual[1:]]):
+                with self.assertRaisesRegex(ValueError, "child command"):
+                    H.child_command_proof(task, bad, H.Host())
+
+    def test_mutating_dispatch_identity_never_creates_a_new_allowlisted_exec(self):
+        task = self.tasks()[0]
+        changes = {"id": "another-task", "model": "core2", "freeze_commit": "0"*40,
+            "plan": "/another/plan.json", "output": task["output"]+"-other",
+            "launcher": "/another/central_task.sh", "plan_sha256": "0"*64,
+            "launcher_sha256": "0"*64, "cwd": "/another"}
+        for key, value in changes.items():
+            with self.subTest(field=key):
+                bad = copy.deepcopy(task); bad[key] = value
+                bad["command"] = ["bash", bad["launcher"], bad["freeze_commit"], bad["plan"], bad["model"], bad["output"]]
+                with self.assertRaisesRegex(ValueError, "child command"):
+                    H.child_command_proof(bad, self.expanded(bad), H.Host())
+
+    def test_changed_run_script_git_bytes_are_rejected_without_editing_source(self):
+        real = S.subprocess.check_output
+        wanted = H.QWEN2_FIX_REF+":codex/retrieval_matrix_qwen2_runtime_fix/run.sh"
+        def different_run(command, *args, **kwargs):
+            return b"different committed run script" if command[-1] == wanted else real(command, *args, **kwargs)
+        task = self.tasks()[0]
+        with patch.object(S.subprocess, "check_output", side_effect=different_run):
+            with self.assertRaisesRegex(ValueError, "fixed commit"):
+                H.child_command_proof(task, self.expanded(task), H.Host())
+
+    def test_phase_mode_and_complete_model_spec_remain_bound(self):
+        task = self.tasks()[0]
+        original = json.loads(Path(task["plan"]).read_text())
+        variants = []
+        for key, value in (("phase", "MCMR-native-MMEB-v2"), ("state", "REVIEW_REQUIRED"), ("reviewed", False)):
+            bad = copy.deepcopy(original); bad[key] = value; variants.append(bad)
+        bad = copy.deepcopy(original); bad["runtime_fix"]["mode"] = "mcmr"; variants.append(bad)
+        bad = copy.deepcopy(original); bad["models"][task["model"]]["synthetic_change"] = True; variants.append(bad)
+        for bad in variants:
+            with patch.object(H.json, "loads", return_value=bad):
+                with self.assertRaisesRegex(ValueError, "phase/mode or complete model"):
+                    H.child_command_proof(task, self.expanded(task), H.Host())
+
+
 class Handoff(Fixture):
+    def test_frozen_wrapper_expansion_keeps_child_identity_and_handoff_evidence(self):
+        task = next(task for task in FrozenLauncherExpansion().tasks() if task["id"] == "fixed-embedding-gme2")
+        self.tasks[1] = task
+        dump(self.old_path, {"schema": 1, "max_live": 2, "tasks": self.tasks})
+        self.previous["tasks"].pop("fixed-core2")
+        self.previous["tasks"][task["id"]] = self.running(task, self.old, 200, 201, "GPU-new")
+        self.previous["schedule_sha256"] = B.sha(self.old_path)
+        self.schedule["tasks"] = copy.deepcopy(self.tasks)
+        self.schedule["adoption"]["schedule"] = C.entry(self.old_path)
+        self.config["old"]["schedule"] = C.entry(self.old_path)
+        dump(self.new_path, self.schedule)
+        self.config["new"]["schedule"] = C.entry(self.new_path)
+        dump(self.old/"state.json", self.previous)
+        host = FakeHost(self)
+        host.commands[201] = FrozenLauncherExpansion().expanded(task)
+        host.freeze = lambda path, ref: S.frozen(path, ref) if Path(path).parent == H.QWEN2_FIX else None
+        result = H.execute(self.config, host=host, gate=False)
+        proof = result["workers"][task["id"]]
+        self.assertEqual(proof["child"], {"pid": 201, "start_ticks": 201, "boot_id": "synthetic"})
+        self.assertEqual(proof["dispatch_command"], task["command"])
+        self.assertEqual(proof["child_command"], host.commands[201])
+        self.assertEqual(proof["launcher_expansion"]["run_script"]["sha256"], H.QWEN2_RUN_SHA)
+        self.assertEqual(host.signals, [(10, signal.SIGSTOP), (10, signal.SIGKILL)])
+        self.assertEqual(len(host.spawns), 1)
+
     def prepare_four_live_origin(self, old_limit):
         for key in ("third-old", "fourth-old"):
             self.tasks.append(self.task(key))
