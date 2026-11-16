@@ -1,6 +1,6 @@
 # [codex] CLIP P2 接線獨立預檢
 
-[codex] 2026-11-16 21:54（台北）。審查者：`official_p0/p3_contract_review`；接線實作者：root。結論：**目前程式接線無剩餘阻斷，可凍結程式；不代表 SigLIP2 已通過 P0，亦不授權尚未建立的正式 P2 plan 推論。**
+[codex] 2026-11-16 22:00（台北）。審查者：`official_p0/p3_contract_review`；接線實作者：root。結論：**當前 CLIP 接線與 native 資格介面無剩餘阻斷，可凍結程式。**本報告不代表 SigLIP2 已通過 P0，亦不授權尚未建立的正式 P2 plan 推論。
 
 本次只讀新 `codex/retrieval_matrix_clip_panel/`、native P0 資格介面與既有共同 panel 的程式／凍結規格，執行 CPU 合成測試。沒有讀取真實 P0/P2/P3 效果、沒有 GPU 推論、沒有新增正式 plan、沒有修改接線程式或 commit。
 
@@ -22,8 +22,9 @@
 ## CPU 驗收與審查更正
 
 - 最後修版 CLIP panel：**9 tests PASS**，涵蓋缺真資格、錯 family/model/parent、修改 forward/smoke 設定、漏依賴 source 與繞中央排程的早拒絕。
-- native P0：**10 tests PASS**，包含完整原始 caption 分母、雙資料集、方向／tie／FP32、原 arrays 損毀及非產生者資格等合成驗收。
+- 本審查已實跑 native P0 **12 tests PASS**，包含完整原始 caption 分母、雙資料集、方向／tie／FP32、原 arrays 損毀、非產生者資格、實際 checkpoint 與 freeze commit 等合成驗收；之後 native 最終硬化另由 root 獨立審查，不包含在這個次數。
 - 額外獨立合成 probe 逐一替換依賴表 9 個 module 的 import path，**9/9 皆拒絕**；probe 結束時 `torch.cuda.is_initialized() == False`。CLIP shell 語法與所有 Python AST 檢查通過。
+- 額外在實際 native Python／依賴路徑直接呼叫 `runner.runtime(plan, gpu=False)`：全部 **9 項 module 的完整 dict 與 dependencies 逐項相等**，欄位均含 `path/actual_version/distribution_version`，CUDA 未初始化。producer／validator 最新 schema 一致。審查曾以不同時間的 source 節錄比較而誤報缺 `distribution_version`；本次同步讀取 current bytes 並實際執行後撤回，沒有保留為上游阻斷。
 - 審查中曾誤把 E 補錄 receipt 的三項 module 誤認為驗證範圍，提出 runtime 缺少其餘依賴檢查。重讀原版第 72–76 行及上述 9 項 probe 後，**撤回此誤報；原版已有完整依賴驗證，並非後續修正。**
 - 結果讀取登記與凍結 producer PREREG 的交界已釐清：另凍結 analysis PREREG，記實際讀取時間及來源 plan SHA／freeze commit，保留原 producer bytes。當前仍為零主結果 exposure，不藉追加日誌放寬原判準 SHA。
 
