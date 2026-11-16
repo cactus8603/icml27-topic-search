@@ -304,3 +304,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 23:39 hold-parent central-2681588 compositional-retrieval 只暫停exact舊中央父程序以核接手證據 f6780742ec62d7e50773054ea747c3692fce43dc
 [codex] 2026-11-16 23:39 retire-parent central-2681588 compositional-retrieval 只退休exact已停中央父程序；不signal worker/model f6780742ec62d7e50773054ea747c3692fce43dc
 [codex] 2026-11-16 23:39 submit central-2921085 compositional-retrieval 唯一新中央接手原worker/globalcap4/perGPU1；原producer不重跑 f6780742ec62d7e50773054ea747c3692fce43dc
+[codex] 2026-11-16 23:50 start local3090-2960823 compositional-retrieval central-task=native-siglip2-einops-v1 GPU=GPU-24b28441-1bef-4e95-9739-be0d909755e5 original-frozen-command f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb
+[codex] 2026-11-16 23:50 start local3090-2960998 compositional-retrieval central-task=native-rerank-jina_m0 GPU=GPU-b6f521f7-c314-b23e-abac-92a7fc6c828a original-frozen-command 54f544ce54bca82be3cc8b3c72662b354c6d3e40
