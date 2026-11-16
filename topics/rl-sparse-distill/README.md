@@ -1,5 +1,3 @@
-> **已搬到 [`icml27-rl-sparse-distill`](https://github.com/cactus8603/icml27-rl-sparse-distill)（2026-11-16，使用者決定）。** 此處是封存，不再修改；之後的工作一律在新 repo 進行。
-
 # 只移植少數 RL 推理決策的蒸餾
 
 ## 介紹卡

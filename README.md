@@ -15,7 +15,7 @@
 | [Λ 漏出預測](https://github.com/cactus8603/icml27-inoculation-lambda) | ◐ 語言漏出成立（無防禦 17/20 含西語，其他 0/20）；GCD 各臂差異未建立 | ◐ 一步近似通過數值檢查；51/51 組事前評分完成；方向待行為結果 | — 還缺重訓信度上限與 PHM 對照 | 2/5、4/5 | `27112` 行為試驗 51 格（38 格完成、1 格執行中）→ `27113` 驗收 → `27162` 比較 |
 | [文生圖罕見失敗](https://github.com/cactus8603/icml27-t2i-rare-failure) | ◐ CLIP 前置檢查通過；正式雙偵測器事件率待測 | ◐ 代理設定 213/10,000 命中；正式訊號待人工盲評 | ◐ 高斯模擬省 88 倍（10⁻⁵）、13 倍（10⁻⁴）；實際生圖待量 | 2/5、4/5 | `27190` 第二段 11 格（執行中）→ `27512` 第二段 b 選格 |
 | [強驗證器](https://github.com/cactus8603/icml27-fallible-verifier) | ◐ 強模型誤收 23.32%（GSM8K）、57.29%（ASDiv-A）；共同誤收未確立 | ◐ GSM8K Brier −41.95% 通過；ASDiv-A −6.35% 未過 15% 門檻 | ✅ 省 11.70%，事後最佳 48.29%，差 36.59 點 | 3/5、3/5 | 閒置 |
-| [RL 稀疏蒸餾](https://github.com/cactus8603/icml27-rl-sparse-distill) | ◐ 外部 32K 有交叉（pass@1 +7.60、pass@64 −1.30）；原 3K 配對截斷，不可比 | ◐ 單 token 分叉 +34.38 點，但截斷使區間為 −8.59 至 +39.06 | ◐ 分叉上限差 2.34 點；pass@64 上限差 3.68 點 | 2/5、3/5 | 閒置 |
+| [RL 稀疏蒸餾](topics/rl-sparse-distill/)（**暫停**） | ◐ 外部 32K 有交叉（pass@1 +7.60、pass@64 −1.30）；原 3K 配對截斷，不可比 | ◐ 單 token 分叉 +34.38 點，但截斷使區間為 −8.59 至 +39.06 | ◐ 分叉上限差 2.34 點；pass@64 上限差 3.68 點 | 2/5、3/5 | 暫停（2026-11-17） |
 
 ## 資源總表
 
@@ -55,12 +55,12 @@
 
 - [多條件影像檢索](topics/compositional-retrieval/)　[repo `icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)（已搬）
 - [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)（已搬）
-- [只移植少數 RL 推理決策的蒸餾](topics/rl-sparse-distill/)　[repo `icml27-rl-sparse-distill`](https://github.com/cactus8603/icml27-rl-sparse-distill)（已搬）
 - [強驗證器與少量金標](topics/fallible-verifier/)　[repo `icml27-fallible-verifier`](https://github.com/cactus8603/icml27-fallible-verifier)（已搬）
 
 ## 暫停與淘汰
 
 - [大型平行解碼提交集合](topics/large-commit-sets/)　論文潛力降為 **2/5**，暫停。
+- [只移植少數 RL 推理決策的蒸餾](topics/rl-sparse-distill/)　論文潛力 **3/5**，暫停（2026-11-17）：完整論文約需 500–800 H200 GPU 小時，時間不夠。
 - [注意力寫入與最佳化器](topics/gate-optimizer.md)　論文潛力 **2/5**，本輪淘汰。
 - [條件擴散的兩個時鐘](topics/biased-gen-cfg.md)　論文潛力 **2/5**，本輪淘汰。
 

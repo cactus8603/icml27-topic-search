@@ -40,6 +40,8 @@
 
 - [claude] 01:55（2026-11-17）整理：經使用者同意，結束 2026-11-14 07:34 起的孤兒監控程序（PID 2780395，腳本與 lock 所在資料夾已不存在，未登記），刪除其寫入的未追蹤 `runs/`。`COORDINATION.md` 第 0 節新增本機 3090／H200 叢集對照表；`HOLDS.md` 新增排隊機制跨題目化與叢集切換兩項待辦。
 
+- [claude] 02:40（2026-11-17）使用者決定暫停 rl-sparse-distill（完整論文約需 500–800 H200 GPU 小時，時間不夠），並照規則刪除題目 repo：GitHub `icml27-rl-sparse-distill` 只有匯入 commit 加上同步的報告 63，與中樞 `topics/rl-sparse-distill/` 的差別只有連結改寫；中樞恢復為正本並移除「已搬」標記。叢集 clone 已刪；本機 3090 的 `/ssd4/cactus8603/icml27-repos/icml27-rl-sparse-distill/` 請在本機那邊刪除。
+
 ## 未確認
 
 - 上面各項只有回報首次出現的時間可核對（reports/INDEX.md）；使用者下指令的時刻，除審核報告引用到的幾處外沒有逐一核對。「約 13:00 起」「約 16:26–16:35」為概略時間。

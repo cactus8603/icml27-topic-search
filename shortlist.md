@@ -14,6 +14,9 @@
 ## 其他候選的原排程順序
 
 1. [多保真度資料歸因](topics/multifidelity-attribution/)
-2. [RL 稀疏決策蒸餾](topics/rl-sparse-distill/)
+
+## 暫停
+
+- [RL 稀疏決策蒸餾](topics/rl-sparse-distill/)　2026-11-17 使用者決定暫停：完整論文約需 500–800 H200 GPU 小時，時間不夠（[報告 63](reports/2026-11-16-63-full-paper-resources-and-allocation.md)）。
 
 後續探針與判讀更新在各題資料夾。GPU 作業依協作規則與當前佇列安排。

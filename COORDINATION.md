@@ -13,7 +13,7 @@
   - 跨題目的報告（`reports/`、`codex/reports/`），以及 `README.md` 的題目索引。
 - **題目 repo**：每題一個，私有，命名 `icml27-<題目>`。放該題的程式、PREREG、結果、VERDICT 與論文。
 - **進行中與候選題目已搬到題目 repo**（使用者決定；2026-11-16 起），題目 repo 是正本。
-- **暫緩與淘汰的題目不建 repo**（使用者 2026-11-17 決定），正本留在中樞 `topics/`。`icml27-large-commit-sets` 因此已刪除，`topics/large-commit-sets/` 恢復為正本。題目重新啟動時再依下面步驟開 repo。
+- **暫緩與淘汰的題目不建 repo**（使用者 2026-11-17 決定），正本留在中樞 `topics/`。`icml27-large-commit-sets` 因此已刪除，`topics/large-commit-sets/` 恢復為正本；`icml27-rl-sparse-distill` 也於 2026-11-17 暫停並刪除，`topics/rl-sparse-distill/` 恢復為正本。題目重新啟動時再依下面步驟開 repo。
 - **中樞的舊路徑是封存**：`topics/<題目>/`、`codex/retrieval*/`、`paper/compositional-retrieval/` 不再修改，也不刪除。歷史與凍結紀錄的 commit SHA 仍有效。
   - 已凍結、排隊中的任務可以照原計畫從封存路徑執行（不改那些檔案）。
   - 新的程式、計畫、PREREG、報告與結果一律 commit 到題目 repo；誤寫到中樞舊路徑的，搬進題目 repo 並在 commit 註明來源。
