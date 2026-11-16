@@ -208,3 +208,7 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 14:54 submit local3090-3634135 compositional-retrieval 文獻公開dev5000圖/配對1000群；完整cheap索引及50000重排，無Slurm，無卡依共享條件排隊 cbd545ac96e4978454c41a78f78b75419d413b77
 [codex] 2026-11-16 16:07 submit local3090-3743501 compositional-retrieval CORE2B/8B四格；8191圖136查詢、同50重排與各自oracle；已凍結32測試/獨立審查，20GiB低使用率排隊 5e7b6f01551c0a60b379825e9f6f38722d450574
 [codex] 2026-11-16 17:38 complete local3090-3743501 compositional-retrieval 正式推論17:31完成/0；十檔收據與獨立CPU重算PASS，結果及限制見codex/reports/2026-11-16-core-scaling-headroom-codex.md，未開封存資料 5e7b6f01551c0a60b379825e9f6f38722d450574
+[codex] 2026-11-16 20:22 submit local3090-2226876 compositional-retrieval P0-core2 官方完整COCO/NegBench/Flickr三格；26測試及獨立協定審查通過，20GiB/低使用率排隊 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 20:22 submit local3090-2226877 compositional-retrieval P0-core8 官方完整COCO/NegBench/Flickr三格；26測試及獨立協定審查通過，20GiB/低使用率排隊 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 20:22 submit local3090-2226878 compositional-retrieval P0-qwen2 官方完整COCO/NegBench/Flickr三格；26測試及獨立協定審查通過，20GiB/低使用率排隊 c26b7f9f2a942f34480a0715762814d6697c1205
+[codex] 2026-11-16 20:22 submit local3090-2226879 compositional-retrieval P0-qwen8 官方完整COCO/NegBench/Flickr三格；26測試及獨立協定審查通過，20GiB/低使用率排隊 c26b7f9f2a942f34480a0715762814d6697c1205
