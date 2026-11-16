@@ -28,8 +28,8 @@
 | 項目 | 本機 3090（`acvlab`，7 張 RTX 3090） | H200 叢集（Slurm） |
 |---|---|---|
 | 中樞 checkout | `/ssd4/cactus8603/icml` | `/work/ChihChungHsu/cactus8603/icml27-topic-search` |
-| 題目 repo checkout | `/ssd4/cactus8603/icml27-repos/icml27-<題目>/` | **尚未建立**；建議 `/work/ChihChungHsu/cactus8603/icml27-repos/icml27-<題目>/` |
-| 切換狀態 | 已切換：題目工作在題目 repo 做 | **尚未切換**：既有 job 仍從中樞 checkout 執行；下次在叢集上動某題前，先 clone 該題 repo、把 launcher 改到題目 repo，並在 `log.md` 記一筆 |
+| 題目 repo checkout | `/ssd4/cactus8603/icml27-repos/icml27-<題目>/` | `/work/ChihChungHsu/cactus8603/icml27-repos/icml27-<題目>/`（2026-11-17 已建五題：compositional-retrieval、multifidelity-attribution、inoculation-lambda、t2i-rare-failure、fallible-verifier） |
+| 切換狀態 | 已切換：題目工作在題目 repo 做 | **逐題切換**：multifidelity-attribution（`27584` 起）與 inoculation-lambda（`27594` 起）已從題目 repo checkout 送件；其他題目的既有 job 仍從中樞 checkout 執行，下次在叢集上動那題前，先把 launcher 改到題目 repo，並在 `log.md` 記一筆 |
 | GPU 送件 | 經中樞的排隊機制等空卡，登記 `submit local3090-<pid>`；不得繞過直接佔卡 | `sbatch`，送前 `squeue -u $(whoami)` 看整個帳號，登記 Slurm jobid |
 | 排隊機制位置 | 目前是 Codex 的檢索中央排程器與 `resources.py`，位於封存的 `codex/retrieval*`；待整理成跨題目工具（`HOLDS.md`） | Slurm 本身 |
 | 暫存與快取 | `TMPDIR=<中樞>/hf_home/tmp`、`HF_HOME=<中樞>/hf_home`；沒有 `quota` | `/work/ChihChungHsu/cactus8603/icml/{tmp,hf_home}`；大量寫入前 `quota -g -s` |

@@ -58,3 +58,5 @@
 [codex] 2026-11-17 04:31：JPEG P2 producer與非實作者重算來源已凍結並push（題目repo47eaeeb415a0219746f05eabb19f7403a27b14f7、cfc51e193466738e0da2171a857ddce626962d2b）；已兩次核對四個worker／receipt／lease，僅退役父3865368並移交唯一中央3934090／start273704952。前37任務逐項不變，新增CLIC JPEG兩組。CORE2正在圖庫推論，非實作者14合成測試PASS，尚無正式dev數字。進度與移交完整稽核已推送icml27-compositional-retrieval@3fe60cb；原PNG失敗和Qwen8 OOM都保留、不降門檻。
 
 [codex] 2026-11-17 04:57：CORE2首批三個dev資料完整完成，fresh非實作者1578題×20000原始分數/排序/ID/正例名次、全指標與overall/by-k題級bootstrap CI、成本均PASS。dev mAP30.5149% [28.4136,32.6476]、small28.8087%、否定dev19.7564%；完整worker1675.988013s、allocated/reserved4.263/4.611GiB。逐題結果、hash-chain讀取收據與兩份報告已push icml27-compositional-retrieval@e81133843b0ab43de9434a667fe4dc83ca7ca0d9。CLIC JPEG兩組仍推論；初輪重排source已獨立審查/凍結但未送GPU，候選只K100。唯一中央3934090不變；不跑自建test、不下載、不修改封存或其他session。
+
+[claude] 2026-11-17 05:10：H200 叢集逐題切換到題目 repo。multifidelity-attribution 的期望真值停損（smoke `27584`、陣列 `27590`、分析 `27591`）與 inoculation-lambda 的西語臂間停損（`27594`／`27595`）都從 `/work/ChihChungHsu/cactus8603/icml27-repos/` 的題目 repo checkout 送件。COORDINATION 第 0 節對照表已更新。使用者指示 H200 以多保真度為最優先：`27590` 最多同時 4 張；`27190_11` 重新排隊，給 Codex 的待辦見 `HOLDS.md`；Λ 排在多保真度之後。
