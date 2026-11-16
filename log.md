@@ -68,3 +68,5 @@
 [codex] 2026-11-17 06:31:06+0800 初輪四組clean K100計畫56b1da9與唯一中央schedule b0bdf35凍結；獨立源審PASS，兩次核對交接104711/start274417143，原45任務完整保留，加4P2。GPU5已跑CORE2接CLIC-L14，總4GPU工作；純CPU d1a3fae後處理不派GPU。完整矩陣持續，未碰自建test/下載。
 
 [codex] 2026-11-17 07:26:29+0800 初輪四組clean K100計畫56b1da9與唯一中央schedule b0bdf35凍結；獨立源審PASS，兩次核對交接104711/start274417143，原45任務完整保留，加4P2。GPU5已跑CORE2接CLIC-L14，總4GPU工作；純CPU d1a3fae後處理不派GPU。完整矩陣持續，未碰自建test/下載。
+
+[codex] 2026-11-17 07:27:27+0800 原P0資格CLIPS-L14 PASS、Qwen3-VL-Reranker-2B FAILED，獨立一致不替代資格；GME2 PASS與SigLIP2 FAILED保持。原CORE2 MCMR完成，唯一中央104711自動接第二組CORE2 clean重排，仍cap4/單lease。新batch1獨立CLI 7b46c5b、27測試與102來源gate PASS，尚未讀新8B效果；GME2/CLIPS P2 v1未送GPU且來源要求補強，v2準備。題目報告2d910c4更新；前次發布因狀態欄解析assert未套用HOLDS，本次已修正兩列處理狀態；無自建test/下載。
