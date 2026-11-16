@@ -1,0 +1,390 @@
+{
+  "P3_native_qwen": {
+    "claim": "Native official protocol differs from CORE Swift precision, context, image tokens and binary projection order. No P0 CORE table target attached.",
+    "dtype": "bfloat16",
+    "image_tokens": 1800,
+    "max_length": 10240,
+    "method": "Qwen3VLReranker.process",
+    "repo_code": "QwenLM/Qwen3-VL-Embedding",
+    "revision": "393e2978d27852b0d0230d6994f37f9c15bed73c",
+    "score": "Official score_linear(weight_yes-weight_no) then native-dtype sigmoid",
+    "sha256": "7f55d5598d0e93585dcd9de7cad522756bb9eed7b1e783a66f8d53a1f7f47e6c",
+    "source_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--src__models__qwen3_vl_reranker.py",
+    "source_file": "src/models/qwen3_vl_reranker.py"
+  },
+  "data": {
+    "adaptations": [
+      "Resolve original CSV image_path by basename under verified source archive image root",
+      "Keep duplicate original VOC MCQ rows; no deduplication"
+    ],
+    "cola_rule": "text_choice",
+    "counts": {
+      "coco_mcq": 5914,
+      "cola": 210,
+      "replace_att": 788,
+      "replace_obj": 1652,
+      "replace_rel": 1406,
+      "swap_att": 666,
+      "swap_obj": 245,
+      "voc_mcq": 5031
+    },
+    "examples": 15912,
+    "owner": "[codex]",
+    "pairs": 58891,
+    "prepared": {
+      "examples.jsonl": "e638eab06544d6705d2df86882d3b9bafc15bacc846be6db2e366b1b454bc92d",
+      "images-receipt.jsonl": "2ea557a0cc3936f12f6c2d512e7a92fdcd27ac80ef697690355f7e9f28522296",
+      "pairs.jsonl": "8b3fb58fd186b72225b25043932a3995b97e3c77924faeb370fc5d0b497f1464"
+    },
+    "sources": {
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/data/voc/VOC2007_mcq_llama3.1_rephrased.csv": "666269c3661d29c9148c702fdae7efa049b7f9b312679f845ac66ddf619979c1",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/cola/data/multiobjects.parquet": "f7aee8eca00b816314df0ceedb1e0ff61d446b77540e58df429b879abad414a8",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/sugarcrepe_pp/data/replace_att.json": "6826413592894754eeca02aeebbcbbc8b95a7456998abcc714e71c033ce6fe87",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/sugarcrepe_pp/data/replace_obj.json": "5c6dc499ec8f511a8aa4ec1b7b5eb0eca90317488abe36ec39573355e2d361ab",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/sugarcrepe_pp/data/replace_rel.json": "040fb95d3f0619bf515db60879e99709a87a5e9b4f524ec3403b127243480fd4",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/sugarcrepe_pp/data/swap_att.json": "450d0fd9fcad3e6f44950dc634e7f901ab1c6d9c60a569ade5ae8ffb3d203ad8",
+      "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/sugarcrepe_pp/data/swap_obj.json": "5f33cae824de431a7ecd3c5de6301f689815f9497aa36d96b154bbaf117b201b",
+      "/ssd4/cactus8603/icml/dl/retrieval3090/data/literature-development/raw/negbench/COCO_val_mcq_llama3.1_rephrased.csv": "42bc853b64fb7d995e73e39212cbbe076ea3e06c8dca1ccc892910f3f91bceee"
+    },
+    "state": "COMPLETE",
+    "unique_images": 9425
+  },
+  "jina": {
+    "attention": "flash_attention_2",
+    "dtype": "auto from pinned model card",
+    "metadata": "image-only document protocol; reject extra text rather than silently drop it",
+    "method": "AutoModel trust_remote_code; compute_score(pairs,max_length=2048,doc_type=image)",
+    "repo": "jinaai/jina-reranker-m0",
+    "revision": "94bfe0aeb2d4dd7978362699cddd5893d4e0adc8",
+    "score": "Official score head and sigmoid(pooled_logits-2.65); no additional transformation"
+  },
+  "official_CORE": {
+    "cache": "dl/retrieval-matrix/sources/core",
+    "files": [
+      {
+        "bytes": 7692,
+        "git_blob_sha1": "3f16676a5211ff47a8cd5384a5ab399bde697325",
+        "path": "README.md",
+        "sha256": "e0d8d2cbfefa1af4c96e7e3f80c2e96ca3efc872ab9d68a82457c6068ce70c63"
+      },
+      {
+        "bytes": 1252,
+        "git_blob_sha1": "d092d9587e4d7aa3f85e02b43fec026534a1266e",
+        "path": "config.py",
+        "sha256": "2e632a49f1aea6b81a359dba6c95700ac14a8fd2130e8e8408599a3477ef6b69"
+      },
+      {
+        "bytes": 3096,
+        "git_blob_sha1": "18640cf660ee8e4dc47f00d95879d3bf5ab9a5cf",
+        "path": "datasets.md",
+        "sha256": "0df05fb909fbed0113503e0cd5b6492b5320933d8fb5cbcd851b77d86b7e3d63"
+      },
+      {
+        "bytes": 11230,
+        "git_blob_sha1": "bcf9adb79f5e42c8f28d5a9ea3bddfe039ba9701",
+        "path": "embedding.py",
+        "sha256": "314fd0411e09573585c5ea5e12a8c240feb16fc7633f5af0c03444eff936c266"
+      },
+      {
+        "bytes": 3454,
+        "git_blob_sha1": "bf9be97a5c25f95bd399ebcc456315b656eb633d",
+        "path": "main.py",
+        "sha256": "050783d3ff29f7fe165e0fab34fe05473d203753eefb8066e91f7666c5f96e6e"
+      },
+      {
+        "bytes": 170,
+        "git_blob_sha1": "97cd711432068a25e6a24a590a50896fb365e4c9",
+        "path": "models/e5_v/__init__.py",
+        "sha256": "b0a14865971a85a11bfd4eed772df7719b51b98b5637bdd37e73bef0cd03ea84"
+      },
+      {
+        "bytes": 6552,
+        "git_blob_sha1": "71af6c75ce71573639bc7ef0970e894aef6f8fc4",
+        "path": "models/e5_v/e5_v_wrapper.py",
+        "sha256": "e0ee2c70444a282b1ee9bd0727fa7617c185e18fc328be9e59645fa49b2b153e"
+      },
+      {
+        "bytes": 9540,
+        "git_blob_sha1": "f84ff92c29814cbb7a451f55c956245b419464ea",
+        "path": "models/load_models.py",
+        "sha256": "f11e50b628b3714ef3406b188daecead5c28f2bffa5f925ede18f282c7b84941"
+      },
+      {
+        "bytes": 0,
+        "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "path": "models/qwen2_5_vl/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 21680,
+        "git_blob_sha1": "182f46ff1048e5e1a0e3dde1d7e31f32df1b4e7e",
+        "path": "models/qwen2_5_vl/embedding_qwen2_5_vl.py",
+        "sha256": "f7404bb97194a99447dadf48455bf2848c550f5aef9970f6baafd9bdaa5446de"
+      },
+      {
+        "bytes": 1445,
+        "git_blob_sha1": "4ebf86e5914517f7a88700502e0c7a0eb2b81f69",
+        "path": "models/qwen2_5_vl/load.py",
+        "sha256": "bb9b600346cad0e84a6f05903fcf270ece702a20996f79078b54ceb78285f054"
+      },
+      {
+        "bytes": 18861,
+        "git_blob_sha1": "00a070bd02c9ce19e002c42609e2c3ed294bc20e",
+        "path": "models/qwen2_vl/qwen2_vl_wrapper.py",
+        "sha256": "d2293856bd0e69f2b4ad4d7361f980d29b752027b8086d9ed224a1851325f9b2"
+      },
+      {
+        "bytes": 1663,
+        "git_blob_sha1": "42808585abbefab39848116562fa82065e2816ae",
+        "path": "models/qwen3_vl/load_pr.py",
+        "sha256": "11c06135e1aa089ca043db1c1d280cbbce5f18a8b8d3909f39d30491d87a12ee"
+      },
+      {
+        "bytes": 13202,
+        "git_blob_sha1": "ae94c707ec3c2e6a2485c3e3144d222427ca1dfc",
+        "path": "models/qwen3_vl/qwen3_vl_wrapper.py",
+        "sha256": "28574af5a11a95264ced86be6d0dfc4964609c4472592582a9e4227b0d5282a6"
+      },
+      {
+        "bytes": 1,
+        "git_blob_sha1": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+        "path": "models/reranker/ours_rank.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "bytes": 23815,
+        "git_blob_sha1": "fcec3e76eeb9a65fe12fab957d3d2e555b61606d",
+        "path": "models/reranker/qwen3_vl_rank.py",
+        "sha256": "cc47d3f8ff88de9c7187d8068041b5218bae4272e910468aa30d8d93073d570a"
+      },
+      {
+        "bytes": 10873,
+        "git_blob_sha1": "8ba67fb3ba5ee34e6bf7ab8047b5d8e4cc2a2f2c",
+        "path": "models/reranker/qwen3_vl_reranker_official.py",
+        "sha256": "0a639258132817e2f3a2bed644f9470a8feef405b3405532a3e70c2c6c05b849"
+      },
+      {
+        "bytes": 14286,
+        "git_blob_sha1": "c5ddba2f6783acc499b9eed37ab642857cd6bb0e",
+        "path": "models/rzen/rzen_embed_inference.py",
+        "sha256": "dcf5e86791de6b6aa877b80c08bfa164174e1b8583fa0d268ae081d457b32d12"
+      },
+      {
+        "bytes": 1131,
+        "git_blob_sha1": "aa6763cb0458369286ffeaab6b993ce44bc9fd20",
+        "path": "models/rzen/rzen_on_scpp.py",
+        "sha256": "017dd021ff9e8715d2d6b212a1253767547ae44b3dbbbe157e4026e11376f0ee"
+      },
+      {
+        "bytes": 7238,
+        "git_blob_sha1": "f9b7ea658e6712c6a89a8e397c9b9bdb45ae8487",
+        "path": "tasks/coco.py",
+        "sha256": "8eb24092ed6632d05836d203ca8bbdbe2a5835a1e75c74e0e3a680e0f171f757"
+      },
+      {
+        "bytes": 7114,
+        "git_blob_sha1": "8f4fcd5bbc0263a1a4a7009c0a0ecc2fe6111c9c",
+        "path": "tasks/cola.py",
+        "sha256": "79c5d782fda6aa49d6433bd1e46d010dc68c533a1c69dbb11e4faa90a160d68e"
+      },
+      {
+        "bytes": 5083,
+        "git_blob_sha1": "e3625e4ae90db9051da65eda00a9f0aa632a13a3",
+        "path": "tasks/composite_dataset.py",
+        "sha256": "d42ff06734cde4b5cac04e4a9c1cb7b2debc45cb7620b68cd5eb08580db5cc24"
+      },
+      {
+        "bytes": 855,
+        "git_blob_sha1": "8aa686b34a64d4006384142e528c63b399f1e7ee",
+        "path": "tasks/dataset.py",
+        "sha256": "00c5c75c350cce69d3697889f2de16d745d45e8f691a592d55a71631a6f9b843"
+      },
+      {
+        "bytes": 7716,
+        "git_blob_sha1": "c2f9ad1f8ab1cc58eab92e2f65eada70ed021056",
+        "path": "tasks/flickr30k.py",
+        "sha256": "90ac46afe9062ce28bbeefb39379b3d02a3a3f24685cb37a84369b40986abfc2"
+      },
+      {
+        "bytes": 7011,
+        "git_blob_sha1": "c9390ac37172e5c06174d671bd05a746c7891408",
+        "path": "tasks/mcmr.py",
+        "sha256": "0c6d861ad4f4e26fbda481375e2043759d32064b5ef1a103c6c2ca8d0fb8e2d6"
+      },
+      {
+        "bytes": 14591,
+        "git_blob_sha1": "74dd0a3138443402ca79ea31c1feebebaf847122",
+        "path": "tasks/negbench.py",
+        "sha256": "3d9d7471f811dd922800a7cc5b1b56602c6fb48fb72e88573564d58860dcab84"
+      },
+      {
+        "bytes": 15980,
+        "git_blob_sha1": "4ead1829262fc6a4ed08244db82f1855fe65e987",
+        "path": "tasks/scpp.py",
+        "sha256": "216c257598f7836b25e4297076fc053227e80040093bbffa79e12226682541aa"
+      }
+    ],
+    "integrity": "27 downloaded Python/Markdown files verified against Git blob SHA-1",
+    "repo": "Alibaba-NLP/core-emb",
+    "revision": "400cf919838ceeecf4c94e3ac178a4270abcc4c5"
+  },
+  "owner": "[codex]",
+  "paper": {
+    "cache": "dl/retrieval-matrix/sources/core-paper.html",
+    "revision": "v1",
+    "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+    "targets_source": "Tables 2,5,8,9",
+    "url": "https://arxiv.org/html/2609.04083v1"
+  },
+  "phase": "P0 reranker MCQ plus distinct P3 backends; CPU preparation only",
+  "pointwise": {
+    "calls": "Unmodified load_qwen and LabelScorer.score_pair; two branch forward passes per pair",
+    "git_blob_sha1": "bbb6ad942f886d6c99f17eb9ad4c37b7aae812f6",
+    "image_only_adaptation": "COCO/COLA/SCPP have no native product metadata. Empty Candidate text is an explicitly labeled P3 image-only adaptation, not an exact MCMR reproduction.",
+    "labels": [
+      "True",
+      "False"
+    ],
+    "model_repo": "Qwen/Qwen3-VL-8B-Instruct",
+    "model_revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "no_silent_skips": "Fixed pair list fails on missing image/score error; original main skip behavior not copied.",
+    "renderer": "Unmodified render_candidate_text; title | description | features | price | date, capped at2048 characters",
+    "repo": "EIT-NLP/MCMR",
+    "revision": "8bf618a89cb41c1e12f1bad640eb12bcf0ef31a0",
+    "score": "softmax([True branch sequence logprob, False branch sequence logprob])[0]",
+    "sha256": "dce636de090a7e022f9227fc3aafd639b4259c07c74c61b8676161edf0cb3ce7",
+    "source_path": "eval/rerank/qwen3_pointwise.py"
+  },
+  "production_status": "No GPU or benchmark model effects produced. Parent must perform independent review, freeze source/model/data/dependency specs, then schedule. Draft specs default verified_protocol=false.",
+  "rules": {
+    "cola_core_qwen": "s(img0,t0)>s(img0,t1) and s(img1,t1)>s(img1,t0)",
+    "cola_jina": "s(img0,t0)>s(img1,t0) and s(img1,t1)>s(img0,t1)",
+    "cross_model_cola_warning": "Released CORE and Jina code use different axes. Report both named rules for unified comparison; use each released branch only for its P0 published reproduction.",
+    "negbench_mcq": "score[0] strictly exceeds 1,2,3; average rows within COCO and VOC; unweighted COCO/VOC macro",
+    "scpp": "two positive captions strictly exceed negative; mean over five subset accuracies"
+  },
+  "schema": 1,
+  "swift": {
+    "adaptations": [
+      "Stable ms-swift4.0.0 selected from original checkpoint4.0.0.dev0, exact development commit not published",
+      "Raise on score parse error instead of silently writing zero",
+      "Local path/name mapping only; args.json preserved so no invented model_type"
+    ],
+    "checkpoint_args": {
+      "models--Alibaba-NLP--core-reranker-2b": {
+        "repo": "Alibaba-NLP/core-reranker-2b",
+        "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+        "sha256": "e00ca60ea41aca70d6fabfb03cbf722e8082dba14a66f25afb07064121982188"
+      },
+      "models--Alibaba-NLP--core-reranker-8b": {
+        "repo": "Alibaba-NLP/core-reranker-8b",
+        "revision": "d95d36a34300e34b87cc1793827ac798642c4488",
+        "sha256": "76f1ac6921e69ee530fd5de6bf7da5419b217681ff21583d8b02cb2dc4b5bed4"
+      }
+    },
+    "checkpoint_original_swift_version": "4.0.0.dev0",
+    "engine": "swift.infer_engine.TransformersEngine",
+    "engine_kwargs": {
+      "attn_impl": "flash_attention_2",
+      "max_batch_size": 32,
+      "max_length": 1500,
+      "task_type": "generative_reranker",
+      "torch_dtype": "float16"
+    },
+    "env": {
+      "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+      "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+      "IMAGE_MAX_TOKEN_NUM": "1200"
+    },
+    "model_type": "qwen3_vl_reranker",
+    "request": {
+      "images": [
+        "IMAGE_PATH"
+      ],
+      "max_tokens": 1500,
+      "messages": [
+        {
+          "content": "Determine if the following image is relevant to the query. ",
+          "role": "system"
+        },
+        {
+          "content": "CAPTION",
+          "role": "user"
+        },
+        {
+          "content": "<image>",
+          "role": "assistant"
+        }
+      ],
+      "score": "float(response.choices[0].message.content[0])",
+      "temperature": 0
+    },
+    "score": "Official lm_head projection at last valid token -> logit_yes-logit_no -> float32 sigmoid; return content list; scalar is content[0].",
+    "template": "qwen3_vl_reranker",
+    "version": "4.0.0",
+    "wheel_sha256": "891e798a9b4d258bdf3f145ae84a5c15325a57f78bb82ff8242dcc2b569db66b"
+  },
+  "targets_table8": {
+    "core2": {
+      "coco_mcq": 0.507,
+      "cola": 0.724,
+      "negbench_macro": 0.646,
+      "replace_att": 0.881,
+      "replace_obj": 0.97,
+      "replace_rel": 0.759,
+      "scpp_avg": 0.839,
+      "swap_att": 0.874,
+      "swap_obj": 0.71,
+      "voc_mcq": 0.784
+    },
+    "core8": {
+      "coco_mcq": 0.562,
+      "cola": 0.843,
+      "negbench_macro": 0.698,
+      "replace_att": 0.918,
+      "replace_obj": 0.975,
+      "replace_rel": 0.819,
+      "scpp_avg": 0.875,
+      "swap_att": 0.92,
+      "swap_obj": 0.743,
+      "voc_mcq": 0.835
+    },
+    "jina_m0": {
+      "coco_mcq": 0.355,
+      "cola": 0.714,
+      "negbench_macro": 0.417,
+      "replace_att": 0.868,
+      "replace_obj": 0.958,
+      "replace_rel": 0.778,
+      "scpp_avg": 0.842,
+      "swap_att": 0.89,
+      "swap_obj": 0.714,
+      "voc_mcq": 0.479
+    },
+    "qwen2": {
+      "coco_mcq": 0.228,
+      "cola": 0.686,
+      "negbench_macro": 0.315,
+      "replace_att": 0.866,
+      "replace_obj": 0.976,
+      "replace_rel": 0.728,
+      "scpp_avg": 0.818,
+      "swap_att": 0.832,
+      "swap_obj": 0.69,
+      "voc_mcq": 0.402
+    },
+    "qwen8": {
+      "coco_mcq": 0.215,
+      "cola": 0.767,
+      "negbench_macro": 0.261,
+      "replace_att": 0.884,
+      "replace_obj": 0.977,
+      "replace_rel": 0.785,
+      "scpp_avg": 0.856,
+      "swap_att": 0.889,
+      "swap_obj": 0.743,
+      "voc_mcq": 0.307
+    }
+  },
+  "tolerance_absolute": 0.01
+}
