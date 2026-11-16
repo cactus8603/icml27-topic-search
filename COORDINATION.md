@@ -34,6 +34,7 @@
 | 排隊機制位置 | 目前是 Codex 的檢索中央排程器與 `resources.py`，位於封存的 `codex/retrieval*`；待整理成跨題目工具（`HOLDS.md`） | Slurm 本身 |
 | 暫存與快取 | `TMPDIR=<中樞>/hf_home/tmp`、`HF_HOME=<中樞>/hf_home`；沒有 `quota` | `/work/ChihChungHsu/cactus8603/icml/{tmp,hf_home}`；大量寫入前 `quota -g -s` |
 | 執行輸出 | `/ssd4/cactus8603/icml/dl/` | `/work/...`，各題 `RUN.md` 寫明 |
+| 下載與 `/tmp` | 資料集、模型、壓縮檔一律下載到 `/ssd*`（資料放中樞 `dl/`，模型放 `hf_home/`），解壓也在原地做；**不放 `/tmp`，也不放根目錄 `/`**（`/tmp` 在根分割區，2026-11-17 已用 91%，與其他專案共用）。只有用完就刪的小檔可以暫放 `hf_home/tmp`，下載用的暫存目錄也要指到那裡 | `/work/...` 底下 |
 
 兩邊的送件紀錄都寫在同一份中樞 `killtests/SUBMITTED.log`；在叢集上送件後，記得把紀錄 push，讓本機那邊看得到，反之亦然。
 - **跨 repo 引用**一律寫成 `repo@commit`，例如 `icml27-foo@1a2b3c4`。
