@@ -1,0 +1,334 @@
+{
+  "benchmarks": {
+    "coco": {
+      "benchmark_id": "COCO-Karpathy-test5k",
+      "canonical_benchmark": "COCO",
+      "data": {
+        "benchmark_id": "COCO-Karpathy-test5k",
+        "dataset_family": "COCO",
+        "expected_images": 5000,
+        "expected_texts": 25010,
+        "format": "karpathy-coco",
+        "image_receipt": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/karpathy-original/coco-test/image-receipt.jsonl",
+          "sha256": "cb1b72a8d5e771492d183f794403663ca9d2efef41ff6e2c5c724615d3787780"
+        },
+        "manifest": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/karpathy-original/coco-test/manifest.jsonl",
+          "sha256": "d8e63730683181ac9a9128d866f2a245769a6ab5f5ee5a25246217f07fedec56"
+        },
+        "mapping_review_required": "Confirm original Karpathy 5000 images and all 25010 captions, without CORE val2017 substitution or first-five truncation.",
+        "published_dataset_mapping": "Google author issue166 explicitly uses TFDS coco_captions test; fixed TFDS source retains every original Karpathy raw sentence.",
+        "source_json": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/karpathy-original/dataset_coco.json",
+          "sha256": "2fd999220673258012acfb411a4e7e66af7d488050b2519b0badcc49b7600b8d"
+        }
+      },
+      "disclosed_differences": [
+        "Google official HF PyTorch weights, FP32, instead of original Google JAX execution.",
+        "HF PIL bilinear resize384 vs BigVision tf.image.resize bilinear antialias=False followed by uint8 cast; numerical identity is not asserted.",
+        "Original Karpathy source order is frozen; TFDS enumeration can differ, affecting exact similarity ties.",
+        "Author NumPy version is not published; this port fixes NumPy 2.3.5 and default quicksort, with no custom tie rule.",
+        "Google author issue166 explicitly uses TFDS coco_captions test; fixed TFDS source retains every original Karpathy raw sentence."
+      ],
+      "primary_metrics": {
+        "i2t_R@1": {
+          "absolute_tolerance": 0.01,
+          "denominator": 5000,
+          "direction": "i2t",
+          "metric": "any-positive Recall@1",
+          "published": {
+            "source": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+              "sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737"
+            },
+            "table": "SigLIP2 Table1 So/14 384",
+            "url": "https://arxiv.org/html/2502.14786v1",
+            "variant": "siglip2"
+          },
+          "target": 0.717
+        },
+        "t2i_R@1": {
+          "absolute_tolerance": 0.01,
+          "denominator": 25010,
+          "direction": "t2i",
+          "metric": "any-positive Recall@1",
+          "published": {
+            "source": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+              "sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737"
+            },
+            "table": "SigLIP2 Table1 So/14 384",
+            "url": "https://arxiv.org/html/2502.14786v1",
+            "variant": "siglip2"
+          },
+          "target": 0.558
+        }
+      },
+      "protocol_status": "DISCLOSED_OFFICIAL_PORT_REQUIRES_REVIEW",
+      "score_profile": {
+        "cpu_score": true,
+        "embedding_dtype": "float32",
+        "id": "siglip2-google-hf-fp32-bigvision-argsort-v1",
+        "metrics": "any-positive Recall@1/5/10, separately over all text and image queries",
+        "normalization": "torch.nn.functional.normalize(dim=-1) in FP32",
+        "orientation": "images_by_texts",
+        "ranking": "numpy.argsort(-similarity), default quicksort",
+        "similarity": "numpy.dot(images, texts.T); no temperature or bias",
+        "similarity_dtype": "float32",
+        "ties": "author numpy.argsort default quicksort; source-order candidates; no custom stable tie break"
+      },
+      "task": "bidirectional-caption-retrieval"
+    },
+    "flickr": {
+      "benchmark_id": "Flickr30k-Karpathy-test1k",
+      "canonical_benchmark": "Flickr30k",
+      "data": {
+        "benchmark_id": "Flickr30k-Karpathy-test1k",
+        "dataset_family": "Flickr30k",
+        "expected_images": 1000,
+        "expected_texts": 5000,
+        "format": "karpathy-flickr",
+        "image_receipt": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/flickr30k_test/image_receipt.jsonl",
+          "sha256": "684fa142f91510cbd4e05a17ecc50c97c268488bcad4d6becf8e56fffcf5624b"
+        },
+        "image_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/flickr30k_test",
+        "manifest": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/flickr30k_test/karpathy_test_manifest.jsonl",
+          "sha256": "8fed5d341cd6021e92f25e2c016c09a15ff29df3e2f8a90020c5dbd42fb445b5"
+        },
+        "mapping_review_required": "Independently accept or reject the original Karpathy test1k mapping to the published Flickr benchmark; CORE HF captions differ and cannot substitute.",
+        "published_dataset_mapping": "Paper Table1 names Flickr. Use original Karpathy test1k raw captions; Google public issue gives COCO loader only, so exact Flickr loader/order is not claimed.",
+        "receipt_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data",
+        "source_json": {
+          "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/data/flickr30k_test/upstream/dataset_flickr30k.json",
+          "sha256": "db779ee2c5df40c25ff0eebeca464f6124b620cc4a9398650aea71fd1b53d4af"
+        }
+      },
+      "disclosed_differences": [
+        "Google official HF PyTorch weights, FP32, instead of original Google JAX execution.",
+        "HF PIL bilinear resize384 vs BigVision tf.image.resize bilinear antialias=False followed by uint8 cast; numerical identity is not asserted.",
+        "Original Karpathy source order is frozen; TFDS enumeration can differ, affecting exact similarity ties.",
+        "Author NumPy version is not published; this port fixes NumPy 2.3.5 and default quicksort, with no custom tie rule.",
+        "Paper Table1 names Flickr. Use original Karpathy test1k raw captions; Google public issue gives COCO loader only, so exact Flickr loader/order is not claimed."
+      ],
+      "primary_metrics": {
+        "i2t_R@1": {
+          "absolute_tolerance": 0.01,
+          "denominator": 1000,
+          "direction": "i2t",
+          "metric": "any-positive Recall@1",
+          "published": {
+            "source": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+              "sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737"
+            },
+            "table": "SigLIP2 Table1 So/14 384",
+            "url": "https://arxiv.org/html/2502.14786v1",
+            "variant": "siglip2"
+          },
+          "target": 0.949
+        },
+        "t2i_R@1": {
+          "absolute_tolerance": 0.01,
+          "denominator": 5000,
+          "direction": "t2i",
+          "metric": "any-positive Recall@1",
+          "published": {
+            "source": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+              "sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737"
+            },
+            "table": "SigLIP2 Table1 So/14 384",
+            "url": "https://arxiv.org/html/2502.14786v1",
+            "variant": "siglip2"
+          },
+          "target": 0.857
+        }
+      },
+      "protocol_status": "DISCLOSED_OFFICIAL_PORT_REQUIRES_REVIEW",
+      "score_profile": {
+        "cpu_score": true,
+        "embedding_dtype": "float32",
+        "id": "siglip2-google-hf-fp32-bigvision-argsort-v1",
+        "metrics": "any-positive Recall@1/5/10, separately over all text and image queries",
+        "normalization": "torch.nn.functional.normalize(dim=-1) in FP32",
+        "orientation": "images_by_texts",
+        "ranking": "numpy.argsort(-similarity), default quicksort",
+        "similarity": "numpy.dot(images, texts.T); no temperature or bias",
+        "similarity_dtype": "float32",
+        "ties": "author numpy.argsort default quicksort; source-order candidates; no custom stable tie break"
+      },
+      "task": "bidirectional-caption-retrieval"
+    }
+  },
+  "dependencies": {
+    "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_extra/dependencies.json",
+    "sha256": "12d6d1b761179329243fc55734591efdbeea87cf77947472bb0f7dca95418f5a"
+  },
+  "external_sources": {
+    "bigvision/big_vision/configs/proj/image_text/README_siglip2.md": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/configs/proj/image_text/README_siglip2.md",
+      "sha256": "3c1862c16c6c75a97278fe9556482618db1d0419997eaefd4006ec9149994eef"
+    },
+    "bigvision/big_vision/configs/proj/image_text/SigLIP2_demo.ipynb": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/configs/proj/image_text/SigLIP2_demo.ipynb",
+      "sha256": "5148b8f9432b15c36368073b561176a5150bcc7f9e09fab8281ac0f112b0d5f6"
+    },
+    "bigvision/big_vision/datasets/tfds.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/datasets/tfds.py",
+      "sha256": "15e653f3916db29c12abae84699b78bc9c226a306dca7b28606a9f85b4aa59a9"
+    },
+    "bigvision/big_vision/evaluators/proj/image_text/retrieval.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/evaluators/proj/image_text/retrieval.py",
+      "sha256": "ad97d4f72eb6aa736fed1a7e117352abf4d5f5325b1d77b33391bc8af25c1425"
+    },
+    "bigvision/big_vision/pp/ops_general.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/pp/ops_general.py",
+      "sha256": "dfd5c05cd08de6dbccb1bd4465a0a422342648128fb1b46d3018f2feae9afe50"
+    },
+    "bigvision/big_vision/pp/ops_image.py": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision/big_vision/pp/ops_image.py",
+      "sha256": "2fa5b0c4373a9910cc48d33d83d23a6f846a6599c39ed48c1bbc834351c7a710"
+    },
+    "google_author_reproduction": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/sources/siglip2-issue166-comments.json",
+      "sha256": "3abccd57f378d1458e545ad2dddf26472e88ff0d593c3aa9d44faa2e54848e1e"
+    },
+    "google_metric": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-p0/sources/image_text_retrieval.py",
+      "sha256": "6f250d41a2891f8ad914c389dcdcea1fb9cb3276590bb753f6d31b0c9a267361"
+    },
+    "tfds_coco_builder": {
+      "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/tfds/coco_captions.py",
+      "sha256": "9f2b038f8672c35bbb3a15163106a1d8d1bf84a339ea93cca292547d4c4b925d"
+    }
+  },
+  "model_key": "siglip2",
+  "model_spec": {
+    "batches": {
+      "cross": 1,
+      "image": 4,
+      "text": 32
+    },
+    "embedding_dim": 1152,
+    "extra_family": "siglip2",
+    "family": "CLIP",
+    "files": {
+      "README.md": "5c02af3cafc849e2acbc03630b4ef9de4cc3c29f8bbef613bf7484fe4be9a897",
+      "config.json": "73477b47ae9a395f008f993ebd8fb5c16ce0b5e8419ffdf2f5b2183b260f9cff",
+      "model.safetensors": "9f4f4a49f908ef0c979bce8ff5a5c0e88882dc6c5dc4304387cbbd152558e2c2",
+      "preprocessor_config.json": "fb2817d3523ca3b666c859f15320c7138416bc38ffc515e2963f78c868c51c90",
+      "special_tokens_map.json": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351",
+      "tokenizer.json": "cb9140fae3ac5122c972d37adf83e1248471a38147ad76f8215c8872c6fd8322",
+      "tokenizer.model": "61a7b147390c64585d6c3543dd6fc636906c9af3865a5548f27f31aee1d4c8e2",
+      "tokenizer_config.json": "14afe629fe4959b9e0d51e1852b8d9f7ad074f90a1a7125a4fcdd17f06e78fc8"
+    },
+    "kind": "official_embedding",
+    "loader": {
+      "torch_dtype": "float32"
+    },
+    "native_protocol": {
+      "coco_split": "TFDS coco_captions/2014 test (Karpathy 5k)",
+      "disclosed_adaptation": "Official Google HF PyTorch conversion, not a JAX/TF execution. PIL/HF preprocessing is recorded; compare against BigVision targets without claiming numerical identity.",
+      "flickr_split": "original Karpathy test1k captions",
+      "image_size": 384,
+      "max_length": 64,
+      "metric": "any-positive Recall@1",
+      "name": "Google SigLIP2 fixed-resolution official HF port",
+      "padding": "max_length",
+      "qualification_status": "requires exact native datasets and frozen P0",
+      "text_lowercase": true,
+      "truncation": true
+    },
+    "published_targets": [
+      {
+        "benchmark": "COCO-Karpathy-test5k",
+        "checkpoint_identity_verified": true,
+        "metrics": {
+          "i2t_R@1": 0.717,
+          "t2i_R@1": 0.558
+        },
+        "note": "",
+        "reported_only": true,
+        "source_file": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+        "source_sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737",
+        "table": "SigLIP2 Table1 So/14 384"
+      },
+      {
+        "benchmark": "Flickr30k-Karpathy-test1k",
+        "checkpoint_identity_verified": true,
+        "metrics": {
+          "i2t_R@1": 0.949,
+          "t2i_R@1": 0.857
+        },
+        "note": "",
+        "reported_only": true,
+        "source_file": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/siglip2-paper.html",
+        "source_sha256": "59d3a85238e3a46dc4e65f7e5f8dfef68e1f4d31d1edb2fbdfb2b6a00cb7f737",
+        "table": "SigLIP2 Table1 So/14 384"
+      }
+    ],
+    "qualification": "P0_REQUIRED",
+    "repo": "google/siglip2-so400m-patch14-384",
+    "revision": "e8e487298228002f3d8a82e0cd5c8ea9c567f57f",
+    "snapshot": "/ssd4/cactus8603/icml/hf_home/hub/models--google--siglip2-so400m-patch14-384/snapshots/e8e487298228002f3d8a82e0cd5c8ea9c567f57f",
+    "sources": {
+      "big_vision": {
+        "files": {
+          "big_vision/configs/proj/image_text/README_siglip2.md": "3c1862c16c6c75a97278fe9556482618db1d0419997eaefd4006ec9149994eef",
+          "big_vision/configs/proj/image_text/SigLIP2_demo.ipynb": "5148b8f9432b15c36368073b561176a5150bcc7f9e09fab8281ac0f112b0d5f6",
+          "big_vision/datasets/tfds.py": "15e653f3916db29c12abae84699b78bc9c226a306dca7b28606a9f85b4aa59a9",
+          "big_vision/evaluators/proj/image_text/retrieval.py": "ad97d4f72eb6aa736fed1a7e117352abf4d5f5325b1d77b33391bc8af25c1425",
+          "big_vision/pp/ops_general.py": "dfd5c05cd08de6dbccb1bd4465a0a422342648128fb1b46d3018f2feae9afe50",
+          "big_vision/pp/ops_image.py": "2fa5b0c4373a9910cc48d33d83d23a6f846a6599c39ed48c1bbc834351c7a710"
+        },
+        "repo": "google-research/big_vision",
+        "revision": "0127fb6b337ee2a27bf4e54dea79cff176527356",
+        "root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/sources/big_vision"
+      }
+    },
+    "support": {},
+    "variant": "siglip2"
+  },
+  "owner": "[codex]",
+  "phase": "P0_NATIVE",
+  "purpose": "P0_OFFICIAL_QUALIFICATION",
+  "qualification": {
+    "all_declared_benchmarks_retained": true,
+    "counting_unit": "canonical_benchmark dataset family, never metric directions or subcategories",
+    "required_distinct_benchmarks": 2,
+    "requires_explicit_protocol_review": true,
+    "requires_independent_array_recomputation": true,
+    "requires_separate_reviewer": true
+  },
+  "schema": 2,
+  "settings": {
+    "allow_tf32": false,
+    "image_batch": 4,
+    "offload": false,
+    "precision": "float32",
+    "quantization": false,
+    "seed": 2026111665,
+    "smoke_cosine_min": 0.9995,
+    "smoke_max_abs": 0.01,
+    "text_batch": 32
+  },
+  "source_files": {
+    "codex/retrieval_matrix_extra/dependencies.json": "12d6d1b761179329243fc55734591efdbeea87cf77947472bb0f7dca95418f5a",
+    "codex/retrieval_matrix_native_p0/PREREG.md": "898a896f174193b04c6398583202cdaa7d1939280ddbe580a3037dfcf14a780a",
+    "codex/retrieval_matrix_native_p0/build_plan.py": "cfdc0532d8c85227fd758827d8607ef431a9483dcf61b5d252a8a8d5cae77c2b",
+    "codex/retrieval_matrix_native_p0/central_task.sh": "0a7a8ddb79dd847e8e877fe4a014fa189d97ec163f33515a9e4131796bf20a81",
+    "codex/retrieval_matrix_native_p0/data.py": "407cf3741b362927a8290e446d2e64ca812421754edae44cf72e1577ce903d2a",
+    "codex/retrieval_matrix_native_p0/evidence.py": "710a02ecf62d9264a08cf91cffa9731eb4f8623562b76e0b84b2eedb076a55ed",
+    "codex/retrieval_matrix_native_p0/metrics.py": "ac5db3abfa5077ba0ec54567533f5745389033fb5df5e8f690b26c55fc414342",
+    "codex/retrieval_matrix_native_p0/models.py": "bd0c1c78d1f11a5d4b026de94d732212311ce1aede1f07090fb0baf3949caf0f",
+    "codex/retrieval_matrix_native_p0/qualification.py": "e392c9056d664fca92adcc6f0db59226b47c07b8f8aebadb43eea20641372767",
+    "codex/retrieval_matrix_native_p0/run.sh": "b7cbd8024719500a434edbc5a5dfebb21d8e573c521e37fb51b48aff5365c87a",
+    "codex/retrieval_matrix_native_p0/runner.py": "064f79f557bc33b1043493835b4fdf6c58445c833b923ce740f3517f6f5ba9ef",
+    "codex/retrieval_matrix_native_p0/test_native.py": "89feb73c6ba585ccfdc4f85599094057530469d6a6b149086c67c9eefba2a71b",
+    "codex/retrieval_scaling/runner.py": "221ef92a2b3f7e6d2b7aa3f288b07334d718bdf39282fea3daf5c259807672f5"
+  },
+  "state": "NOT_RUN"
+}
