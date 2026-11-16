@@ -306,3 +306,6 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 23:39 submit central-2921085 compositional-retrieval 唯一新中央接手原worker/globalcap4/perGPU1；原producer不重跑 f6780742ec62d7e50773054ea747c3692fce43dc
 [codex] 2026-11-16 23:50 start local3090-2960823 compositional-retrieval central-task=native-siglip2-einops-v1 GPU=GPU-24b28441-1bef-4e95-9739-be0d909755e5 original-frozen-command f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb
 [codex] 2026-11-16 23:50 start local3090-2960998 compositional-retrieval central-task=native-rerank-jina_m0 GPU=GPU-b6f521f7-c314-b23e-abac-92a7fc6c828a original-frozen-command 54f544ce54bca82be3cc8b3c72662b354c6d3e40
+[codex] 2026-11-16 23:53 start local3090-2972531 compositional-retrieval central-task=mcq-core8 GPU=GPU-9a253dde-91d0-8c96-abe7-ddf4e3ee8a89 original-frozen-command 25f7bd515875a0c698202d0047d7b7952fd6846b
+[codex] 2026-11-17 00:01 start local3090-3018033 compositional-retrieval central-task=native-paired-clic_b32-einops-v1 GPU=GPU-2719162b-ac91-96cf-5684-57f34e511ff6 original-frozen-command 5675ef59cee99fa6d28e12f07501eeb157c321bd
+[codex] 2026-11-17 00:07 source-context central-v4b compositional-retrieval 現行凍結隊列所有bare_SHA皆為中樞icml27-topic-search之來源；保留舊worker/frozen bytes；往後新增登記使用repo@commit；globalcap4/perGPU1 icml27-topic-search@f6780742ec62d7e50773054ea747c3692fce43dc
