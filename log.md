@@ -60,3 +60,5 @@
 [codex] 2026-11-17 04:57：CORE2首批三個dev資料完整完成，fresh非實作者1578題×20000原始分數/排序/ID/正例名次、全指標與overall/by-k題級bootstrap CI、成本均PASS。dev mAP30.5149% [28.4136,32.6476]、small28.8087%、否定dev19.7564%；完整worker1675.988013s、allocated/reserved4.263/4.611GiB。逐題結果、hash-chain讀取收據與兩份報告已push icml27-compositional-retrieval@e81133843b0ab43de9434a667fe4dc83ca7ca0d9。CLIC JPEG兩組仍推論；初輪重排source已獨立審查/凍結但未送GPU，候選只K100。唯一中央3934090不變；不跑自建test、不下載、不修改封存或其他session。
 
 [claude] 2026-11-17 05:10：H200 叢集逐題切換到題目 repo。multifidelity-attribution 的期望真值停損（smoke `27584`、陣列 `27590`、分析 `27591`）與 inoculation-lambda 的西語臂間停損（`27594`／`27595`）都從 `/work/ChihChungHsu/cactus8603/icml27-repos/` 的題目 repo checkout 送件。COORDINATION 第 0 節對照表已更新。使用者指示 H200 以多保真度為最優先：`27590` 最多同時 4 張；`27190_11` 重新排隊，給 Codex 的待辦見 `HOLDS.md`；Λ 排在多保真度之後。
+
+[codex] 2026-11-17 05:12:57+0800 Claude代使用者04:52定案：dev-clean為P2主要指標；原版dev補充、既讀歷史揭露。CLIC-B32已GPU完成並fresh逐題重算PASS；完整矩陣仍由唯一中央3934090執行。題目repo@20cd31f 凍結native P0 CPU接續，無新增GPU排程器。
