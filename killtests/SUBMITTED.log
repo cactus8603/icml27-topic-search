@@ -205,3 +205,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-16 01:59 submit 27162 inoculation-lambda 替代27114；從舊執行副本載入原比較凍結版，等待27112和27113，啟動入口 0ebfd7b2534b4938c9c590c315053e7fc71f0f68 2b04482255ee1942969ba41ef2ffdc3af6a77187
 [codex] 2026-11-16 04:13 submit 27190 t2i-rare-failure formal-stage=2a 重送失敗索引1–11；六個歷史基準檔依原收據復原，CPU Gate B與凍結成本配額驗收通過，保留27117_0，低優先 4351ebb70f2e7ad72e0ec8b99658d9ed41c06567
 [codex] 2026-11-16 04:15 submit 27191 multifidelity-attribution 替代26866；原清冊與上游26734預檢通過，沿用64新遮罩，使用新輸出目錄、低優先、停用同編號重排，入口 d5ba5a773bbcec34ce42ee04b467763a8209c0b9 1f3e88e3b47ee1b7263ae8e8594023020df7eeb2
+[codex] 2026-11-16 14:54 submit local3090-3634135 compositional-retrieval 文獻公開dev5000圖/配對1000群；完整cheap索引及50000重排，無Slurm，無卡依共享條件排隊 cbd545ac96e4978454c41a78f78b75419d413b77
