@@ -1,0 +1,307 @@
+{
+  "excluded_missing_targets": [
+    "qwen_native2",
+    "qwen_native8",
+    "qwen_instruct8"
+  ],
+  "execution_plan": false,
+  "execution_separately_defined_by": "workflow.py; independently reviewed committed approved plan required",
+  "gpu_production": false,
+  "main_outputs_read": false,
+  "owner": "[codex]",
+  "profiles": {
+    "native-paired-clic_b32-einops-v1": {
+      "benchmarks": [
+        "sugarcrepe",
+        "sugarcrepe_pp"
+      ],
+      "counts": {
+        "sugarcrepe": {
+          "images": 7511,
+          "texts": 15022
+        },
+        "sugarcrepe_pp": {
+          "images": 4757,
+          "texts": 14271
+        }
+      },
+      "family": "paired",
+      "id": "native-paired-clic_b32-einops-v1",
+      "model": "clic_b32",
+      "model_spec_sha256": "11cb38685a7e74348a8af093ac7df94bea2f4e3f08a23590434650e7bd9a0c1d",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_b32",
+      "primary_metric_names": {
+        "sugarcrepe": [
+          "add_ITT",
+          "replace_ITT",
+          "swap_ITT"
+        ],
+        "sugarcrepe_pp": [
+          "replace_ITT",
+          "replace_TOT",
+          "swap_ITT",
+          "swap_TOT"
+        ]
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_b32-einops-approved-v1.json",
+        "sha256": "f81ec57f7ea40bd913cb0a5f19774779498b17fee2e2599ea8340fb24ee430e5"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+        "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+      },
+      "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+    },
+    "native-paired-clic_clips_l14-einops-v1": {
+      "benchmarks": [
+        "sugarcrepe",
+        "sugarcrepe_pp"
+      ],
+      "counts": {
+        "sugarcrepe": {
+          "images": 7511,
+          "texts": 15022
+        },
+        "sugarcrepe_pp": {
+          "images": 4757,
+          "texts": 14271
+        }
+      },
+      "family": "paired",
+      "id": "native-paired-clic_clips_l14-einops-v1",
+      "model": "clic_clips_l14",
+      "model_spec_sha256": "c779d5192212004a494b14b2f267d8b9e81500132811995eb86bf498777ade32",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_clips_l14",
+      "primary_metric_names": {
+        "sugarcrepe": [
+          "add_ITT",
+          "replace_ITT",
+          "swap_ITT"
+        ],
+        "sugarcrepe_pp": [
+          "replace_ITT",
+          "replace_TOT",
+          "swap_ITT",
+          "swap_TOT"
+        ]
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_clips_l14-einops-approved-v1.json",
+        "sha256": "5b5c4e33f06d0ec1c8b4df0f105a5c6f09a2ea896b669cd558e10044a2302e8b"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+        "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+      },
+      "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+    },
+    "native-paired-clic_l14-einops-v1": {
+      "benchmarks": [
+        "sugarcrepe",
+        "sugarcrepe_pp"
+      ],
+      "counts": {
+        "sugarcrepe": {
+          "images": 7511,
+          "texts": 15022
+        },
+        "sugarcrepe_pp": {
+          "images": 4757,
+          "texts": 14271
+        }
+      },
+      "family": "paired",
+      "id": "native-paired-clic_l14-einops-v1",
+      "model": "clic_l14",
+      "model_spec_sha256": "60ee3e72a29f4fde8b7247ad363d094903f2fcc1fbce5ce029e26398d951be16",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_l14",
+      "primary_metric_names": {
+        "sugarcrepe": [
+          "add_ITT",
+          "replace_ITT",
+          "swap_ITT"
+        ],
+        "sugarcrepe_pp": [
+          "replace_ITT",
+          "replace_TOT",
+          "swap_ITT",
+          "swap_TOT"
+        ]
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_l14-einops-approved-v1.json",
+        "sha256": "efd8fbbe8bbd493cc473a52363cb0a9036dbe73b8c91414427ee0b1b42ff64ce"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+        "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+      },
+      "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+    },
+    "native-rerank-jina_m0": {
+      "benchmarks": [
+        "COLA",
+        "SugarCrepe++",
+        "NegBench"
+      ],
+      "cola_rule": "cola_image_choice",
+      "counts": {
+        "examples": 15912,
+        "pairs": 58891,
+        "subsets": 8
+      },
+      "family": "reranker",
+      "id": "native-rerank-jina_m0",
+      "model": "jina_m0",
+      "model_spec_sha256": "4c072ca5d77f39bb3e16ec3148709e78d061f5ef69a02fd6358060691745c900",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0",
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+        "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+      },
+      "qualification_scope": "official-native-reranker-mcq-qualified",
+      "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0/scores",
+      "variant_spec_sha256": "4d98ad37e4f80fa4f99fd4eb7dc6b677c0acdd586769ed9c5a574a6240bf8d3a"
+    },
+    "native-rerank-qwen2": {
+      "benchmarks": [
+        "COLA",
+        "SugarCrepe++",
+        "NegBench"
+      ],
+      "cola_rule": "cola_text_choice",
+      "counts": {
+        "examples": 15912,
+        "pairs": 58891,
+        "subsets": 8
+      },
+      "family": "reranker",
+      "id": "native-rerank-qwen2",
+      "model": "qwen2",
+      "model_spec_sha256": "8c314314623119891899c6931f4d11aada8d7177ba236771363fcae42300af65",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2",
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+        "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+      },
+      "qualification_scope": "official-native-reranker-mcq-qualified",
+      "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2/scores",
+      "variant_spec_sha256": "aa985c91ea5dfcbe01e52328df0f9d4160fb8015a6072e2fc630fa3965bb96af"
+    },
+    "native-rerank-qwen8": {
+      "benchmarks": [
+        "COLA",
+        "SugarCrepe++",
+        "NegBench"
+      ],
+      "cola_rule": "cola_text_choice",
+      "counts": {
+        "examples": 15912,
+        "pairs": 58891,
+        "subsets": 8
+      },
+      "family": "reranker",
+      "id": "native-rerank-qwen8",
+      "model": "qwen8",
+      "model_spec_sha256": "745b29c955394e28c1688c3fced3c35ffcd92841156e92d4ceb5b960090dc1e1",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8",
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+        "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+      },
+      "qualification_scope": "official-native-reranker-mcq-qualified",
+      "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8/scores",
+      "variant_spec_sha256": "5cb35338732afa16cf3109f7e7d5f35f4a930749b8f9668e6c635b0da00e1bfc"
+    },
+    "native-siglip2-einops-v1": {
+      "benchmarks": [
+        "coco",
+        "flickr"
+      ],
+      "counts": {
+        "coco": {
+          "images": 5000,
+          "texts": 25010
+        },
+        "flickr": {
+          "images": 1000,
+          "texts": 5000
+        }
+      },
+      "family": "siglip2",
+      "id": "native-siglip2-einops-v1",
+      "model": "siglip2",
+      "model_spec_sha256": "5abba94ed22658e7c15f99a8f4713759e4da735f69b13c60736bf2422a9c0df8",
+      "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-runtime-fix/runs/p0-v1-20261116/siglip2",
+      "primary_metric_names": {
+        "coco": [
+          "i2t_R@1",
+          "t2i_R@1"
+        ],
+        "flickr": [
+          "i2t_R@1",
+          "t2i_R@1"
+        ]
+      },
+      "producer_commit": "f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/p0-siglip2-einops-approved-v1.json",
+        "sha256": "d45d5502838b587daad1f8f3d8b241cdbc7a1b8f6c3d620fb2edb19b13377167"
+      },
+      "qualification_module": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/qualification.py",
+        "sha256": "84849d3af50a3e5ee4ebfbe18c5ad06c4e1a0363b235c07d0eaba54c0a5c605a"
+      },
+      "qualification_scope": "official-native-runtime-fix-p0-qualified"
+    }
+  },
+  "qualification_emitted": false,
+  "schedule": {
+    "freeze_commit": "3a234a83586b8c253d4690b6638243b71cd22b7a",
+    "immutable_body_only": false,
+    "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_batches/central-v4.json",
+    "sha256": "9ff2b29a231a97e70b27f7e1127a23d96a05a4e0cca9a329b495a5e9992771ea"
+  },
+  "schema": 1,
+  "shared_analysis_ref": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+  "shared_sources": {
+    "codex/retrieval_matrix_analysis/PREREG.md": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": true,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/PREREG.md",
+      "sha256": "ec398c21da3d58c199ab53334118b477c963ac3501ae74119ca4b02c851573c5"
+    },
+    "codex/retrieval_matrix_analysis/contracts.py": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": false,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/contracts.py",
+      "sha256": "16baf9710417a76557ee334e8f2020228763119f7ae54c79aef17ff1ca996c8d"
+    },
+    "codex/retrieval_matrix_analysis/reading.py": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": false,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/reading.py",
+      "sha256": "49777bf1a59a27da26a2b1fdab00b48657a103d041d947e07fcf9e71e186a509"
+    }
+  },
+  "state": "SOURCE_INVENTORY"
+}

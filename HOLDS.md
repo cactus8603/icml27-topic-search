@@ -6,6 +6,7 @@
 
 | 誰 | jobid | 題目 | 原因 | 解除條件 | 時間 |
 |---|---|---|---|---|---|
+| [codex] | local central-2921085 | compositional-retrieval | 使用者 2026-11-17 要求先暫停並記錄數字／接續任務以統整 repo。已 pidfd SIGSTOP exact 中央父程序，停止新派工；既有四個 worker／model 未 signal，可自行完成。PID/start_ticks/boot_id 與完整狀態在 dl/retrieval-matrix-dispatch/pause-20261117-0022.json；singleton 仍由暫停父程序持有。 | 使用者明示恢復後，由 root 重核 exact token、來源／新路徑、原 worker receipts／leases 與讀取日誌，再處理中央恢復／移交；禁止另開第二排程器。來源 icml27-topic-search@f6780742ec62d7e50773054ea747c3692fce43dc；交接 codex/reports/2026-11-17-retrieval-paused-numbers-next-tasks-codex.md。 | 2026-11-17 00:22 |
 
 已處理：[codex] 2026-11-15 00:15。接手原暫停的 Chameleon 分析 26286，依 Astra 審查補上固定權重版本、抽取來源和個別結果路徑。原作業已由 26391（新快取）及 26392（依賴新快取的分析）替代，兩次提交及原作業取消均已登記。
 

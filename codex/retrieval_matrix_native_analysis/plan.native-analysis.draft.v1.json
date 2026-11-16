@@ -1,0 +1,1508 @@
+{
+  "decision_order": [
+    "original-frozen-mechanical",
+    "fresh-nonimplementer-original-array-recomputation",
+    "original-native-make-admit",
+    "user-final-decision"
+  ],
+  "excluded_missing_targets": [
+    "qwen_native2",
+    "qwen_native8",
+    "qwen_instruct8"
+  ],
+  "execution_plan": true,
+  "gpu_allowed": false,
+  "jobs": {
+    "native-paired-clic_b32-einops-v1": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-paired-v2.json",
+        "sha256": "bf608f8ad75c11dd38b164c4fa39462185cdc5ba6c0138fc34d190f49034c319"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+        },
+        "modules": {
+          "einops": {
+            "actual_version": "0.8.2",
+            "distribution_version": "0.8.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps/einops/__init__.py"
+          },
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "distribution_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py"
+          },
+          "open_clip": {
+            "actual_version": "2.31.0",
+            "distribution_version": "2.31.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps/open_clip/__init__.py"
+          },
+          "peft": {
+            "actual_version": "0.15.2",
+            "distribution_version": "0.15.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/peft/__init__.py"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "distribution_version": "0.0.8",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/qwen_vl_utils/__init__.py"
+          },
+          "tokenizers": {
+            "actual_version": "0.21.4",
+            "distribution_version": "0.21.4",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/tokenizers/__init__.py"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "distribution_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "distribution_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py"
+          },
+          "transformers": {
+            "actual_version": "4.51.3",
+            "distribution_version": "4.51.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/transformers/__init__.py"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "id": "native-paired-clic_b32-einops-v1",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_b32-einops-v1.json",
+        "sha256": "87b1e0ed19a0d3a3b53954807e9b13556b5a07e086834ebe66a60793d7cdae54"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_b32-einops-v1.json",
+      "model_spec_sha256": "11cb38685a7e74348a8af093ac7df94bea2f4e3f08a23590434650e7bd9a0c1d",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/qualification.json"
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_b32-einops-approved-v1.json",
+        "sha256": "f81ec57f7ea40bd913cb0a5f19774779498b17fee2e2599ea8340fb24ee430e5"
+      },
+      "profile": {
+        "benchmarks": [
+          "sugarcrepe",
+          "sugarcrepe_pp"
+        ],
+        "counts": {
+          "sugarcrepe": {
+            "images": 7511,
+            "texts": 15022
+          },
+          "sugarcrepe_pp": {
+            "images": 4757,
+            "texts": 14271
+          }
+        },
+        "family": "paired",
+        "id": "native-paired-clic_b32-einops-v1",
+        "model": "clic_b32",
+        "model_spec_sha256": "11cb38685a7e74348a8af093ac7df94bea2f4e3f08a23590434650e7bd9a0c1d",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_b32",
+        "primary_metric_names": {
+          "sugarcrepe": [
+            "add_ITT",
+            "replace_ITT",
+            "swap_ITT"
+          ],
+          "sugarcrepe_pp": [
+            "replace_ITT",
+            "replace_TOT",
+            "swap_ITT",
+            "swap_TOT"
+          ]
+        },
+        "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_b32-einops-approved-v1.json",
+          "sha256": "f81ec57f7ea40bd913cb0a5f19774779498b17fee2e2599ea8340fb24ee430e5"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+          "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+        },
+        "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0/p3_contract_review",
+            "evidence": "Parent explicitly identified both runtime repair implementations as this agent; producer 5675ef59cee99fa6d28e12f07501eeb157c321bd",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_b32-einops-v1/qualify-attempt.json"
+      }
+    },
+    "native-paired-clic_clips_l14-einops-v1": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-paired-v2.json",
+        "sha256": "bf608f8ad75c11dd38b164c4fa39462185cdc5ba6c0138fc34d190f49034c319"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+        },
+        "modules": {
+          "einops": {
+            "actual_version": "0.8.2",
+            "distribution_version": "0.8.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps/einops/__init__.py"
+          },
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "distribution_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py"
+          },
+          "open_clip": {
+            "actual_version": "2.31.0",
+            "distribution_version": "2.31.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps/open_clip/__init__.py"
+          },
+          "peft": {
+            "actual_version": "0.15.2",
+            "distribution_version": "0.15.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/peft/__init__.py"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "distribution_version": "0.0.8",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/qwen_vl_utils/__init__.py"
+          },
+          "tokenizers": {
+            "actual_version": "0.21.4",
+            "distribution_version": "0.21.4",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/tokenizers/__init__.py"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "distribution_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "distribution_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py"
+          },
+          "transformers": {
+            "actual_version": "4.51.3",
+            "distribution_version": "4.51.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/transformers/__init__.py"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "id": "native-paired-clic_clips_l14-einops-v1",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_clips_l14-einops-v1.json",
+        "sha256": "ba6d3cde05bca3b56e8c8c5751675723e2e257136411b230329ac42221c07e42"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_clips_l14-einops-v1.json",
+      "model_spec_sha256": "c779d5192212004a494b14b2f267d8b9e81500132811995eb86bf498777ade32",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/qualification.json"
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_clips_l14-einops-approved-v1.json",
+        "sha256": "5b5c4e33f06d0ec1c8b4df0f105a5c6f09a2ea896b669cd558e10044a2302e8b"
+      },
+      "profile": {
+        "benchmarks": [
+          "sugarcrepe",
+          "sugarcrepe_pp"
+        ],
+        "counts": {
+          "sugarcrepe": {
+            "images": 7511,
+            "texts": 15022
+          },
+          "sugarcrepe_pp": {
+            "images": 4757,
+            "texts": 14271
+          }
+        },
+        "family": "paired",
+        "id": "native-paired-clic_clips_l14-einops-v1",
+        "model": "clic_clips_l14",
+        "model_spec_sha256": "c779d5192212004a494b14b2f267d8b9e81500132811995eb86bf498777ade32",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_clips_l14",
+        "primary_metric_names": {
+          "sugarcrepe": [
+            "add_ITT",
+            "replace_ITT",
+            "swap_ITT"
+          ],
+          "sugarcrepe_pp": [
+            "replace_ITT",
+            "replace_TOT",
+            "swap_ITT",
+            "swap_TOT"
+          ]
+        },
+        "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_clips_l14-einops-approved-v1.json",
+          "sha256": "5b5c4e33f06d0ec1c8b4df0f105a5c6f09a2ea896b669cd558e10044a2302e8b"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+          "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+        },
+        "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0/p3_contract_review",
+            "evidence": "Parent explicitly identified both runtime repair implementations as this agent; producer 5675ef59cee99fa6d28e12f07501eeb157c321bd",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_clips_l14-einops-v1/qualify-attempt.json"
+      }
+    },
+    "native-paired-clic_l14-einops-v1": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-paired-v2.json",
+        "sha256": "bf608f8ad75c11dd38b164c4fa39462185cdc5ba6c0138fc34d190f49034c319"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+        },
+        "modules": {
+          "einops": {
+            "actual_version": "0.8.2",
+            "distribution_version": "0.8.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps/einops/__init__.py"
+          },
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "distribution_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py"
+          },
+          "open_clip": {
+            "actual_version": "2.31.0",
+            "distribution_version": "2.31.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps/open_clip/__init__.py"
+          },
+          "peft": {
+            "actual_version": "0.15.2",
+            "distribution_version": "0.15.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/peft/__init__.py"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "distribution_version": "0.0.8",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/qwen_vl_utils/__init__.py"
+          },
+          "tokenizers": {
+            "actual_version": "0.21.4",
+            "distribution_version": "0.21.4",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/tokenizers/__init__.py"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "distribution_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "distribution_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py"
+          },
+          "transformers": {
+            "actual_version": "4.51.3",
+            "distribution_version": "4.51.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/transformers/__init__.py"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "id": "native-paired-clic_l14-einops-v1",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_l14-einops-v1.json",
+        "sha256": "9efeffa50b3597a52f41dbb8c1752b756b0042c638b12d68e4896a5a50c11c40"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-paired-clic_l14-einops-v1.json",
+      "model_spec_sha256": "60ee3e72a29f4fde8b7247ad363d094903f2fcc1fbce5ce029e26398d951be16",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/qualification.json"
+      },
+      "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_l14-einops-approved-v1.json",
+        "sha256": "efd8fbbe8bbd493cc473a52363cb0a9036dbe73b8c91414427ee0b1b42ff64ce"
+      },
+      "profile": {
+        "benchmarks": [
+          "sugarcrepe",
+          "sugarcrepe_pp"
+        ],
+        "counts": {
+          "sugarcrepe": {
+            "images": 7511,
+            "texts": 15022
+          },
+          "sugarcrepe_pp": {
+            "images": 4757,
+            "texts": 14271
+          }
+        },
+        "family": "paired",
+        "id": "native-paired-clic_l14-einops-v1",
+        "model": "clic_l14",
+        "model_spec_sha256": "60ee3e72a29f4fde8b7247ad363d094903f2fcc1fbce5ce029e26398d951be16",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-paired-runtime-fix/runs/p0-v1-20261116/clic_l14",
+        "primary_metric_names": {
+          "sugarcrepe": [
+            "add_ITT",
+            "replace_ITT",
+            "swap_ITT"
+          ],
+          "sugarcrepe_pp": [
+            "replace_ITT",
+            "replace_TOT",
+            "swap_ITT",
+            "swap_TOT"
+          ]
+        },
+        "producer_commit": "5675ef59cee99fa6d28e12f07501eeb157c321bd",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/p0-clic_l14-einops-approved-v1.json",
+          "sha256": "efd8fbbe8bbd493cc473a52363cb0a9036dbe73b8c91414427ee0b1b42ff64ce"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_paired_runtime_fix/qualification.py",
+          "sha256": "19e4087b797ad7717712aff8c53a9c0fe300b3b9da4844ce1c62dd54bd6b3b5c"
+        },
+        "qualification_scope": "official-paired-runtime-fix-p0-qualified"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0/p3_contract_review",
+            "evidence": "Parent explicitly identified both runtime repair implementations as this agent; producer 5675ef59cee99fa6d28e12f07501eeb157c321bd",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-paired-clic_l14-einops-v1/qualify-attempt.json"
+      }
+    },
+    "native-rerank-jina_m0": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+          "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "IMAGE_MAX_TOKEN_NUM": "1200",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-reranker-v2.json",
+        "sha256": "5e1b33b040c70e50db0f0ff77d23f724dcefbc3debc2b681e615858440d20c84"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+            "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "IMAGE_MAX_TOKEN_NUM": "1200",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+        },
+        "modules": {
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py",
+            "sha256": "19de6aae2ed6ace6bd29a0fa45c1872da7302b308bc2461144d3152f1a287ab8"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38"
+          },
+          "peft": {
+            "actual_version": "0.18.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/peft/__init__.py",
+            "sha256": "99a650878fd1a603426e75f5ae33922037c4bf5ca70e9af3c0ace385a57daadf"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/qwen_vl_utils/__init__.py",
+            "sha256": "a0c454a56f2ba478731013afe1ba5d5d9caff652fe0ce51be1c315476e5c7905"
+          },
+          "swift": {
+            "actual_version": "4.0.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/swift/__init__.py",
+            "sha256": "d345fd8f68077d11730ffe56747a52b1858550e8c21067ed55a1db2f79ab5caf"
+          },
+          "tokenizers": {
+            "actual_version": "0.22.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/tokenizers/__init__.py",
+            "sha256": "148ecb122f3fee03be9abb1fe213dd85fbc691bf2ad2b437ff531533781a6a3a"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py",
+            "sha256": "5a190666c3853aa236c4d48ed64e2d4bbcd23bd32c21e64c0867646a6852e43f"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py",
+            "sha256": "ee2c9f4110cf1203db48c42601607329ac1f19709fa91c152f8d95eb53437a73"
+          },
+          "transformers": {
+            "actual_version": "4.57.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/transformers/__init__.py",
+            "sha256": "7eb0743ed843f24c1d4e8b8daf4b18249cb81403b4571a70c00be0a4c0a67bd4"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "id": "native-rerank-jina_m0",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-jina_m0.json",
+        "sha256": "14eb078de98ed4e4c3a29fa4a11c7d30ec5f7ed95a9e00cecbffc20c48d64646"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-jina_m0.json",
+      "model_spec_sha256": "4c072ca5d77f39bb3e16ec3148709e78d061f5ef69a02fd6358060691745c900",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/qualification.json"
+      },
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "profile": {
+        "benchmarks": [
+          "COLA",
+          "SugarCrepe++",
+          "NegBench"
+        ],
+        "cola_rule": "cola_image_choice",
+        "counts": {
+          "examples": 15912,
+          "pairs": 58891,
+          "subsets": 8
+        },
+        "family": "reranker",
+        "id": "native-rerank-jina_m0",
+        "model": "jina_m0",
+        "model_spec_sha256": "4c072ca5d77f39bb3e16ec3148709e78d061f5ef69a02fd6358060691745c900",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0",
+        "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+          "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+          "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+        },
+        "qualification_scope": "official-native-reranker-mcq-qualified",
+        "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/jina_m0/scores",
+        "variant_spec_sha256": "4d98ad37e4f80fa4f99fd4eb7dc6b677c0acdd586769ed9c5a574a6240bf8d3a"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0",
+            "evidence": "Parent assigned native reranker implementation to this agent; frozen producer 54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-jina_m0/qualify-attempt.json"
+      }
+    },
+    "native-rerank-qwen2": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+          "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "IMAGE_MAX_TOKEN_NUM": "1200",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-reranker-v2.json",
+        "sha256": "5e1b33b040c70e50db0f0ff77d23f724dcefbc3debc2b681e615858440d20c84"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+            "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "IMAGE_MAX_TOKEN_NUM": "1200",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+        },
+        "modules": {
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py",
+            "sha256": "19de6aae2ed6ace6bd29a0fa45c1872da7302b308bc2461144d3152f1a287ab8"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38"
+          },
+          "peft": {
+            "actual_version": "0.18.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/peft/__init__.py",
+            "sha256": "99a650878fd1a603426e75f5ae33922037c4bf5ca70e9af3c0ace385a57daadf"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/qwen_vl_utils/__init__.py",
+            "sha256": "a0c454a56f2ba478731013afe1ba5d5d9caff652fe0ce51be1c315476e5c7905"
+          },
+          "swift": {
+            "actual_version": "4.0.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/swift/__init__.py",
+            "sha256": "d345fd8f68077d11730ffe56747a52b1858550e8c21067ed55a1db2f79ab5caf"
+          },
+          "tokenizers": {
+            "actual_version": "0.22.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/tokenizers/__init__.py",
+            "sha256": "148ecb122f3fee03be9abb1fe213dd85fbc691bf2ad2b437ff531533781a6a3a"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py",
+            "sha256": "5a190666c3853aa236c4d48ed64e2d4bbcd23bd32c21e64c0867646a6852e43f"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py",
+            "sha256": "ee2c9f4110cf1203db48c42601607329ac1f19709fa91c152f8d95eb53437a73"
+          },
+          "transformers": {
+            "actual_version": "4.57.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/transformers/__init__.py",
+            "sha256": "7eb0743ed843f24c1d4e8b8daf4b18249cb81403b4571a70c00be0a4c0a67bd4"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "id": "native-rerank-qwen2",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-qwen2.json",
+        "sha256": "41b850fcb396d50e294cb0e2e41390833639967505beb0aad4231917a2bb1c7c"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-qwen2.json",
+      "model_spec_sha256": "8c314314623119891899c6931f4d11aada8d7177ba236771363fcae42300af65",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/qualification.json"
+      },
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "profile": {
+        "benchmarks": [
+          "COLA",
+          "SugarCrepe++",
+          "NegBench"
+        ],
+        "cola_rule": "cola_text_choice",
+        "counts": {
+          "examples": 15912,
+          "pairs": 58891,
+          "subsets": 8
+        },
+        "family": "reranker",
+        "id": "native-rerank-qwen2",
+        "model": "qwen2",
+        "model_spec_sha256": "8c314314623119891899c6931f4d11aada8d7177ba236771363fcae42300af65",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2",
+        "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+          "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+          "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+        },
+        "qualification_scope": "official-native-reranker-mcq-qualified",
+        "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen2/scores",
+        "variant_spec_sha256": "aa985c91ea5dfcbe01e52328df0f9d4160fb8015a6072e2fc630fa3965bb96af"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0",
+            "evidence": "Parent assigned native reranker implementation to this agent; frozen producer 54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen2/qualify-attempt.json"
+      }
+    },
+    "native-rerank-qwen8": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+          "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "IMAGE_MAX_TOKEN_NUM": "1200",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-reranker-v2.json",
+        "sha256": "5e1b33b040c70e50db0f0ff77d23f724dcefbc3debc2b681e615858440d20c84"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "GENERATIVE_RERANKER_NEGATIVE_TOKEN": "no",
+            "GENERATIVE_RERANKER_POSITIVE_TOKEN": "yes",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "IMAGE_MAX_TOKEN_NUM": "1200",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+        },
+        "modules": {
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py",
+            "sha256": "19de6aae2ed6ace6bd29a0fa45c1872da7302b308bc2461144d3152f1a287ab8"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38"
+          },
+          "peft": {
+            "actual_version": "0.18.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/peft/__init__.py",
+            "sha256": "99a650878fd1a603426e75f5ae33922037c4bf5ca70e9af3c0ace385a57daadf"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/qwen_vl_utils/__init__.py",
+            "sha256": "a0c454a56f2ba478731013afe1ba5d5d9caff652fe0ce51be1c315476e5c7905"
+          },
+          "swift": {
+            "actual_version": "4.0.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/swift/__init__.py",
+            "sha256": "d345fd8f68077d11730ffe56747a52b1858550e8c21067ed55a1db2f79ab5caf"
+          },
+          "tokenizers": {
+            "actual_version": "0.22.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/tokenizers/__init__.py",
+            "sha256": "148ecb122f3fee03be9abb1fe213dd85fbc691bf2ad2b437ff531533781a6a3a"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py",
+            "sha256": "5a190666c3853aa236c4d48ed64e2d4bbcd23bd32c21e64c0867646a6852e43f"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py",
+            "sha256": "ee2c9f4110cf1203db48c42601607329ac1f19709fa91c152f8d95eb53437a73"
+          },
+          "transformers": {
+            "actual_version": "4.57.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/lib/python3.12/site-packages/transformers/__init__.py",
+            "sha256": "7eb0743ed843f24c1d4e8b8daf4b18249cb81403b4571a70c00be0a4c0a67bd4"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank/env/bin/python"
+      },
+      "id": "native-rerank-qwen8",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-qwen8.json",
+        "sha256": "70e10840e1c1a041c07e821351dcfab90e7d2a551ce513d9abaa4881914f419c"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-rerank-qwen8.json",
+      "model_spec_sha256": "745b29c955394e28c1688c3fced3c35ffcd92841156e92d4ceb5b960090dc1e1",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/qualification.json"
+      },
+      "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+        "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+      },
+      "profile": {
+        "benchmarks": [
+          "COLA",
+          "SugarCrepe++",
+          "NegBench"
+        ],
+        "cola_rule": "cola_text_choice",
+        "counts": {
+          "examples": 15912,
+          "pairs": 58891,
+          "subsets": 8
+        },
+        "family": "reranker",
+        "id": "native-rerank-qwen8",
+        "model": "qwen8",
+        "model_spec_sha256": "745b29c955394e28c1688c3fced3c35ffcd92841156e92d4ceb5b960090dc1e1",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8",
+        "producer_commit": "54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/plan.native-mcq.approved.v1.json",
+          "sha256": "1af9cb84d317cff075a564cf7ad021bc9d872854d6caccc36227c8f37fe7b326"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_rerank_native_p0/qualification.py",
+          "sha256": "522ce979ed6f924c1087739e681f59862713742906467882ffea2510547b5ca6"
+        },
+        "qualification_scope": "official-native-reranker-mcq-qualified",
+        "score_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-rerank-native-p0/runs/p0-v1-20261116/qwen8/scores",
+        "variant_spec_sha256": "5cb35338732afa16cf3109f7e7d5f35f4a930749b8f9668e6c635b0da00e1bfc"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0",
+            "evidence": "Parent assigned native reranker implementation to this agent; frozen producer 54f544ce54bca82be3cc8b3c72662b354c6d3e40",
+            "evidence_kind": "parent_assignment"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-rerank-qwen8/qualify-attempt.json"
+      }
+    },
+    "native-siglip2-einops-v1": {
+      "cpu": {
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+          "HF_HUB_OFFLINE": "1",
+          "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+          "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TRANSFORMERS_OFFLINE": "1",
+          "TZ": "Asia/Taipei"
+        },
+        "gpu_allowed": false,
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "cpu_probe": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/cpu-environment-siglip2-v2.json",
+        "sha256": "f2a5461652a7641d686b34a8c21f831eab0e6ef2b78253e01c1110d291fb1df0"
+      },
+      "cpu_runtime": {
+        "array_runtime": {
+          "numpy": {
+            "array_binary": {
+              "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+              "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+            },
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py",
+            "sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+            "version": "2.3.5"
+          },
+          "python": "/ssd7/cactus8603/roco_spring/.conda-stereo/bin/python3.12",
+          "python_version": "3.12.14 | packaged by conda-forge | (main, Aug 21 2026, 22:48:28) [GCC 14.4.0]"
+        },
+        "cuda_initialized": false,
+        "environment_recipe": {
+          "environment": {
+            "CUDA_VISIBLE_DEVICES": "",
+            "HF_HOME": "/ssd4/cactus8603/icml/hf_home",
+            "HF_HUB_OFFLINE": "1",
+            "HF_MODULES_CACHE": "/ssd4/cactus8603/icml/hf_home/modules",
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash:/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/core-p0:/ssd4/cactus8603/icml",
+            "TMPDIR": "/ssd4/cactus8603/icml/hf_home/tmp",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TZ": "Asia/Taipei"
+          },
+          "gpu_allowed": false,
+          "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+        },
+        "modules": {
+          "einops": {
+            "actual_version": "0.8.2",
+            "distribution_version": "0.8.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-qwen2-runtime-fix/deps/einops/__init__.py"
+          },
+          "flash_attn": {
+            "actual_version": "2.7.4.post1",
+            "distribution_version": "2.7.4.post1",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-flash/flash_attn/__init__.py"
+          },
+          "numpy": {
+            "actual_version": "2.3.5",
+            "distribution_version": "2.3.5",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/numpy/__init__.py"
+          },
+          "open_clip": {
+            "actual_version": "2.31.0",
+            "distribution_version": "2.31.0",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-extra/deps/open_clip/__init__.py"
+          },
+          "peft": {
+            "actual_version": "0.15.2",
+            "distribution_version": "0.15.2",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/peft/__init__.py"
+          },
+          "qwen_vl_utils": {
+            "actual_version": null,
+            "distribution_version": "0.0.8",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/qwen_vl_utils/__init__.py"
+          },
+          "tokenizers": {
+            "actual_version": "0.21.4",
+            "distribution_version": "0.21.4",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/tokenizers/__init__.py"
+          },
+          "torch": {
+            "actual_version": "2.6.0+cu124",
+            "distribution_version": "2.6.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torch/__init__.py"
+          },
+          "torchvision": {
+            "actual_version": "0.21.0+cu124",
+            "distribution_version": "0.21.0+cu124",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/lib/python3.12/site-packages/torchvision/__init__.py"
+          },
+          "transformers": {
+            "actual_version": "4.51.3",
+            "distribution_version": "4.51.3",
+            "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix/deps/qwen2-transformers451/transformers/__init__.py"
+          }
+        },
+        "python": "/ssd4/cactus8603/icml/dl/retrieval3090/envs/retrieval3090/bin/python"
+      },
+      "id": "native-siglip2-einops-v1",
+      "manifest": {
+        "path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-siglip2-einops-v1.json",
+        "sha256": "67d2fe45dff54fadeea9deb4465fee4279e866645c88409cb36904c580b6d642"
+      },
+      "manifest_path": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/manifests/native-siglip2-einops-v1.json",
+      "model_spec_sha256": "5abba94ed22658e7c15f99a8f4713759e4da735f69b13c60736bf2422a9c0df8",
+      "outputs": {
+        "admission": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/admission.json",
+        "independent-envelope": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/independent-envelope.json",
+        "independent-review": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/independent-review.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/mechanical.json",
+        "qualification": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/qualification.json"
+      },
+      "producer_commit": "f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb",
+      "producer_plan": {
+        "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/p0-siglip2-einops-approved-v1.json",
+        "sha256": "d45d5502838b587daad1f8f3d8b241cdbc7a1b8f6c3d620fb2edb19b13377167"
+      },
+      "profile": {
+        "benchmarks": [
+          "coco",
+          "flickr"
+        ],
+        "counts": {
+          "coco": {
+            "images": 5000,
+            "texts": 25010
+          },
+          "flickr": {
+            "images": 1000,
+            "texts": 5000
+          }
+        },
+        "family": "siglip2",
+        "id": "native-siglip2-einops-v1",
+        "model": "siglip2",
+        "model_spec_sha256": "5abba94ed22658e7c15f99a8f4713759e4da735f69b13c60736bf2422a9c0df8",
+        "output_root": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-runtime-fix/runs/p0-v1-20261116/siglip2",
+        "primary_metric_names": {
+          "coco": [
+            "i2t_R@1",
+            "t2i_R@1"
+          ],
+          "flickr": [
+            "i2t_R@1",
+            "t2i_R@1"
+          ]
+        },
+        "producer_commit": "f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb",
+        "producer_plan": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/p0-siglip2-einops-approved-v1.json",
+          "sha256": "d45d5502838b587daad1f8f3d8b241cdbc7a1b8f6c3d620fb2edb19b13377167"
+        },
+        "qualification_module": {
+          "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_native_runtime_fix/qualification.py",
+          "sha256": "84849d3af50a3e5ee4ebfbe18c5ad06c4e1a0363b235c07d0eaba54c0a5c605a"
+        },
+        "qualification_scope": "official-native-runtime-fix-p0-qualified"
+      },
+      "roles": {
+        "analysis_authors": [
+          "/root/official_p0",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "excluded_reviewers": [
+          "/root",
+          "/root/matrix_runner",
+          "/root/public_data",
+          "/root/official_p0",
+          "/root/official_p0/p3_contract_review",
+          "/root/official_p0/native_full_fixtures"
+        ],
+        "fresh_independent_reviewer_required": true,
+        "known_implementation_authors": [
+          {
+            "actor": "/root/official_p0/p3_contract_review",
+            "evidence": "Parent explicitly identified both runtime repair implementations as this agent; producer f3f787eeb193aad8dcc6f2ee43e9609ddf5b47eb",
+            "evidence_kind": "parent_assignment"
+          },
+          {
+            "actor": "/root/matrix_runner",
+            "evidence": {
+              "path": "/ssd4/cactus8603/icml/codex/reports/2026-11-16-native-p0-prelaunch-review-codex.md",
+              "sha256": "f1e31559e4dc1970f03c2dcb8c001d7e0a2bc4c32824ef155ee06b751feb543b"
+            },
+            "evidence_kind": "implementation_handoff_report",
+            "location": "Opening implementer/reviewer attribution"
+          }
+        ],
+        "producer_and_mechanical_actor_excluded": true
+      },
+      "stage_attempts": {
+        "independent": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/independent-attempt.json",
+        "mechanical": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/mechanical-attempt.json",
+        "qualify": "/ssd4/cactus8603/icml/dl/retrieval-matrix-native-analysis/runs/native-v1/native-siglip2-einops-v1/qualify-attempt.json"
+      }
+    }
+  },
+  "owner": "[codex]",
+  "phase": "NATIVE-P0-FROZEN-PRODUCER-ANALYSIS-v1",
+  "production_outputs_read_during_build": false,
+  "qualification_created_during_build": false,
+  "reviewed": false,
+  "schedule": {
+    "freeze_commit": "3a234a83586b8c253d4690b6638243b71cd22b7a",
+    "immutable_body_only": false,
+    "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_dispatch_batches/central-v4.json",
+    "sha256": "9ff2b29a231a97e70b27f7e1127a23d96a05a4e0cca9a329b495a5e9992771ea"
+  },
+  "schema": 1,
+  "shared_analysis_ref": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+  "shared_sources": {
+    "codex/retrieval_matrix_analysis/PREREG.md": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": true,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/PREREG.md",
+      "sha256": "ec398c21da3d58c199ab53334118b477c963ac3501ae74119ca4b02c851573c5"
+    },
+    "codex/retrieval_matrix_analysis/contracts.py": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": false,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/contracts.py",
+      "sha256": "16baf9710417a76557ee334e8f2020228763119f7ae54c79aef17ff1ca996c8d"
+    },
+    "codex/retrieval_matrix_analysis/reading.py": {
+      "freeze_commit": "7b4855f5d1b7f6e6c1f3850b8a2a9e41b5ac82ed",
+      "immutable_body_only": false,
+      "path": "/ssd4/cactus8603/icml/codex/retrieval_matrix_analysis/reading.py",
+      "sha256": "49777bf1a59a27da26a2b1fdab00b48657a103d041d947e07fcf9e71e186a509"
+    }
+  },
+  "source_files": {
+    "codex/retrieval_matrix_native_analysis/PREREG.md": {
+      "immutable_body_only": true,
+      "sha256": "4d547cc858d651631b5a8db0aba42e7b4b81bfcdd05e7d9266e0b95bfb406f31"
+    },
+    "codex/retrieval_matrix_native_analysis/README.md": {
+      "immutable_body_only": false,
+      "sha256": "e215e626892efe65065770885c5b2e1a84ae5415b0a4b2c354056667241c8561"
+    },
+    "codex/retrieval_matrix_native_analysis/build_plan.py": {
+      "immutable_body_only": false,
+      "sha256": "3391bb7755e255acd9d5836d60ca18753e306b7a5e5a41ee2d34a80795d8ddc5"
+    },
+    "codex/retrieval_matrix_native_analysis/contracts.py": {
+      "immutable_body_only": false,
+      "sha256": "98367ef3e91ecae4a7ed2df4c1489320c0e06e1ad9d2eaa2ab57028a0368be25"
+    },
+    "codex/retrieval_matrix_native_analysis/launcher.py": {
+      "immutable_body_only": false,
+      "sha256": "12b49f16b8b50f92a8ab75973b672435b8c92cfd1da3a0fbcb9f4678b2a97a26"
+    },
+    "codex/retrieval_matrix_native_analysis/run.sh": {
+      "immutable_body_only": false,
+      "sha256": "31a54ccd58bb298d7cf81d2c06185eab9304d975ff095c50069b55604c4bab38"
+    },
+    "codex/retrieval_matrix_native_analysis/source-profiles.json": {
+      "immutable_body_only": false,
+      "sha256": "a4374599c3ea3bdea99362ab88abeae8a1b3aab8d9d872cf4f34a91edb34c17b"
+    },
+    "codex/retrieval_matrix_native_analysis/synthetic.py": {
+      "immutable_body_only": false,
+      "sha256": "cf54f3346fc97c804e06c5cf3b0af2f7248fac9a6f285de03f07de27be3336f1"
+    },
+    "codex/retrieval_matrix_native_analysis/test_contracts.py": {
+      "immutable_body_only": false,
+      "sha256": "903ca549dd1aee7e436e22787e49b36f6ef5833671f5d0dd955fd77ae9bf0501"
+    },
+    "codex/retrieval_matrix_native_analysis/test_full_flow.py": {
+      "immutable_body_only": false,
+      "sha256": "615eed510469de0afa87c1d8478e1531f92c206c0971a051a9f13e3c4c1ab945"
+    },
+    "codex/retrieval_matrix_native_analysis/test_pipeline.py": {
+      "immutable_body_only": false,
+      "sha256": "89ab515801d994d8c9b2e8ed6f40202dff71276db2c9ccea4fbff6d762d65112"
+    },
+    "codex/retrieval_matrix_native_analysis/test_workflow.py": {
+      "immutable_body_only": false,
+      "sha256": "f82fda7067ea25a4d84a4819de2fb0d503cc8b463d4a8105fe37b48e1f8de105"
+    },
+    "codex/retrieval_matrix_native_analysis/workflow.py": {
+      "immutable_body_only": false,
+      "sha256": "c60337ffe02837dc3dd7270dd79447a78ea10cff83e4c0c016703ac94a96a7e8"
+    }
+  },
+  "state": "REVIEW_REQUIRED",
+  "user_decision": "PENDING"
+}
