@@ -20,6 +20,22 @@
   - 執行輸出（資料、權重、環境、`dl/`、`hf_home/`）不屬於任何 repo，路徑不變；題目 repo 的 `RUN.md` 寫明位置。
 - **本機 checkout 位置**：`/ssd4/cactus8603/icml27-repos/icml27-<題目>/`，兩邊共用。
 - `scripts/topic_repo_sync.py` 只用於切換前的鏡像；切換後不得再對題目 repo 用 mirror 模式（程式會拒絕）。
+
+### 本機 3090 與 H200 叢集分開
+
+兩台機器各自有中樞與題目 repo 的 checkout，GPU 排隊與暫存路徑也不同。第 2 節（GPU）、第 6 節（磁碟與暫存）依下表套用到各自的機器。
+
+| 項目 | 本機 3090（`acvlab`，7 張 RTX 3090） | H200 叢集（Slurm） |
+|---|---|---|
+| 中樞 checkout | `/ssd4/cactus8603/icml` | `/work/ChihChungHsu/cactus8603/icml27-topic-search` |
+| 題目 repo checkout | `/ssd4/cactus8603/icml27-repos/icml27-<題目>/` | **尚未建立**；建議 `/work/ChihChungHsu/cactus8603/icml27-repos/icml27-<題目>/` |
+| 切換狀態 | 已切換：題目工作在題目 repo 做 | **尚未切換**：既有 job 仍從中樞 checkout 執行；下次在叢集上動某題前，先 clone 該題 repo、把 launcher 改到題目 repo，並在 `log.md` 記一筆 |
+| GPU 送件 | 經中樞的排隊機制等空卡，登記 `submit local3090-<pid>`；不得繞過直接佔卡 | `sbatch`，送前 `squeue -u $(whoami)` 看整個帳號，登記 Slurm jobid |
+| 排隊機制位置 | 目前是 Codex 的檢索中央排程器與 `resources.py`，位於封存的 `codex/retrieval*`；待整理成跨題目工具（`HOLDS.md`） | Slurm 本身 |
+| 暫存與快取 | `TMPDIR=<中樞>/hf_home/tmp`、`HF_HOME=<中樞>/hf_home`；沒有 `quota` | `/work/ChihChungHsu/cactus8603/icml/{tmp,hf_home}`；大量寫入前 `quota -g -s` |
+| 執行輸出 | `/ssd4/cactus8603/icml/dl/` | `/work/...`，各題 `RUN.md` 寫明 |
+
+兩邊的送件紀錄都寫在同一份中樞 `killtests/SUBMITTED.log`；在叢集上送件後，記得把紀錄 push，讓本機那邊看得到，反之亦然。
 - **跨 repo 引用**一律寫成 `repo@commit`，例如 `icml27-foo@1a2b3c4`。
 
 ### 開新題目 repo 的步驟
@@ -61,7 +77,7 @@
 6. **優先順序。** 帳號有 GPU 上限。依 `shortlist.md` 的題目順序送；使用者另有指示時從其指示。
 7. **不搶卡：所有 repo 共用同一套排隊機制。**
    - H200 叢集：送件前的 `squeue -u $(whoami)` 要看整個帳號，不只自己的題目。
-   - 本機 3090：不論哪個 repo 的工作，都經中樞的排隊機制等空卡，不得繞過直接佔卡。目前是 Codex 維護的 `codex/retrieval3090/resources.py` queue 與中央排程器；之後若換成跨題目通用的排程器，路徑在此更新。
+   - 本機 3090：不論哪個 repo 的工作，都經中樞的排隊機制等空卡，不得繞過直接佔卡。排隊機制目前的位置與待辦見第 0 節「本機 3090 與 H200 叢集分開」。
 
 ## 3. 預先登記與結果
 
