@@ -6,8 +6,8 @@
 
 | 階段 | 必須完成的內容 | 完成所需證據 | 目前狀態 |
 |---|---|---|---|
-| P0 | 六個 embedding 在 COCO、Flickr、MCMR、NegBench 的官方重現；重排器配對任務驗收 | 固定官方來源／資料／設定、完整推論收據、逐題輸出、獨立重算、論文值差異表 | 正在核對官方協定與實作 |
-| P1 | COLA、train2017 否定開發資料、自建連言面板；dev-small／dev-full 與 test 界線 | 下載雜湊、圖片覆蓋、固定產生規則、分割檢查 | 連言 40,000 張已取得；其他來源取得中 |
+| P0 | 六個 embedding 在 COCO、Flickr、MCMR、NegBench 的官方重現；重排器配對任務驗收 | 固定官方來源／資料／設定、完整推論收據、逐題輸出、獨立重算、論文值差異表 | 首批 CORE/Qwen3 各2B/8B × COCO/NegBench/Flickr 共12格已固定；26 CPU tests與獨立協定審查通過，待GPU |
+| P1 | COLA、train2017 否定開發資料、自建連言面板；dev-small／dev-full 與 test 界線 | 下載雜湊、圖片覆蓋、固定產生規則、分割檢查 | 連言40,000圖、Flickr1000圖/5000句、SugarCrepe++4757題、COLA10623圖已取得；MCMR全量123561有效圖已解壓，所需圖零缺；COLA官方train未公開、否定dev尚待建立 |
 | P2 | 報告 64 方法 A 的 embedding × 主資料與一般檢索矩陣 | P0 資格、模型／資料固定版本、獨立驗收的每格結果 | 尚未開始 |
 | P3 | 方法 B × 兩個第一階段，主 K=100；50／200 深度實驗 | 固定候選協定、完整結果與實測成本 | 尚未開始 |
 | P4 | 按資料集彙整最強基線、來源與限制 | 可追溯結果表及獨立審查 | 尚未開始 |
@@ -23,6 +23,10 @@
 | public_data | COLA、SugarCrepe++、Flickr30K 取得與覆蓋驗收 | `data_acquisition.py`、`test_data_acquisition.py`、`data_sources.json`、`data_notes.md`；`dl/retrieval-matrix/data/` |
 | matrix_runner | 模型包裝、可續算 runner 與 CPU 指標 | `runner.py`、`models.py`、`metrics.py` 與對應 tests |
 | 後續獨立審查者 | 官方設定核對、程式與真實輸出獨立重算 | 新增獨立審查報告，不改實作者程式與結果 |
+
+首批計畫為 `p0-qwen3-batch1.json`；來源、資料、模型 payload、2,734 個隔離依賴檔已核對。套件為原 torch2.14 環境加隔離 Transformers4.57.3，不修改舊環境。只在真正 synthetic GPU smoke 及數字重現完成後，才可將相應狀態列為通過。
+
+平行後續模組 `codex/retrieval_matrix_qwen2/` 與 `codex/retrieval_matrix_rerank/` 分別處理 GME/VLM2Vec 的舊API與DoRA、CORE ms-swift MCQ及其他重排器，不能改首批已凍結的執行程式。
 
 ## 執行規則
 

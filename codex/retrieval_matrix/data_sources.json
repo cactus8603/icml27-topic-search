@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "owner": "[codex]",
+  "data_root": "dl/retrieval-matrix/data",
+  "datasets": {
+    "sugarcrepe_pp": {
+      "status": "downloaded_and_verified",
+      "rows_by_subset": {
+        "replace_att": 788,
+        "replace_obj": 1652,
+        "replace_rel": 1406,
+        "swap_att": 666,
+        "swap_obj": 245
+      },
+      "rows": 4757,
+      "unique_images": 1542,
+      "missing_images": 0,
+      "image_root": "dl/retrieval3090/data/coco2017/val2017",
+      "image_receipt_sha256": "3222e3ff1c4b0185c791a98e9a16ed24810df4ac83ec59378287800f54275b7b",
+      "revision": "dea2a1b6f9e1069c609f676aa55ec61e9b65fb61",
+      "source_repo": "Aman-J/SugarCrepe_pp",
+      "file_receipt_sha256": "994a92bd8243ce8717e0f96a78ba45cfb56b19085b73bd08e1577fe85634d1bc",
+      "source_api_sha256": "6b2102065db820afe7e3a1917858606e6c516a540fa316ccaa897f4b75cee784"
+    },
+    "flickr30k_test": {
+      "status": "downloaded_and_verified",
+      "images": 1000,
+      "captions": 5000,
+      "missing_images": 0,
+      "manifest_sha256": "2ad25bebe039f8ff4c6f9c5e7b1350f6e2bae12ce3004475dd79fe4583ee84ec",
+      "image_receipt_sha256": "684fa142f91510cbd4e05a17ecc50c97c268488bcad4d6becf8e56fffcf5624b",
+      "revision": "a07382c123b95eec85827a9d8ce3eb135093411a",
+      "source_repo": "royokong/flickr30k_test",
+      "file_receipt_sha256": "d58704cd621c1998b9d675e86a3a379be9d2b484b74e0c5b64f9ef4f09b612c9",
+      "source_api_sha256": "97d0f3ece7aaa99fe1f3926fa5fa36f9ef1b572af8bdb8ecaa35ffec5debe763"
+    },
+    "cola": {
+      "status": "images_downloading",
+      "revision": "daee86b15a60308cfcc277ea11ab7f6be60fdfbc",
+      "gqa": {
+        "rows": 2589,
+        "classes": 320,
+        "unique_images": 2589,
+        "matches_upstream_json": true
+      },
+      "paco": {
+        "rows": 7921,
+        "classes": 400,
+        "unique_images": 7921,
+        "matches_upstream_json": true
+      },
+      "multiobjects": {
+        "pairs": 210
+      },
+      "train": {
+        "status": "not_published_in_current_official_releases",
+        "development_split_created": false
+      },
+      "official_github_revision": "997457b78a1cadf81954747e2ebae9d532f0c2d3",
+      "official_annotation_source_receipt": [
+        {
+          "path": "cola/upstream/README.md",
+          "bytes": 6399,
+          "sha256": "fd3d3a6f6e9059fc2534b6e32f6d53c15dc3ad886d0abd9e968bb67e2f033b93",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "6266fd5d0d9db6b19eebd445017856abda39fa7a"
+        },
+        {
+          "path": "cola/upstream/LICENSE",
+          "bytes": 1067,
+          "sha256": "49396852652a603f62f017ef0691d61cf05728f9287c0a61a59c51ba6a877abc",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "ea79ba000ed50e8fb068e169d3babd3b0715f194"
+        },
+        {
+          "path": "cola/upstream/scripts/eval.py",
+          "bytes": 4039,
+          "sha256": "f7f33887ff059e648595b83faff3baafaaa8b271075f2ab15314aedeafa1e45c",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "7cc407361ec037b48bc45f61ddad3a6cca2a0712"
+        },
+        {
+          "path": "cola/upstream/data/COLA_singleobjects_benchmark_GQA.json",
+          "bytes": 5280694,
+          "sha256": "da6cd3fff51d2dc116bd55bafa8c1a0fcf1e9d77dfba7bc31b3e5b45512ee95d",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "cd66f87ff9369d687e3b638c322fa44564110ac7"
+        },
+        {
+          "path": "cola/upstream/data/COLA_singleobjects_benchmark_PACO.json",
+          "bytes": 19313562,
+          "sha256": "658879945e552a91ea042452c3ecf741534123c99ab000c74183fa0236fdf754",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "f5ddfff54831f9b81d2c847516e5d97c44721602"
+        },
+        {
+          "path": "cola/upstream/data/COLA_multiobjects_matching_benchmark.json",
+          "bytes": 56746,
+          "sha256": "e2846dcc958e3277813ca572bce53db96fd5dd65caaa57ccd20dc1ce51d73ec0",
+          "source_digest_kind": "git_blob_sha1",
+          "source_digest": "77fd828bc38e73f80a8e587e6357d3c2a16405cf"
+        }
+      ],
+      "missing_paco_images_in_official_hf_release": 7921,
+      "expected_image_union": 10623
+    }
+  }
+}

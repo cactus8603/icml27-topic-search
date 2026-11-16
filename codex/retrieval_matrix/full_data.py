@@ -46,16 +46,22 @@ def prepare_mcmr(source, out):
     out.mkdir(parents=True, exist_ok=True)
     images = out / "images"
     images.mkdir(exist_ok=True)
-    entries, seen = [], set()
+    entries, seen, unusable = [], set(), []
     with tarfile.open(archive, "r|gz") as stream:
         for member in stream:
             if member.isdir() and member.name.rstrip("/") == "images":
                 continue
             name = Path(member.name).name
             if (not member.isfile() or member.name != "images/" + name
-                    or not 0 < member.size <= 32 * 1024**2 or name in seen):
+                    or not 0 <= member.size <= 32 * 1024**2 or name in seen):
                 raise ValueError("Unexpected, repeated or unsafe MCMR archive entry")
             seen.add(name)
+            if member.size == 0:
+                # Preserve this source defect explicitly. It is not a usable
+                # image and cannot be counted as candidate image coverage.
+                unusable.append({"file": name, "bytes": 0, "reason": "zero-byte original archive member"})
+                log(stage="mcmr_unusable_source_entry", file=name, candidate_reference=name in expected.values())
+                continue
             target = images / name
             if target.is_symlink():
                 raise ValueError("Refusing an existing image symlink")
@@ -79,7 +85,7 @@ def prepare_mcmr(source, out):
                             "width": width, "height": height})
             if len(entries) % 10000 == 0:
                 log(stage="mcmr_full_extract", images=len(entries))
-    missing = sorted(set(expected.values()) - seen)
+    missing = sorted(set(expected.values()) - {row["file"] for row in entries})
     receipt = out / "images-receipt.jsonl"
     body = "".join(json.dumps(row, sort_keys=True) + "\n" for row in sorted(entries, key=lambda x: x["file"]))
     pending = receipt.with_suffix(".pending")
@@ -89,7 +95,8 @@ def prepare_mcmr(source, out):
                "archive_sha256": ARCHIVE_SHA, "raw_metadata_sha256": METADATA_SHA,
                "normalized_metadata_sha256": sha(normalized), "candidate_ids": len(expected),
                "expected_unique_images": len(set(expected.values())), "archive_images": len(entries),
-               "missing_images": missing, "image_bytes": sum(row["bytes"] for row in entries),
+               "missing_images": missing, "unusable_source_entries": unusable,
+               "image_bytes": sum(row["bytes"] for row in entries),
                "images_receipt_sha256": sha(receipt), "producer_sha256": sha(__file__),
                "verified_at_taipei": datetime.now(ZoneInfo("Asia/Taipei")).isoformat()}
     (out / "preparation.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")

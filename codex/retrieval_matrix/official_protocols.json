@@ -1,0 +1,592 @@
+{
+  "batches": {
+    "coco": 64,
+    "flickr30k": 64,
+    "local_3090": "Lower batches may be frozen for memory only, with batch-invariance check and receipt; never label as exact original hardware batch.",
+    "main_embedding": 64,
+    "mcmr": 64,
+    "negbench": 32,
+    "reason": "NegbenchDataset.eval ignores its batch_size argument in calls to individual subtasks"
+  },
+  "cpu_processor_verification": {
+    "actual_environment": {
+      "qwen_vl_utils_dist": "0.0.14",
+      "torch_actual": "2.14.0+cu126",
+      "transformers_actual": "4.57.3",
+      "transformers_dist": "4.57.3"
+    },
+    "empty_caption_supported": true,
+    "empty_input_token_count": 21,
+    "meaning": "Official unmodified processor tokenizes source empty caption; preserve original full denominator. Initial Transformers5.20.2 processor failed due missing min_pixels, isolated4.57.3 succeeds.",
+    "no_weights_loaded": true,
+    "receipt": "dl/retrieval-matrix/sources/core-empty-caption-cpu.json",
+    "sha256": "0075ceea75e77f00da53bc0808cc6559f93aa5d4b5871f9f8713d4a7b5bfae97"
+  },
+  "created_taipei": "2026-11-16T20:07:24+08:00",
+  "datasets": {
+    "coco": {
+      "captions_encoding": "Python literal list, parse safely using ast.literal_eval",
+      "columns": [
+        "filepath",
+        "image_id",
+        "captions"
+      ],
+      "corpus_scope": "all images in CSV rows",
+      "image_root": "datasets/coco2017_val/val2017",
+      "metrics": "T2I pytrec recall@5/10; I2T pytrec fraction of all reference captions retrieved, not conventional any-positive hit rate",
+      "official_csv": "COCO_val_retrieval.csv",
+      "official_csv_dir": "benchmark/negbench/data/images",
+      "official_script": "tasks/coco.py",
+      "query_scope": "all captions in all rows; no query subsampling",
+      "retrieved_depth": 100
+    },
+    "flickr30k": {
+      "csv": "test_1k_flickr.csv",
+      "hf_repo": "royokong/flickr30k_test",
+      "image_dir": "images_flickr_1k_test",
+      "metrics": "same pytrec recall semantics as COCO",
+      "official_script": "tasks/flickr30k.py"
+    },
+    "mcmr": {
+      "corpus_schema": {
+        "id": "corpus id",
+        "image": "directly loadable path",
+        "text": "rendered product metadata"
+      },
+      "fused": true,
+      "hf_repo": "Lux1997/MCMR",
+      "instances_schema": {
+        "pos": [
+          "positive corpus ids"
+        ],
+        "qid": "query id"
+      },
+      "mteb_dir": "benchmark/MCMR-datasets/uni_mteb_eval_t2ti",
+      "official_script": "tasks/mcmr.py",
+      "paper_mrr_cutoff": 10,
+      "queries_schema": {
+        "id": "query id",
+        "text": "query text"
+      },
+      "retrieved_depth": 100,
+      "source_gap": "make_candidates.py / make_query_and_instances.py referenced in datasets.md are absent in repository; exact product text rendering and MRR implementation unavailable. Do not claim exact native reproduction from arbitrary renderer."
+    },
+    "negbench_coco": {
+      "columns": [
+        "filepath",
+        "image_id",
+        "captions"
+      ],
+      "image_root": "datasets/coco2017_val/val2017",
+      "metric": "single referenced image hit in torch.topk(scores,k=5); mean over captions",
+      "official_csv": "COCO_val_negated_retrieval_llama3.1_rephrased_affneg_true.csv",
+      "official_script": "tasks/negbench.py:eval_coco_neg",
+      "query_scope": "all negated captions in all rows"
+    }
+  },
+  "dependencies": {
+    "core_release_readme": "unversioned torch transformers pandas pytrec_eval tqdm pillow qwen-vl-utils sentencepiece; ms-swift for reranker",
+    "qwen_fixed_model_card": {
+      "qwen-vl-utils": ">=0.0.14",
+      "transformers": ">=4.57.0"
+    },
+    "qwen_fixed_repo_pyproject": {
+      "qwen-vl-utils": ">=0.0.14",
+      "torch": "==2.8.*",
+      "transformers": ">=4.57.3"
+    },
+    "qwen_source_pyproject_cache": "hf_home/tmp/benchmark-sources-20261116/Qwen3-VL-Embedding--pyproject.toml",
+    "selected_qwen_vl_utils": "0.0.14; released minimum, freeze exact installed wheel SHA receipt"
+  },
+  "gate": {
+    "absolute_tolerance": 0.01,
+    "minimum_passed_p0_benchmarks_per_embedding": 2,
+    "policy": "Record all cells, no tuning to match; model enters P2 only after at least two distinct benchmark columns match within 1 percentage point. Missing or unresolved protocols remain blocked and cannot pass."
+  },
+  "known_source_issues": [
+    "Paper max image tokens1000/text200 disagrees with release processor max_pixels1310720, tokenization truncationFalse,max_length1024. Follow release for initial reproduction and disclose; never adjust after seeing score.",
+    "CORE generic loader lacks explicit VLM2Vec V2 DoRA application.",
+    "Qwen2 import branch incompatible with Qwen3 environment.",
+    "MCMR conversion scripts absent and released evaluation does not compute MRR@10.",
+    "I2T recall semantics are fraction recall, not conventional any-positive recall.",
+    "CORE fused_emb Qwen2 branch omits vlm2vec model_name, causing explicit unsupported-model error for MCMR without a disclosed compatibility change."
+  ],
+  "models": {
+    "core_embed_2b": {
+      "embedding_dim": 2048,
+      "protocol": "core_qwen3",
+      "repo": "Alibaba-NLP/core-emb-2b",
+      "revision": "cc9870ea92d64ebd5f8f9fc368d1120453564158",
+      "snapshot": "hf_home/hub/models--Alibaba-NLP--core-emb-2b/snapshots/cc9870ea92d64ebd5f8f9fc368d1120453564158",
+      "targets": {
+        "coco_i2t_recall_10": 0.656,
+        "coco_i2t_recall_5": 0.525,
+        "coco_t2i_recall_10": 0.867,
+        "coco_t2i_recall_5": 0.793,
+        "flickr_i2t_recall_10": 0.887,
+        "flickr_i2t_recall_5": 0.766,
+        "flickr_t2i_recall_10": 0.981,
+        "flickr_t2i_recall_5": 0.962,
+        "mcmr_mrr_10": 0.397,
+        "mcmr_recall_1": 0.306,
+        "negbench_coco_recall_5": 0.766
+      }
+    },
+    "core_embed_8b": {
+      "embedding_dim": 4096,
+      "protocol": "core_qwen3",
+      "repo": "Alibaba-NLP/core-emb-8b",
+      "revision": "123aef9e5e9e76fb686420f077fce3ef3b580c2b",
+      "snapshot": "hf_home/hub/models--Alibaba-NLP--core-emb-8b/snapshots/123aef9e5e9e76fb686420f077fce3ef3b580c2b",
+      "targets": {
+        "coco_i2t_recall_10": 0.687,
+        "coco_i2t_recall_5": 0.557,
+        "coco_t2i_recall_10": 0.887,
+        "coco_t2i_recall_5": 0.82,
+        "flickr_i2t_recall_10": 0.91,
+        "flickr_i2t_recall_5": 0.81,
+        "flickr_t2i_recall_10": 0.987,
+        "flickr_t2i_recall_5": 0.97,
+        "mcmr_mrr_10": 0.506,
+        "mcmr_recall_1": 0.412,
+        "negbench_coco_recall_5": 0.79
+      }
+    },
+    "gme_2b": {
+      "embedding_dim": 1536,
+      "protocol": "core_qwen2",
+      "repo": "Alibaba-NLP/gme-Qwen2-VL-2B-Instruct",
+      "revision": "9cfa6413f704a7c1cf5064d240748e10c876b286",
+      "snapshot": "hf_home/hub/models--Alibaba-NLP--gme-Qwen2-VL-2B-Instruct/snapshots/9cfa6413f704a7c1cf5064d240748e10c876b286",
+      "targets": {
+        "coco_i2t_recall_10": 0.609,
+        "coco_i2t_recall_5": 0.477,
+        "coco_t2i_recall_10": 0.84,
+        "coco_t2i_recall_5": 0.758,
+        "flickr_i2t_recall_10": 0.843,
+        "flickr_i2t_recall_5": 0.711,
+        "flickr_t2i_recall_10": 0.961,
+        "flickr_t2i_recall_5": 0.93,
+        "mcmr_mrr_10": 0.199,
+        "mcmr_recall_1": 0.139,
+        "negbench_coco_recall_5": 0.658
+      }
+    },
+    "qwen3vl_embed_2b": {
+      "embedding_dim": 2048,
+      "protocol": "core_qwen3",
+      "repo": "Qwen/Qwen3-VL-Embedding-2B",
+      "revision": "9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda",
+      "snapshot": "hf_home/hub/models--Qwen--Qwen3-VL-Embedding-2B/snapshots/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda",
+      "targets": {
+        "coco_i2t_recall_10": 0.626,
+        "coco_i2t_recall_5": 0.496,
+        "coco_t2i_recall_10": 0.838,
+        "coco_t2i_recall_5": 0.754,
+        "flickr_i2t_recall_10": 0.88,
+        "flickr_i2t_recall_5": 0.754,
+        "flickr_t2i_recall_10": 0.973,
+        "flickr_t2i_recall_5": 0.944,
+        "mcmr_mrr_10": 0.36,
+        "mcmr_recall_1": 0.273,
+        "negbench_coco_recall_5": 0.668
+      }
+    },
+    "qwen3vl_embed_8b": {
+      "embedding_dim": 4096,
+      "protocol": "core_qwen3",
+      "repo": "Qwen/Qwen3-VL-Embedding-8B",
+      "revision": "2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "snapshot": "hf_home/hub/models--Qwen--Qwen3-VL-Embedding-8B/snapshots/2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "targets": {
+        "coco_i2t_recall_10": 0.662,
+        "coco_i2t_recall_5": 0.527,
+        "coco_t2i_recall_10": 0.86,
+        "coco_t2i_recall_5": 0.785,
+        "flickr_i2t_recall_10": 0.887,
+        "flickr_i2t_recall_5": 0.776,
+        "flickr_t2i_recall_10": 0.973,
+        "flickr_t2i_recall_5": 0.947,
+        "mcmr_mrr_10": 0.469,
+        "mcmr_recall_1": 0.375,
+        "negbench_coco_recall_5": 0.723
+      }
+    },
+    "vlm2vec_v2": {
+      "embedding_dim": 1536,
+      "protocol": "vlm2vec_dora_unresolved",
+      "repo": "VLM2Vec/VLM2Vec-V2.0",
+      "revision": "e39ff079b8275ef876d3656da8c0bddbff3c4dde",
+      "snapshot": "hf_home/hub/models--VLM2Vec--VLM2Vec-V2.0/snapshots/e39ff079b8275ef876d3656da8c0bddbff3c4dde",
+      "targets": {
+        "coco_i2t_recall_10": 0.58,
+        "coco_i2t_recall_5": 0.448,
+        "coco_t2i_recall_10": 0.806,
+        "coco_t2i_recall_5": 0.716,
+        "flickr_i2t_recall_10": 0.808,
+        "flickr_i2t_recall_5": 0.68,
+        "flickr_t2i_recall_10": 0.96,
+        "flickr_t2i_recall_5": 0.926,
+        "mcmr_mrr_10": 0.369,
+        "mcmr_recall_1": 0.288,
+        "negbench_coco_recall_5": 0.682
+      }
+    }
+  },
+  "official_code": {
+    "cache": "dl/retrieval-matrix/sources/core",
+    "files": [
+      {
+        "bytes": 7692,
+        "git_blob_sha1": "3f16676a5211ff47a8cd5384a5ab399bde697325",
+        "path": "README.md",
+        "sha256": "e0d8d2cbfefa1af4c96e7e3f80c2e96ca3efc872ab9d68a82457c6068ce70c63"
+      },
+      {
+        "bytes": 1252,
+        "git_blob_sha1": "d092d9587e4d7aa3f85e02b43fec026534a1266e",
+        "path": "config.py",
+        "sha256": "2e632a49f1aea6b81a359dba6c95700ac14a8fd2130e8e8408599a3477ef6b69"
+      },
+      {
+        "bytes": 3096,
+        "git_blob_sha1": "18640cf660ee8e4dc47f00d95879d3bf5ab9a5cf",
+        "path": "datasets.md",
+        "sha256": "0df05fb909fbed0113503e0cd5b6492b5320933d8fb5cbcd851b77d86b7e3d63"
+      },
+      {
+        "bytes": 11230,
+        "git_blob_sha1": "bcf9adb79f5e42c8f28d5a9ea3bddfe039ba9701",
+        "path": "embedding.py",
+        "sha256": "314fd0411e09573585c5ea5e12a8c240feb16fc7633f5af0c03444eff936c266"
+      },
+      {
+        "bytes": 3454,
+        "git_blob_sha1": "bf9be97a5c25f95bd399ebcc456315b656eb633d",
+        "path": "main.py",
+        "sha256": "050783d3ff29f7fe165e0fab34fe05473d203753eefb8066e91f7666c5f96e6e"
+      },
+      {
+        "bytes": 170,
+        "git_blob_sha1": "97cd711432068a25e6a24a590a50896fb365e4c9",
+        "path": "models/e5_v/__init__.py",
+        "sha256": "b0a14865971a85a11bfd4eed772df7719b51b98b5637bdd37e73bef0cd03ea84"
+      },
+      {
+        "bytes": 6552,
+        "git_blob_sha1": "71af6c75ce71573639bc7ef0970e894aef6f8fc4",
+        "path": "models/e5_v/e5_v_wrapper.py",
+        "sha256": "e0ee2c70444a282b1ee9bd0727fa7617c185e18fc328be9e59645fa49b2b153e"
+      },
+      {
+        "bytes": 9540,
+        "git_blob_sha1": "f84ff92c29814cbb7a451f55c956245b419464ea",
+        "path": "models/load_models.py",
+        "sha256": "f11e50b628b3714ef3406b188daecead5c28f2bffa5f925ede18f282c7b84941"
+      },
+      {
+        "bytes": 0,
+        "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "path": "models/qwen2_5_vl/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 21680,
+        "git_blob_sha1": "182f46ff1048e5e1a0e3dde1d7e31f32df1b4e7e",
+        "path": "models/qwen2_5_vl/embedding_qwen2_5_vl.py",
+        "sha256": "f7404bb97194a99447dadf48455bf2848c550f5aef9970f6baafd9bdaa5446de"
+      },
+      {
+        "bytes": 1445,
+        "git_blob_sha1": "4ebf86e5914517f7a88700502e0c7a0eb2b81f69",
+        "path": "models/qwen2_5_vl/load.py",
+        "sha256": "bb9b600346cad0e84a6f05903fcf270ece702a20996f79078b54ceb78285f054"
+      },
+      {
+        "bytes": 18861,
+        "git_blob_sha1": "00a070bd02c9ce19e002c42609e2c3ed294bc20e",
+        "path": "models/qwen2_vl/qwen2_vl_wrapper.py",
+        "sha256": "d2293856bd0e69f2b4ad4d7361f980d29b752027b8086d9ed224a1851325f9b2"
+      },
+      {
+        "bytes": 1663,
+        "git_blob_sha1": "42808585abbefab39848116562fa82065e2816ae",
+        "path": "models/qwen3_vl/load_pr.py",
+        "sha256": "11c06135e1aa089ca043db1c1d280cbbce5f18a8b8d3909f39d30491d87a12ee"
+      },
+      {
+        "bytes": 13202,
+        "git_blob_sha1": "ae94c707ec3c2e6a2485c3e3144d222427ca1dfc",
+        "path": "models/qwen3_vl/qwen3_vl_wrapper.py",
+        "sha256": "28574af5a11a95264ced86be6d0dfc4964609c4472592582a9e4227b0d5282a6"
+      },
+      {
+        "bytes": 1,
+        "git_blob_sha1": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+        "path": "models/reranker/ours_rank.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "bytes": 23815,
+        "git_blob_sha1": "fcec3e76eeb9a65fe12fab957d3d2e555b61606d",
+        "path": "models/reranker/qwen3_vl_rank.py",
+        "sha256": "cc47d3f8ff88de9c7187d8068041b5218bae4272e910468aa30d8d93073d570a"
+      },
+      {
+        "bytes": 10873,
+        "git_blob_sha1": "8ba67fb3ba5ee34e6bf7ab8047b5d8e4cc2a2f2c",
+        "path": "models/reranker/qwen3_vl_reranker_official.py",
+        "sha256": "0a639258132817e2f3a2bed644f9470a8feef405b3405532a3e70c2c6c05b849"
+      },
+      {
+        "bytes": 14286,
+        "git_blob_sha1": "c5ddba2f6783acc499b9eed37ab642857cd6bb0e",
+        "path": "models/rzen/rzen_embed_inference.py",
+        "sha256": "dcf5e86791de6b6aa877b80c08bfa164174e1b8583fa0d268ae081d457b32d12"
+      },
+      {
+        "bytes": 1131,
+        "git_blob_sha1": "aa6763cb0458369286ffeaab6b993ce44bc9fd20",
+        "path": "models/rzen/rzen_on_scpp.py",
+        "sha256": "017dd021ff9e8715d2d6b212a1253767547ae44b3dbbbe157e4026e11376f0ee"
+      },
+      {
+        "bytes": 7238,
+        "git_blob_sha1": "f9b7ea658e6712c6a89a8e397c9b9bdb45ae8487",
+        "path": "tasks/coco.py",
+        "sha256": "8eb24092ed6632d05836d203ca8bbdbe2a5835a1e75c74e0e3a680e0f171f757"
+      },
+      {
+        "bytes": 7114,
+        "git_blob_sha1": "8f4fcd5bbc0263a1a4a7009c0a0ecc2fe6111c9c",
+        "path": "tasks/cola.py",
+        "sha256": "79c5d782fda6aa49d6433bd1e46d010dc68c533a1c69dbb11e4faa90a160d68e"
+      },
+      {
+        "bytes": 5083,
+        "git_blob_sha1": "e3625e4ae90db9051da65eda00a9f0aa632a13a3",
+        "path": "tasks/composite_dataset.py",
+        "sha256": "d42ff06734cde4b5cac04e4a9c1cb7b2debc45cb7620b68cd5eb08580db5cc24"
+      },
+      {
+        "bytes": 855,
+        "git_blob_sha1": "8aa686b34a64d4006384142e528c63b399f1e7ee",
+        "path": "tasks/dataset.py",
+        "sha256": "00c5c75c350cce69d3697889f2de16d745d45e8f691a592d55a71631a6f9b843"
+      },
+      {
+        "bytes": 7716,
+        "git_blob_sha1": "c2f9ad1f8ab1cc58eab92e2f65eada70ed021056",
+        "path": "tasks/flickr30k.py",
+        "sha256": "90ac46afe9062ce28bbeefb39379b3d02a3a3f24685cb37a84369b40986abfc2"
+      },
+      {
+        "bytes": 7011,
+        "git_blob_sha1": "c9390ac37172e5c06174d671bd05a746c7891408",
+        "path": "tasks/mcmr.py",
+        "sha256": "0c6d861ad4f4e26fbda481375e2043759d32064b5ef1a103c6c2ca8d0fb8e2d6"
+      },
+      {
+        "bytes": 14591,
+        "git_blob_sha1": "74dd0a3138443402ca79ea31c1feebebaf847122",
+        "path": "tasks/negbench.py",
+        "sha256": "3d9d7471f811dd922800a7cc5b1b56602c6fb48fb72e88573564d58860dcab84"
+      },
+      {
+        "bytes": 15980,
+        "git_blob_sha1": "4ead1829262fc6a4ed08244db82f1855fe65e987",
+        "path": "tasks/scpp.py",
+        "sha256": "216c257598f7836b25e4297076fc053227e80040093bbffa79e12226682541aa"
+      }
+    ],
+    "integrity": "27 downloaded Python/Markdown files verified against Git blob SHA-1",
+    "repo": "Alibaba-NLP/core-emb",
+    "revision": "400cf919838ceeecf4c94e3ac178a4270abcc4c5"
+  },
+  "owner": "[codex]",
+  "paper": {
+    "cache": "dl/retrieval-matrix/sources/core-paper.html",
+    "revision": "v1",
+    "sha256": "d2492de7d8894bf1b3ff55ae0cbfe191ce02f887cf4354487af9dce477f6c869",
+    "targets_source": "Tables 2,5,8,9",
+    "url": "https://arxiv.org/html/2609.04083v1"
+  },
+  "paper_default_claim": {
+    "matches_released_code": false,
+    "max_image_tokens": 1000,
+    "max_text_length": 200,
+    "source": "Appendix B.2"
+  },
+  "protocols": {
+    "core_qwen2": {
+      "compatibility_blocker": "Released loader defines Qwen2 wrapper only for transformers>4.47,<4.57; wrapper itself uses older Transformers Qwen2VL internals. Use separately pinned compatible environment, not silent replacement.",
+      "effective_system": "No explicit system message from format_model_input; base tokenizer chat_template may inject default Qwen system",
+      "loader": {
+        "attn_implementation": "flash_attention_2",
+        "eval": true,
+        "torch_dtype": "bfloat16"
+      },
+      "model_class": "Qwen2VLForEmbedding",
+      "module": "models.qwen2_vl.qwen2_vl_wrapper",
+      "normalization": "F.normalize(...,dim=-1)",
+      "pooling": "_pooling_last(last_hidden_state,attention_mask)",
+      "processor_call": {
+        "is_query": false,
+        "max_length": 1024,
+        "truncation": false
+      },
+      "processor_class": "Qwen2VLProcessorForEmbedding",
+      "processor_init": {
+        "instruction_standalone": true,
+        "max_length": 3024,
+        "max_pixels": 1310720,
+        "min_pixels": 4096,
+        "num_frames": 48,
+        "total_pixels": 4608000
+      }
+    },
+    "core_qwen3": {
+      "chat_template": {
+        "add_generation_prompt": true,
+        "observed_final_eod_count": 2,
+        "padding_side": "right",
+        "tokenizer_postprocessor_appends": "<|endoftext|>"
+      },
+      "effective_system": "Represent the user's input.",
+      "fused_call": {
+        "instruction": "Represent the given image and text.",
+        "is_query": false,
+        "max_length": 4096,
+        "system": "Represent the user's input.",
+        "truncation": false
+      },
+      "image_content": "PIL.Image.open(path); text/videos None",
+      "image_instruction_argument": "Represent the given image.",
+      "instruction_argument_ignored_reason": "format_model_input uses supplied instruction only when is_query=True; embedding.py passes False for both modalities",
+      "loader": {
+        "device_map": "chosen GPU",
+        "eval": true,
+        "torch_dtype": "bfloat16"
+      },
+      "model_class": "Qwen3VLForEmbedding",
+      "module": "models.qwen3_vl.qwen3_vl_wrapper",
+      "mrl_dim": -1,
+      "normalization": "torch.nn.functional.normalize(embeddings,dim=-1), in model output dtype",
+      "pooling": "last_hidden_state[arange(batch), attention_mask.sum(dim=1)-1]",
+      "processor_call": {
+        "is_query": false,
+        "max_length": 1024,
+        "padding": true,
+        "truncation": false
+      },
+      "processor_class": "Qwen3VLForEmbeddingProcessor",
+      "processor_init": {
+        "instruction_standalone": true,
+        "max_length": 3024,
+        "max_pixels": 1310720,
+        "min_pixels": 4096,
+        "num_frames": 48,
+        "total_pixels": 4608000
+      },
+      "text_content": "verbatim caption; images/videos None",
+      "text_instruction_argument": "Find me an everyday image that matches the given caption: ",
+      "vision": {
+        "process_vision_info_image_patch_size": 16,
+        "processor_do_resize": false,
+        "resize_stage": "qwen_vl_utils process_vision_info with min/max pixels"
+      }
+    },
+    "vlm2vec_dora_unresolved": {
+      "adapter": "VLM2Vec/VLM2Vec-V2.0",
+      "adapter_rank": 16,
+      "adapter_revision": "e39ff079b8275ef876d3656da8c0bddbff3c4dde",
+      "base": "Qwen/Qwen2-VL-2B-Instruct",
+      "base_revision": "895c3a49bc3fa70a340399125c650a463535e71c",
+      "cache": "dl/retrieval-matrix/sources/vlm2vec",
+      "official_vlm2vec_code": "f658ebeb49704784330ffe9e68a10796698d75e3",
+      "status": "CORE paper identifies V2.0 but released generic Qwen2 loader never applies adapter. Must explicitly verify adapter key coverage and official VLM2Vec loading before running.",
+      "use_dora": true
+    }
+  },
+  "reranker": {
+    "cola": {
+      "success": "score(img0,caption0)>score(img0,caption1) AND score(img1,caption1)>score(img1,caption0)",
+      "system_has_trailing_space": false
+    },
+    "core2": {
+      "repo": "Alibaba-NLP/core-reranker-2b",
+      "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b",
+      "targets": {
+        "cola": 0.724,
+        "negbench_coco_mcq": 0.507,
+        "negbench_mcq_macro": 0.646,
+        "negbench_voc_mcq": 0.784,
+        "scpp_avg": 0.839
+      }
+    },
+    "core8": {
+      "repo": "Alibaba-NLP/core-reranker-8b",
+      "revision": "d95d36a34300e34b87cc1793827ac798642c4488",
+      "targets": {
+        "cola": 0.843,
+        "negbench_coco_mcq": 0.562,
+        "negbench_mcq_macro": 0.698,
+        "negbench_voc_mcq": 0.835,
+        "scpp_avg": 0.875
+      }
+    },
+    "negbench": {
+      "aggregation": "unweighted average of VOC accuracy and COCO accuracy; do not compare COCO-only to macro target",
+      "columns": [
+        "image_path",
+        "caption_0",
+        "caption_1",
+        "caption_2",
+        "caption_3"
+      ],
+      "correct_option": 0,
+      "csvs": [
+        "VOC2007_mcq_llama3.1_rephrased.csv",
+        "COCO_val_mcq_llama3.1_rephrased.csv"
+      ],
+      "success": "score[0] > score[1] and score[0] > score[2] and score[0] > score[3]"
+    },
+    "protocol_difference": "Released CORE uses ms-swift generative_reranker API, not Qwen official yes/no .process API. Any replacement must prove token/logit score equivalence and preserve released prompt.",
+    "released_engine": {
+      "attn_impl": "flash_attention_2",
+      "env_IMAGE_MAX_TOKEN_NUM": "1200",
+      "import": "swift.infer_engine.TransformersEngine",
+      "max_batch_size": 32,
+      "max_length": 1500,
+      "task_type": "generative_reranker",
+      "torch_dtype": "float16"
+    },
+    "request": {
+      "images": [
+        "IMAGE_PATH"
+      ],
+      "max_tokens": 1500,
+      "messages": [
+        {
+          "content": "Determine if the following image is relevant to the query. ",
+          "role": "system"
+        },
+        {
+          "content": "CAPTION",
+          "role": "user"
+        },
+        {
+          "content": "<image>",
+          "role": "assistant"
+        }
+      ],
+      "score": "float(response.choices[0].message.content[0])",
+      "temperature": 0
+    },
+    "scpp": {
+      "success": "both positive captions strictly outrank negative caption; mean of five subset accuracies"
+    }
+  },
+  "schema": 1,
+  "scope": "P0 published fixed-baseline reproduction only; no custom method tuning or sealed panel access"
+}
