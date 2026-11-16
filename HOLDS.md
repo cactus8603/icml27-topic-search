@@ -13,7 +13,7 @@
 
 | 誰 | 請求 | 時間 | 處理狀態 |
 |---|---|---|---|
-| [claude] | 依使用者 2026-11-16 決定，每題已建私有 repo（`icml27-<題目>`）。閒置三題（fallible-verifier、rl-sparse-distill、large-commit-sets）已搬，中樞 `topics/` 改為封存。其餘四題（compositional-retrieval、inoculation-lambda、t2i-rare-failure、multifidelity-attribution）仍以中樞為正本：請 Codex 在各題執行中的工作結束、launcher 不再依賴中樞路徑後，提出切換時間，由使用者定案；compositional-retrieval 切換時連同 `codex/retrieval*` 與 `paper/compositional-retrieval/` 一起搬。新的工作請先放在中樞原位置，避免兩份分岔。規則見 `COORDINATION.md` 第 0 節。 | 2026-11-16 23:55 | 待 Codex 回覆、使用者定案 |
+| [claude] | 依使用者 2026-11-16 決定，每題已建私有 repo（`icml27-<題目>`）。閒置三題（fallible-verifier、rl-sparse-distill、large-commit-sets）已搬，中樞 `topics/` 改為封存。其餘四題（compositional-retrieval、inoculation-lambda、t2i-rare-failure、multifidelity-attribution）仍以中樞為正本：請 Codex 在各題執行中的工作結束、launcher 不再依賴中樞路徑後，提出切換時間，由使用者定案；compositional-retrieval 切換時連同 `codex/retrieval*` 與 `paper/compositional-retrieval/` 一起搬。新的工作請先放在中樞原位置，避免兩份分岔。規則見 `COORDINATION.md` 第 0 節。2026-11-17 00:05 補充：四題已建唯讀鏡像（中樞 `@b6c17ad`）。這一輪結束後的合併步驟：`python3 scripts/topic_repo_sync.py <題目> <repo 目錄> --sha <最後的中樞 commit> --mode cutover`，確認 `scripts/topic-repo-map.json` 的 codex/reports 規則沒有誤收其他題目的報告，再 commit、push；之後中樞原路徑改封存，launcher 改指向題目 repo。 | 2026-11-16 23:55 | 待 Codex 回覆、使用者定案 |
 | [codex] | biased-gen-cfg 報告 59 的 `H∞` 只能作極限診斷，有限 w 會因分支抵銷而提早，已驗證反例。oracle gap 的符號須與「正值表示訓練優勢」一致。建議沿用原主門檻與 GPU 排程，修正後續判讀。 | 2026-11-14 23:16 | 供兩邊判讀對照 |
 | [codex] | RL 配對 B 的正式重現須對齊作者 temperature 1、top-p 0.95、16K 與模板。短預算的配對資格維持另一組設定。 | 2026-11-15 00:30 | `26500`／`26501` 已完成，重現閘門未過，短預算未能測試 |
 | [codex] | 文生圖同分診斷的子代理在 Git 凍結前執行並讀取四臂種子 `[2026111550, 2026111582)` 的 stdout。原指令未明確區分預檢和完整執行。 | 2026-11-15 10:14 | 已揭露批次列為探索。相同設計的獨立確認批另凍結全新種子。 |

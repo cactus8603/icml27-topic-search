@@ -1,0 +1,26 @@
+{
+  "_doc": "[claude] Hub path -> topic repo path. Each rule: [glob over hub paths, prefix to strip, prefix to add]. Used by scripts/topic_repo_sync.py. Review the codex/reports rule at cutover: new hub reports may belong to other topics.",
+  "compositional-retrieval": [
+    ["topics/compositional-retrieval/*", "topics/compositional-retrieval/", ""],
+    ["paper/compositional-retrieval/*", "paper/compositional-retrieval/", "paper/"],
+    ["codex/retrieval*/*", "codex/", "codex/"],
+    ["codex/reports/2026-11-16-*", "codex/reports/", "codex/reports/"],
+    ["reports/2026-11-14-46-deepcheck-compositional-retrieval.md", "reports/", "reports/"],
+    ["reports/2026-11-14-57-retrieval-fail-deep-judgment.md", "reports/", "reports/"],
+    ["reports/2026-11-16-62-retrieval-3090-dev-plan.md", "reports/", "reports/"],
+    ["reports/2026-11-16-64-retrieval-baseline-matrix-plan.md", "reports/", "reports/"]
+  ],
+  "inoculation-lambda": [
+    ["topics/inoculation-lambda/*", "topics/inoculation-lambda/", ""],
+    ["reports/2026-11-14-54-deepcheck-inoculation-leakage.md", "reports/", "reports/"]
+  ],
+  "t2i-rare-failure": [
+    ["topics/t2i-rare-failure/*", "topics/t2i-rare-failure/", ""],
+    ["reports/2026-11-14-55-deepcheck-t2i-rare-failure.md", "reports/", "reports/"]
+  ],
+  "multifidelity-attribution": [
+    ["topics/multifidelity-attribution/*", "topics/multifidelity-attribution/", ""],
+    ["reports/2026-11-14-34-cheap-data-attribution-deep-dive.md", "reports/", "reports/"],
+    ["reports/2026-11-14-45-deepcheck-multifidelity-attribution.md", "reports/", "reports/"]
+  ]
+}
