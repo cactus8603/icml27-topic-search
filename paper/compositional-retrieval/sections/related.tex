@@ -1,0 +1,33 @@
+% [claude] 2026-11-16 draft. Every factual claim below was checked against the cited paper (abstract or full text).
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Compositional understanding as matching.}
+Most evaluations of vision--language compositionality pose a \emph{matching} problem: one image is compared with a handful of captions, or a few images with a few captions.
+Winoground pairs two images with two captions that differ only in word order~\cite{winoground2022}.
+ARO probes relations, attributes, and word order, and argues that contrastive models often behave like bags of words~\cite{aro2023}.
+SugarCrepe replaces or swaps objects, attributes, and relations to build hard negatives that text-only models cannot exploit~\cite{sugarcrepe2023}, and SugarCrepe++ adds semantically equivalent rewrites~\cite{sugarcrepepp2024}.
+What'sUp isolates spatial relations such as left and right~\cite{whatsup2023}, and Half-Truths ranks a correct short anchor, a correct extension, and an extension with one wrong detail for the same image~\cite{halftruths2026}.
+These benchmarks control the perturbation precisely, but a small candidate set does not tell whether a system can find every image that satisfies all conditions in a large gallery.
+
+\paragraph{Compositional retrieval benchmarks.}
+A few benchmarks do evaluate retrieval over a gallery.
+COLA retrieves objects with several attributes among distractor images that contain the same attributes on other objects and reports mAP; its multi-object setting is again a matching task~\cite{cola2023}.
+NegBench evaluates negated queries, including COCO text-to-image retrieval in which the source image of each caption is the relevant item~\cite{negbench2025}.
+MCMR builds product queries whose conditions are split between the image and long-form metadata, with 3,997 queries over 104,981 candidates; each query is generated from one source product~\cite{mcmr2026}.
+FACTOR-Bench, introduced with LCSE, tests logical operators on image--caption pairs~\cite{lcse2026}.
+None of these provides gallery-level retrieval with complete multi-positive relevance and a controlled number of conditions per query, which is the gap our benchmark targets (\cref{sec:benchmark}).
+
+\paragraph{Improving compositionality in embeddings.}
+One line of work fine-tunes dual encoders on hard negatives: NegCLIP~\cite{aro2023}, TripletCLIP with synthetic image and text negatives~\cite{tripletclip2024}, CLIC~\cite{clic2025}, and CS-CLIP~\cite{halftruths2026}.
+A second line builds universal embeddings on multimodal large language models, including VLM2Vec and VLM2Vec-V2~\cite{vlm2vec2025,vlm2vecv22025}, GME~\cite{gme2025}, UniME and UniME-V2~\cite{unime2025,unimev22025}, and Qwen3-VL-Embedding~\cite{qwen3vlemb2026}.
+CORE distills a reranker into an MLLM embedding with graded supervision that separates partial from full matches, and reports gains on COLA, SugarCrepe++, and NegBench that transfer to MCMR~\cite{core2026}.
+Training-free alternatives change the scoring rule instead of the weights: LCSE replaces a single similarity with factored inference over parsed conditions~\cite{lcse2026}, and ConstraintMatch penalizes evidence that is matched in different image regions for parts of the same entity~\cite{constraintmatch2026}.
+Flow-CLIP refines global scores with image-conditioned token--patch evidence but learns its calibration and ranking components~\cite{flowclip2026}.
+
+\paragraph{Two-stage retrieval and reranking.}
+Retrieval systems commonly pair a fast first-stage embedding with a slower cross-modal scorer on the top-$K$ candidates.
+ALBEF and BLIP rerank first-stage candidates with an image--text matching head~\cite{albef2021,blip2022}; BLIP uses $K{=}256$ on COCO and $K{=}128$ on Flickr30K, and BLIP-2 uses $K{=}128$~\cite{blip22023}.
+Qwen3-VL-Reranker is evaluated on the top 100 candidates of Qwen3-VL-Embedding-2B~\cite{qwen3vlemb2026}, and MCMR reranks the top 50 candidates of its strongest retriever~\cite{mcmr2026}.
+CORE evaluates its rerankers only on multiple-choice subsets, because corpus-level retrieval would require a separate first stage~\cite{core2026}; how such rerankers behave on gallery retrieval with multi-condition queries is therefore largely unmeasured.
+On the theory side, \citet{limit2025} show that embedding dimension bounds the number of top-$k$ subsets a single-vector retriever can represent, which motivates studying where single-vector first stages lose conjunctive relevance.

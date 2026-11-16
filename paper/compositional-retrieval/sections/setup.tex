@@ -1,0 +1,37 @@
+% [claude] 2026-11-16 draft. Protocol follows reports/2026-11-16-64-retrieval-baseline-matrix-plan.md.
+\section{Problem Setup and Evaluation Protocol}
+\label{sec:setup}
+
+\paragraph{Task.}
+A gallery $\mathcal{G}$ contains images, and a query $q$ is a sentence that states a set of conditions $C(q)=\{c_1,\dots,c_k\}$.
+An image $x$ is relevant, $\rel(q,x)=1$, only if it satisfies every condition in $C(q)$.
+Images whose status cannot be decided from the annotations form an ignore set $\mathcal{I}(q)$ and are removed from the ranking of $q$ (\cref{sec:benchmark}).
+The positives are $\mathcal{P}(q)=\{x\in\mathcal{G}:\rel(q,x)=1\}$.
+
+\paragraph{Two-stage retrieval.}
+A first-stage model with score $s_f(q,x)$ ranks the whole gallery.
+A reranker with score $s_r(q,x)$ re-scores the top-$K$ images of that ranking.
+The final ranking places the reranked top-$K$ first, followed by the remaining images in their first-stage order.
+With $K{=}0$ this reduces to embedding-only retrieval.
+
+\paragraph{Metrics.}
+For each query we compute average precision over the full ranking of $\mathcal{G}\setminus\mathcal{I}(q)$, with $|\mathcal{P}(q)|$ as the denominator, so positives outside the top-$K$ lower the score instead of being dropped; mAP averages over queries.
+We also report Recall@$K$, the fraction of positives that the first stage places in its top $K$.
+To separate the two failure modes of a two-stage system we use a fixed-candidate oracle: it moves every positive already in the top-$K$ to the front and keeps everything else unchanged.
+The gap between this oracle and the system measures in-pool ordering errors that a better reranker could fix; the gap between a perfect ranking and the oracle measures positives that the first stage leaves outside the pool or ranks poorly in the tail.
+
+\paragraph{Candidate depth.}
+Our primary setting is $K{=}100$, matching the reranking evaluations of Qwen3-VL-Reranker and the CORE development set~\cite{qwen3vlemb2026,core2026}.
+We vary $K\in\{50,200\}$ to study how depth trades recall for reranking cost.
+The same $K$ does not imply the same compute: we report measured wall time and peak memory for every first stage and reranker.
+
+\paragraph{Development and test discipline.}
+Every benchmark has a development portion and a test portion.
+We select methods, prompts, and hyperparameters only on development data.
+Baselines are run without tuning, following each original paper, and we check each one against the numbers its authors report before including it (\cref{sec:experiments}).
+Our own methods are evaluated on test data once, after all choices are fixed.
+Where a benchmark releases only a test set, we use it only in this final evaluation.
+
+\paragraph{Uncertainty.}
+In our benchmark the positive sets of different queries are disjoint, so each query is an independent unit, and we report 95\% bootstrap intervals over queries.
+For other benchmarks we follow their unit of analysis and resample groups of queries that share images.

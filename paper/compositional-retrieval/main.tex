@@ -1,0 +1,84 @@
+%%%%%%%% [claude] Draft built on the official ICML 2026 template (icml2026.zip, SHA-256 8b29290f...).
+%%%%%%%% Swap to icml2027.sty when the ICML 2027 style is released.
+\documentclass{article}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+\usepackage{icml2026}   % anonymous submission mode
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage[textsize=tiny]{todonotes}
+
+% Working name of our benchmark; rename in one place.
+\newcommand{\bench}{\textsc{ConjCOCO}}
+\newcommand{\rel}{\mathrm{rel}}
+
+\icmltitlerunning{Multi-Condition Image Retrieval}
+
+\begin{document}
+
+\twocolumn[
+  \icmltitle{TODO: Title (Multi-Condition Image Retrieval)}
+  \icmlsetsymbol{equal}{*}
+  \begin{icmlauthorlist}
+    \icmlauthor{Anonymous Authors}{anon}
+  \end{icmlauthorlist}
+  \icmlaffiliation{anon}{Anonymous Institution}
+  \icmlcorrespondingauthor{Anonymous Authors}{anon@anon}
+  \icmlkeywords{Compositional Retrieval, Multimodal Embedding, Reranking}
+  \vskip 0.3in
+]
+
+\printAffiliationsAndNotice{}
+
+\begin{abstract}
+\todo[inline]{Abstract: write after the baseline matrix (P0--P4) and the method are in.}
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+\todo[inline]{Draft later. Motivation available now: on our exposed development panel, upgrading the CORE reranker from 2B to 8B recovers only about 23\% of the fixed-candidate ordering gap, leaving roughly 15 mAP points (codex/reports/2026-11-16-core-scaling-headroom-codex.md). Contributions depend on the method and the baseline matrix.}
+
+\input{sections/related}
+\input{sections/setup}
+\input{sections/benchmark}
+
+\section{Method}
+\label{sec:method}
+\todo[inline]{Pending.}
+
+\section{Experiments}
+\label{sec:experiments}
+\todo[inline]{Pending: baseline matrix (report 64, P0--P4) and method results on dev; test only at final scoring.}
+
+\section{Conclusion}
+\todo[inline]{Pending.}
+
+\section*{Impact Statement}
+\todo[inline]{Required for the camera-ready main track.}
+
+\bibliography{refs}
+\bibliographystyle{icml2026}
+
+\newpage
+\appendix
+\onecolumn
+\input{sections/appendix_benchmark}
+
+\end{document}

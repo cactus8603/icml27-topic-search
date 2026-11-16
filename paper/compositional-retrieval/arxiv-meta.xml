@@ -1,0 +1,1042 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/UZBWhNTVsCGzoQQqbHTSw2FUjEc</id>
+  <title>arXiv Query: search_query=&amp;id_list=2609.04083,2602.23906,2505.24424,2607.23052,2611.00784,2610.21937,2603.01082,2501.09425,2305.03689,2406.11171,2306.14610,2210.01936,2310.19785,2103.00020,2502.14786,2411.02545,2601.04720,2412.16855,2410.05160,2507.04590,2504.17432,2510.13515,2201.12086,2107.07651,1405.0312,2508.21038,2204.03162,1602.07332,1902.09506,1505.04870,2301.12597&amp;start=0&amp;max_results=50</title>
+  <updated>2026-11-16T15:15:17Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=50&amp;id_list=2609.04083,2602.23906,2505.24424,2607.23052,2611.00784,2610.21937,2603.01082,2501.09425,2305.03689,2406.11171,2306.14610,2210.01936,2310.19785,2103.00020,2502.14786,2411.02545,2601.04720,2412.16855,2410.05160,2507.04590,2504.17432,2510.13515,2201.12086,2107.07651,1405.0312,2508.21038,2204.03162,1602.07332,1902.09506,1505.04870,2301.12597" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>50</opensearch:itemsPerPage>
+  <opensearch:totalResults>31</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2107.07651v2</id>
+    <title>Align before Fuse: Vision and Language Representation Learning with Momentum Distillation</title>
+    <updated>2021-10-07T04:06:04Z</updated>
+    <link href="https://arxiv.org/abs/2107.07651v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2107.07651v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large-scale vision and language representation learning has shown promising improvements on various vision-language tasks. Most existing methods employ a transformer-based multimodal encoder to jointly model visual tokens (region-based image features) and word tokens. Because the visual tokens and word tokens are unaligned, it is challenging for the multimodal encoder to learn image-text interactions. In this paper, we introduce a contrastive loss to ALign the image and text representations BEfore Fusing (ALBEF) them through cross-modal attention, which enables more grounded vision and language representation learning. Unlike most existing methods, our method does not require bounding box annotations nor high-resolution images. In order to improve learning from noisy web data, we propose momentum distillation, a self-training method which learns from pseudo-targets produced by a momentum model. We provide a theoretical analysis of ALBEF from a mutual information maximization perspective, showing that different training tasks can be interpreted as different ways to generate views for an image-text pair. ALBEF achieves state-of-the-art performance on multiple downstream vision-language tasks. On image-text retrieval, ALBEF outperforms methods that are pre-trained on orders of magnitude larger datasets. On VQA and NLVR$^2$, ALBEF achieves absolute improvements of 2.37% and 3.84% compared to the state-of-the-art, while enjoying faster inference speed. Code and pre-trained models are available at https://github.com/salesforce/ALBEF/.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2021-07-16T00:19:22Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Junnan Li</name>
+    </author>
+    <author>
+      <name>Ramprasaath R. Selvaraju</name>
+    </author>
+    <author>
+      <name>Akhilesh Deepak Gotmare</name>
+    </author>
+    <author>
+      <name>Shafiq Joty</name>
+    </author>
+    <author>
+      <name>Caiming Xiong</name>
+    </author>
+    <author>
+      <name>Steven Hoi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2103.00020v1</id>
+    <title>Learning Transferable Visual Models From Natural Language Supervision</title>
+    <updated>2021-02-26T19:04:58Z</updated>
+    <link href="https://arxiv.org/abs/2103.00020v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2103.00020v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2021-02-26T19:04:58Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Alec Radford</name>
+    </author>
+    <author>
+      <name>Jong Wook Kim</name>
+    </author>
+    <author>
+      <name>Chris Hallacy</name>
+    </author>
+    <author>
+      <name>Aditya Ramesh</name>
+    </author>
+    <author>
+      <name>Gabriel Goh</name>
+    </author>
+    <author>
+      <name>Sandhini Agarwal</name>
+    </author>
+    <author>
+      <name>Girish Sastry</name>
+    </author>
+    <author>
+      <name>Amanda Askell</name>
+    </author>
+    <author>
+      <name>Pamela Mishkin</name>
+    </author>
+    <author>
+      <name>Jack Clark</name>
+    </author>
+    <author>
+      <name>Gretchen Krueger</name>
+    </author>
+    <author>
+      <name>Ilya Sutskever</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1405.0312v3</id>
+    <title>Microsoft COCO: Common Objects in Context</title>
+    <updated>2015-02-21T01:48:49Z</updated>
+    <link href="https://arxiv.org/abs/1405.0312v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1405.0312v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2014-05-01T21:43:32Z</published>
+    <arxiv:comment>1) updated annotation pipeline description and figures; 2) added new section describing datasets splits; 3) updated author list</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tsung-Yi Lin</name>
+    </author>
+    <author>
+      <name>Michael Maire</name>
+    </author>
+    <author>
+      <name>Serge Belongie</name>
+    </author>
+    <author>
+      <name>Lubomir Bourdev</name>
+    </author>
+    <author>
+      <name>Ross Girshick</name>
+    </author>
+    <author>
+      <name>James Hays</name>
+    </author>
+    <author>
+      <name>Pietro Perona</name>
+    </author>
+    <author>
+      <name>Deva Ramanan</name>
+    </author>
+    <author>
+      <name>C. Lawrence Zitnick</name>
+    </author>
+    <author>
+      <name>Piotr Dollár</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2406.11171v2</id>
+    <title>SUGARCREPE++ Dataset: Vision-Language Model Sensitivity to Semantic and Lexical Alterations</title>
+    <updated>2024-06-19T00:03:42Z</updated>
+    <link href="https://arxiv.org/abs/2406.11171v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2406.11171v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Despite their remarkable successes, state-of-the-art large language models (LLMs), including vision-and-language models (VLMs) and unimodal language models (ULMs), fail to understand precise semantics. For example, semantically equivalent sentences expressed using different lexical compositions elicit diverging representations. The degree of this divergence and its impact on encoded semantics is not very well understood. In this paper, we introduce the SUGARCREPE++ dataset to analyze the sensitivity of VLMs and ULMs to lexical and semantic alterations. Each sample in SUGARCREPE++ dataset consists of an image and a corresponding triplet of captions: a pair of semantically equivalent but lexically different positive captions and one hard negative caption. This poses a 3-way semantic (in)equivalence problem to the language models. We comprehensively evaluate VLMs and ULMs that differ in architecture, pre-training objectives and datasets to benchmark the performance of SUGARCREPE++ dataset. Experimental results highlight the difficulties of VLMs in distinguishing between lexical and semantic variations, particularly in object attributes and spatial relations. Although VLMs with larger pre-training datasets, model sizes, and multiple pre-training objectives achieve better performance on SUGARCREPE++, there is a significant opportunity for improvement. We show that all the models which achieve better performance on compositionality datasets need not perform equally well on SUGARCREPE++, signifying that compositionality alone may not be sufficient for understanding semantic and lexical alterations. Given the importance of the property that the SUGARCREPE++ dataset targets, it serves as a new challenge to the vision-and-language community.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-06-17T03:22:20Z</published>
+    <arxiv:comment>Added the dataset link to the abstract</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Sri Harsha Dumpala</name>
+    </author>
+    <author>
+      <name>Aman Jaiswal</name>
+    </author>
+    <author>
+      <name>Chandramouli Sastry</name>
+    </author>
+    <author>
+      <name>Evangelos Milios</name>
+    </author>
+    <author>
+      <name>Sageev Oore</name>
+    </author>
+    <author>
+      <name>Hassan Sajjad</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.04590v1</id>
+    <title>VLM2Vec-V2: Advancing Multimodal Embedding for Videos, Images, and Visual Documents</title>
+    <updated>2025-07-07T00:51:57Z</updated>
+    <link href="https://arxiv.org/abs/2507.04590v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.04590v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multimodal embedding models have been crucial in enabling various downstream tasks such as semantic similarity, information retrieval, and clustering over different modalities. However, existing multimodal embeddings like VLM2Vec, E5-V, GME are predominantly focused on natural images, with limited support for other visual forms such as videos and visual documents. This restricts their applicability in real-world scenarios, including AI agents, multi-modal search and recommendation, and retrieval-augmented generation (RAG). To close this gap, we propose VLM2Vec-V2, a unified framework for learning embeddings across diverse visual forms. First, we introduce MMEB-V2, a comprehensive benchmark that extends MMEB with five new task types: visual document retrieval, video retrieval, temporal grounding, video classification and video question answering - spanning text, image, video, and visual document inputs. Next, we train VLM2Vec-V2, a general-purpose embedding model that supports text, image, video, and visual document inputs. Extensive experiments show that VLM2Vec-V2 achieves strong performance not only on the newly introduced video and document retrieval tasks, but also improves over prior baselines on the original image benchmarks. Through extensive evaluation, our study offers insights into the generalizability of various multimodal embedding models and highlights effective strategies for unified embedding learning, laying the groundwork for more scalable and adaptable representation learning in both research and real-world settings.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-07T00:51:57Z</published>
+    <arxiv:comment>Technical Report</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Rui Meng</name>
+    </author>
+    <author>
+      <name>Ziyan Jiang</name>
+    </author>
+    <author>
+      <name>Ye Liu</name>
+    </author>
+    <author>
+      <name>Mingyi Su</name>
+    </author>
+    <author>
+      <name>Xinyi Yang</name>
+    </author>
+    <author>
+      <name>Yuepeng Fu</name>
+    </author>
+    <author>
+      <name>Can Qin</name>
+    </author>
+    <author>
+      <name>Zeyuan Chen</name>
+    </author>
+    <author>
+      <name>Ran Xu</name>
+    </author>
+    <author>
+      <name>Caiming Xiong</name>
+    </author>
+    <author>
+      <name>Yingbo Zhou</name>
+    </author>
+    <author>
+      <name>Wenhu Chen</name>
+    </author>
+    <author>
+      <name>Semih Yavuz</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.24424v2</id>
+    <title>Advancing Compositional Awareness in CLIP with Efficient Fine-Tuning</title>
+    <updated>2025-10-28T12:08:40Z</updated>
+    <link href="https://arxiv.org/abs/2505.24424v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.24424v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Vision-language models like CLIP have demonstrated remarkable zero-shot capabilities in classification and retrieval. However, these models often struggle with compositional reasoning - the ability to understand the relationships between concepts. A recent benchmark, SugarCrepe++, reveals that previous works on improving compositionality have mainly improved lexical sensitivity but neglected semantic understanding. In addition, downstream retrieval performance often deteriorates, although one would expect that improving compositionality should enhance retrieval. In this work, we introduce CLIC (Compositionally-aware Learning in CLIP), a fine-tuning method based on a novel training technique combining multiple images and their associated captions. CLIC improves compositionality across architectures as well as differently pre-trained CLIP models, both in terms of lexical and semantic understanding, and achieves consistent gains in retrieval performance. This even applies to the recent CLIPS, which achieves SOTA retrieval performance. Nevertheless, the short fine-tuning with CLIC leads to an improvement in retrieval and to the best compositional CLIP model on SugarCrepe++. All our models and code are available at https://clic-compositional-clip.github.io</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-30T10:04:00Z</published>
+    <arxiv:comment>Accepted at NeurIPS 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Amit Peleg</name>
+    </author>
+    <author>
+      <name>Naman Deep Singh</name>
+    </author>
+    <author>
+      <name>Matthias Hein</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.13515v3</id>
+    <title>UniME-V2: MLLM-as-a-Judge for Universal Multimodal Embedding Learning</title>
+    <updated>2025-12-08T03:54:07Z</updated>
+    <link href="https://arxiv.org/abs/2510.13515v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.13515v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Universal multimodal embedding models are foundational to various tasks. Existing approaches typically employ in-batch negative mining by measuring the similarity of query-candidate pairs. However, these methods often struggle to capture subtle semantic differences among candidates and lack diversity in negative samples. Moreover, the embeddings exhibit limited discriminative ability in distinguishing false and hard negatives. In this paper, we leverage the advanced understanding capabilities of MLLMs to enhance representation learning and present a novel Universal Multimodal Embedding (UniME-V2) model. Our approach first constructs a potential hard negative set through global retrieval. We then introduce the MLLM-as-a-Judge mechanism, which utilizes MLLMs to assess the semantic alignment of query-candidate pairs and generate soft semantic matching scores. These scores serve as a foundation for hard negative mining, mitigating the impact of false negatives and enabling the identification of diverse, high-quality hard negatives. Furthermore, the semantic matching scores are used as soft labels to mitigate the rigid one-to-one mapping constraint. By aligning the similarity matrix with the soft semantic matching score matrix, the model learns semantic distinctions among candidates, significantly enhancing its discriminative capacity. To further improve performance, we propose UniME-V2-Reranker, a reranking model trained on our mined hard negatives through a joint pairwise and listwise optimization approach. We conduct comprehensive experiments on the MMEB benchmark and multiple retrieval tasks, demonstrating that our method achieves state-of-the-art performance on average across all tasks.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-15T13:07:00Z</published>
+    <arxiv:comment>AAAI2026 Oral, Webpage:https://garygutc.github.io/UniME-v2/</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tiancheng Gu</name>
+    </author>
+    <author>
+      <name>Kaicheng Yang</name>
+    </author>
+    <author>
+      <name>Kaichen Zhang</name>
+    </author>
+    <author>
+      <name>Xiang An</name>
+    </author>
+    <author>
+      <name>Ziyong Feng</name>
+    </author>
+    <author>
+      <name>Yueyi Zhang</name>
+    </author>
+    <author>
+      <name>Weidong Cai</name>
+    </author>
+    <author>
+      <name>Jiankang Deng</name>
+    </author>
+    <author>
+      <name>Lidong Bing</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.17432v4</id>
+    <title>Breaking the Modality Barrier: Universal Embedding Learning with Multimodal LLMs</title>
+    <updated>2025-12-08T03:25:37Z</updated>
+    <link href="https://arxiv.org/abs/2504.17432v4" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.17432v4" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The Contrastive Language-Image Pre-training (CLIP) framework has become a widely used approach for multimodal representation learning, particularly in image-text retrieval and clustering. However, its efficacy is constrained by three key limitations: (1) text token truncation, (2) isolated image-text encoding, and (3) deficient compositionality due to bag-of-words behavior. While recent Multimodal Large Language Models (MLLMs) have demonstrated significant advances in generalized vision-language understanding, their potential for learning transferable multimodal representations remains underexplored.In this work, we present UniME (Universal Multimodal Embedding), a novel two-stage framework that leverages MLLMs to learn discriminative representations for diverse downstream tasks. In the first stage, we perform textual discriminative knowledge distillation from a powerful LLM-based teacher model to enhance the embedding capability of the MLLMś language component. In the second stage, we introduce hard negative enhanced instruction tuning to further advance discriminative representation learning. Specifically, we initially mitigate false negative contamination and then sample multiple hard negatives per instance within each batch, forcing the model to focus on challenging samples. This approach not only improves discriminative power but also enhances instruction-following ability in downstream tasks. We conduct extensive experiments on the MMEB benchmark and multiple retrieval tasks, including short and long caption retrieval and compositional retrieval. Results demonstrate that UniME achieves consistent performance improvement across all tasks, exhibiting superior discriminative and compositional capabilities.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-24T10:51:52Z</published>
+    <arxiv:comment>13 pages, 8 figures, Accepted by ACM MM2025, Project page: https://garygutc.github.io/UniME</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tiancheng Gu</name>
+    </author>
+    <author>
+      <name>Kaicheng Yang</name>
+    </author>
+    <author>
+      <name>Ziyong Feng</name>
+    </author>
+    <author>
+      <name>Xingjun Wang</name>
+    </author>
+    <author>
+      <name>Yanzhao Zhang</name>
+    </author>
+    <author>
+      <name>Dingkun Long</name>
+    </author>
+    <author>
+      <name>Yingda Chen</name>
+    </author>
+    <author>
+      <name>Weidong Cai</name>
+    </author>
+    <author>
+      <name>Jiankang Deng</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2210.01936v3</id>
+    <title>When and why vision-language models behave like bags-of-words, and what to do about it?</title>
+    <updated>2023-03-23T23:21:38Z</updated>
+    <link href="https://arxiv.org/abs/2210.01936v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2210.01936v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Despite the success of large vision and language models (VLMs) in many downstream applications, it is unclear how well they encode compositional information. Here, we create the Attribution, Relation, and Order (ARO) benchmark to systematically evaluate the ability of VLMs to understand different types of relationships, attributes, and order. ARO consists of Visual Genome Attribution, to test the understanding of objects' properties; Visual Genome Relation, to test for relational understanding; and COCO &amp; Flickr30k-Order, to test for order sensitivity. ARO is orders of magnitude larger than previous benchmarks of compositionality, with more than 50,000 test cases. We show where state-of-the-art VLMs have poor relational understanding, can blunder when linking objects to their attributes, and demonstrate a severe lack of order sensitivity. VLMs are predominantly trained and evaluated on large datasets with rich compositional structure in the images and captions. Yet, training on these datasets has not been enough to address the lack of compositional understanding, and evaluating on these datasets has failed to surface this deficiency. To understand why these limitations emerge and are not represented in the standard tests, we zoom into the evaluation and training procedures. We demonstrate that it is possible to perform well on retrieval over existing datasets without using the composition and order information. Given that contrastive pretraining optimizes for retrieval on datasets with similar shortcuts, we hypothesize that this can explain why the models do not need to learn to represent compositional information. This finding suggests a natural solution: composition-aware hard negative mining. We show that a simple-to-implement modification of contrastive learning significantly improves the performance on tasks requiring understanding of order and compositionality.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-10-04T22:13:25Z</published>
+    <arxiv:comment>ICLR 2023 Oral (notable-top-5%)</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Mert Yuksekgonul</name>
+    </author>
+    <author>
+      <name>Federico Bianchi</name>
+    </author>
+    <author>
+      <name>Pratyusha Kalluri</name>
+    </author>
+    <author>
+      <name>Dan Jurafsky</name>
+    </author>
+    <author>
+      <name>James Zou</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2305.03689v3</id>
+    <title>COLA: A Benchmark for Compositional Text-to-image Retrieval</title>
+    <updated>2023-11-03T03:54:28Z</updated>
+    <link href="https://arxiv.org/abs/2305.03689v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2305.03689v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Compositional reasoning is a hallmark of human visual intelligence. Yet, despite the size of large vision-language models, they struggle to represent simple compositions by combining objects with their attributes. To measure this lack of compositional capability, we design Cola, a text-to-image retrieval benchmark to Compose Objects Localized with Attributes. To solve Cola, a model must retrieve images with the correct configuration of attributes and objects and avoid choosing a distractor image with the same objects and attributes but in the wrong configuration. Cola contains about 1.2k composed queries of 168 objects and 197 attributes on around 30K images. Our human evaluation finds that Cola is 83.33% accurate, similar to contemporary compositionality benchmarks. Using Cola as a testbed, we explore empirical modeling designs to adapt pre-trained vision-language models to reason compositionally. We explore 6 adaptation strategies on 2 seminal vision-language models, using compositionality-centric test benchmarks - Cola and CREPE. We find the optimal adaptation strategy is to train a multi-modal attention layer that jointly attends over the frozen pre-trained image and language features. Surprisingly, training multimodal layers on CLIP performs better than tuning a larger FLAVA model with already pre-trained multimodal layers. Furthermore, our adaptation strategy improves CLIP and FLAVA to comparable levels, suggesting that training multimodal layers using contrastive attribute-object data is key, as opposed to using them pre-trained. Lastly, we show that Cola is harder than a closely related contemporary benchmark, CREPE, since simpler fine-tuning strategies without multimodal layers suffice on CREPE but not on Cola. However, we still see a significant gap between our best adaptation and human accuracy, suggesting considerable room for further research.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-05-05T17:00:16Z</published>
+    <arxiv:comment>Accepted to NeurIPS 2023. Webpage: https://cs-people.bu.edu/array/research/cola/</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Arijit Ray</name>
+    </author>
+    <author>
+      <name>Filip Radenovic</name>
+    </author>
+    <author>
+      <name>Abhimanyu Dubey</name>
+    </author>
+    <author>
+      <name>Bryan A. Plummer</name>
+    </author>
+    <author>
+      <name>Ranjay Krishna</name>
+    </author>
+    <author>
+      <name>Kate Saenko</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2410.05160v3</id>
+    <title>VLM2Vec: Training Vision-Language Models for Massive Multimodal Embedding Tasks</title>
+    <updated>2025-01-02T05:26:47Z</updated>
+    <link href="https://arxiv.org/abs/2410.05160v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.05160v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Embedding models have been crucial in enabling various downstream tasks such as semantic similarity, information retrieval, and clustering. Recently, there has been a surge of interest in developing universal text embedding models that can generalize across tasks (e.g., MTEB). However, progress in learning universal multimodal embedding models has been relatively slow despite its importance and practicality. In this work, we aim to explore the potential for building universal embeddings capable of handling a wide range of downstream tasks. Our contributions are twofold: (1) MMEB (Massive Multimodal Embedding Benchmark), which covers 4 meta-tasks (i.e. classification, visual question answering, multimodal retrieval, and visual grounding) and 36 datasets, including 20 training and 16 evaluation datasets covering both in-distribution and out-of-distribution tasks, and (2) VLM2Vec (Vision-Language Model -&gt; Vector), a contrastive training framework that converts any state-of-the-art vision-language model into an embedding model via training on MMEB. Unlike previous models such as CLIP and BLIP, which encodes text or images independently without any task instruction, VLM2Vec can process any combination of images and text to generate a fixed-dimensional vector based on task instructions. We build a series of VLM2Vec models on SoTA VLMs like Phi-3.5-V, LLaVA-1.6 and evaluate them on MMEB's evaluation split. Our results show that VLM2Vec achieves an absolute average improvement of 10% to 20% over existing multimodal embedding models on both in-distribution and out-of-distribution datasets in MMEB. We show that VLMs are secretly strong embedding models.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-07T16:14:05Z</published>
+    <arxiv:comment>Technical Report</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Ziyan Jiang</name>
+    </author>
+    <author>
+      <name>Rui Meng</name>
+    </author>
+    <author>
+      <name>Xinyi Yang</name>
+    </author>
+    <author>
+      <name>Semih Yavuz</name>
+    </author>
+    <author>
+      <name>Yingbo Zhou</name>
+    </author>
+    <author>
+      <name>Wenhu Chen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.04720v2</id>
+    <title>Qwen3-VL-Embedding and Qwen3-VL-Reranker: A Unified Framework for State-of-the-Art Multimodal Retrieval and Ranking</title>
+    <updated>2026-01-19T09:03:26Z</updated>
+    <link href="https://arxiv.org/abs/2601.04720v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.04720v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In this report, we introduce the Qwen3-VL-Embedding and Qwen3-VL-Reranker model series, the latest extensions of the Qwen family built on the Qwen3-VL foundation model. Together, they provide an end-to-end pipeline for high-precision multimodal search by mapping diverse modalities, including text, images, document images, and video, into a unified representation space. The Qwen3-VL-Embedding model employs a multi-stage training paradigm, progressing from large-scale contrastive pre-training to reranking model distillation, to generate semantically rich high-dimensional vectors. It supports Matryoshka Representation Learning, enabling flexible embedding dimensions, and handles inputs up to 32k tokens. Complementing this, Qwen3-VL-Reranker performs fine-grained relevance estimation for query-document pairs using a cross-encoder architecture with cross-attention mechanisms. Both model series inherit the multilingual capabilities of Qwen3-VL, supporting more than 30 languages, and are released in $\textbf{2B}$ and $\textbf{8B}$ parameter sizes to accommodate diverse deployment requirements. Empirical evaluations demonstrate that the Qwen3-VL-Embedding series achieves state-of-the-art results across diverse multimodal embedding evaluation benchmarks. Specifically, Qwen3-VL-Embedding-8B attains an overall score of $\textbf{77.8}$ on MMEB-V2, ranking first among all models (as of January 8, 2025). This report presents the architecture, training methodology, and practical capabilities of the series, demonstrating their effectiveness on various multimodal retrieval tasks, including image-text retrieval, visual question answering, and video-text matching.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-08T08:36:06Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Mingxin Li</name>
+    </author>
+    <author>
+      <name>Yanzhao Zhang</name>
+    </author>
+    <author>
+      <name>Dingkun Long</name>
+    </author>
+    <author>
+      <name>Keqin Chen</name>
+    </author>
+    <author>
+      <name>Sibo Song</name>
+    </author>
+    <author>
+      <name>Shuai Bai</name>
+    </author>
+    <author>
+      <name>Zhibo Yang</name>
+    </author>
+    <author>
+      <name>Pengjun Xie</name>
+    </author>
+    <author>
+      <name>An Yang</name>
+    </author>
+    <author>
+      <name>Dayiheng Liu</name>
+    </author>
+    <author>
+      <name>Jingren Zhou</name>
+    </author>
+    <author>
+      <name>Junyang Lin</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2609.04083v1</id>
+    <title>CORE: Improving Compositional Reasoning in MLLM Embedding via Reranker Distillation</title>
+    <updated>2026-09-03T16:50:29Z</updated>
+    <link href="https://arxiv.org/abs/2609.04083v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2609.04083v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>MLLM-based embedding models remain limited in compositional retrieval, often failing to distinguish scenes containing the same concepts but different attribute-object bindings. Yet the same backbone can resolve such distinctions when used as a cross-attentive reranker, motivating us to distill its compositional judgments into the embedding model. We propose CORE, which synthesizes candidate lists spanning five compositional matching levels and introduces a Rank-KL objective that trains the embedding model to reproduce the reranker's fine-grained ranking. We further introduce a graded evaluation protocol and compare contrastive learning, pairwise CoSENT, and listwise Rank-KL under the same data and tuning budget. Our comparison shows that both CoSENT and Rank-KL use the multi-level supervision more effectively than contrastive learning, with Rank-KL achieving the strongest overall performance. Across three compositional reasoning benchmarks (COLA, SUGARCREPE++, NEGBENCH), CORE-RERANKER-8B achieves an 82.7% total average, outperforming Jina-Reranker by 10.7 points, while CORE-EMBED-8B achieves the best total average (0.666) among all evaluated embedding models. The improvements transfer to the MCMR benchmark without sacrificing retrieval performance on COCO and Flickr30K.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-09-03T16:50:29Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tingyu Song</name>
+    </author>
+    <author>
+      <name>Mingxin Li</name>
+    </author>
+    <author>
+      <name>Yanzhao Zhang</name>
+    </author>
+    <author>
+      <name>Dingkun Long</name>
+    </author>
+    <author>
+      <name>Chu Liu</name>
+    </author>
+    <author>
+      <name>Pengjun Xie</name>
+    </author>
+    <author>
+      <name>Yilun Zhao</name>
+    </author>
+    <author>
+      <name>Shu Wu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2602.23906v2</id>
+    <title>Half-Truths Break Similarity-Based Retrieval</title>
+    <updated>2026-10-23T13:29:55Z</updated>
+    <link href="https://arxiv.org/abs/2602.23906v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.23906v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>When a text description is extended with an additional detail, image-text similarity should drop if that detail is wrong. We show that CLIP-style dual encoders often violate this intuition: appending a plausible but incorrect object or relation to an otherwise correct description can increase the similarity score. We call such cases half-truths. On COCO, CLIP prefers the correct shorter description only 34.0% of the time, and performance drops to 27.8% when the added detail is a relation. We trace this vulnerability to weak supervision on caption parts: contrastive training aligns full sentences but does not explicitly enforce that individual entities and relations are grounded. We propose CS-CLIP (Component-Supervised CLIP), which decomposes captions into entity and relation units, constructs a minimally edited foil for each unit, and fine-tunes the model to score the correct unit above its foil while preserving standard dual-encoder inference. CS-CLIP raises half-truth accuracy to 76.4% and improves average performance on established compositional benchmarks by 5.8 points, suggesting that reducing half-truth errors aligns with broader gains in compositional understanding.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-27T10:56:31Z</published>
+    <arxiv:comment>Accepted at NeurIPS 2026. Camera-ready version with expanded evaluation and additional analyses. 40 pages, 10 figures, including appendices. Code, checkpoints, and datasets: https://github.com/kargibora/CS-CLIP</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Bora Kargi</name>
+    </author>
+    <author>
+      <name>Arnas Uselis</name>
+    </author>
+    <author>
+      <name>Seong Joon Oh</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2502.14786v1</id>
+    <title>SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features</title>
+    <updated>2025-02-20T18:08:29Z</updated>
+    <link href="https://arxiv.org/abs/2502.14786v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2502.14786v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce SigLIP 2, a family of new multilingual vision-language encoders that build on the success of the original SigLIP. In this second iteration, we extend the original image-text training objective with several prior, independently developed techniques into a unified recipe -- this includes captioning-based pretraining, self-supervised losses (self-distillation, masked prediction) and online data curation. With these changes, SigLIP 2 models outperform their SigLIP counterparts at all model scales in core capabilities, including zero-shot classification, image-text retrieval, and transfer performance when extracting visual representations for Vision-Language Models (VLMs). Furthermore, the new training recipe leads to significant improvements on localization and dense prediction tasks. We also train variants which support multiple resolutions and preserve the input's native aspect ratio. Finally, we train on a more diverse data-mixture that includes de-biasing techniques, leading to much better multilingual understanding and improved fairness. To allow users to trade off inference cost with performance, we release model checkpoints at four sizes: ViT-B (86M), L (303M), So400m (400M), and g (1B).</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-02-20T18:08:29Z</published>
+    <arxiv:comment>Model checkpoints are available at https://github.com/google-research/big_vision/tree/main/big_vision/configs/proj/image_text/README_siglip2.md</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Michael Tschannen</name>
+    </author>
+    <author>
+      <name>Alexey Gritsenko</name>
+    </author>
+    <author>
+      <name>Xiao Wang</name>
+    </author>
+    <author>
+      <name>Muhammad Ferjad Naeem</name>
+    </author>
+    <author>
+      <name>Ibrahim Alabdulmohsin</name>
+    </author>
+    <author>
+      <name>Nikhil Parthasarathy</name>
+    </author>
+    <author>
+      <name>Talfan Evans</name>
+    </author>
+    <author>
+      <name>Lucas Beyer</name>
+    </author>
+    <author>
+      <name>Ye Xia</name>
+    </author>
+    <author>
+      <name>Basil Mustafa</name>
+    </author>
+    <author>
+      <name>Olivier Hénaff</name>
+    </author>
+    <author>
+      <name>Jeremiah Harmsen</name>
+    </author>
+    <author>
+      <name>Andreas Steiner</name>
+    </author>
+    <author>
+      <name>Xiaohua Zhai</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2301.12597v3</id>
+    <title>BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models</title>
+    <updated>2023-06-15T07:57:29Z</updated>
+    <link href="https://arxiv.org/abs/2301.12597v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2301.12597v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The cost of vision-and-language pre-training has become increasingly prohibitive due to end-to-end training of large-scale models. This paper proposes BLIP-2, a generic and efficient pre-training strategy that bootstraps vision-language pre-training from off-the-shelf frozen pre-trained image encoders and frozen large language models. BLIP-2 bridges the modality gap with a lightweight Querying Transformer, which is pre-trained in two stages. The first stage bootstraps vision-language representation learning from a frozen image encoder. The second stage bootstraps vision-to-language generative learning from a frozen language model. BLIP-2 achieves state-of-the-art performance on various vision-language tasks, despite having significantly fewer trainable parameters than existing methods. For example, our model outperforms Flamingo80B by 8.7% on zero-shot VQAv2 with 54x fewer trainable parameters. We also demonstrate the model's emerging capabilities of zero-shot image-to-text generation that can follow natural language instructions.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-01-30T00:56:51Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Junnan Li</name>
+    </author>
+    <author>
+      <name>Dongxu Li</name>
+    </author>
+    <author>
+      <name>Silvio Savarese</name>
+    </author>
+    <author>
+      <name>Steven Hoi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1602.07332v1</id>
+    <title>Visual Genome: Connecting Language and Vision Using Crowdsourced Dense Image Annotations</title>
+    <updated>2016-02-23T22:00:40Z</updated>
+    <link href="https://arxiv.org/abs/1602.07332v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1602.07332v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Despite progress in perceptual tasks such as image classification, computers still perform poorly on cognitive tasks such as image description and question answering. Cognition is core to tasks that involve not just recognizing, but reasoning about our visual world. However, models used to tackle the rich content in images for cognitive tasks are still being trained using the same datasets designed for perceptual tasks. To achieve success at cognitive tasks, models need to understand the interactions and relationships between objects in an image. When asked "What vehicle is the person riding?", computers will need to identify the objects in an image as well as the relationships riding(man, carriage) and pulling(horse, carriage) in order to answer correctly that "the person is riding a horse-drawn carriage".
+  In this paper, we present the Visual Genome dataset to enable the modeling of such relationships. We collect dense annotations of objects, attributes, and relationships within each image to learn these models. Specifically, our dataset contains over 100K images where each image has an average of 21 objects, 18 attributes, and 18 pairwise relationships between objects. We canonicalize the objects, attributes, relationships, and noun phrases in region descriptions and questions answer pairs to WordNet synsets. Together, these annotations represent the densest and largest dataset of image descriptions, objects, attributes, relationships, and question answers.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2016-02-23T22:00:40Z</published>
+    <arxiv:comment>44 pages, 37 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Ranjay Krishna</name>
+    </author>
+    <author>
+      <name>Yuke Zhu</name>
+    </author>
+    <author>
+      <name>Oliver Groth</name>
+    </author>
+    <author>
+      <name>Justin Johnson</name>
+    </author>
+    <author>
+      <name>Kenji Hata</name>
+    </author>
+    <author>
+      <name>Joshua Kravitz</name>
+    </author>
+    <author>
+      <name>Stephanie Chen</name>
+    </author>
+    <author>
+      <name>Yannis Kalantidis</name>
+    </author>
+    <author>
+      <name>Li-Jia Li</name>
+    </author>
+    <author>
+      <name>David A. Shamma</name>
+    </author>
+    <author>
+      <name>Michael S. Bernstein</name>
+    </author>
+    <author>
+      <name>Fei-Fei Li</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2306.14610v1</id>
+    <title>SugarCrepe: Fixing Hackable Benchmarks for Vision-Language Compositionality</title>
+    <updated>2023-06-26T11:35:22Z</updated>
+    <link href="https://arxiv.org/abs/2306.14610v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2306.14610v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In the last year alone, a surge of new benchmarks to measure compositional understanding of vision-language models have permeated the machine learning ecosystem. Given an image, these benchmarks probe a model's ability to identify its associated caption amongst a set of compositional distractors. Surprisingly, we find significant biases in all these benchmarks rendering them hackable. This hackability is so dire that blind models with no access to the image outperform state-of-the-art vision-language models. To remedy this rampant vulnerability, we introduce SugarCrepe, a new benchmark for vision-language compositionality evaluation. We employ large language models, instead of rule-based templates used in previous benchmarks, to generate fluent and sensical hard negatives, and utilize an adversarial refinement mechanism to maximally reduce biases. We re-evaluate state-of-the-art models and recently proposed compositionality inducing strategies, and find that their improvements were hugely overestimated, suggesting that more innovation is needed in this important direction. We release SugarCrepe and the code for evaluation at: https://github.com/RAIVNLab/sugar-crepe.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-06-26T11:35:22Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Cheng-Yu Hsieh</name>
+    </author>
+    <author>
+      <name>Jieyu Zhang</name>
+    </author>
+    <author>
+      <name>Zixian Ma</name>
+    </author>
+    <author>
+      <name>Aniruddha Kembhavi</name>
+    </author>
+    <author>
+      <name>Ranjay Krishna</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2204.03162v2</id>
+    <title>Winoground: Probing Vision and Language Models for Visio-Linguistic Compositionality</title>
+    <updated>2022-04-22T18:54:25Z</updated>
+    <link href="https://arxiv.org/abs/2204.03162v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2204.03162v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present a novel task and dataset for evaluating the ability of vision and language models to conduct visio-linguistic compositional reasoning, which we call Winoground. Given two images and two captions, the goal is to match them correctly - but crucially, both captions contain a completely identical set of words, only in a different order. The dataset was carefully hand-curated by expert annotators and is labeled with a rich set of fine-grained tags to assist in analyzing model performance. We probe a diverse range of state-of-the-art vision and language models and find that, surprisingly, none of them do much better than chance. Evidently, these models are not as skilled at visio-linguistic compositional reasoning as we might have hoped. We perform an extensive analysis to obtain insights into how future work might try to mitigate these models' shortcomings. We aim for Winoground to serve as a useful evaluation set for advancing the state of the art and driving further progress in the field. The dataset is available at https://huggingface.co/datasets/facebook/winoground.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-04-07T02:17:05Z</published>
+    <arxiv:comment>CVPR 2022</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tristan Thrush</name>
+    </author>
+    <author>
+      <name>Ryan Jiang</name>
+    </author>
+    <author>
+      <name>Max Bartolo</name>
+    </author>
+    <author>
+      <name>Amanpreet Singh</name>
+    </author>
+    <author>
+      <name>Adina Williams</name>
+    </author>
+    <author>
+      <name>Douwe Kiela</name>
+    </author>
+    <author>
+      <name>Candace Ross</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2412.16855v2</id>
+    <title>GME: Improving Universal Multimodal Retrieval by Multimodal LLMs</title>
+    <updated>2025-04-01T08:48:04Z</updated>
+    <link href="https://arxiv.org/abs/2412.16855v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.16855v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Universal Multimodal Retrieval (UMR) aims to enable search across various modalities using a unified model, where queries and candidates can consist of pure text, images, or a combination of both. Previous work has attempted to adopt multimodal large language models (MLLMs) to realize UMR using only text data. However, our preliminary experiments demonstrate that more diverse multimodal training data can further unlock the potential of MLLMs. Despite its effectiveness, the existing multimodal training data is highly imbalanced in terms of modality, which motivates us to develop a training data synthesis pipeline and construct a large-scale, high-quality fused-modal training dataset. Based on the synthetic training data, we develop the General Multimodal Embedder (GME), an MLLM-based dense retriever designed for UMR. Furthermore, we construct a comprehensive UMR Benchmark (UMRB) to evaluate the effectiveness of our approach. Experimental results show that our method achieves state-of-the-art performance among existing UMR methods. Last, we provide in-depth analyses of model scaling and training strategies, and perform ablation studies on both the model and synthetic data.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-22T04:40:24Z</published>
+    <arxiv:comment>Accepted to CVPR 2025, models at https://huggingface.co/Alibaba-NLP/gme-Qwen2-VL-2B-Instruct</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Xin Zhang</name>
+    </author>
+    <author>
+      <name>Yanzhao Zhang</name>
+    </author>
+    <author>
+      <name>Wen Xie</name>
+    </author>
+    <author>
+      <name>Mingxin Li</name>
+    </author>
+    <author>
+      <name>Ziqi Dai</name>
+    </author>
+    <author>
+      <name>Dingkun Long</name>
+    </author>
+    <author>
+      <name>Pengjun Xie</name>
+    </author>
+    <author>
+      <name>Meishan Zhang</name>
+    </author>
+    <author>
+      <name>Wenjie Li</name>
+    </author>
+    <author>
+      <name>Min Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.09425v2</id>
+    <title>Vision-Language Models Do Not Understand Negation</title>
+    <updated>2025-05-13T06:30:11Z</updated>
+    <link href="https://arxiv.org/abs/2501.09425v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.09425v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Many practical vision-language applications require models that understand negation, e.g., when using natural language to retrieve images which contain certain objects but not others. Despite advancements in vision-language models (VLMs) through large-scale training, their ability to comprehend negation remains underexplored. This study addresses the question: how well do current VLMs understand negation? We introduce NegBench, a new benchmark designed to evaluate negation understanding across 18 task variations and $79$k examples spanning image, video, and medical datasets. The benchmark consists of two core tasks designed to evaluate negation understanding in diverse multimodal settings: Retrieval with Negation and Multiple Choice Questions with Negated Captions. Our evaluation reveals that modern VLMs struggle significantly with negation, often performing at chance level. To address these shortcomings, we explore a data-centric approach wherein we finetune CLIP models on large-scale synthetic datasets containing millions of negated captions. We show that this approach can result in a 10% increase in recall on negated queries and a 28% boost in accuracy on multiple-choice questions with negated captions.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-16T09:55:42Z</published>
+    <arxiv:comment>CVPR 2025; project page: https://negbench.github.io</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Kumail Alhamoud</name>
+    </author>
+    <author>
+      <name>Shaden Alshammari</name>
+    </author>
+    <author>
+      <name>Yonglong Tian</name>
+    </author>
+    <author>
+      <name>Guohao Li</name>
+    </author>
+    <author>
+      <name>Philip Torr</name>
+    </author>
+    <author>
+      <name>Yoon Kim</name>
+    </author>
+    <author>
+      <name>Marzyeh Ghassemi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.23052v1</id>
+    <title>Similarity Is Not Logic: Factored Inference for Dual-Encoder Vision-Language Models</title>
+    <updated>2026-07-25T05:39:51Z</updated>
+    <link href="https://arxiv.org/abs/2607.23052v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.23052v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Dual-encoder vision-language models (VLMs) expose a similarity interface that enables zero-shot retrieval but fails compositional constraints: queries like "umbrella and no person" retrieve images containing both, even when concept detection is reliable. We trace this to an interface-level Bag-of-Concepts effect, where similarity scores approximate mean pooling of concept evidence regardless of operators. Although operator-dependent signals exist in text embeddings, they are too weak or misaligned to affect rankings. Fine-tuning does not reliably resolve this failure because the dominant bottleneck is how similarity aggregates evidence rather than what encoders represent. We propose factored inference, which separates evidence extraction from constraint execution, and introduce LCSE (Logic-Constrained Score Editing), a training-free method that executes constraints externally using concept scores from frozen encoders. We also introduce FACTOR-Bench, where LCSE achieves 85.5% accuracy versus 73.2% for the best fine-tuned baseline, 90.7% when applied to SigLIP 2, and improves NegBench COCO MCQ accuracy from 27.2% to 65.2% while preserving retrieval performance.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-25T05:39:51Z</published>
+    <arxiv:comment>Accepted at ICML 2026. 18 pages, 8 figures. Project page: https://sultanmo.github.io/factored-vlm Code and benchmark: https://github.com/SultanMo/factored-vlm</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Sultan Alshehri</name>
+    </author>
+    <author>
+      <name>Zhantao Yang</name>
+    </author>
+    <author>
+      <name>Han Zhang</name>
+    </author>
+    <author>
+      <name>Marios Savvides</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2611.00784v1</id>
+    <title>ConstraintMatch: Compositional Image-Text Matching through Constrained Regional Evidence Selection</title>
+    <updated>2026-10-31T09:57:06Z</updated>
+    <link href="https://arxiv.org/abs/2611.00784v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2611.00784v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Local image--text matching can find strong evidence for individual concepts yet favor captions with incorrect attribute--entity bindings. We introduce ConstraintMatch, a training-free inference method that turns entity-level regional consistency into an explicit matching cost. On the same frozen condition--region similarity matrix, it compares independent crop selection for each category and attribute with a shared crop choice within each entity. Their gap quantifies the score advantage obtained by relaxing the shared-region constraint. Spatial references from the same image calibrate this gap by keeping category evidence fixed while jointly shifting an entity's attribute maps. Per-entity clipping prevents cancellation across residuals, and the scaled mean cost is subtracted from global similarity. ConstraintMatch uses pooled embeddings, and spatial calibration requires no additional encoder calls. With parameters fixed per backbone across tasks, ConstraintMatch improves over global matching by 7.70 percentage points on full ARO Attribute and 5.63 points on held-out SugarCrepe++ attribute swaps, averaged across Qwen~2B and CORE~2B. Against SGI adapted to the same 13-crop budget, the respective gains are 4.85 and 3.51 points. Controlled analyses distinguish the effects of shared-region matching and candidate score calibration. The results establish entity-level evidence selection as a practical scoring principle for compositional multimodal retrieval.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-31T09:57:06Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Yuhong Zhou</name>
+    </author>
+    <author>
+      <name>Yubo Gao</name>
+    </author>
+    <author>
+      <name>Xiangbo Shu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2201.12086v2</id>
+    <title>BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Generation</title>
+    <updated>2022-02-15T05:43:32Z</updated>
+    <link href="https://arxiv.org/abs/2201.12086v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2201.12086v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Vision-Language Pre-training (VLP) has advanced the performance for many vision-language tasks. However, most existing pre-trained models only excel in either understanding-based tasks or generation-based tasks. Furthermore, performance improvement has been largely achieved by scaling up the dataset with noisy image-text pairs collected from the web, which is a suboptimal source of supervision. In this paper, we propose BLIP, a new VLP framework which transfers flexibly to both vision-language understanding and generation tasks. BLIP effectively utilizes the noisy web data by bootstrapping the captions, where a captioner generates synthetic captions and a filter removes the noisy ones. We achieve state-of-the-art results on a wide range of vision-language tasks, such as image-text retrieval (+2.7% in average recall@1), image captioning (+2.8% in CIDEr), and VQA (+1.6% in VQA score). BLIP also demonstrates strong generalization ability when directly transferred to video-language tasks in a zero-shot manner. Code, models, and datasets are released at https://github.com/salesforce/BLIP.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-01-28T12:49:48Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Junnan Li</name>
+    </author>
+    <author>
+      <name>Dongxu Li</name>
+    </author>
+    <author>
+      <name>Caiming Xiong</name>
+    </author>
+    <author>
+      <name>Steven Hoi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2310.19785v1</id>
+    <title>What's "up" with vision-language models? Investigating their struggle with spatial reasoning</title>
+    <updated>2023-10-30T17:50:15Z</updated>
+    <link href="https://arxiv.org/abs/2310.19785v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2310.19785v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent vision-language (VL) models are powerful, but can they reliably distinguish "right" from "left"? We curate three new corpora to quantify model comprehension of such basic spatial relations. These tests isolate spatial reasoning more precisely than existing datasets like VQAv2, e.g., our What'sUp benchmark contains sets of photographs varying only the spatial relations of objects, keeping their identity fixed (see Figure 1: models must comprehend not only the usual case of a dog under a table, but also, the same dog on top of the same table). We evaluate 18 VL models, finding that all perform poorly, e.g., BLIP finetuned on VQAv2, which nears human parity on VQAv2, achieves 56% accuracy on our benchmarks vs. humans at 99%. We conclude by studying causes of this surprising behavior, finding: 1) that popular vision-language pretraining corpora like LAION-2B contain little reliable data for learning spatial relationships; and 2) that basic modeling interventions like up-weighting preposition-containing instances or fine-tuning on our corpora are not sufficient to address the challenges our benchmarks pose. We are hopeful that these corpora will facilitate further research, and we release our data and code at https://github.com/amitakamath/whatsup_vlms.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-10-30T17:50:15Z</published>
+    <arxiv:comment>EMNLP 2023</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Amita Kamath</name>
+    </author>
+    <author>
+      <name>Jack Hessel</name>
+    </author>
+    <author>
+      <name>Kai-Wei Chang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1902.09506v3</id>
+    <title>GQA: A New Dataset for Real-World Visual Reasoning and Compositional Question Answering</title>
+    <updated>2019-05-10T22:24:55Z</updated>
+    <link href="https://arxiv.org/abs/1902.09506v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1902.09506v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce GQA, a new dataset for real-world visual reasoning and compositional question answering, seeking to address key shortcomings of previous VQA datasets. We have developed a strong and robust question engine that leverages scene graph structures to create 22M diverse reasoning questions, all come with functional programs that represent their semantics. We use the programs to gain tight control over the answer distribution and present a new tunable smoothing technique to mitigate question biases. Accompanying the dataset is a suite of new metrics that evaluate essential qualities such as consistency, grounding and plausibility. An extensive analysis is performed for baselines as well as state-of-the-art models, providing fine-grained results for different question types and topologies. Whereas a blind LSTM obtains mere 42.1%, and strong VQA models achieve 54.1%, human performance tops at 89.3%, offering ample opportunity for new research to explore. We strongly hope GQA will provide an enabling resource for the next generation of models with enhanced robustness, improved consistency, and deeper semantic understanding for images and language.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2019-02-25T18:37:49Z</published>
+    <arxiv:comment>Published as a conference paper at CVPR 2019 (oral)</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Drew A. Hudson</name>
+    </author>
+    <author>
+      <name>Christopher D. Manning</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.21038v2</id>
+    <title>On the Theoretical Limitations of Embedding-Based Retrieval</title>
+    <updated>2026-03-12T16:35:48Z</updated>
+    <link href="https://arxiv.org/abs/2508.21038v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.21038v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Vector embeddings have been tasked with an ever-increasing set of retrieval tasks over the years, with a nascent rise in using them for reasoning, instruction-following, coding, and more. These new benchmarks push embeddings to work for any query and any notion of relevance that could be given. While prior works have pointed out theoretical limitations of vector embeddings, there is a common assumption that these difficulties are exclusively due to unrealistic queries, and those that are not can be overcome with better training data and larger models. In this work, we demonstrate that we may encounter these theoretical limitations in realistic settings with extremely simple queries. We connect known results in learning theory, showing that the number of top-k subsets of documents capable of being returned as the result of some query is limited by the dimension of the embedding. We empirically show that this holds true even if we directly optimize on the test set with free parameterized embeddings. Using free embeddings, we then demonstrate that returning all pairs of documents requires a relatively high dimension. We then create a realistic dataset called LIMIT that stress tests embedding models based on these theoretical results, and observe that even state-of-the-art models fail on this dataset despite the simple nature of the task. Our work shows the limits of embedding models under the existing single vector paradigm and calls for future research to develop new techniques that can resolve this fundamental limitation.</summary>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-28T17:43:53Z</published>
+    <arxiv:comment>Accepted to ICLR'26</arxiv:comment>
+    <arxiv:primary_category term="cs.IR"/>
+    <author>
+      <name>Orion Weller</name>
+    </author>
+    <author>
+      <name>Michael Boratko</name>
+    </author>
+    <author>
+      <name>Iftekhar Naim</name>
+    </author>
+    <author>
+      <name>Jinhyuk Lee</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2411.02545v1</id>
+    <title>TripletCLIP: Improving Compositional Reasoning of CLIP via Synthetic Vision-Language Negatives</title>
+    <updated>2024-11-04T19:24:59Z</updated>
+    <link href="https://arxiv.org/abs/2411.02545v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2411.02545v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Contrastive Language-Image Pretraining (CLIP) models maximize the mutual information between text and visual modalities to learn representations. This makes the nature of the training data a significant factor in the efficacy of CLIP for downstream tasks. However, the lack of compositional diversity in contemporary image-text datasets limits the compositional reasoning ability of CLIP. We show that generating ``hard'' negative captions via in-context learning and synthesizing corresponding negative images with text-to-image generators offers a solution. We introduce a novel contrastive pre-training strategy that leverages these hard negative captions and images in an alternating fashion to train CLIP. We demonstrate that our method, named TripletCLIP, when applied to existing datasets such as CC3M and CC12M, enhances the compositional capabilities of CLIP, resulting in an absolute improvement of over 9% on the SugarCrepe benchmark on an equal computational budget, as well as improvements in zero-shot image classification and image retrieval. Our code, models, and data are available at: https://tripletclip.github.io</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-11-04T19:24:59Z</published>
+    <arxiv:comment>Accepted at: NeurIPS 2024 | Project Page: https://tripletclip.github.io</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Maitreya Patel</name>
+    </author>
+    <author>
+      <name>Abhiram Kusumba</name>
+    </author>
+    <author>
+      <name>Sheng Cheng</name>
+    </author>
+    <author>
+      <name>Changhoon Kim</name>
+    </author>
+    <author>
+      <name>Tejas Gokhale</name>
+    </author>
+    <author>
+      <name>Chitta Baral</name>
+    </author>
+    <author>
+      <name>Yezhou Yang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1505.04870v4</id>
+    <title>Flickr30k Entities: Collecting Region-to-Phrase Correspondences for Richer Image-to-Sentence Models</title>
+    <updated>2016-09-19T20:20:42Z</updated>
+    <link href="https://arxiv.org/abs/1505.04870v4" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1505.04870v4" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The Flickr30k dataset has become a standard benchmark for sentence-based image description. This paper presents Flickr30k Entities, which augments the 158k captions from Flickr30k with 244k coreference chains, linking mentions of the same entities across different captions for the same image, and associating them with 276k manually annotated bounding boxes. Such annotations are essential for continued progress in automatic image description and grounded language understanding. They enable us to define a new benchmark for localization of textual entity mentions in an image. We present a strong baseline for this task that combines an image-text embedding, detectors for common objects, a color classifier, and a bias towards selecting larger objects. While our baseline rivals in accuracy more complex state-of-the-art models, we show that its gains cannot be easily parlayed into improvements on such tasks as image-sentence retrieval, thus underlining the limitations of current methods and the need for further research.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2015-05-19T04:46:03Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Bryan A. Plummer</name>
+    </author>
+    <author>
+      <name>Liwei Wang</name>
+    </author>
+    <author>
+      <name>Chris M. Cervantes</name>
+    </author>
+    <author>
+      <name>Juan C. Caicedo</name>
+    </author>
+    <author>
+      <name>Julia Hockenmaier</name>
+    </author>
+    <author>
+      <name>Svetlana Lazebnik</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.01082v1</id>
+    <title>Beyond Global Similarity: Towards Fine-Grained, Multi-Condition Multimodal Retrieval</title>
+    <updated>2026-03-01T12:53:47Z</updated>
+    <link href="https://arxiv.org/abs/2603.01082v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.01082v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in multimodal large language models (MLLMs) have substantially expanded the capabilities of multimodal retrieval, enabling systems to align and retrieve information across visual and textual modalities. Yet, existing benchmarks largely focus on coarse-grained or single-condition alignment, overlooking real-world scenarios where user queries specify multiple interdependent constraints across modalities. To bridge this gap, we introduce MCMR (Multi-Conditional Multimodal Retrieval): a large-scale benchmark designed to evaluate fine-grained, multi-condition cross-modal retrieval under natural-language queries. MCMR spans five product domains: upper and bottom clothing, jewelry, shoes, and furniture. It also preserves rich long-form metadata essential for compositional matching. Each query integrates complementary visual and textual attributes, requiring models to jointly satisfy all specified conditions for relevance. We benchmark a diverse suite of MLLM-based multimodal retrievers and vision-language rerankers to assess their condition-aware reasoning abilities. Experimental results reveal: (i) distinct modality asymmetries across models; (ii) visual cues dominate early-rank precision, while textual metadata stabilizes long-tail ordering; and (iii) MLLM-based pointwise rerankers markedly improve fine-grained matching by explicitly verifying query-candidate consistency. Overall, MCMR establishes a challenging and diagnostic benchmark for advancing multimodal retrieval toward compositional, constraint-aware, and interpretable understanding. Our code and dataset is available at https://github.com/EIT-NLP/MCMR</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-01T12:53:47Z</published>
+    <arxiv:comment>Accepted by CVPR 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Xuan Lu</name>
+    </author>
+    <author>
+      <name>Kangle Li</name>
+    </author>
+    <author>
+      <name>Haohang Huang</name>
+    </author>
+    <author>
+      <name>Rui Meng</name>
+    </author>
+    <author>
+      <name>Wenjun Zeng</name>
+    </author>
+    <author>
+      <name>Xiaoyu Shen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.21937v1</id>
+    <title>Flow-CLIP: Image-Conditioned Residual Scoring for CompositionalImage-Text Matching</title>
+    <updated>2026-10-15T14:12:30Z</updated>
+    <link href="https://arxiv.org/abs/2610.21937v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.21937v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Vision--language pre-training has enabled substantial progress in image--text retrieval and zero-shot recognition by learning transferable cross-modal representations. However, sentence-level alignment remains insufficient for compositional matching, where captions can describe the same objects and attributes while differing in how these elements are bound. To address this limitation, we propose Flow-CLIP, which refines global image-text alignment through image-conditioned changes in token--patch evidence. Global Compatibility Calibration (GCC) learns a sentence-level similarity metric, while Image-Conditioned Evidence Refinement (ICER) incorporates visual patch context into token queries and uses the resulting change in local matching evidence to adjust the global score. We further introduce Cross-Image Margin Ranking (CIMR), which compares the same positive--negative caption pair across matched and mismatched images, encouraging a larger ranking margin when the image supports the correct description. Experiments on compositional matching and attribute--object binding benchmarks show that Flow-CLIP improves binding accuracy over pretrained CLIP and learned global alignment through local evidence refinement, while cross-image ranking supervision mitigates reliance on language priors. Code will be released at link.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-15T14:12:30Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Minghong Wei</name>
+    </author>
+    <author>
+      <name>Enguang Zhu</name>
+    </author>
+    <author>
+      <name>Pu Cao</name>
+    </author>
+    <author>
+      <name>Lu Yang</name>
+    </author>
+    <author>
+      <name>Qing Song</name>
+    </author>
+  </entry>
+</feed>

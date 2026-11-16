@@ -1,0 +1,89 @@
+% [claude] 2026-11-16 draft. Construction and numbers from
+% topics/compositional-retrieval/code/experiments/retrieval-conjunction-panel/{SPEC,MANIFEST}.md (frozen f8e3a2c, generated b7edb4e).
+\section{\bench: Conjunctive Retrieval with Complete Relevance}
+\label{sec:benchmark}
+
+Existing gallery-level benchmarks either mark a single source item as relevant~\cite{negbench2025,mcmr2026} or rank against a curated set of distractors~\cite{cola2023}.
+Neither lets us count how many fully matching images a system misses, and neither controls how many conditions a query contains.
+We therefore build \bench{} from the human annotations of COCO~\cite{coco2014}, whose 80 object categories are exhaustively labeled in each image.
+A query asks for $k$ object categories to appear together, so every image in the gallery can be labeled as a positive, a negative, or ignored without new annotation.
+
+\subsection{Construction}
+
+\paragraph{Visibility.}
+For each image and category, the category is \emph{present} if at least one non-crowd instance covers at least $\tau{=}1\%$ of the image area, \emph{absent} if the category has no annotation in the image, and \emph{uncertain} otherwise (only small or crowd instances).
+A query's ignore set contains images that are not positives, have no absent condition, and have at least one uncertain condition; these images are neither rewarded nor penalized.
+
+\paragraph{Galleries.}
+We order all COCO train2017 images by a fixed hash and draw two disjoint galleries of 20{,}000 images.
+The test gallery excludes every image used during our exploratory development, including images from earlier diagnostic panels and the COCO images of Half-Truths~\cite{halftruths2026}; the development gallery is drawn from the rest.
+We do not use COCO val2017 for this benchmark: with only 5{,}000 images it supports about 520 independent queries under the rules below, and it remains available for the public benchmarks that are built on it.
+
+\paragraph{Queries.}
+For $k\in\{2,3,4\}$ we enumerate every set of $k$ categories that co-occur in some gallery image and keep a candidate query if
+(i) it has between 1 and 20 positives, so every positive fits in the primary candidate depth $K{=}100$, and
+(ii) it has at least 5 hard negatives, images in which $k{-}1$ of the categories are present and the remaining one is absent.
+We then select queries in hash order, alternating over $k$, and accept a query only if none of its positives belongs to an already selected query.
+Every query is therefore an independent unit for statistical analysis.
+Queries use one template, ``A photo that contains a dog, a cat, and an egg.'', with the category order fixed by a hash.
+Model-specific instructions are added by each model's wrapper and never change the query text.
+
+\paragraph{Freezing.}
+The construction rules and code were committed before any data was generated, and regenerating the benchmark reproduces every file hash.
+We release a development set and a 252-query development subset for fast iteration (84 queries for each $k$), drawn by a fixed hash before any model was run.
+
+\subsection{Statistics}
+
+\begin{table}[t]
+\caption{\bench{} splits. Each gallery has 20{,}000 COCO train2017 images; the two galleries are disjoint.}
+\label{tab:bench-stats}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Split & $k{=}2$ & $k{=}3$ & $k{=}4$ & Queries & Positives \\
+\midrule
+Development & 334 & 402 & 391 & 1{,}127 & 1{,}873 \\
+\quad dev-small & 84 & 84 & 84 & 252 & -- \\
+Test & 334 & 400 & 388 & 1{,}122 & 1{,}904 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\cref{tab:bench-stats} summarizes the splits.
+On the development split, 71\% of queries have exactly one positive and the largest positive set has 17 images; the median query has 95 hard negatives and 3 ignored images.
+All 80 categories appear, with \emph{person} in 306 of the 1{,}127 queries.
+We report test statistics only as counts and file hashes until the final evaluation.
+
+\cref{tab:bench-compare} contrasts \bench{} with related benchmarks.
+It is the only one that combines gallery-level retrieval, complete multi-positive relevance, and a controlled number of conditions.
+
+\begin{table*}[t]
+\caption{Benchmarks for compositional text-to-image retrieval and matching. ``Complete'' means every gallery image is labeled from annotations; ``source'' means only the item a query was written for counts as relevant.}
+\label{tab:bench-compare}
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllll}
+\toprule
+Benchmark & Task & Candidates per query & Relevance & Conditions & Controlled $k$ \\
+\midrule
+Winoground~\cite{winoground2022} & matching & 2 images, 2 captions & paired & relations, word order & no \\
+ARO~\cite{aro2023} & matching & 1 image, few captions & paired & relations, attributes & no \\
+SugarCrepe(++)~\cite{sugarcrepe2023,sugarcrepepp2024} & matching & 1 image, 2--3 captions & paired & objects, attributes, relations & no \\
+What'sUp~\cite{whatsup2023} & matching & 1 image, 2--4 captions & paired & spatial relations & no \\
+Half-Truths~\cite{halftruths2026} & matching & 1 image, 3 captions & paired & entities, relations & no \\
+COLA~\cite{cola2023} & retrieval / matching & distractor set & annotation-derived & attributes on objects & no \\
+NegBench~\cite{negbench2025} & retrieval & 5{,}000 COCO images & source & negation & no \\
+MCMR~\cite{mcmr2026} & retrieval & 104{,}981 products & source & visual + metadata attributes & no \\
+\bench{} (ours) & retrieval & 20{,}000 images & complete & object conjunctions & yes ($2$--$4$) \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\paragraph{Scope and limitations.}
+\bench{} tests object conjunctions only; attribute binding and spatial relations are covered by COLA, SugarCrepe++, and What'sUp in our evaluation.
+COCO annotations contain omissions and errors, and $\tau$ is a heuristic threshold; marking small instances as uncertain rather than absent limits, but does not remove, label noise.
+Requiring disjoint positives keeps queries independent but makes most queries single-positive and favors less frequent category combinations, since frequent ones often exceed 20 positives.
+A single query template does not measure sensitivity to phrasing.
