@@ -70,3 +70,17 @@ P0未通過的模型仍需保留完整失敗／差異紀錄，不按test效果�
 - 原Karpathy COCO補圖也已完成：5,000張、25,010原caption、820,306,454 bytes，2,125張復用＋2,875張官方新下載，零失敗。全圖另核官方ZIP中央目錄CRC／bytes、尺寸／JPEG／SHA及原caption/列序，4項來源完整性CPU測試root獨立重跑通過；不把此文字版本冒充UniME作者指定HF版。
 - 額外12模型來源與接口正在非實作者審查；原生SigLIP2等兩benchmark資格計畫、通用CLIP資格schema與P3接線仍在各自新目錄CPU準備。UniME方向／數值路線及CLIC缺轉檔來源等差異未被當作PASS；P3仍須一個合格MLLM加一個合格CLIP，不能暗用兩個MLLM代替。
 - 尚未產生正式P0分數或宣稱完整矩陣完成。未push。
+
+
+## [codex] 2026-11-16 22:09：十五項單一中央排程與 CLIP／P3 接線
+
+- 最新中央是 PID **2557793**，runtime `dl/retrieval-matrix-dispatch/central-v2/`；host 的 boot/start token、cmdline、持續 heartbeat 皆吻合。15項目前全 pending，零 attempt／模型效果。舊2451282已安全退休；非重複排程。
+- v2 source freeze `788aae2b89e018882761add273af29c755302340`，schedule SHA `199cfd9fd64d062f483a65fd532a3ebadcd58dcf4516815e3006233d41cf972c`。原14項argv／model／ref／plan／output與相對順序逐項不變，只在MCMR前加native SigLIP2。
+- 移交先在host核舊PID完整身分，再短暫停止其父程序，確認atomic state14全pending、零attempt、無worker；保存state/events快照，才終止這個未啟動模型的舊中央。沒有恢復其可能停在admission中的程式路徑，也沒有停止任何模型或他人程序。新中央啟動前確認singleton已釋放。實際動作與原快照在 `central-v2/migration.json`、`previous-state.json`；送件均登記。
+- 延續使用者授權：global最多2個我們的job／每卡1個；記憶體足夠可共用，不看utilization是否idle；加入前既有compute PID最多1個。22:07有8–9GiB餘額的卡已有4–8個程序，因此仍等待，沒有硬塞第三、第四個程序。
+- SigLIP2 native P0 freeze `387d4fa5293967705b93aeba235cb9ffe643cc42`，plan SHA `c62a50a646938173a1fa76221b7181fd53fe037abcb56248f41db0304d44b329`。完整COCO5000/25010、Flickr1000/5000，root另重建原caption/order/label mapping、重算6000圖SHA/bytes皆PASS。14 native＋9 CLIP CPU tests PASS；實效仍NOT_RUN，固定完整FP32/image4/text32/保守20GiB。
+- 12個extra模型的來源/權重、3232實體檔SHA與依賴經非實作者查核，prep freeze `e374bfc`。全部仍P0_REQUIRED；UniME-V2方向/精度、CS-CLIP單一benchmark子集、原UniME身份與CLIC缺轉檔等限制如實保留。
+- CLIP P2接線 freeze `4311a9d`；要求真COCO/Flickr兩個canonical benchmark資格、原model class/spec、父plan/settings/依賴、devv2 audit，不產假PASS或正式P2plan。
+- P3接線 freeze `a93764f`，14 CPU tests與獨立中斷probe通過：raw batch4原子保存，checkpoint64恢復不重算已存scalar；固定一合格MLLM＋一合格CLIP，K100主效應／50、200補充。共享K200成本不冒稱K100獨立latency。真P0/P2未齊，沒有production P3 plan或GPU。
+- 本輪未讀主結果、未push。P0真數字及P2/P3/P4仍未完成。主結果讀取前另凍結analysis PREREG，登actual read time與原plan/commit，保留仍在執行的producer來源bytes。
+- 程序查核須用host：受限exec的PID namespace看不到主機PID，曾造成2451282死亡假陰性；已直接host查證更正，當時沒有重啟或重複送件。
