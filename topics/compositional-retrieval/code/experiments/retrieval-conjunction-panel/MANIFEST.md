@@ -41,6 +41,15 @@
 - 80 類都有用到；最常見的是 person（306 題）、chair（170）、dining table（143）。
 - dev 圖庫中 8,536 張是先前曝光過的開發影像，規格允許。
 
-## 尚未完成
+## 影像（2026-11-16 取得）
 
-- 下載 dev 與 test 圖庫的 train2017 影像（共 40,000 張，約 6 GB），逐檔記錄 SHA；之後才能跑模型。
+用 [fetch_images.py](fetch_images.py) 取得：本機已有的 COCO 影像直接複製位元組，其餘從 `coco_url` 下載。每張都要能用 PIL 解碼，且尺寸與標註相同；逐檔 SHA 與來源寫入收據。
+
+| split | 張數 | 來源 | 位元組 | 收據 SHA-256 |
+|---|---|---|---|---|
+| dev | 20,000，失敗 0 | 本機複製 8,282、遠端 11,718 | 3,262,286,794 | `37a72a527ffd021608fa0d4221187add536350f8cd3417bf02af6ace947bdec2` |
+| test | 20,000，失敗 0 | 遠端 20,000 | 3,257,639,356 | `fec3229103a21c838cf7caaeb189d9802ba440acec1f8a75a43aca229eb9dfeb` |
+
+- 位置：`dl/claude-panel/conj-panel-v1/{dev,test}/images/`，收據 `images-receipt.jsonl`，總表 `images-summary.json`。
+- 本機複製來源：`dl/retrieval3090/data/coco2017-{anchor-rerank,rank-and,rerank}/images`。
+- 位元組完全相同的影像：只有 1 組，都在 dev（ID 137715 與 242807），不跨 dev／test。規格沒有要求去重，保留原樣並在此記錄；評估時兩張各依自己的標註算正負。
