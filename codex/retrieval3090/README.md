@@ -128,3 +128,22 @@ OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
 本輪本機開發的結果、證據限制與下一輪建議見 [完整實驗報告](../reports/2026-11-16-retrieval-experiments-codex.md)；可追溯的精簡數字與輸入SHA見 [結果摘要](results/2026-11-16-local-study.json)。原基線重現、同平台相對探索與正式確認的狀態分開記錄。
 
 固定政策的外部快取若使用 `mcmr_reuse.py`，須同時指定已驗收的 `--baseline`、`--index` 與事前鎖定的 `--selection-lock`；cache與analyze都經此wrapper入口，不能改用只認原生COMPLETE的分析入口。原始候選圖文資訊、batch及政策保持，重用配對與固定抽樣新算的收據一併驗證。
+
+## 擴大的公開文獻資料
+
+[codex] 2026-11-16。資料來源與適用範圍見 [資料調查與本機驗收](../reports/2026-11-16-retrieval-scale-data-survey-codex.md)，事前固定設定在 `literature_plan.json`。這條獨立入口不改舊面板的重現與評估流程。公開NegBench採來源圖Recall／MRR；FACTOR採單圖caption配對診斷，兩種真值分開。
+
+共用原圖位於 `dl/retrieval3090/data/coco2017/val2017/`；原始CSV／FACTOR JSONL、來源收據與完整／抽樣清冊位於 `dl/retrieval3090/data/literature-development/`。圖片、查詢清冊、向量與分數不進Git。首次取得CSV按來源報告的作者Drive連結；`acquire_literature.py`可續下載其餘固定公開資產。重新建清冊會改變SHA時，應使用新設計與輸出目錄，不覆蓋原快取。
+
+```bash
+python=dl/retrieval3090/envs/retrieval3090-torch214/bin/python
+"$python" -B codex/retrieval3090/literature_data.py verify
+
+# 設定與程式須已commit；無合適卡會等待。
+"$python" -B codex/retrieval3090/resources.py queue \
+  --queue dl/retrieval3090/queues/literature-development.json -- \
+  bash codex/retrieval3090/literature_run.sh \
+  "$PWD/dl/retrieval3090/runs/literature-development"
+```
+
+整個流程依序做技術smoke、完整向量索引、CPU檢索分析、固定否定開發子集的CORE50、CPU重排分析。中斷後以相同清冊／設定／來源重跑即可續算；每個已完成batch保存state。四份向量NPY與重排分數是canonical產物，不再另存重複NPZ。完成與來源資訊由 `index-meta.json`／`cross-meta.json`記錄；結果只在報告位置保存，不能由技術smoke或執行中的進度推定研究效果。

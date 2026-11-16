@@ -32,11 +32,18 @@
     "min_free_mib": 14336,
     "two_checks": true
   },
+  "include_factor": true,
   "max_cross_pairs": 50000,
   "model_family": "Existing local torch214 CORE-EMBED, CS-CLIP, CORE-RERANKER pinned revisions; no training",
   "new_policy_search": false,
   "schema": 1,
   "scope": "public-literature-development-only; not independent formal confirmation",
+  "source_files": {
+    "codex/retrieval3090/cache_v2.py": "f62a906a40d36bf3aebdca86a98aa5831fa91c83cf1bce4247218ff349f6c7d3",
+    "codex/retrieval3090/literature_data.py": "e7820cea630f34f31ea732c4d5a7996f32a73f46a7432c1a893ffd4015045865",
+    "codex/retrieval3090/literature_dev.py": "cb41bdb380842ac0ffd9add7e1bd3a885274576063953733677692bbda86ca34",
+    "codex/retrieval3090/mcmr_pilot.py": "49476b31c5fcba674ece1103328aaa2e7b819b6b08186de0ac1e66cec57eb2d5"
+  },
   "stages": [
     "technical-smoke",
     "full-cheap-index",
