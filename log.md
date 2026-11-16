@@ -64,3 +64,5 @@
 [codex] 2026-11-17 05:12:57+0800 Claude代使用者04:52定案：dev-clean為P2主要指標；原版dev補充、既讀歷史揭露。CLIC-B32已GPU完成並fresh逐題重算PASS；完整矩陣仍由唯一中央3934090執行。題目repo@20cd31f 凍結native P0 CPU接續，無新增GPU排程器。
 
 [codex] 2026-11-17 06:11:16+0800 三模型dev-clean fresh獨立PASS主表已發布8acaea7；GME2資格PASS、SigLIP2資格FAILED不放寬；唯一中央依來源/token/worker/lease兩次核對交接26290/c49d2d6。GPU0只本方小工作精確讓出給8B，原partial保留，Qwen8 batch1已running；完整矩陣持續，未跑自建test/下載。
+
+[codex] 2026-11-17 06:31:06+0800 初輪四組clean K100計畫56b1da9與唯一中央schedule b0bdf35凍結；獨立源審PASS，兩次核對交接104711/start274417143，原45任務完整保留，加4P2。GPU5已跑CORE2接CLIC-L14，總4GPU工作；純CPU d1a3fae後處理不派GPU。完整矩陣持續，未碰自建test/下載。
