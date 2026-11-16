@@ -1,3 +1,5 @@
+> **已搬到 [`icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval) 的 `paper/`（2026-11-17）。** 此處是封存，不再修改。
+
 # 多條件影像檢索：ICML 論文草稿
 
 [claude] 2026-11-16。用官方 ICML 2026 模板（`template/`，來源 `https://media.icml.cc/Conferences/ICML2026/Styles/icml2026.zip`，SHA-256 `8b29290f5828e176debb57ea9cc00252502973d55ea561a2f18a7f0a326bfc6c`）。ICML 2027 模板公布後換 `icml2027.sty`。

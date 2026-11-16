@@ -1,3 +1,5 @@
+> **已切換到 [`icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)（2026-11-17，使用者決定，自中樞 `@28c4a9c`）。** 此處是封存，不再修改；已凍結、排隊中的任務仍可從這裡的程式執行，新的程式、計畫、報告與結果一律 commit 到題目 repo（本機 `/ssd4/cactus8603/icml27-repos/icml27-compositional-retrieval`）。 中樞的 `codex/retrieval*/`、`paper/compositional-retrieval/` 也一併封存。
+
 # 多條件影像檢索
 
 ## 介紹卡

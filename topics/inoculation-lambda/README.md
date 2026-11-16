@@ -1,3 +1,5 @@
+> **已切換到 [`icml27-inoculation-lambda`](https://github.com/cactus8603/icml27-inoculation-lambda)（2026-11-17，使用者決定，自中樞 `@28c4a9c`）。** 此處是封存，不再修改；已凍結、排隊中的任務仍可從這裡的程式執行，新的程式、計畫、報告與結果一律 commit 到題目 repo（本機 `/ssd4/cactus8603/icml27-repos/icml27-inoculation-lambda`）。
+
 # 用訓練前的 Λ 預測防禦漏出
 
 **優先補量**（2026-11-15）

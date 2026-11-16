@@ -13,5 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - GPU 共用；送工作用 `codex/retrieval3090/resources.py` 的 queue 等空卡，並在 `killtests/SUBMITTED.log` 登記 `submit local3090-<pid>`。
 - 共享主目錄 2026-11-16 搬遷過：不要沿用寫死舊工作目錄的 launcher。
 
+## 題目 repo
+- 每個題目的正本在題目 repo `icml27-<題目>`，本機 checkout 在 `/ssd4/cactus8603/icml27-repos/`。中樞的 `topics/`、`codex/retrieval*/`、`paper/` 是封存，不要修改；題目的工作到題目 repo 做（規則見 `COORDINATION.md` 第 0 節）。
+
 ## Claude 的報告
 - 放在 `reports/`，檔名 `YYYY-MM-DD-NN-<主題>.md`。編號接 `reports/` 內檔名的最大編號（有重號，先 `ls` 確認）。`reports/INDEX.md` 只收錄從對話紀錄抽出的子代理報告，自己寫的報告不用列進去。

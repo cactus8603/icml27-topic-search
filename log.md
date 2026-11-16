@@ -34,6 +34,8 @@
 
 - [claude] 23:55 使用者定案「中樞＋題目 repo」：每題一個私有 repo，GPU 送件仍登記在中樞並共用同一排隊機制（`COORDINATION.md` 第 0 節、第 2 節第 7 點）。建立七個題目 repo；閒置三題自 `icml27-topic-search@6ee74ce` 搬入新 repo，中樞改封存；進行中四題先建空 repo，切換請求見 `HOLDS.md`。
 
+- [claude] 01:05（2026-11-17）使用者決定提前切換：compositional-retrieval、inoculation-lambda、t2i-rare-failure、multifidelity-attribution 自中樞 `@28c4a9c` 以 cutover 同步到題目 repo，題目 repo 成為正本，中樞舊路徑封存。七個題目 repo 的本機 checkout 在 `/ssd4/cactus8603/icml27-repos/`。使用者同意中央排程恢復，由 Codex 依程序執行（`HOLDS.md`）。
+
 ## 未確認
 
 - 上面各項只有回報首次出現的時間可核對（reports/INDEX.md）；使用者下指令的時刻，除審核報告引用到的幾處外沒有逐一核對。「約 13:00 起」「約 16:26–16:35」為概略時間。

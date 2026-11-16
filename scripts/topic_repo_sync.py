@@ -92,6 +92,9 @@ def main():
     hub, repo = Path(a.hub), Path(a.repo_dir)
     sha = subprocess.run(["git", "-C", str(hub), "rev-parse", a.sha], check=True, capture_output=True,
                          text=True).stdout.strip()
+    readme = repo / "README.md"
+    if a.mode == "mirror" and readme.exists() and "**正本**" in readme.read_text(encoding="utf-8")[:2000]:
+        raise SystemExit("refusing: this topic repo is already canonical (cutover done); mirror mode would overwrite it")
     rules = json.loads((hub / "scripts/topic-repo-map.json").read_text())[a.topic]
     dest = mapper(rules)
     files = [p for p in hub_files(hub, sha) if dest(p) is not None]

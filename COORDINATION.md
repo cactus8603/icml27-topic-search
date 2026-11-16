@@ -12,7 +12,13 @@
   - **全帳號共用的 GPU 送件紀錄** `killtests/SUBMITTED.log`。不論 job 屬於哪個 repo，都登記在這裡。
   - 跨題目的報告（`reports/`、`codex/reports/`），以及 `README.md` 的題目索引。
 - **題目 repo**：每題一個，私有，命名 `icml27-<題目>`。放該題的程式、PREREG、結果、VERDICT 與論文。
-- **既有題目不搬家。** 已在中樞的題目（含 `compositional-retrieval`）留在中樞 `topics/`，因為凍結紀錄綁在中樞的 commit SHA 上。只有使用者明確決定才搬；搬家不改寫歷史，原路徑保留，並留一份指向新 repo 的說明。
+- **全部題目已搬到題目 repo**（使用者決定；閒置三題 2026-11-16，其餘四題 2026-11-17 自中樞 `@28c4a9c` 切換）。題目 repo 是正本。
+- **中樞的舊路徑是封存**：`topics/<題目>/`、`codex/retrieval*/`、`paper/compositional-retrieval/` 不再修改，也不刪除。歷史與凍結紀錄的 commit SHA 仍有效。
+  - 已凍結、排隊中的任務可以照原計畫從封存路徑執行（不改那些檔案）。
+  - 新的程式、計畫、PREREG、報告與結果一律 commit 到題目 repo；誤寫到中樞舊路徑的，搬進題目 repo 並在 commit 註明來源。
+  - 執行輸出（資料、權重、環境、`dl/`、`hf_home/`）不屬於任何 repo，路徑不變；題目 repo 的 `RUN.md` 寫明位置。
+- **本機 checkout 位置**：`/ssd4/cactus8603/icml27-repos/icml27-<題目>/`，兩邊共用。
+- `scripts/topic_repo_sync.py` 只用於切換前的鏡像；切換後不得再對題目 repo 用 mirror 模式（程式會拒絕）。
 - **跨 repo 引用**一律寫成 `repo@commit`，例如 `icml27-foo@1a2b3c4`。
 
 ### 開新題目 repo 的步驟
