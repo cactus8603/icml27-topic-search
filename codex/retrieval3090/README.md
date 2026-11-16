@@ -2,6 +2,12 @@
 
 [codex] 2026-11-16（台北）。配合原 [dev-3090 規範](../../topics/compositional-retrieval/code/dev-3090/SPEC.md)，在本機做小規模方法開發；大顯存計算、訓練與正式驗證回叢集執行。
 
+## 目前研究基線
+
+[codex] 2026-11-16 13:39，依使用者指示，後續方法比較正式採用本機torch214平台的CORE50為研究baseline。主要環境為 `dl/retrieval3090/envs/retrieval3090-torch214/bin/python`，基準快取為 `dl/retrieval3090/runs/platform-torch214-20261116/`。本機環境、資料、模型及評估保持一致；舊叢集數字的對齊紀錄只作來源追溯，不再作本輪研究是否可繼續的條件。
+
+現有分析入口沿用成對的 `--platform-plan`、`--platform-receipt`，驗證本機快取及來源；不用修改歷史產物狀態。舊相容環境留作診斷，不與主研究快取混用。新的獨立確認仍須事前固定方法與評估方式。
+
 ## 本機位置與環境
 
 - 執行根目錄：`dl/retrieval3090/`，已由既有 `dl/` 規則排除於 Git。
