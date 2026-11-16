@@ -153,11 +153,13 @@ def capture(config, previous, runtime, host, *, prior_proofs=None):
     exact original identity and a dead original model child; otherwise stop.
     """
     old = config["old"]
-    old_tasks = {row["id"]: row for row in json.loads(C.checked(old["schedule"]).read_text())["tasks"]}
+    old_schedule = json.loads(C.checked(old["schedule"]).read_text())
+    old_tasks = {row["id"]: row for row in old_schedule["tasks"]}
     proofs = copy.deepcopy(prior_proofs or {})
     live = [row for row in previous["tasks"].values() if row["status"] in B.LIVE]
-    if len(live) > 2 or len({row.get("gpu", {}).get("uuid") for row in live}) != len(live):
-        raise ValueError("Original live state violates global cap2 or perGPU1; defer handoff without touching workers")
+    old_limit = old_schedule.get("max_live")
+    if old_limit not in {2, 4} or len(live) > old_limit or len({row.get("gpu", {}).get("uuid") for row in live}) != len(live):
+        raise ValueError("Original live state violates its frozen cap2/cap4 or perGPU1; defer handoff without touching workers")
     for key, row in previous["tasks"].items():
         if row["status"] not in B.LIVE:
             continue
@@ -236,7 +238,7 @@ def launch_new(config, previous, migration, runtime, host):
     migration["phase"] = "controller_start_attempted"
     persist(runtime, previous, migration)
     host.log("submit", "central-"+str(migration["new_parent"]["pid"]),
-        "唯一新中央接手原worker/globalcap2/perGPU1；原producer不重跑", config["new"]["freeze_commit"])
+        "唯一新中央接手原worker/globalcap4/perGPU1；原producer不重跑", config["new"]["freeze_commit"])
     return migration
 
 

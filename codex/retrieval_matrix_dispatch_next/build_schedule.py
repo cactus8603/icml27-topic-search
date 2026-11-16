@@ -57,14 +57,14 @@ def build(old_path, old_commit, old_runtime, additions_path, *, before=None):
     index = old_ids.index(before) if before else len(old_ids)
     result = copy.deepcopy(previous)
     result["tasks"][index:index] = extra
-    result.update(controller="immutable-additive-next-v1",
+    result.update(controller="immutable-additive-next-v1", max_live=4,
         adoption={"schedule": C.entry(old_path), "freeze_commit": old_commit,
             "runtime": str(Path(old_runtime).resolve()), "retire_pending": []},
         additions={row["id"]: C.digest(row) for row in extra}, additions_input=C.entry(additions_path),
         insertion_before=before,
         resource_exceptions={row["id"]: C.siglip_exception(row) for row in extra if row["min_free_mib"] == 12288},
         controller_sources={"codex/retrieval_matrix_dispatch_next/"+name: B.sha(C.HERE/name) for name in C.OWN},
-        policy="Every inherited task dictionary/history/token/receipt stays unchanged; explicit new IDs/outputs before MCMR; failed never retry; adopted and new workers share cap2/perGPU1.")
+        policy="Every inherited task dictionary/history/token/receipt stays unchanged; explicit new IDs/outputs before MCMR; failed never retry; adopted and new workers share user-authorized cap4/perGPU1.")
     result["controller_sources"].update({"codex/retrieval_matrix_dispatch_v3/"+name: B.sha(C.V3.HERE/name) for name in C.V3.OWN})
     C.validate(result)
     return result

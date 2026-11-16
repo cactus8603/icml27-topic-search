@@ -1,4 +1,4 @@
-"""[codex] Immutable additive batches; adopt exact workers under the same cap2.
+"""[codex] Immutable additive batches; user-authorized global cap4/perGPU1.
 
 The base dispatcher is loaded privately. No imported live module's validator,
 worker gate, or class is modified by this wrapper.
@@ -58,6 +58,8 @@ def siglip_exception(task):
 
 
 def validate(schedule):
+    if schedule.get("max_live") != 4:
+        raise ValueError("The new user-authorized central schedule must have global cap4")
     old = inherited(schedule)
     current = {task["id"]: task for task in schedule["tasks"]}
     if (schedule.get("controller") != "immutable-additive-next-v1"
@@ -69,6 +71,9 @@ def validate(schedule):
     if set(additions) != current.keys()-old.keys() or any(additions[key] != digest(current[key]) for key in additions):
         raise ValueError("Every new task needs its explicit immutable addition digest")
     normalized = copy.deepcopy(schedule)
+    # Only the legacy schema check sees cap2. Execution below uses the real
+    # integer live_count and explicit schedule.max_live=4 without scaling it.
+    normalized["max_live"] = 2
     exceptions = {}
     for task in normalized["tasks"]:
         actual = current[task["id"]]
@@ -168,6 +173,102 @@ class Dispatcher(B.Dispatcher):
             return actual_popen(argv, **options)
         kwargs.setdefault("complete", completed)
         super().__init__(schedule, schedule_sha, runtime, popen=popen, **kwargs)
+
+    def tick(self):
+        """Copy of frozen base admission; only its two cap2 limits become cap4.
+
+        Global helper references use the private B module. Lease admission,
+        checkpoint identity, STARTING-before-Popen, and the post-Popen failure
+        branch retain the original control flow.
+        """
+        self.reconcile()
+        limit = self.schedule["max_live"]
+        if self.stopping or self.live_count() >= limit:
+            return
+        try:
+            snapshot = self.query()
+        except (OSError, ValueError, subprocess.SubprocessError) as exc:
+            self.prior = {}
+            B.append_json(self.journal, {"event": "query_failure", "error": str(exc)})
+            return
+        now_value = self.clock()
+        occupied = {row["gpu"]["uuid"] for row in self.state["tasks"].values() if row["status"] in B.LIVE and "gpu" in row}
+        for task in self.schedule["tasks"]:
+            if self.stopping or self.live_count() >= limit:
+                break
+            key = task["id"]
+            row = self.state["tasks"][key]
+            if row["status"] != "pending":
+                continue
+            if self.complete(task):
+                row.update(status="skipped_complete", finished_at=B.now())
+                B.append_json(self.journal, {"event": "skip_complete", "task_id": key})
+                continue
+            available = [gpu for gpu in snapshot if gpu["uuid"] not in occupied and B.eligible(gpu, task)]
+            current = {gpu["uuid"] for gpu in available}
+            for prior_key in list(self.prior):
+                if prior_key[0] == key and prior_key[1] not in current:
+                    del self.prior[prior_key]
+            for gpu in sorted(available, key=lambda x: (x["free_mib"], x["index"])):
+                pair = (key, gpu["uuid"])
+                if pair not in self.prior:
+                    self.prior[pair] = now_value
+                    continue
+                if now_value-self.prior[pair] < 5:
+                    continue
+                lease = B.FileLock(Path(self.schedule["gpu_lock_dir"])/(gpu["uuid"]+".lock"))
+                try:
+                    spawned = None
+                    lease.__enter__()
+                except BlockingIOError:
+                    continue
+                try:
+                    final = next((item for item in self.query() if item["uuid"] == gpu["uuid"]), None)
+                    if self.stopping:
+                        lease.__exit__(None, None, None)
+                        return
+                    if final is None or not B.eligible(final, task):
+                        self.prior.pop(pair, None)
+                        lease.__exit__(None, None, None)
+                        continue
+                    if self.complete(task):
+                        row.update(status="skipped_complete", finished_at=B.now())
+                        lease.__exit__(None, None, None)
+                        break
+                    token = B.os.urandom(16).hex()
+                    attempt = self.runtime/(key+"-attempt.json")
+                    config = self.runtime/(key+"-worker.json")
+                    B.atomic_json(config, {"task": task, "gpu": final, "token": token, "schedule_sha256": self.schedule_sha,
+                        "receipt": str(attempt), "journal": str(self.journal), "shared_log": self.schedule["shared_log"],
+                        "execution_proof": self.execution_proof})
+                    row.update(status="starting", token=token, receipt=str(attempt), gpu=final, command=task["command"])
+                    self.save()
+                    B.append_json(self.journal, {"event": "admitted", "task_id": key, "gpu": final, "threshold_mib": task["min_free_mib"]})
+                    log = (self.runtime/(key+".log")).open("ab", buffering=0)
+                    try:
+                        child = self.popen([sys.executable, "-B", str(B.HERE/"dispatch.py"), "worker", "--config", str(config), "--gpu-fd", str(lease.fd)],
+                            cwd=str(ROOT), shell=False, start_new_session=True, pass_fds=(lease.fd,), stdout=log, stderr=subprocess.STDOUT)
+                        spawned = child
+                    finally:
+                        log.close()
+                    row["worker"] = B.process_token(child.pid)
+                    self.children[key] = child
+                    self.leases[key] = lease
+                    occupied.add(gpu["uuid"])
+                    self.save()
+                    break
+                except BaseException as exc:
+                    if spawned is None:
+                        lease.__exit__(None, None, None)
+                        row.update(status="failed", error=f"{type(exc).__name__}: {exc}")
+                    else:
+                        self.children[key] = spawned
+                        self.leases[key] = lease
+                        row.update(status="uncertain", worker=B.process_token(spawned.pid), error=str(exc))
+                    self.save()
+                    B.append_json(self.journal, {"event": "launch_failure", "task_id": key, "error": str(exc)})
+                    raise
+        self.save()
 
 
 # The only patched globals belong to this private module, never canonical B/V3.

@@ -31,8 +31,8 @@ class Fixture(unittest.TestCase):
         self.old.mkdir(); self.earlier.mkdir()
         self.tasks = [self.task(key) for key in ("mcq-core2", "fixed-core2", "already-failed", "mcmr-core2")]
         self.old_path = self.old/"schedule.json"
-        dump(self.old_path, {"schema": 1, "tasks": self.tasks})
-        self.schedule = {"schema": 1, "owner": "[codex]", "state": "FROZEN", "max_live": 2,
+        dump(self.old_path, {"schema": 1, "max_live": 2, "tasks": self.tasks})
+        self.schedule = {"schema": 1, "owner": "[codex]", "state": "FROZEN", "max_live": 4,
             "confirmation_seconds": 5, "max_existing_compute_pids": 1,
             "controller": "immutable-additive-next-v1", "tasks": copy.deepcopy(self.tasks),
             "gpu_lock_dir": str(self.root/"locks"), "shared_log": str(self.root/"submitted.log"),
@@ -83,12 +83,12 @@ class Fixture(unittest.TestCase):
             "execution_proof": {"schedule": str(schedule_path), "freeze_commit": "a"*40}})
         return row
 
-    def dispatcher(self, query=lambda: []):
+    def dispatcher(self, query=lambda: [], **kwargs):
         self.new.mkdir(exist_ok=True)
         dump(self.new/"previous-state.json", self.previous)
         dump(self.new/"migration.json", {"new_schedule_sha256": "d"*64,
             "previous_state_sha256": B.sha(self.new/"previous-state.json"), "old_parent_retired": True})
-        return C.Dispatcher(self.schedule, "d"*64, self.new, query=query)
+        return C.Dispatcher(self.schedule, "d"*64, self.new, query=query, **kwargs)
 
 
 class Additive(Fixture):
@@ -111,13 +111,71 @@ class Additive(Fixture):
         with self.assertRaises(ValueError):
             C.validate(bad)
 
-    def test_cap_two_per_gpu_and_failed_never_retried(self):
-        dispatcher = self.dispatcher(query=lambda: self.fail("No admission at global cap2"))
+    def test_adopted_count_and_failed_never_retried(self):
+        dispatcher = self.dispatcher()
         with patch.object(C.V3.B, "alive", return_value=True):
             dispatcher.tick()
         self.assertEqual(dispatcher.live_count(), 2)
         self.assertEqual(dispatcher.state["tasks"]["already-failed"]["status"], "failed")
         self.assertEqual({r["gpu"]["uuid"] for r in dispatcher.state["tasks"].values() if r["status"] in B.LIVE}, {"GPU-old", "GPU-new"})
+
+    def add_new_task(self, key):
+        row = self.task(key)
+        self.schedule["tasks"].append(row)
+        self.schedule["additions"][key] = C.digest(row)
+        return row
+
+    def third_running(self, dispatcher):
+        path = self.new/"third-attempt.json"
+        value = {"task_id": "third", "token": "third-token", "schedule_sha256": "d"*64,
+            "status": "running", "worker": {"pid": 300}, "child": {"pid": 301}, "gpu": {"uuid": "GPU-third"}}
+        dump(path, value)
+        dispatcher.state["tasks"]["third"] = {**value, "receipt": str(path)}
+
+    def test_three_adopted_or_new_live_can_start_fourth_then_four_reject_fifth(self):
+        self.add_new_task("third"); self.add_new_task("fifth")
+        timer = [0.]
+        gpu = {"uuid": "GPU-fourth", "index": 3, "free_mib": 9000, "compute_pids": [987], "utilization": 100}
+        launches = []
+        def popen(argv, **options):
+            state = json.loads((self.new/"state.json").read_text())
+            self.assertEqual(state["tasks"]["mcmr-core2"]["status"], "starting")
+            self.assertEqual(argv[2], str(C.HERE/"controller.py"))
+            launches.append(argv)
+            return SimpleNamespace(pid=400)
+        dispatcher = self.dispatcher(query=lambda: [gpu], clock=lambda: timer[0], popen=popen, complete=lambda task: False)
+        self.addCleanup(lambda: [lease.__exit__(None, None, None) for lease in dispatcher.leases.values()])
+        self.third_running(dispatcher)
+        with patch.object(C.V3.B, "alive", return_value=True), patch.object(B, "process_token", side_effect=lambda pid: {"pid": pid}):
+            dispatcher.tick()
+            self.assertEqual(dispatcher.live_count(), 3)
+            self.assertFalse(launches)
+            timer[0] = 5.
+            dispatcher.tick()
+            self.assertEqual(dispatcher.live_count(), 4)
+            self.assertEqual(len(launches), 1)
+            dispatcher.query = lambda: self.fail("A fifth admission query is forbidden at cap4")
+            dispatcher.tick()
+            self.assertEqual(dispatcher.live_count(), 4)
+            self.assertEqual(dispatcher.state["tasks"]["fifth"]["status"], "pending")
+            self.assertEqual(len(launches), 1)
+
+    def test_room_below_cap4_still_rejects_an_adopted_occupied_gpu(self):
+        self.add_new_task("third")
+        gpu = {"uuid": "GPU-old", "index": 0, "free_mib": 24000, "compute_pids": [101]}
+        def forbidden(*args, **kwargs):
+            self.fail("Cannot start on an adopted worker's occupied GPU")
+        dispatcher = self.dispatcher(query=lambda: [gpu], clock=lambda: 10., popen=forbidden, complete=lambda task: False)
+        self.third_running(dispatcher)
+        with patch.object(C.V3.B, "alive", return_value=True):
+            dispatcher.tick(); dispatcher.tick()
+        self.assertEqual(dispatcher.live_count(), 3)
+
+    def test_new_schedule_requires_exact_cap4(self):
+        for limit in (2, 3, 5):
+            bad = copy.deepcopy(self.schedule); bad["max_live"] = limit
+            with self.assertRaisesRegex(ValueError, "cap4"):
+                C.validate(bad)
 
     def test_no_canonical_validator_mutation_and_own_stop_only(self):
         original = canonical.validate
@@ -153,10 +211,11 @@ class Additive(Fixture):
             "output": str(out), "completion": [str(out/name/"index/final-receipt.json") for name in ("sugarcrepe", "sugarcrepe_pp")], "min_free_mib": 8192}
         additions = self.root/"requests.json"
         dump(additions, {"schema": 1, "owner": "[codex]", "tasks": [request]})
-        dump(self.old_path, self.schedule | {"tasks": self.tasks})
+        dump(self.old_path, self.schedule | {"tasks": self.tasks, "max_live": 2})
         with patch.object(S, "frozen", side_effect=lambda path, commit: Path(path)):
             value = S.build(self.old_path, "a"*40, self.old, additions)
         self.assertEqual(len(value["tasks"]), 5)
+        self.assertEqual(value["max_live"], 4)
         old = self.tasks
         self.assertEqual([row for row in value["tasks"] if row["id"] != request["id"]], old)
         ids = [row["id"] for row in value["tasks"]]
@@ -173,7 +232,7 @@ class Additive(Fixture):
         old_path = ROOT/"codex/retrieval_matrix_dispatch_batches/central-v3.json"
         old = json.loads(old_path.read_text())
         value = copy.deepcopy(old)
-        value.update(controller="immutable-additive-next-v1", additions={}, resource_exceptions={},
+        value.update(controller="immutable-additive-next-v1", max_live=4, additions={}, resource_exceptions={},
             adoption={"schedule": C.entry(old_path), "freeze_commit": "665a5743c6c1308ae84d25dd450a625cb98fa3b4",
                 "runtime": str(self.old), "retire_pending": []})
         C.validate(value)
@@ -214,7 +273,7 @@ class FakeHost:
                 continue
             self.tokens.update({row[name]["pid"]: row[name] for name in ("worker", "child")})
             origin = Path(row.get("adopted_runtime", fixture.old))
-            script = canonical.HERE/"dispatch.py" if origin == fixture.earlier else C.V3.HERE/"controller.py"
+            script = canonical.HERE/"dispatch.py" if origin == fixture.earlier else Path(fixture.config["old"]["controller"])
             self.commands[row["worker"]["pid"]] = ["/usr/bin/python3", "-B", str(script), "worker", "--config", str(origin/(key+"-worker.json")), "--gpu-fd", "7"]
             self.commands[row["child"]["pid"]] = row["command"]
         self.bad_lease = False
@@ -268,6 +327,42 @@ class FakeHost:
 
 
 class Handoff(Fixture):
+    def prepare_four_live_origin(self, old_limit):
+        for key in ("third-old", "fourth-old"):
+            self.tasks.append(self.task(key))
+        dump(self.old_path, {"schema": 1, "max_live": old_limit, "tasks": self.tasks})
+        old_sha = B.sha(self.old_path)
+        self.previous["schedule_sha256"] = old_sha
+        row = self.previous["tasks"]["fixed-core2"]
+        for path in (Path(row["receipt"]), self.old/"fixed-core2-worker.json"):
+            value = json.loads(path.read_text()); value["schedule_sha256"] = old_sha; dump(path, value)
+        for index, key in enumerate(("third-old", "fourth-old"), 3):
+            task = next(task for task in self.tasks if task["id"] == key)
+            self.previous["tasks"][key] = self.running(task, self.old, index*100, index*100+1, "GPU-"+str(index))
+        self.schedule["tasks"] = copy.deepcopy(self.tasks)
+        self.schedule["adoption"]["schedule"] = C.entry(self.old_path)
+        self.config["old"].update(schedule=C.entry(self.old_path), controller=str(C.HERE/"controller.py") if old_limit == 4 else str(C.V3.HERE/"controller.py"))
+        dump(self.new_path, self.schedule)
+        self.config["new"]["schedule"] = C.entry(self.new_path)
+        dump(self.old/"state.json", self.previous)
+
+    def test_future_cap4_parent_handoff_adopts_four_live_with_earliest_origin(self):
+        self.prepare_four_live_origin(4)
+        host = FakeHost(self)
+        result = H.execute(self.config, host=host, gate=False)
+        self.assertEqual(len(result["workers"]), 4)
+        self.assertEqual(result["workers"]["mcq-core2"]["receipt"], str(self.earlier/"mcq-core2-attempt.json"))
+        self.assertEqual(host.signals, [(10, signal.SIGSTOP), (10, signal.SIGKILL)])
+        self.assertEqual(len(host.spawns), 1)
+
+    def test_old_v3_cap2_snapshot_cannot_adopt_four_even_when_new_cap4(self):
+        self.prepare_four_live_origin(2)
+        host = FakeHost(self)
+        with self.assertRaisesRegex(ValueError, "frozen cap2/cap4"):
+            H.execute(self.config, host=host, gate=False)
+        self.assertEqual(host.signals, [(10, signal.SIGSTOP), (10, signal.SIGCONT)])
+        self.assertFalse(host.spawns)
+
     def test_real_signal_interface_pins_pidfd_and_rechecks_command_without_sending(self):
         host = H.Host()
         command = H.parent_command(self.config["old"])
