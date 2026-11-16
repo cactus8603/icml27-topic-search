@@ -1,6 +1,6 @@
 # [codex] 擴大 retrieval 開發資料：來源、用途與最小組合
 
-[codex] 2026-11-16 14:36（台北時間）。本報告只核官方論文、作者資料卡／發布檔／程式；不讀本機研究結果、private／sealed 或 retrieval-independent-panel，不執行 GPU，不下載圖庫。NegBench 小型 CSV 僅由協作子代理在記憶體核對；COCO zip只查HTTP HEAD。本檔是唯一新增／修改檔案，未改既有 protocol。
+[codex] 2026-11-16 14:36來源調查，15:15整合更新（台北時間）。來源與規模依官方論文、作者資料卡／發布檔／程式核對；後段另記本機實際資料驗收、已完成的向量檢索基準及執行中的精排。沒有讀取private／sealed或retrieval-independent-panel；新公開開發協定與程式在GPU執行前另行凍結，既有確認協定未改。
 
 ## 推薦決定
 
@@ -48,7 +48,7 @@ reader以list字串儲存captions；本地匯入應使用 `ast.literal_eval`／�
 
 1. **共用影像與全量cheap層。** 固定val2017的5,000 IDs，原圖bytes／解碼規則、labels／captions各自保留SHA。每個既有frozen backbone只建一次影像index；NegBench原始與否定25,014 queries各自全量評估。這增加自然語句覆蓋並保留完整圖庫，毋須新增baseline。若為2,048維float32，單一5k影像表約40.96MB；25,014×5,000 score矩陣約500.28MB，屬CPU儲存估算，可用query chunk避免一次保留多份。
 2. **昂貴開發層。** 在不看模型效果下，按固定seed/hash挑1,000個source image IDs；再明定每圖一個negated caption索引。這才是1,000昂貴queries；若保留所有captions則約5,000，必須另算成本。本輪plain只作cheap對照，不增加plain cross。若進一步做原／否定逐query配對，需查兩份lists的逐caption對齊，不能僅因同一image row就假定文本索引已語義對齊。所有開發query均搜尋原5,000圖庫，不因1k子集而縮圖庫。
-3. **邏輯與half-truth公開診斷。** FACTOR全1,695比較以oracle parses測operator執行；Half-Truths v2全1,437比較分三設定、entity／relation列出。它們是不同測量，不能把比較數加進retrieval query數當同一個總樣本量。若作開發選法，標作development；若只作選法鎖定後的描述，仍說明COCO影像重疊，不能宣稱資料獨立。
+3. **邏輯與half-truth公開診斷。** FACTOR全1,695比較先建立完整句子cosine的配對基準；使用oracle parses執行LCSE需另凍結方法，不能把本輪基準稱LCSE重現。Half-Truths v2全1,437比較分三設定、entity／relation列出，但本輪尚未啟用。它們是不同測量，不能把比較數加進retrieval query數當同一個總樣本量。若作開發選法，標作development；若只作選法鎖定後的描述，仍說明COCO影像重疊，不能宣稱資料獨立。
 4. **原生跨域與正式確認。** MCMR需要保留圖像和metadata輸入，不能用純圖分支替代後稱原生MCMR。此輪不新增全量cross；現有public pilot只按其已登記用途解讀。真正confirmation由既有封存協定處理，本報告沒有變更，也不把公開資料的增量當新增formal evidence。
 
 資料準備與GPU預算分開：1,000 queries×K50為50,000 query–candidate pairs，K200則200,000；全25,014 queries×K50已達1,250,700 pairs／政策。這些是工作量算術，不是RTX3090實測耗時或完成保證。先保證全量cheap層和固定昂貴子集可重用，再由實測吞吐決定K與政策數；不把cache建置時間當線上延遲。
@@ -66,7 +66,7 @@ reader以list字串儲存captions；本地匯入應使用 `ast.literal_eval`／�
 
 ## COCO val2017.zip 的下載驗收依據
 
-官方下載URL及其S3 provider HTTPS URL均以HEAD驗得200，未下載body：
+來源調查階段，官方下載URL及其S3 provider HTTPS URL均以HEAD驗得200；後續實際下載與驗收另見下節：
 
 - 官方：<http://images.cocodataset.org/zips/val2017.zip>。
 - 同一provider物件的有效TLS URL：<https://s3.amazonaws.com/images.cocodataset.org/zips/val2017.zip>。
@@ -83,7 +83,7 @@ COCO下載頁未列本次所需SHA；但Google官方TensorFlow Datasets checksum
 
 下載後先比size／SHA256，再檢ZIP所有entry CRC；驗相對路徑安全、恰有5,000預期image IDs、無重複／多餘JPEG，與官方 `instances_val2017.json`／`captions_val2017.json` image inventory一致。CRC只能檢傳輸／解壓完整性，不能代替來源SHA。若圖像bytes或解碼尺寸有異，應停止建index查明，不可靜默跳圖讓gallery變小。
 
-本報告未驗收任何新增本地下載或GPUcache；實際取用仍需核下載bytes／解壓後inventory。本次不先取COCO train2017整包；它是需要更多gallery或另立fitting資料時的後續選項，不能在未排除跨資料集image IDs前直接混入本輪。
+上述是下載前的驗收依據；實際bytes／JPEG inventory已於後續資料準備階段核對，見下節。本次不先取COCO train2017整包；它是需要更多gallery或另立fitting資料時的後續選項，不能在未排除跨資料集image IDs前直接混入本輪。
 
 ## 官方來源
 
@@ -117,4 +117,27 @@ COCO下載頁未列本次所需SHA；但Google官方TensorFlow Datasets checksum
 
 Half-Truths指定snapshot的三Parquet已在本機；只讀footer可核共1,437例，無須再下載。但允許查閱的公開來源設計，尚未將該snapshot與原封存排除收據完整綁定。本輪先不啟用其圖片或query內容，也不為補證而打開封存清冊。MCMR保留既有原生圖文跨域pilot；Flickr30K、全COCO train與大規模訓練資料未新增。
 
-此處是資料驗收，尚不代表新增模型基準或精排完成。研究執行狀態與效果須由已凍結runner的真實產物及獨立複核另記。
+以上為資料驗收；新增模型基準及精排狀態分開記錄如下。
+
+## 本機開發已開始：完成範圍與第一輪觀察
+
+[codex] 2026-11-16 15:15（台北）。凍結來源commit `cbd545ac96e4978454c41a78f78b75419d413b77`，tag `codex/retrieval3090-literature-20261116`。39項資料／runner測試、shell語法及實際GPU smoke通過。完整5,000圖及52,775個去重文字的CORE／CS向量已建妥；canonical NPY總591,616,000 bytes，保留作後續重用，不另存NPZ複本。setup_review已獨立核來源、state／payload與processor／environment一致性。這裡的52,775是包含FACTOR captions的去重編碼數，不是獨立retrieval樣本量。
+
+全量普通25,014／否定25,013有效query的向量檢索計分已完成。literature_check未實作該producer，另以不同排名算法逐條重算dev四組共4,000個來源圖排名，並重算四組paired bootstrap，全部一致；full部分核資格／分母並由已存ranks重算指標，沒有再做全部full dot products。FACTOR全1,695項cosine與分組亦重新核算通過。詳見[獨立效果審查](2026-11-16-retrieval-literature-results-review-codex.md)。
+
+固定1,000來源群、否定query上的第一輪基準（同一5,000圖庫；這裡尚未精排）：
+
+| 方法 | 來源圖MRR（%） | 來源圖R@1（%） | 來源圖R@50（%） |
+|---|---:|---:|---:|
+| CORE-EMBED | 65.16088 | 54.40 | 96.90 |
+| CS-CLIP | 53.36044 | 40.80 | 95.30 |
+
+CS−CORE的MRR差為−11.80044百分點，來源群paired bootstrap95%CI［−14.24351, −9.37316］。它顯示本輪checkpoint比較有清楚差距，但不是同backbone fine-tuning因果ablation；也沒有證明任一新方法有效。較大的資料能降低部分抽樣不確定性，不能保證小幅改善的CI不跨0。固定dev的兩種文字都沒有CS超77-token query，不能用這個截斷事件解釋dev差距。
+
+目前CORE前50已包含969/1,000個來源圖，表示在這份source-image任務中，只增加候選數的入池Recall理論剩餘空間為3.1百分點；排序改善仍是另一個問題。這也說明大樣本開發可幫我們分辨入池與排序瓶頸。FACTOR的AND配對上CS較強，整體來源圖檢索卻較弱，兩種任務不可互相替代；FACTOR基準不是LCSE結果。
+
+**CORE50精排仍在執行，尚未讀取效果。** 固定1,000條否定query×50候選，共50,000配對，不依來源圖是否入池篩題。背景pipeline會在精排完成後自動產生 `cross-report.json`／`cross-per_query.json`，未完成前不稱其通過效果驗收。佇列狀態：`dl/retrieval3090/queues/literature-dev-20261116.json`；技術進度：`dl/retrieval3090/runs/literature-dev-20261116/main/progress.json`。本次實際選physical GPU3，啟動時20,792MiB空閒；依序載入模型、batch影像8／文字32／cross4，截至本節更新未見OOM。15:15快照為精排完成5,400/50,000配對，整卡used8,419MiB、free15,835MiB；這是含其他使用者的當下整卡快照，不是本模型peak量測。GPU准入仍為至少14GiB空閒且util≤20%、兩次確認，無合適卡即排隊。
+
+本輪已清理驗收後的官方下載ZIP815,585,330 bytes，以及逐byte相同的smoke文字表複本3,918,306 bytes；保留原圖、原始資料、canonical向量／state、來源與清理收據。未刪可重用模型或其他研究產物。後續M1／LCSE或條件解析改編需在新一輪事前固定，再使用這份公開開發資料比較；目前沒有執行新增訓練。
+
+最後的測量邊界：NegBench只標來源圖；本輪不能檢驗所有其他圖是否同時滿足AND／NOT條件。若要主張多條件full-match檢索改善，仍需原本相應的全相關性標註／獨立確認資料，不能把本輪MRR替換成該mAP。所有公開caption已用於全量cheap評估；未抽中昂貴dev的其他caption也不能再稱完全未見。

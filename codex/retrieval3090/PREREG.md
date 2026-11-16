@@ -81,8 +81,13 @@ root整合、固定協定、快取／追加編碼／成本執行、結果報告�
 - **輸入與真值。** 模型只接完整query文字和原圖；`positive_objects`、`negative_objects`、來源圖ID與正解只供資料驗收／計分，不能作query parser輸入或入池特徵。NegBench官方只標來源圖positive，故主指標為source-image Recall@1/5/10/50與MRR；單正例AP等於MRR，不稱完整Boolean相關性mAP。不能因來源圖未進top50就刪掉該query。
 - **階段與成本。** 第一階段重用固定CORE-EMBED／CS-CLIP建立全量普通／否定文字與共用影像索引，分塊在CPU算原生retrieval指標。第二階段僅對固定1000條否定query的CORE前50個候選使用同一CORE-RERANKER，恰50000個配對。普通描述先作cheap控制，不能拿它與昂貴否定結果做同成本因果比較。本輪不自動開全量25000級query的昂貴重排、不做大超參數搜尋；後續M1／解析／LCSE改編另先固定。
 - **模型與平台。** 沿用本機torch214、已固定revision的三個模型、原始image-only CORE prompt與前處理，batch影像8／文字32／cross4，模型依序載入。新runner與舊8191／136及128／8320入口分開，不能放寬歷史驗收門檻。所有快取綁plan、來源、資料、模型、processor、環境、batch與輸入順序；pure-doc commit不使相同來源快取失效，實際執行commit另留紀錄。
-- **統計與解讀。** 比較只對相同資料／處理階段；配對來源群bootstrap10000次，seed同上；全量多caption按來源群聚合，列raw／有效／跳過數與token截斷。這些是public-development條件式描述，不是新獨立確認、效果保證或停止門檻。普通／否定文字還含改寫差異，不把差值直接視為否定的單一因果效應。
+- **統計與解讀。** 比較只對相同資料／處理階段；配對來源群bootstrap10000次，seed同上。依已凍結runner，完整集點估沿官方逐caption平均，本輪只列描述值；配對區間只在固定dev1000計算，同圖caption視為同來源群，列raw／有效／跳過數與token截斷。這些是public-development條件式描述，不是新獨立確認、效果保證或停止門檻。普通／否定文字還含改寫差異，不把差值直接視為否定的單一因果效應。
 - **邏輯診斷。** FACTOR原始operator／compound二選一與equivalence的`both`分開；caption cosine匹配和oracle parse評分不混淆，不將其轉成全庫retrieval真值。Half-Truths只在既有固定公開資料與封存來源排除關係證明後才考慮，否則本輪延後；MCMR保留原生metadata，暫不擴昂貴計算。
 - **排程與清理。** 使用既有共享GPU排隊器，至少14336MiB空閒、util≤20%、連續兩次確認；沒有合適卡即等待，不取消他人作業。保留canonical逐batch向量／分數及state、來源、timing；不另存可避免的大份複本。下載壓縮包只在逐圖驗收與來源收據完成後，核擁有者、檔案SHA與連結數再刪。研究結果僅寫 `results/` 或 `reports/`，經未實作該部分的代理獨立複核後交使用者判讀。
 
 本輪分工：setup_review只實作 `literature_data.py`／資料測試；potential_audit只實作 `literature_dev.py`／runner測試；literature_check負責資料來源報告與取得驗收；root負責取得器、設定、整合、凍結、排隊及結果紀錄。各自不覆寫他人檔案，後續交叉審查另行分派。
+
+- [codex] 2026-11-16 14:55–15:03，root已讀新作業的技術完成日誌與progress，setup_review於14:57:20首次獨立讀 `runs/literature-dev-20261116/smoke/smoke.json`、`index-meta.json`、向量／分數state及原始前綴，核CPU payload與跨stage共同輸入逐值一致；15:02:41核main已完成影像向量的payload/state。皆僅技術正確性，未讀新 `report.json`／`per_query.json`／cross效果；未讀封存。15:04補充統計文字只澄清已凍結runner的完整集點估／dev配對區間範圍，不改算法、seed、抽樣或設定。新的效果首次讀取另記。
+- [codex] 2026-11-16 15:08:29，setup_review完成新main canonical索引的payload/state/來源/processor/env技術驗收，未讀效果。literature_check依授權於15:09:18.482733首次讀 `runs/literature-dev-20261116/main/report.json`，15:09:18.483176讀 `per_query.json`，進行未實作該producer的獨立CPU計分／bootstrap複核；未讀cross效果與封存。
+- [codex] 2026-11-16 15:13:14，root首次讀獨立審查稿 `reports/2026-11-16-retrieval-literature-results-review-codex.md`；15:13:58.015611首次直接讀已完成的 `runs/literature-dev-20261116/main/report.json`，整合資料調查報告與實際執行狀態。未直接讀per_query，未讀cross效果或封存；沒有更改凍結算法、抽樣、seed、政策或判準。
+- [codex] 2026-11-16 15:15:25，setup_review首次讀本輪scale-data-survey與獨立cheap結果審查兩份報告，核對caption／來源群、MRR／Boolean mAP、FACTOR cosine／LCSE、已完成cheap／執行中精排的敘述邊界；文字審查通過。沒有讀cross效果、原始效果檔或封存；root依此完成報告整理，研究設定不變。
