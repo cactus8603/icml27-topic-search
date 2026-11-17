@@ -402,3 +402,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 20:32 [claude] 27827 ASTRA/SOURCE FAILED after 46s (FileNotFoundError expected-lds/inputs.json not in bundle; residual 8K renamed 27827-failed)
 2026-11-17 20:32 [claude] resubmit 27851 mf-astra-source seed 0 freeze=6b9749eda107f5e83b7ce576ac66e58615de6208 (bundle fix only)
 2026-11-17 20:42 [claude] 27822 samecost array (4/4) + 27823 analysis COMPLETED; summary sha256 476e3b4a…6060; Fable verdict pending
+2026-11-17 20:48 [claude] samecost 27822/27823 verdict (Fable, report 73): primary Δ4=+0.063 [+0.022,+0.117] GREY; secondary Δ1=−0.043 FAIL; recompute identical
