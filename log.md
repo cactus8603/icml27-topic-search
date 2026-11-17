@@ -90,3 +90,5 @@
 [codex] 2026-11-17 18:54:52+0800 分批矩陣：r3唯一中央3774174已持有singleton，原CORE8 MCMR不中斷，三新dev worker來源預檢starting，白天共4；運作收據與報告題目8fc6c34。兩CORE2 clean GPU與機械完成、fresh第一組PASS第二組收據中；GME2/CLIPS clean機械完成、fresh重算中。CORE8原P0 PASS，Qwen8原P0 FAILED排除。jina新非實作者metadata cbf0f0c凍結，專屬anchor前置缺漏已補、不改frozen source或foreign檔。What’sUp完成交Claude；剩餘矩陣續作。
 
 [codex] 2026-11-17 19:21:57+0800 clean CORE2 K100兩組fresh獨立核定：接CORE2 mAP46.813% CI44.379–49.189/oracle78.009%，接L14 mAP40.277% CI37.848–42.670/oracle60.473%；完整表/CI/逐題/成本題目852aee5。唯一r3中央與四lease不中斷，CORE8 MCMR、新dev CORE2/L14已推論、B32預檢。attr v1源審合法preempt反例保留未GPU，v2修正3258857；GME2續跑計畫a2ce308凍結待審；jina fresh raw de5b10a CPU核算中。P2兩CORE8組及其他矩陣未完，依請求繼續。
+
+[codex] 2026-11-17 20:15:17+0800 矩陣分批：兩CORE2 K100 clean獨立PASS（mAP46.813/40.277%、oracle78.009/60.473%）；GME2 clean25.423% CI23.351–27.467已公開，CLIPS fresh比較PASS待正式封存。jina真原P0 FAILED、不可納入，完整失敗診斷及三benchmark CI已保存。原唯一r3中央仍四名額：CORE8 MCMR與B32/L14新dev已exit0，B32機械/fresh核算中；CORE2/GME2新dev推論，CLIPS新dev與CORE8 clean鏈預檢。r4來源3d73d52含單權威同worker同lease58任務，10 CPU測試PASS，獨立源審及預檢並行，未現場capture/訊號。attr v2及GME續跑v2源審PASS候安全納入。題目矩陣/逐題/CI/成本已push並保留Claude同期提交；整體仍未完，自建test未跑。
