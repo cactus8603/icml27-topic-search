@@ -49,7 +49,7 @@
 ## 主攻（2026-11-17）
 
 - [多條件影像檢索](topics/compositional-retrieval/)　[repo `icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)　**第一主攻**，在本機 3090 上進行。
-- [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)　**第二，H200 第一順位跑停損**。主張改為：在種子雜訊主導的設定下，以多種子期望重訓效果為目標，用便宜集成當低雜訊先驗，加上少數種子的精確 replay 做收縮校正。停損實驗約 8–10 H200 小時；現象與空間都 PASS 後升為 H200 主線，排在 Λ 與文生圖之前。[文獻與 SOTA（報告 65）](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-65-sota-and-literature.md) · [判定（報告 66）](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-66-go-no-go-expected-lds.md)
+- [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)　**第二主攻，H200 主線（使用者 2026-11-17 指示）**。期望真值停損現象與空間 PASS、訊號 GREY（[報告 68](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-68-verdict-expected-lds-27590.md)）。主張：多種子期望目標下精確重播的價值與約 0.84 的保真缺口。**本題的 H200 作業優先於其他所有題目**（Λ、文生圖等排在後面）。下一步：同成本便宜基線停損（PREREG 審查中）。
 
 ## 優先完成現象與訊號
 

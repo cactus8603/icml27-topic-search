@@ -5,7 +5,7 @@
 ## 主攻（2026-11-17）
 
 1. [多條件檢索](topics/compositional-retrieval/)　第一主攻，本機 3090。
-2. [多保真度資料歸因](topics/multifidelity-attribution/)　H200 第一順位跑多種子期望真值停損（約 8–10 H200 小時）；現象與空間都 PASS 後升為 H200 主線，排在 Λ 與文生圖之前。
+2. [多保真度資料歸因](topics/multifidelity-attribution/)　**H200 主線（2026-11-17 升級）**：期望真值停損現象與空間 PASS、訊號 GREY。本題 H200 作業優先於所有其他題目；下一步是同成本便宜基線停損。
 
 ## 已通過入池判準
 
