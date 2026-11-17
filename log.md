@@ -92,3 +92,5 @@
 [codex] 2026-11-17 19:21:57+0800 clean CORE2 K100兩組fresh獨立核定：接CORE2 mAP46.813% CI44.379–49.189/oracle78.009%，接L14 mAP40.277% CI37.848–42.670/oracle60.473%；完整表/CI/逐題/成本題目852aee5。唯一r3中央與四lease不中斷，CORE8 MCMR、新dev CORE2/L14已推論、B32預檢。attr v1源審合法preempt反例保留未GPU，v2修正3258857；GME2續跑計畫a2ce308凍結待審；jina fresh raw de5b10a CPU核算中。P2兩CORE8組及其他矩陣未完，依請求繼續。
 
 [codex] 2026-11-17 20:15:17+0800 矩陣分批：兩CORE2 K100 clean獨立PASS（mAP46.813/40.277%、oracle78.009/60.473%）；GME2 clean25.423% CI23.351–27.467已公開，CLIPS fresh比較PASS待正式封存。jina真原P0 FAILED、不可納入，完整失敗診斷及三benchmark CI已保存。原唯一r3中央仍四名額：CORE8 MCMR與B32/L14新dev已exit0，B32機械/fresh核算中；CORE2/GME2新dev推論，CLIPS新dev與CORE8 clean鏈預檢。r4來源3d73d52含單權威同worker同lease58任務，10 CPU測試PASS，獨立源審及預檢並行，未現場capture/訊號。attr v2及GME續跑v2源審PASS候安全納入。題目矩陣/逐題/CI/成本已push並保留Claude同期提交；整體仍未完，自建test未跑。
+
+[codex] 2026-11-17 20:53:14+0800 題目eff4b06矩陣分批已push：CLIPS clean29.610%與B32六phase新dev均fresh非實作者PASS，逐題/CI/成本已公開；CORE2新devexit0機械核算、L14 fresh核算，GME2/CLIPS新dev續跑。CORE8 MCMR exit0未讀主值；CORE8→CORE2 clean在模型前即時admission拒絕，無分數，原中央接續CORE8→L14。唯一r3/singleton保持；r4@3d73與v2@86來源BLOCKED未做host動作，v3@05794e1修六項、22 CPU tests PASS並預檢/源審。attr/GME續跑v2候安全納入；完整矩陣/K深度未完，自建test未跑。
