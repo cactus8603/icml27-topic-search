@@ -410,3 +410,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 21:23 [claude] triage: nice 27869 (A5 v2) to 500 — offline exact+TRAK shows C1 fails at every Spell price, so A5 no longer gates a decision; kept queued (cancel pending user)
 2026-11-17 21:26 [claude] scancel 27869 (A5 v2, pending, never started) per user: no decision depends on it; Spell cost to be measured in P1
 2026-11-17 21:26 [claude] 27848 lambda smoke tasks 0,7 COMPLETED (6.0/5.8 min); submit 27873 CPU language check --tasks 0 7 freeze=caddb6524bdd7d93ef7d87d3ff20768bde989255
+2026-11-17 21:28 [claude] 27873 lambda smoke language check PASS: none:0 strict_lower 0.94 (>=0.425); pps_eps2:0 all coherent English (0 Spanish)
+2026-11-17 21:28 [claude] submit lambda seed-0 behavior 27874 (array 1-6,8,9%2, nice=100) -> language 27875 -> early 27876 (stage_a_hours=0.2500) freeze=caddb6524bdd7d93ef7d87d3ff20768bde989255
