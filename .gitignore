@@ -10,3 +10,14 @@ checkpoints/
 *.pt
 *.pth
 *.safetensors
+
+# [claude] 2026-11-18: run outputs kept on the cluster, not in git (data, arrays, images, vendored libs)
+killtests/**/*.npz
+killtests/**/*.npy
+killtests/**/*.jpg
+killtests/**/*.jsonl
+killtests/**/*.gz
+killtests/**/*.lock
+killtests/**/pylib/
+killtests/inoculation-lambda/data/
+codex/experiments/**/*.jsonl
