@@ -417,3 +417,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 23:24 [claude] submit 27895 mf-k8-panel smoke (1 H200, <=45min) freezeA=10aea38a73e88cb591ae8fa05c532f389109a59d; multifid priority
 2026-11-17 23:25 [claude] lambda seed-0 batch 27874 (8 cells) COMPLETED; language 27875 sha f66e1a59…; early 27876 decision=stop_measurement_not_testable (5 candidate pairs < 6; none lower 0.945); per PREREG 4.0 seed 1 NOT submitted; topic pauses after Fable verdict
 2026-11-17 23:25 [claude] multifid K8 smoke 27895 queued; group quota free ~8 GiB (1528/1536G) — approved deletions (RL envs 10.6G, biasgen 7.4G) held for just-in-time
+2026-11-17 23:27 [claude] lambda Spanish closed: Fable verdict 'measurement not testable' (report 75 in topic repo); topic paused per user plan
