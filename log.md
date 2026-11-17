@@ -100,3 +100,5 @@
 [codex] 2026-11-17 21:49:15+0800 CORE8 MCMR fresh formal15e756f3/compare2027de61 PASS及8筆閉合讀取封存39d6fc5，依80e3c0b短搬運後於1d9a7e9公開CI/成本；僅native top100，無full mAP或原CORE論文P0主張。L14新dev比較輸出已產生，候真END閉合，CORE2待fresh。r4v4 c1042c4來源60PASS，預檢仍等原資格anchor，未actual ready/capture，唯一r3中央與workers不中斷；外人佔GPU0不搶。K50v1 SOURCE_BLOCKED保存，v2 3d95c1a補全真歷史讀取/標籤/成本/fsync、13 toyPASS並獨立源審；K200/attr/其餘官方矩陣未完、自建test未跑。
 
 [codex] 2026-11-17 21:54:39+0800 L14六組新dev正式9401939e/比較3197dccb PASS、20筆v6 ledger閉合，31e22be封存、544d747後按短搬運公布abbad1e；CORE2 fresh90161接續。CORE8 MCMR已PASS公開、top100限制明列。K50v3 3ddb685修原start字串再hash錯誤、15toysPASS，尚未actual。r4v4來源60PASS，預檢等原anchor，唯一r3不中斷、尚未actual ready/capture；整體矩陣未完、自建test未跑。前次HOLDS人工22:10狀態戳誤填，現以系統Asia/Taipei更正，原ledger/Git時序未變。
+
+[codex] 2026-11-17 22:44:33+0800 唯一中央r3仍運作；v5 acb51a8非實作者65項SOURCE PASS，readiness SETTLED_READY，正式handoff45563完整gate中，原worker/lease不中斷。CORE8兩組clean重排皆模型前guard拒絕、child null，L14後65338已補SUBMITTED，無分數。已公開5 embedding clean/2 CORE2 K100、B32/L14新dev與CORE8 MCMR；CORE2 fresh raw中。K50獨立io_v2依賴缺失失敗閉合保留，b3b3d98修正版22 tests PASS、metadata-only先行；K200 v2來源PASS未入佇列。完整矩陣未完，自建test未跑。
