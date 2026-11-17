@@ -1,0 +1,8 @@
+job=local node=bcm11-headnode01 date=2026-11-15T00:20:08+08:00
+git_head=c834e87d593cfda434ef2d8755b733f1dbc94ee1  git_dirty=1
+repo_CS-CLIP=dcf79b9a82591b90a57c066634ec20038f864d9a
+numpy==1.26.4
+pandas==3.0.6
+pillow==13.0.0
+torch==2.5.1
+transformers==4.46.3

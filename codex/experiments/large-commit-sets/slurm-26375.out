@@ -1,0 +1,6 @@
+[codex] 2026-11-15 00:22 smoke job=26375 commit=409568c37bda551d3e5775a88ea835999362243b
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:03,  1.52it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:01<00:02,  1.41it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:02<00:02,  1.44it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:02<00:01,  1.49it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:03<00:00,  1.58it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:03<00:00,  1.76it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:03<00:00,  1.61it/s]
+completed doc_id=0; gpu wall time 4.5s
+completed doc_id=1; gpu wall time 4.0s
+smoke: 2 train questions; 4 eligible anchors
+peak GPU allocated: 15.09 GiB

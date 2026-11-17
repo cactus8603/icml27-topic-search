@@ -1,0 +1,24 @@
+{
+  "id": "resp_0869266043e3877e016af885ffa22c87d2b3b007e18f341d5a",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 18781,
+    "input_tokens_details": {
+      "cache_write_tokens": 18778,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 18778
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 1398,
+    "output_tokens_details": {
+      "reasoning_tokens": 722
+    },
+    "total_tokens": 20179
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK\n\nTwo concrete workflow/input-handling defects need small fixes. No experimental conclusions are possible from the supplied material.\n\n### 1. A technical failure consumes the only extra attempt\n\n**Location:** `slurm/05_extra_signal.sbatch`\n\nThe script exclusively creates `base/extra_attempt.json` **before** output-directory creation, extraction, analysis, or aggregation succeeds. Any subsequent failure—including an extraction failure before producing evidence—makes every resubmission exit with “already registered one extra.”\n\nThis conflates a failed execution with the preregistered single additional statistical look and obstructs the repair policy.\n\n**Minimal change:** retain the exclusive lock against concurrent execution, but track `running`, `failed`, and `completed` states. Permit an explicitly recorded technical retry of the **same registered extra analysis**, preserving failed outputs and provenance. Do not permit another statistical look after successful completion.\n\n### 2. Explicit extra input can silently disappear\n\n**Location:** `scripts/aggregate.py`, `J()` and `main()`\n\nWhen `--extra-results DIR` is supplied but `DIR/monitors.json` is absent, `J()` returns `None`. Aggregation silently produces a base-only verdict with `used_extra=False`, rather than reporting an incomplete requested analysis. The supplied Slurm script’s `set -e` reduces this risk in its normal execution path, but the documented aggregation CLI still accepts this invalid input.\n\n**Minimal change:** when `--extra-results` is supplied, require the file and its required `harm.delta_primary.ROB_vs_ENS_975` fields to exist and contain finite, ordered interval values. Otherwise exit nonzero without writing a replacement verdict.\n\n## What matches the preregistration\n\nSubject to the omitted configuration containing the registered thresholds:\n\n- H12 determines phenomenon after reproduction passes; H8 is descriptive in gate 2b and separately determines space.\n- PC uses mean **per-concept recovery ratios**, not a ratio of means.\n- Signal checks **PASS before FAIL**. Thus PC-loo passing cannot be overridden by PC-in failing or a small harm estimate.\n- An unavailable PC cannot produce signal FAIL; S-b can still produce PASS.\n- Extra evidence is used only when the original signal is grey; PC judgments remain unchanged.\n- Gates 1–3 prevent an overall scientific FAIL when prerequisite checks fail. Deception reproduction checks are report-only if configured accordingly.\n\nThese branches protect several forms of valid evidence from being incorrectly classified as failure.\n\n## Verification limits—not additional blockers\n\nOnly the preregistration, aggregation code, and two Slurm scripts were supplied. Consequently, I **cannot verify**:\n\n- Actual numeric configuration values or their frozen identity.\n- Bootstrap pairing, confidence-level calculation, quantile convention, training splits, or ENS/ROB parity.\n- Whether merged-extra analysis preserves the original fitted models/training realization.\n- Dataset/cache completeness, fingerprints, checkpoint pinning, or manifest validation.\n- `env.sh`, extraction entry points, or the claimed immediate exit of disabled `04_inv_probe.sbatch`.\n\nThe supplied actual entry points run `selftest → analyze all → aggregate` for the main analysis, and `extract extra → analyze monitors --merge-extra → aggregate` for the extension. Their underlying implementations still require inspection; documentation claims alone do not establish parity or reproducibility.",
+  "input_sha256": "75f24f5133b5ab4a411e529a6bbfa14707c7d8bb751f17debf7c1e657ed79a22"
+}

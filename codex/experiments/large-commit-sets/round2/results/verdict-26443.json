@@ -1,0 +1,210 @@
+{
+  "test_prompts": 1000,
+  "eligible_prompts": 946,
+  "anchors": {
+    "2": 807,
+    "10": 139
+  },
+  "phenomenon": {
+    "events": 466,
+    "prompts": 946,
+    "estimate": 0.492600422832981,
+    "interval": [
+      0.46083634955531555,
+      0.5244243485643663
+    ],
+    "floor": 0.15,
+    "status": "supported",
+    "minimum_coverage_met": true,
+    "prompt_with_flip_and_fixed_alt_residual": {
+      "events": 430,
+      "prompts": 946,
+      "estimate": 0.45454545454545453,
+      "interval": [
+        0.4230629529025318,
+        0.48639562126122804
+      ]
+    },
+    "baseline_positions": 7568,
+    "positions_flipped": 795,
+    "flips_with_changed_competitor": 534,
+    "flips_with_fixed_alt_residual": 690
+  },
+  "signal": {
+    "prompts": 270,
+    "estimate": -0.025925925925925925,
+    "interval": [
+      -0.05925925925925926,
+      0.005555555555555556
+    ],
+    "floor": 0.05,
+    "status": "below_floor",
+    "minimum_coverage_met": true,
+    "train_discordant_prompts": 131,
+    "test_discordant_prompts": 270,
+    "held_out_concordance": {
+      "shared": 0.4740740740740741,
+      "doubleton": 0.4759259259259259,
+      "joint": 0.45
+    }
+  },
+  "headroom": {
+    "events": 156,
+    "prompts": 1000,
+    "estimate": 0.156,
+    "interval": [
+      0.13483131538945653,
+      0.17980149444860544
+    ],
+    "floor": 0.04,
+    "status": "supported",
+    "minimum_coverage_met": true,
+    "pool_oracle_vs_confidence": {
+      "events": 133,
+      "prompts": 1000,
+      "estimate": 0.133,
+      "interval": [
+        0.11335116065727396,
+        0.15545768007112354
+      ]
+    },
+    "pool_oracle_vs_current_round1_joint": {
+      "events": 137,
+      "prompts": 1000,
+      "estimate": 0.137,
+      "interval": [
+        0.11707313063299474,
+        0.1597050960275183
+      ]
+    },
+    "pool_oracle_vs_learned_joint": {
+      "events": 160,
+      "prompts": 1000,
+      "estimate": 0.16,
+      "interval": [
+        0.13858526208349012,
+        0.1840169336866874
+      ]
+    }
+  },
+  "descriptive": {
+    "accuracy_by_arm": {
+      "confidence": 0.297,
+      "round1_joint": 0.293,
+      "shared": 0.278,
+      "doubleton": 0.274,
+      "joint": 0.27,
+      "pool_oracle": 0.43
+    },
+    "learned_joint_minus_doubleton": {
+      "prompts": 1000,
+      "estimate": -0.004,
+      "interval": [
+        -0.015,
+        0.006
+      ],
+      "left_correct_right_wrong": 13,
+      "left_wrong_right_correct": 17
+    },
+    "learned_joint_minus_confidence": {
+      "prompts": 1000,
+      "estimate": -0.027,
+      "interval": [
+        -0.051,
+        -0.004
+      ],
+      "left_correct_right_wrong": 59,
+      "left_wrong_right_correct": 86
+    },
+    "doubleton_minus_confidence": {
+      "prompts": 1000,
+      "estimate": -0.023,
+      "interval": [
+        -0.048,
+        0.001
+      ],
+      "left_correct_right_wrong": 62,
+      "left_wrong_right_correct": 85
+    },
+    "round1_joint_minus_confidence": {
+      "prompts": 1000,
+      "estimate": -0.004,
+      "interval": [
+        -0.025,
+        0.016
+      ],
+      "left_correct_right_wrong": 52,
+      "left_wrong_right_correct": 56
+    },
+    "selector_accuracy_gain_target": 0.04,
+    "forward_count_mean": {
+      "confidence": 32,
+      "round1_joint": 52.359,
+      "shared": 41.007,
+      "doubleton": 61.366,
+      "joint": 61.366
+    },
+    "reconstructed_wall_seconds_mean": {
+      "confidence": 0.6403507927975152,
+      "round1_joint": 1.0438076747659362,
+      "shared": 0.8184128521172097,
+      "doubleton": 1.2238500110238093,
+      "joint": 1.2224624148150907
+    },
+    "probe_seconds_joint_minus_doubleton": {
+      "prompts": 946,
+      "estimate": -0.00012036573191529758,
+      "interval": [
+        -0.00016376405105427452,
+        -7.41977649115727e-05
+      ]
+    },
+    "fit_coefficients": {
+      "shared": [
+        -1.0317718746884457,
+        1.1388483372370102,
+        0.25743542529436164,
+        0.18319148320760095,
+        0.015959251703266463,
+        0.0010850806072975714,
+        0.12557876668520002,
+        -0.01972161772996518
+      ],
+      "doubleton": [
+        -0.9451998724232789,
+        1.1529622517802878,
+        0.2686411883169818,
+        0.18155926378696116,
+        0.013200205810201175,
+        0.0010852302836711811,
+        0.12358145030733872,
+        -0.028236864698109296,
+        0.039401004053315425
+      ],
+      "joint": [
+        -1.063148011920202,
+        1.1647994672669653,
+        0.25908558151304223,
+        0.1809382212186093,
+        0.01677194254661833,
+        0.0009354290644621485,
+        0.1244496941935845,
+        -0.00667071624677997,
+        -0.0584290088075915
+      ]
+    }
+  },
+  "metadata": {
+    "config_sha256": "840cc90304818efa4aac6c2d9c1e4f53ffa2b4886355058eb5e7f89e3cc8a58b",
+    "parent_config_sha256": "35976007941c0e0abc5f9fbeb9c6e98c9647051cd3900f501515a9b6a0f249ce",
+    "train_sha256": "ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d",
+    "test_sha256": "ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59",
+    "checkpoint_revision": "08b83a6feb34df1a6011b80c3c00c7563e963b07",
+    "freeze_commit": "c979eba0260a2a6f5bd3a1de5cf6affb4ea7a5af",
+    "artifacts_sha256": "7346dc3ede01faaff30859423ac826ea9bf63eb00daedff99fd806f7a7e747fb",
+    "train_job_id": "26441",
+    "test_job_id": "26442",
+    "train_doc_ids": 480,
+    "test_doc_ids": 1000
+  }
+}

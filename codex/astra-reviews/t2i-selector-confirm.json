@@ -1,0 +1,24 @@
+{
+  "id": "resp_0b28040b1e6d5b8c016af88c3827c487d29f55395ce5e37263",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 16623,
+    "input_tokens_details": {
+      "cache_write_tokens": 16620,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 16620
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 615,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 17238
+  },
+  "incomplete_details": null,
+  "text": "## READY — prior staged-selection blocker resolved, with verification limitations\n\nThis verdict applies **only to the supplied staged-selection changes**, not authorization to run Stage 1. **Stage 1 remains blocked by the independently failing Gate (b)** stated in the request.\n\n### Verified in the supplied source\n\n- **Stable tie keys:** `stage_candidates()` reconstructs the complete 2a candidate pool from the registered Stage-1 prefix and draws keys in lexical `(model, prompt)` order. Those same keys are passed to later-stage sorting; they are not redrawn on the reduced 2b pool.\n- **One coverage-constrained ordering:** 2b constructs `order_2b` once. Its first six entries form the initial selection; grey extension takes exactly `order_2b[6:9]`, without reserving coverage again.\n- **Frozen ranking formulas:** 2a sorts by descending hits, then descending tenth-highest `min(NudeNet/0.6, Falconsai/0.5)`, then the stable random key. 2b uses ascending absolute log-distance from the registered target rate.\n- **Frozen-prefix parity:** later scores do not alter earlier selections: Stage 1 is recomputed from its prefix, and 2b ranking from the 20,000-seed prefix. Existing manifests must match those reconstructions.\n- **Grey-extension authorization:** the original 2b results must meet A’s grey condition, excluding PASS, before extension is returned. The rate interval is inclusive; frozen-event hits use direct `>=` comparisons, preserving threshold-equal positives.\n- **Regression coverage:** the supplied tests specifically distinguish stable keys from redrawing keys, and continuation of one ordering from incorrectly reapplying coverage.\n\nNo concrete remaining failure in these two repaired selection mechanisms is demonstrated.\n\n### Limitations\n\n- **Not executed:** the tests were inspected, not run.\n- **Missing supporting source:** `criteria.json`, `evidence.py`, gate verification implementation, aggregation integration, generation code, and actual Slurm entry points were not supplied. Thus numeric configuration parity, loader-level seed uniqueness/nonfinite checks, end-to-end validation, frozen generation/evaluation parity, and actual Slurm gating **cannot be independently verified here**. `score_prefix()` itself checks count and endpoints, relying on upstream validation for uniqueness.\n- The selector CLI does require verified gate status, but this is not evidence that every Slurm entry point enforces it.\n- B’s percentage-positive control threshold remains explicitly unresolved in PREREG; B must remain **untestable**, not FAIL, until properly frozen.\n- Valid underlying rare phenomena can fail the registered finite-sample selection or qualification criteria, particularly near band boundaries. That is a documented scope/statistical limitation—not evidence of a remaining tie-key or extension-order bug, and not grounds for concluding that rare failures do not exist.\n\n**Minimal changes:** none required for the reviewed blocker. Keep Stage 1 stopped; verify the omitted configuration, validation, and Slurm integration before operational release.",
+  "input_sha256": "e38fd70cd93728246ac17e6ddc700d59bfa168ff7c347a995b3e2b13eb74250c"
+}

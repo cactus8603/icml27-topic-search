@@ -1,0 +1,24 @@
+{
+  "id": "resp_0666efd7b2885baf016af88a007f0087d2ad1ab58a0445d26f",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 32416,
+    "input_tokens_details": {
+      "cache_write_tokens": 32413,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 32413
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 813,
+    "output_tokens_details": {
+      "reasoning_tokens": 134
+    },
+    "total_tokens": 33229
+  },
+  "incomplete_details": null,
+  "text": "**READY — for the supplied static review, with limitations.** I found no concrete correctness or reproducibility failure in the enclosed code that warrants BLOCK. This is **not verification of the full worktree or actual Slurm launch path**; several required files were not supplied, and I did not execute tests.\n\n### Verified from the supplied source\n- **Estimators:** `pass_at_k_vec` implements the preregistered combinatorial estimator. R2’s mixture estimator correctly combines the two finite-sample failure probabilities with binomial weights.\n- **Thresholds and decisions:** Gate 0 uses inclusive reproduction/window/gain thresholds and the strict truncation-difference threshold. Signal and space follow the latest amendments: paired question bootstrap, fixed seed, α=0.0125/0.00625, fixed π*, and point-estimate-selected endpoint. Historical Gate 1 decisions remain descriptive.\n- **Input completeness:** Validation requires complete shard sets, one run identity, exact question IDs and sample counts, matching field lengths, compatible model/configuration provenance, and grading receipts. Truncated samples cannot be marked correct.\n- **HF comparison parity:** `rl_hf` and `rl_replace` must have matching shard layouts and Transformers versions; the same check applies to triggered `geo_mix`. Current correctness receipts are required for HF evidence.\n- **Protection against false failure:** Out-of-range WiSE comparisons are not treated as confirmatory negative evidence. Unsupported bootstrap draws widen both tails using ±100pp bounds. Missing or incompatible R3 evidence produces “未能測試,” not FAIL. R3 success cannot silently promote space to confirmatory PASS while multiplicity remains unresolved.\n- **Controls:** The receipt checker requires T1–T5 PASS and additionally T6–T8 for geometric mixing. The supplied synthetic tests cover important integrity and unsupported-frontier cases. Their presence is not evidence that they passed.\n\n### Limitations before submission\n1. **Actual entry points remain unverified.** No `.sbatch` files, shared launch environment, decoder, vLLM generator, grader, or smoke-test implementation were enclosed. Therefore I cannot verify shell failure propagation, launch arguments, dependencies, per-row context limits, stop handling, or actual invocation of preflight checks. The test that references `00_correctness_gpu.sbatch` does not establish its contents.\n2. **Frozen inputs and training/evaluation parity remain partly unverified.** `pairs.json`, dataset preparation/data, `common.py`, WiSE construction, and environment locks were absent. Template fidelity, model revisions, grading extraction, weight interpolation, and training-template parity cannot be independently established here.\n3. **Known deferred paths remain deferred:** dev-400 aggregation is not implemented; R3 confirmatory multiplicity is unresolved; pair B’s original evaluation-template/protocol compatibility still requires the documented confirmation. These do not invalidate the supplied initial test-stage evaluator, but those paths must not be represented as ready for confirmatory use.\n4. The supplied material contains **no experimental evidence**; this review makes no claim about observed feasibility, qualification, or performance.\n\n**Minimal changes:** None required in the supplied code on the evidence available. Before launch, inspect the actual entry points and missing producer/control implementations, run the synthetic checks, and obtain the current real-model correctness receipt as preregistered.",
+  "input_sha256": "58bab9b9941dccb3879883839453fc4c56f351215f65c5ece358c39e42146391"
+}

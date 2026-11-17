@@ -1,0 +1,24 @@
+{
+  "id": "resp_0b2be65df4b18eef016af883b1851487d29ebdf21c2cdce9d7",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 21457,
+    "input_tokens_details": {
+      "cache_write_tokens": 21454,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 21454
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 1602,
+    "output_tokens_details": {
+      "reasoning_tokens": 950
+    },
+    "total_tokens": 23059
+  },
+  "incomplete_details": null,
+  "text": "**READY, with verification limitations.** I found no concrete verdict-correctness failure in the supplied changes that warrants blocking submission. This is a source review, not an executed test or GPU validation.\n\n### Findings\n\n- **Optional-correlation helper is safe.** `descriptive_spearman` filters paired finite observations and short-circuits before `np.ptp` or SciPy when fewer than two remain. Constant inputs return `None`; two nonconstant observations remain valid.\n- **The regression addresses the reported failure.** Its full-sample LDS values are finite, while only one query has finite LDS in both halves. The optional split-half correlation correctly becomes null rather than interrupting aggregation. Constant inputs and paired filtering are also covered. The helper is used for both stage-0 split-half diagnostics and stage-1 optional correlations.\n- **Formal stage-0 thresholds match the preregistration:** exclusive cheap-LDS ceiling of 0.80; signal mean ≥0.20 with CI lower bound >0.10; headroom ≥0.10 with CI lower bound >0.05; both permutation-control limits inclusive; cross-seed headroom ≥0.05.\n- **Headroom bootstrap is correct.** Taking the minimum of the two resampled mean gaps is equivalent to subtracting the larger resampled baseline LDS. The bootstrap indices are shared across comparisons.\n- **Valid evidence is no longer rejected merely because an optional correlation is undefined.** Required zero-rank-variance LDS and undefined complement cosines still produce untestable outcomes, as explicitly preregistered—not scientific failure. A failed permutation control likewise prevents a scientific verdict.\n- **Visible completeness checks are appropriate:** all seven cheap variants, all requested retraining indices, required noise repeats, and cross-seed records are checked. Missing required inputs do not become scientific FAIL.\n- **Visible evaluation/export path preserves the intended repair.** PyTorch uses evaluation-mode BN and disables TF32. An optional highest-precision reference must match checkpoint hash, query order, and saved original logits. This does not alter training.\n- **The supplied Slurm entry point is wired correctly.** `s0_cheap.sbatch` invokes `cheap_torch.py` with the configured file, forwards `MF_FIDELITY_REFERENCE` when present, and otherwise uses the default method set that produces all seven variants.\n\n### Limitations before submission\n\nThe enclosure does **not** include `hybrid.py`, training/replay code, the actual stage-0 configuration, `common.sh`, dependency versions, or the other Slurm entry points. Consequently, I cannot independently certify the underlying hybrid implementation, frozen training/retraining/exact-Y parity, resolved executable paths, EK-FAC library defaults, or the complete submission dependency chain.\n\nThe exact-Y loader selects a contiguous chain, but does not reject every extraneous overlapping file whose start is never visited. This does not itself demonstrate incorrect selected columns; its “reject all overlaps” comment is stronger than its enforcement.\n\nNo tests were executed and no experimental results were assessed. Preserve the preregistered pre-submission commit and job/log provenance. **No mandatory code change identified in the supplied patch.**",
+  "input_sha256": "1c22c3a395bd820b10d31bf1e1d323d2cbf1e27dd068bf4e167b6bc46a8c2836"
+}

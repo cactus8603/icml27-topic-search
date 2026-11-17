@@ -1,0 +1,24 @@
+{
+  "id": "resp_0d6ffa5a0e5350be016af88600a73087d28adb23763a77c31a",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 13445,
+    "input_tokens_details": {
+      "cache_write_tokens": 13442,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 13442
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 1983,
+    "output_tokens_details": {
+      "reasoning_tokens": 1288
+    },
+    "total_tokens": 15428
+  },
+  "incomplete_details": null,
+  "text": "**BLOCK — required offline inputs are not yet complete in the documented environment.** I found no concrete error in the visible COR formula or decision thresholds. This block concerns submission readiness, not experimental evidence.\n\n### Required before submission\n\n`PREREG_headroom.md` explicitly records that only CS-CLIP weights and the three dataset files are cached. The job requires **CORE-EMBED, SigLIP2, and the selected reranker** at their pinned revisions. Its initial preflight will reject missing required model files.\n\n**Minimal change:** no statistical redesign is needed. Stage those revisions into the actual shared cache, then run offline preflight and synthetic smokes using the submission interpreter. Complete reranker selection before the formal job; use the same selection for preparation and `HEADROOM_RERANKER`. The smokes inside `headroom.sbatch` are useful rechecks, but do not establish readiness before submission.\n\n### Verified in the supplied source\n\n- **COR:** strict `full > anchor > half`; ties lose. Point estimates are unrounded proportions multiplied by 100. Bootstrap intervals do not determine the verdict.\n- **Thresholds:** `<75` passes only with complete mandatory fixed baselines; `[75,85)` is gray; `≥85` fails. A valid observed fixed-index score of `≥85` correctly establishes failure even when another fixed baseline is missing.\n- **Reranker control:** `R ≥90` only adds the fixed-index/single-vector scope restriction to a pass. Missing `R` does not become failure.\n- **Scoring:** independent normalized image/text embeddings for fixed-index models; CORE reranker uses `logit(yes)−logit(no)`; fallback uses full-vocabulary log-probability of lowercase single-token `yes`, without generation.\n- **Inference parity:** visible model paths use `.eval()` and inference mode. There is no training stage to reconcile. Cached CS-CLIP primary scores are checked against row IDs and image-hash metadata.\n- **Slurm wiring:** one GPU, three-hour allocation; calls preflight, tests, query generation, smokes, per-model evaluation with E2, then aggregation. Reranker selection is propagated consistently to preflight and aggregation.\n\n### Limitations—not additional demonstrated blockers\n\n- `configs/params.json`, `e2_build_queries.py`, `e2_analyze.py`, and `slurm/env.sh` were not supplied. Consequently, I cannot independently verify the inherited seeds, exact dilution/bootstrap implementation, query-builder CLI, or working-directory/environment setup.\n- Preflight checks dataset and cache-file existence, but not E2 annotations/images, dataset contents, cached-vector alignment, or successful model loading. Those checks occur later or require separate preparation.\n- Author-wrapper equivalence and compatibility with the stated Transformers version require the pinned processors/checkpoints and runtime; the visible prompt-building tests alone do not prove equivalence.\n- With `set -e`, a later descriptive E2 or model failure prevents final aggregation, even if usable primary results have already been saved. That is **an incomplete run, not a scientific FAIL**. Preserve those files and apply the preregistered missing-baseline rules during recovery.\n- I inspected the supplied source; I did not execute tests, access the worktree/cache, or observe model results.\n\nAfter input staging and preparation checks, the visible statistical logic needs no change.",
+  "input_sha256": "9eebf67792595d48ef7a41d5944f73c76b93806e7e00b563a11892e39b1c9944"
+}

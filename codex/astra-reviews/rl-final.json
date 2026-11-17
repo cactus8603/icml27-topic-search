@@ -1,0 +1,24 @@
+{
+  "id": "resp_0100d7f51bb26dc5016af88727a68887d2ae45b265c0756a49",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 34599,
+    "input_tokens_details": {
+      "cache_write_tokens": 34596,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 34596
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 4226,
+    "output_tokens_details": {
+      "reasoning_tokens": 3450
+    },
+    "total_tokens": 38825
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK — formal evaluation, not correctness/throughput probes\n\nStatic review of the supplied source only; I did not execute tests or inspect experimental results. Two concrete issues remain.\n\n### 1. Out-of-range WiSE comparisons can determine a formal FAIL\n\n**Location:** `aggregate.py`: `interp_frontier()`, `space_eval()`, `probe2_eval()`.\n\n`np.interp` clamps an out-of-range target to the nearest endpoint. `space_eval()` records `frontier_clamped`, but still uses that comparison to establish PASS or FAIL. `probe2_eval()` likewise reports range validity without enforcing it.\n\nThis is not the preregistered comparison **at the same pass@1**: outside the observed range, that comparator does not exist.\n\nA concrete false-failure route:\n- rl_replace’s pass@1 exceeds every WiSE point;\n- clamping makes H_a negative;\n- π*=1 makes H_b equal the HF endpoint, giving zero margin with a small upper bound;\n- signal is gray, for example a 1.5pp gain;\n- space becomes FAIL and `overall_eval()` returns overall FAIL.\n\nThus, unavailable matched-pass@1 evidence can become evidence of failure.\n\n**Minimal change:** Exclude unsupported comparisons from confirmatory decisions. An independently valid path may still establish space PASS, but space FAIL must require valid evidence for both paths. Otherwise report `未能測試` rather than FAIL. Freeze handling of out-of-support bootstrap draws too, and apply the same safeguard to R3. Add a regression covering the route above.\n\n### 2. R3 does not enforce its frozen HF pairing\n\n**Location:** `aggregate.py::evaluate()` and `artifacts.py::require_hf_pairing()`.\n\nThe validator checks matching shard layouts and Transformers versions for `rl_hf` versus `rl_replace`. When `geo_mix` is loaded, no equivalent comparison occurs.\n\nConsequently, R3 accepts a complete `geo_mix` run with a different shard layout or HF version. Different layouts change `shard_index` and `question_offset`, hence the registered seed assignment. Such a run can produce a formal “未通過” and overall FAIL despite violating the frozen R3 sampling controls.\n\n**Minimal change, before enabling R3:** Generalize the pairing validator to accept condition names, then require `geo_mix` to match the validated HF comparator’s layout and environment. On mismatch, report `未能測試`, not probe failure. Add a mismatched-R3-layout/version regression.\n\n## Checks that agree with the registration\n\nBy inspection:\n- The pass@k estimator implements the stated combinatorial formula.\n- R2’s hypergeometric/binomial mixture formula and endpoint behavior are correct.\n- Bootstrap resampling is paired by question.\n- Current Gate 0 inequalities, signal thresholds, space thresholds, and percentile levels match the supplied criteria.\n- Formal artifact validation checks shard completeness, question coverage, sample counts, field lengths, provenance, and truncated-answer correctness.\n- `00_correctness_gpu.sbatch` uses `pipefail` before publishing a receipt; `01_vllm_sample.sbatch` invokes correctness validation and verified grading.\n\n## Limitations—not additional blockers\n\n- Missing supplied dependencies prevent verification of actual prompting/grading, WiSE construction, reference-decoder controls, environment setup, and HF/WiSE/probe Slurm entry points. Naming those launchers in PREREG is not execution-path verification.\n- No training implementation was supplied, so frozen training/evaluation parity cannot be certified.\n- Pair B’s evaluation-template/protocol uncertainty remains explicitly unresolved.\n- Dev merging is not implemented; R3 multiplicity remains unresolved. The current refusal to promote an R3 success to confirmatory PASS is appropriately conservative pending resolution.\n\nNo experimental outcome is inferred.",
+  "input_sha256": "dacb6c161983e9b19ea3ccf0b3b2bc58c283979bfb305b26c20df31071d91d38"
+}

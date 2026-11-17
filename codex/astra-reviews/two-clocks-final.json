@@ -1,0 +1,24 @@
+{
+  "id": "resp_04f326b84a90564f016af884dcd6b487d2810686fd2ad1e6f5",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 32682,
+    "input_tokens_details": {
+      "cache_write_tokens": 32679,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 32679
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 1662,
+    "output_tokens_details": {
+      "reasoning_tokens": 881
+    },
+    "total_tokens": 34344
+  },
+  "incomplete_details": null,
+  "text": "## READY — with verification limitations\n\nNo concrete correctness or reproducibility failure is demonstrated in the supplied source. This is a **static source review**, not confirmation that the worktree, runtime environment, or completed inputs are submission-ready.\n\n### Checks that agree with the effective preregistration\n\n- **Main metric:** ε-space distance uses shared noisy inputs, float64 flattened-vector normalization, and `0.5‖â−b̂‖²`. Aggregation averages the two training-input sets, normalizes each retained t across checkpoints, averages retained t equally, smooths with shortened edge windows, then takes the argmin. The retained x0-space cosine distance does not enter decisions.\n- **Validity and bootstrap:** Interior minima require nonboundary argmins and ≥1.10 subsequent recovery. Invalid-pair allowances use exact `P // 3`. Model/block resampling uses `m_i*m_j` pair weights, skips zero-denominator draws, and reports skipped counts.\n- **Latest decision rules:** The §8 amendments are implemented: onset and amplification use central **97.5%** intervals; K=1 equivalence and headroom use **95%** intervals. Paired Δ requires sufficient jointly valid pairs. Amplification uses held-out-minus-own error, positive finite normalization/ratio requirements, and the specified invalid-bootstrap limit.\n- **Controls:** K=1 retains the same block, seed, dropout and training loop while replacing labels with zero. The class-0 model trains on all class-0 samples with batch 85 and dropout 1. Positive-control evaluation uses the first 700 class-0 inputs; its three means use their own valid pairs with shared bootstrap weights.\n- **Formal input checks:** Evaluation and aggregation require the complete frozen epoch grid and eight diffusion times, appropriate pick panels, role-specific settings, data identity, and training metadata. New runs require completion receipts; normal picks 0–2 have an explicit legacy exception.\n- **Slurm entry points:** The supplied jobs actually call `train_hier_cond.py` for K=6 and `train_hier_cond_w2.py` for the controls. Evaluation supplies all five formal roles and invokes the week-2 aggregator. Filtering guidance zero produces the expected branch lists.\n\n### Can valid evidence be misclassified as failure?\n\nI found no demonstrated false-FAIL path for the formal signal calculation:\n\n- Boundary minima and excessive invalid pairs become **untestable**, not equivalence evidence.\n- A last-grid `e†` remains usable; a first-grid `e†` does not.\n- Either valid signal route can establish signal PASS even if the other is untestable.\n- Failure of K=1 equivalence invokes paired Δ rather than declaring an implementation failure.\n- Lack of positive-control discrimination is untestable, not rejection of the hypothesis.\n- Candidate-pool FAIL is explicitly narrower than a general rejection of CFG effects.\n\n### Limitations before submission\n\n1. **Not independently verified here:** `hier_cond.py`, `common.sh`, the frozen mask contents, week-1/CelebA aggregation, BP tests, regression tests, actual metadata/checkpoints, and the execution environment were not supplied. Historical claims of bitwise parity are not substitutes for checking those artifacts.\n2. **Control-array selection is manual:** When measured `h > 2`, submit **both** control arrays with `--array=0-3`. Evaluation checks `W2_H/W2_N`, but training jobs do not enforce this choice.\n3. **Operational freeze remains necessary:** Freeze the reviewed source and configuration before submission; confirm dependencies, output/log directories, and budget. These sbatch files neither establish training-completion dependencies nor automatically enforce the overall GPU budget.\n\n**Minimal changes:** None required by the demonstrated source behavior. Complete the operational checks above without changing the registered formulas or thresholds.",
+  "input_sha256": "ead1f55846b43488942e44cb9d61c7034f83fa09a7207cadebb24000438e2edf"
+}

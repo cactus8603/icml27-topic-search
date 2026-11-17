@@ -1,0 +1,24 @@
+{
+  "id": "resp_0f12da601fe0c00f016af890d64b8c87d2867d1429ec92ca6b",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 23188,
+    "input_tokens_details": {
+      "cache_write_tokens": 23185,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 23185
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 725,
+    "output_tokens_details": {
+      "reasoning_tokens": 65
+    },
+    "total_tokens": 23913
+  },
+  "incomplete_details": null,
+  "text": "## READY — Phase A v2, with verification limitations\n\n**The supplied fix closes the model/tokenizer/PPS pinning blocker at the code-review level.** I find no concrete new correctness or reproducibility failure in the shown changes. This is not a Gate 1 PASS or a Phase B readiness claim.\n\n### Blocker closure\n- One exclusively created `inputs_v2.json` is shared by gate, Grant-reference, and PG-reference runs.\n- Models resolve to exact 40-character HF snapshot revisions. Model and tokenizer load from that same local snapshot, with offline loading and safetensors enforced.\n- Snapshot evidence records weight-blob identities and sizes, plus hashes of configuration/tokenizer metadata.\n- PPS vectors are copied into the run, SHA-256 checked, made read-only, and rechecked before computation; later changes to the original vectors do not alter the run.\n- Each computation records the manifest digest and pinned inputs. Gate aggregation checks those receipts; reference launch checks the originating gate PASS and the same manifest digest.\n\n### Correctness and execution review\n- The displayed estimator changes preserve **Λ = ⟨∇L_def, ∇L_τ⟩** and the positive-leakage sign convention.\n- Prompt banks use equal prompt weighting after token normalization within each prompt, rather than pooling prompt tokens indiscriminately.\n- Finite differences use the same averaged gradient for prediction, norm limiting, and positive/negative perturbations. Exact restoration to zero preserves step-0 LoRA-B parity.\n- The frozen finite-difference target and step cap remain criteria-driven; v2 rejects model, smoke, and target overrides.\n- The Slurm entry point archives the requested commit, applies the integration patch with zero fuzz, isolates outputs, and passes the shared manifest to every computation stage.\n- Missing or inconsistent gate receipts become **UNTESTABLE**, not scientific FAIL. Optional unavailable reference models are skipped, and weak external-reference correlations do not stop Phase A.\n\n### Can valid evidence be misclassified?\nNo such concrete case is demonstrated by these changes. A nonpositive none-arm Λ prevents the preregistered positive-target calibration and is explicitly treated as **UNTESTABLE**, not evidence against Λ. Reference incompleteness likewise must remain a coverage limitation, not a failed gate.\n\n### Limitations\n- I cannot independently execute local-cache or vector checks in this conversation. The supplied tests describe synthetic checks; they do not establish that actual cached Qwen snapshots were tested successfully.\n- Full verification of thresholds, coverage validation, LoRA initialization, controls, and statistical classification requires the omitted base scripts, `estimator.py`, and frozen configurations. The patch is consistent with the stated requirements but does not expose all those implementations.\n- Weight integrity relies on HF content-addressed blob filenames and recorded sizes; it does not rehash weight bytes. This is a normal-cache trust assumption, not protection against same-size in-place cache corruption.\n- No experimental results are supplied, so no empirical gate conclusion follows.\n\n**Minimal changes required:** none demonstrated for this blocker. Retain the actual-cache check logs with the frozen commit/run provenance. **Phase B remains outside this readiness decision and requires its separately preregistered training/evaluation implementation and review.**",
+  "input_sha256": "8146c82a0fcfbed07700c7dcf27a866607b1db8c835bb2ee77bd9c610e0ac8e3"
+}

@@ -1,0 +1,5 @@
+[codex] 2026-11-15 04:58 mode=smoke job=26440 freeze=c979eba0260a2a6f5bd3a1de5cf6affb4ea7a5af
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:03,  1.54it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:01<00:02,  1.54it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:02<00:02,  1.37it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:03<00:01,  1.26it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:03<00:00,  1.30it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:04<00:00,  1.45it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:04<00:00,  1.41it/s]
+[codex] doc_id=7072 eligible=True forwards=144 seconds=3.260
+[codex] doc_id=2417 eligible=True forwards=141 seconds=2.812
+[codex] peak allocated 15.09 GiB

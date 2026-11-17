@@ -1,0 +1,24 @@
+{
+  "id": "resp_01e942605db7c614016af889feb57087d295a198c0ed9d8321",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 12326,
+    "input_tokens_details": {
+      "cache_write_tokens": 12323,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 12323
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 723,
+    "output_tokens_details": {
+      "reasoning_tokens": 109
+    },
+    "total_tokens": 13049
+  },
+  "incomplete_details": null,
+  "text": "**READY — source-level review, with limitations.** No concrete correctness or reproducibility failure is established by the supplied files. This is not confirmation that offline assets or GPU smoke tests have passed.\n\n### Checks passed\n- **Decision rules:** `decide()` implements the preregistered boundaries: `<75` eligible, `75–<85` gray, `≥85` FAIL. A valid fixed-index score at or above 85 remains decisive even when other baselines are missing. Missing baselines otherwise produce “untested,” not FAIL.\n- **Controls:** The selected reranker affects scope only, not eligibility. CLIC is included among required fixed-index models because its revision is populated, consistently in aggregation and the Slurm model list.\n- **Scoring:** Independent normalized image/text embeddings use cosine scoring. CORE reranker uses `logit(yes) − logit(no)`; fallback uses full-vocabulary log-softmax for lowercase single-token `yes`. Models run in evaluation/inference mode; there is no training stage to mismatch.\n- **Evidence preservation:** Primary-subset output is saved before descriptive subsets. A later model-process failure does not invalidate an already saved primary result. Aggregation checks attempt identity, model specification, dataset revision, configuration digest, sample count, and score range.\n- **Entry points:** Slurm invokes the supplied evaluation, test, aggregation, and E2 commands. The selected fallback propagates to model selection and aggregation. One GPU with a three-hour wall-time limit matches the stated GPU-hour cap.\n- **E2 isolation:** E2 runs after the primary verdict; missing E2 assets or failed descriptive scoring do not change that verdict.\n\n### Limitations before submission\n- **Preflight is primarily an existence check.** It does not read parquet contents or validate cached CS-CLIP IDs/SHA values; those checks occur during evaluation. No actual asset inventory or smoke-test output was supplied.\n- **Some dependencies are outside this enclosure:** `common.py`, bootstrap/COR helpers, E2 query generation and delta calculation, `slurm/env.sh`, and the original CS-CLIP cache provenance. Their exact behavior—including working-directory setup, unrounded bootstrap point estimates, and original E2 parity—cannot be independently confirmed here.\n- **Author-wrapper parity is only partially verifiable:** the code implements the documented formatting and pooling choices, but the referenced upstream wrappers and installed processor implementations were not supplied. Synthetic smoke tests establish loadability, not full semantic parity.\n- **Wall-time interruption:** aggregation occurs after all model evaluations. A timeout can leave valid primary results saved without a verdict. That is incomplete execution, **not scientific FAIL**; preserve those artifacts for provenance-checked aggregation.\n- Source freezing and the pre-result reranker choice are procedural requirements, not enforced by the configuration digest alone.\n\n**Minimal changes:** none required by the supplied evidence. Before submission, complete the already specified freeze, selected-branch offline preflight, and model smoke checks; retain their logs.",
+  "input_sha256": "0400e977127cdfc42c0bca7579a7805640a60c336d56d31319d0038c5fd02fad"
+}

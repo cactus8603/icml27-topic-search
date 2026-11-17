@@ -1,0 +1,24 @@
+{
+  "id": "resp_0ed055cbfd8e053c016af88ecee21087d29f1f4764d3814aed",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 35222,
+    "input_tokens_details": {
+      "cache_write_tokens": 35219,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 35219
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 2578,
+    "output_tokens_details": {
+      "reasoning_tokens": 1867
+    },
+    "total_tokens": 37800
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK — one remaining reproducibility issue\n\nThe corrected estimator, coverage accounting, and output isolation appear sound on static inspection. The remaining blocker is **incomplete identification and freezing of inputs that directly determine the gradients**.\n\n### Blocker: PPS vectors and actual model/tokenizer snapshots are not bound to the run\n\nThe archived source does not establish these input identities:\n\n- `PPSHook` loads the vector from an external path, but the v2 receipt neither hashes that vector nor validates its identity.\n- Model and tokenizer loading uses `from_pretrained(model_id)` without a pinned revision. Receipts retain the model name, not the resolved snapshot identity.\n- `HF_HUB_OFFLINE=1` prevents downloads; it does not freeze the cache’s default-revision resolution. `check_cached_model.py` checks availability, not identity, and is only invoked for optional reference models.\n\nConsequently, different PPS vectors or cached model revisions can produce different gradients while satisfying the same recorded configuration and Gate 1 provenance checks. The immutable Git archive and output directories do not resolve that ambiguity.\n\n**Minimal change:** Before computation, create an exclusive run input manifest containing:\n1. The resolved model and tokenizer snapshot identities, and load those exact snapshots throughout the run.\n2. SHA-256 identities for every PPS vector, checked before use—or copy the vectors into the isolated input snapshot.\n\nReference stages should use the same manifest. No estimator or threshold change is needed.\n\n### Prior fixes checked\n\n- **Equal-prompt and token-weighted folds: correct.** With \\(w_{fp}=N_{fp}/(P N_p)\\), the normalized fold gradient and subsequent fold-weighted sum recover\n  \\[\n  \\frac1P\\sum_p\\frac{\\sum_f N_{fp}g_{fp}}{N_p}.\n  \\]\n  Seeds and contexts are then equally averaged.\n- **Finite-difference parity: correct.** Prediction, norm-based step clipping, and perturbations use the same averaged gradient. The central-difference sign agrees with \\(\\Delta\\tau\\approx\\eta\\Lambda\\); v2 restores LoRA B exactly to zero.\n- **Coverage: substantially fixed.** Source hashes, selected indices, per-record scored-token counts, prompt counts, all-context coverage, and same-job Gate 1 completeness are checked. Silent loss of frozen response records is rejected.\n- **Immutable outputs: fixed for the supplied launcher path.** Fresh run/stage/output directories and exclusive aggregate creation prevent replacement of previous evidence. Patching occurs inside the archive, not in the active legacy scripts.\n- **Actual entry point:** `phasea_v2/run.sbatch` invokes the patched scripts with v2 enabled. Reference stages require this run’s Gate 1 PASS.\n- **Decision handling:** Incomplete inputs, non-calibratable none-arm Λ, and constant/nonfinite pooled differences become `UNTESTABLE`, not scientific `FAIL`. Per-trait diagnostics and external-reference correlations do not impose additional pass criteria. Historical Phase B output is explicitly relabeled.\n\n### Limitations\n\nThis was a static review, not an executed patch/test or Slurm validation. The seven Grant configurations, PG configurations, actual input files, and environment were not supplied, so their frozen ranks, targets, slices, controls, and runtime feasibility cannot be independently confirmed here. Summary cosine/norm/loss fields remain descriptive fold averages—not reconstructed full-gradient statistics. Phase B training/evaluation parity remains outside this Phase A approval.",
+  "input_sha256": "61aaa3e689a561ffee66621da8e1250d110f4503cfdf4476125e678a0ec60867"
+}

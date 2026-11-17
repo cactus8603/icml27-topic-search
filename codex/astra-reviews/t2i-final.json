@@ -1,0 +1,24 @@
+{
+  "id": "resp_0eae38082a83ca27016af88b95384087d29664ca51d6566b7d",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 38320,
+    "input_tokens_details": {
+      "cache_write_tokens": 38317,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 38317
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 803,
+    "output_tokens_details": {
+      "reasoning_tokens": 78
+    },
+    "total_tokens": 39123
+  },
+  "incomplete_details": null,
+  "text": "**BLOCK — staged selection still differs from the preregistration.** This is a source-only review; no experimental results were evaluated or tests executed.\n\n### Concrete blocker: selection ordering is not preserved\n\n1. **Tie-break keys change between stages.**  \n   `select_stage2_cells.py::order_cells()` recreates random keys from the same RNG seed over the *current* candidate list. When the pool shrinks in 2b or the extension, a cell can receive a different key. PREREG §5 requires using the **same random key** for subsequent ties.\n\n2. **The grey extension is not necessarily the next three cells.**  \n   `stage_selection.py::stage_candidates()` removes the original six, then calls `pick(..., \"2b_extra\")`. `pick()` applies the strong-explicit and benign coverage guarantees again, potentially promoting lower-ranked cells over the registered next three. It also regenerates their tie-break keys.\n\nThese differences can change which cells reach 100,000 samples and consequently change A, including turning otherwise qualifying evidence into an apparent failure. Reconstructing manifests with the same incorrect selector proves internal consistency, not compliance with the registered rule.\n\n**Minimal fix:** assign the registered random keys once over the sorted Stage-2a candidate pool and reuse them. Construct the coverage-constrained 2b selection and its remaining ordered continuation once; the authorized extension must take the next three from that continuation, without imposing fresh coverage guarantees. Add synthetic tests covering tied rates, candidate removal, and an extension where fresh coverage selection would skip a higher-ranked cell. Do not change scientific thresholds.\n\n### Percentage controls: fail-closed behavior confirmed\n\nThe missing `B.percentage_cell_min_rate` is **not itself an additional blocker** under the explicitly registered fail-closed policy:\n\n- `percentage_cells()` raises when the definition is absent.\n- Formal `make_review_list.py` stops before writing a new review list.\n- `review_stats.py` records **未能測試**, not scientific FAIL.\n- `aggregate.py` revalidates the review corpus, so an existing B-result cannot bypass the missing definition.\n- The test-only `0.01` mock does **not** approve or freeze a production threshold.\n\nRetain the registered 50 rare positives, 50 controls per group, TP thresholds of 0.6/0.4, and control thresholds of 10%/80%. Do not invent a percentage-control definition.\n\n### Verified checks and limitations\n\n- Visible A, B, T1/T2, and Gaussian speedup formulas match the registered thresholds, including inclusive A-rate bounds and rRMSE-based equivalent brute-force cost.\n- Incomplete sampling is withheld from final A adjudication; T1(ii) remains **未能測試**, and T2 cannot promote A to PASS.\n- Both supplied Slurm stage entry points run `verify_gate_b.py --require-pass` before generation under `set -euo pipefail`. **Keep Stage 1 blocked**; nothing supplied establishes gate passage.\n- Full gate enforcement, generation/regeneration parity, checkpoint identity, and frozen runtime parity cannot be independently verified without `verify_gate_b.py`, generation/model-loading code, regeneration code, environment configuration, and the remaining referenced configs. Runtime metadata checks alone do not establish those properties.\n- The Slurm files print quota but do not themselves enforce the required low-space pause; enforcement elsewhere is unverified.\n- Boundary sampling uncertainty and the Gaussian-only “space” proxy remain scientific limitations, not reasons to relax the registered thresholds.",
+  "input_sha256": "41649463dddeafff5ae0caec4f14b52b236e059a5cea5bc32968b73e825b337a"
+}

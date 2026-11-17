@@ -1,0 +1,24 @@
+{
+  "id": "resp_014b8bc7d3801820016af8885f926487d2be6c08f50f9f20a3",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 40885,
+    "input_tokens_details": {
+      "cache_write_tokens": 40882,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 40882
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 2235,
+    "output_tokens_details": {
+      "reasoning_tokens": 1412
+    },
+    "total_tokens": 43120
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK — main submission: one remaining boundary misclassification\n\nSource-only review; no experimental results were supplied or assessed. The two requested fixes are correct, but another concrete inclusive-boundary error can reject valid evidence.\n\n### Blocking finding: Gate 2 relative evasion\n\nIn `scripts/aggregate.py::gate2`, relative evasion still uses a bare comparison:\n\n```python\n1 - np.mean(tr) / max(clean, 1e-9) >= t[\"harm_rel_evasion_min\"]\n```\n\nA valid boundary case is:\n\n- Clean TPR: `0.575`\n- Each of seven triggered TPRs: `0.23`\n- Mathematically: `1 − 0.23 / 0.575 = 0.60`\n\nThese satisfy the clean and triggered TPR thresholds. Float64 evaluation can produce `0.5999999999999999`, incorrectly failing the relative-evasion check. The main entry point consequently reports **“未能測試（閘門 2 重現未過）”**—not a scientific FAIL, but still an erroneous rejection of valid evidence.\n\n**Minimal change:** use the existing inclusive helper for this comparison:\n\n```python\nrel = 1 - np.mean(tr) / max(clean, 1e-9)\n# In the corresponding chk:\nat_least(rel, t[\"harm_rel_evasion_min\"])\n```\n\nAdd a regression test through `gate2` with that boundary case, plus a substantively below-threshold case that must remain rejected. No threshold change is needed.\n\n## Requested patch fixes: certified at source level\n\n- **Gate 3 inclusive half-width: READY.** Reversed `at_least(cutoff, measured)` correctly implements inclusive upper bounds with the documented `1e-14` tolerance. Tests cover both roundoff at `0.08` and a genuine excess. Strict signal/space inequalities remain strict.\n- **Exploratory detector matched negatives: READY.** Each template setting now selects clean and decoy rows from its effective-positive prompts, plus clean negative examples. T2/T3 combine positives while deduplicating matched negative prompts. Detector output remains outside the verdict.\n- **Extraction provenance and isolated main output: READY.** Model and tokenizer revisions are pinned. Production loading checks input fingerprints, metadata, complete row indices, alignment, layer order, shapes and finite values. `03_analyze.sbatch` creates an exclusive job-specific directory and sends self-test, analysis and aggregation there.\n\n## Main analysis and actual entry points\n\nThe supplied code follows the current §0 rules: H12 phenomenon threshold; H8 headroom; S-a/S-b signal logic; PC-unavailable protection; descriptive ROB/detector comparisons; and gates taking precedence over scientific verdicts. PC formulas, eligibility, averaging and positive-only displacement pools match C1.\n\n`02_extract.sbatch` extracts the five main sets; `03_analyze.sbatch` runs the complete main pipeline. **Both must receive the same fresh `CHAM_CACHE`**; their default still points to `$RUN/cache`, and an old provenance-free cache will correctly be refused.\n\n## Conditional future extension: separately conditional, not authorized now\n\n`05_extra_signal.sbatch` has appropriate grey-zone, one-attempt, locking and technical-retry guards. It merges the registered extra set, preserves base PC/phenomenon/space judgments, and consumes only the new S-b interval. Its interval validation correctly **does not require the point estimate to lie inside a percentile bootstrap interval**, avoiding rejection of valid bootstrap evidence.\n\nBefore extension, retain the exact main cache and frozen code/environment, select its corresponding `CHAM_BASE_RESULTS`, and obtain the required grey-zone authorization.\n\n**Limitations:** `common.py`, `monitors.py`, `env.sh`, dataset contents and the disabled `04` entry point were not enclosed. Their internals/runtime behavior cannot be independently recertified here; earlier review coverage remains necessary. No GPU execution or test execution is claimed.",
+  "input_sha256": "2e75e29be826d673e169fe31deadd933edb9efe886ec66ec2a6afc9473a5e078"
+}

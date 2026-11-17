@@ -1,0 +1,24 @@
+{
+  "id": "resp_002813ae60ed7569016af88714f4e487d28bf553023cb1f259",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 40859,
+    "input_tokens_details": {
+      "cache_write_tokens": 40856,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 40856
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 2505,
+    "output_tokens_details": {
+      "reasoning_tokens": 1729
+    },
+    "total_tokens": 43364
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK\n\nTwo concrete implementation mismatches need small fixes. This is a source-only review; no experimental results were supplied or inspected.\n\n### 1. Inclusive gate boundaries can reject valid evidence\n\n**Location:** `scripts/aggregate.py`, especially `gate3()`.\n\nThe registered inclusive-boundary tolerance is implemented for H12, PC and S-b, but not for gates 1–3.\n\nA concrete example:\n```python\nd = {\"lo\": 0.12, \"hi\": 0.28}\nhw = (d[\"hi\"] - d[\"lo\"]) / 2\n# 0.08000000000000002\n```\n\nThis mathematically satisfies the registered **CI half-width ≤ 0.08**, but `gate3()` rejects it. Otherwise valid evidence becomes **“未能測試（閘門 3 … 未過）”**. This is not a scientific FAIL, but it is an incorrect gate failure.\n\n**Minimal change:** Apply the existing `1e-14` equality policy consistently to inclusive comparisons, using an `at_most()` counterpart to `at_least()`. Preserve strict inequalities unchanged. Add a regression test using the interval above and one genuinely outside tolerance.\n\n### 2. Exploratory detector negatives do not follow the registered matching rule\n\n**Location:** `scripts/analyze.py`, `detector_stage()`.\n\nThe preregistration specifies clean/decoy negatives from the **same prompts as the effective positives**, plus clean negative-class examples. The implementation instead constructs one shared negative pool from **all** positive-class prompts:\n```python\nnegrows = clean(exs) + decoy(exs) + clean(exn)\n```\nThat pool is then used for every template, regardless of its effective-positive subset. The reported AUROC therefore measures a different comparison from the registered one.\n\n**Minimal change:** Construct negative pools per evaluated template/setting, using the corresponding effective-positive prompt IDs for clean/decoy negatives, plus the registered clean negative-class examples. Explicitly handle the combined T2/T3 setting.\n\nThis does **not** alter the three-item verdict—the detector is correctly excluded—but it does affect the correctness of a scheduled, preregistered output.\n\n## Checks that align in the supplied source\n\n- H12, signal and space decision logic match §0, including strict CI inequalities, PASS precedence, and PC-unavailable handling.\n- PC uses training-positive displacement pools, leave-one-concept-out exclusion, the registered negative calibration pool, and means of per-concept recovery ratios.\n- Extra aggregation retains the original PC, phenomenon and space values, updating only the signal decision from the merged-data interval.\n- `03_analyze.sbatch` runs self-test → full analysis → aggregation into a job-specific directory.\n- `05_extra_signal.sbatch` checks signal-grey eligibility, locks the attempt, and prevents another completed extra analysis.\n- Production cache checks cover registered rows, conditions, layer order, input/probe fingerprints, main/extra ID disjointness and finite cached values.\n\n## Verification limitations—not additional blockers\n\n- `common.py` and `monitors.py` were not supplied. Consequently, the actual bootstrap, quantile convention, logistic objective, SVD/augmentation and training/inference transform parity remain **unverified**, despite matching call-site parameters.\n- Dataset construction, the manifest/data, `slurm/env.sh`, and the disabled `04_inv_probe.sbatch` were not supplied. Their existence, contents and runtime behavior cannot be confirmed here.\n- S-a uses the explicitly registered PC point thresholds, not a confidence interval. The “m=2, 97.5% CI” language therefore does not establish simultaneous confidence coverage for both signal routes.\n\nFix the two mismatches above without changing thresholds or verdict policy.",
+  "input_sha256": "1009200df26dcdca1af7a958b6249f761f4397a215b02f2d9f60da911c6e1f9f"
+}

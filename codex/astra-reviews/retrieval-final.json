@@ -1,0 +1,24 @@
+{
+  "id": "resp_0640c68094720160016af888a50e8087d2a8e9f49d598e445a",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 13652,
+    "input_tokens_details": {
+      "cache_write_tokens": 13649,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 13649
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 1726,
+    "output_tokens_details": {
+      "reasoning_tokens": 1009
+    },
+    "total_tokens": 15378
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK — authoritative-output orchestration needs two small fixes\n\nThe scoring and threshold logic appear consistent with the preregistration. The blockers are in the actual execution path, not checkpoint staging or model smoke readiness. This is a static source review; I have not executed the worktree.\n\n### 1. Optional E2 currently gates authoritative evaluation\n\n**Locations:** `preflight()` and `slurm/headroom.sbatch`.\n\n- Preflight unconditionally requires the COCO annotation ZIP and all 5,000 E2 JPEGs.\n- Slurm runs `e2_build_queries.py` **before** Half-Truths evaluation and aggregation, under `set -e`.\n\nConsequently, an E2-only input or query-construction failure prevents authoritative COR output. This contradicts the stated requirement that E2 be optional and run after authoritative output. The final E2 scoring loop is appropriately nonfatal, but its preparation is not.\n\n**Minimal change:** separate E2 input checks from authoritative preflight; move query construction after `--aggregate`, and skip E2 with a logged reason if its checks or construction fail.\n\n### 2. Supported partial-evidence verdicts are not preserved by the runner\n\n**Locations:** the authoritative model loop in Slurm and the final write in `headroom.py::main()`.\n\n`decide()` correctly permits:\n- FAIL from any valid required fixed-index score ≥85, despite another missing score;\n- PASS/gray when fixed baselines are complete but the reranker is missing.\n\nHowever:\n- Any model-process failure aborts Slurm before aggregation. In particular, a reranker failure prevents both the subsequent CLIC evaluation and the verdict.\n- Each model JSON is written only after all three subsets finish. Failure on a descriptive subset therefore discards an already-computed primary COCO result.\n\nThis does **not** falsely produce experimental FAIL; it can suppress valid evidence and prevent the preregistered partial-evidence interpretation.\n\n**Minimal change:** save each completed subset, starting with the primary subset; log individual model failures, continue the remaining model attempts, and then aggregate available validated outputs. Missing scores must remain missing—not become zero. Add a regression test covering a missing reranker and a valid ≥85 fixed score with another fixed model missing.\n\n### Checks that pass\n\n- **COR:** strict `full > anchor > half`; ties lose.\n- **Thresholds:** unrounded percentage points; `<75`, `[75,85)`, and `≥85` implemented correctly.\n- **Controls:** reranker ≥90 changes scope only; CIs and E2 do not change the verdict.\n- **Required models:** the pinned CLIC revision makes CLIC required in aggregation, consistent with its preregistered inclusion. I am not treating its separate staging/smoke gate as a blocker.\n- **Frozen inference:** new encoders use evaluation/inference mode, independent image/text encoding and L2 normalization. Reranker logit difference and fallback full-vocabulary log-probability match the specified formulas.\n- **Resources:** the entry point requests one GPU for three hours.\n\n### Limitations\n\nExact author-wrapper parity, cached CS-vector provenance beyond ID/SHA alignment, and bootstrap/query seeds cannot be independently established from these excerpts alone. `params.json`, the E2 helpers and `env.sh` are not supplied; their contents and the submission worktree revision should be retained with the run. The supplied successful offline smokes address loading readiness, not full-dataset runtime or completion within the cap.",
+  "input_sha256": "79b25a6b4cdc8b339aaacdb104d88302156791c8fa0b24dce3b315c36e16bb34"
+}

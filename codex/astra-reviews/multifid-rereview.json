@@ -1,0 +1,24 @@
+{
+  "id": "resp_07d875db84fbaf3f016af882daa2b487d2881673dc5577b210",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 22724,
+    "input_tokens_details": {
+      "cache_write_tokens": 22721,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 22721
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 2807,
+    "output_tokens_details": {
+      "reasoning_tokens": 2065
+    },
+    "total_tokens": 25531
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK\n\nOne concrete aggregation correctness issue can prevent valid primary evidence from receiving a verdict. This is not a finding about experimental outcomes.\n\n### Blocking issue: optional diagnostics can abort the primary verdict\n\nIn `scripts/aggregate.py`, the stage-0 descriptive split-half diagnostics call:\n\n```python\nspearmanr(\n    lds_q(C, masks[0::2], L[0::2]),\n    lds_q(C, masks[1::2], L[1::2]),\n    nan_policy=\"omit\",\n)\n```\n\nThere is an equivalent call for exact Y. These run **before the final `save_verdict()`**, without handling insufficient finite pairs.\n\nFull-M LDS can be defined even when half-M LDS is undefined: predictions can be constant within each half but differ between halves. Therefore all required primary quantities can be valid while only one query has finite LDS in both halves. SciPy’s omitted-NaN Spearman calculation then raises `ValueError` for insufficient observations rather than returning NaN.\n\nConsequently, a **description-only statistic can abort aggregation and leave no current verdict**, despite a valid primary decision. The existing `finite_float()` does not help because the exception occurs before it is called.\n\n**Minimal change**\n- Add a safe descriptive-correlation helper that checks paired finite observations and rank variation, returning `None` when correlation is undefined.\n- Use it for these split-half calls and the analogous optional stage-1 correlations.\n- Add a regression test with finite full-M LDS but only one finite paired split-half observation; assert that the primary verdict is saved and the diagnostic is null.\n\n### Checks that match the preregistration\n\n- **Formulas:** removal sign, query-wise Spearman LDS, top-eigenvector Gram subspace, scalar α, Spell/hybrid projections, κ and residual κ match the stated definitions.\n- **Formal stage-0 thresholds:** phenomenon’s exclusive 0.80 ceiling, signal/headroom interval boundaries, and cross-seed `H_x ≥ 0.05` agree between specification, criteria, and implementation.\n- **Bootstrap:** headroom correctly recomputes the better baseline within each paired query resample.\n- **Controls:** row-permuted C is refitted through the same hybrid estimator; both negative-control conditions are enforced before substantive PASS/FAIL. Undefined required correlations are generally treated as untestable.\n- **Inputs:** aggregation requires all seven methods, all scheduled same-seed retrains, the noise repeats, and contiguous exact-Y coverage for the selected query range.\n- **Supplied Slurm entry points:** `s0_cheap.sbatch` invokes the reviewed scorer and forwards the optional fidelity reference; `s1_crossseed.sbatch` requests seed 5 and masks 0–99 across four tasks. Both source GPU-required configuration.\n\n### Limitations—not additional blockers\n\n- The enclosed source omits the training, retraining, exact-replay and gate implementations, dependency locks, and most Slurm scripts. Thus frozen training/evaluation parity, actual mask/query generation, replay correctness, library defaults, and the complete submission/dependency chain cannot be independently certified here.\n- The highest-precision inference reference is an allowed fidelity repair, not a training change. Its supplied implementation checks checkpoint identity and query order, but this does not establish provenance for every other artifact.\n- Aggregation records the **current** code/configuration hashes; that alone does not prove all consumed artifacts were produced by that version.\n- No runtime tests, gate results, throughput measurements, or experimental outcomes were available or inferred.\n\nFix the diagnostic exception path before submission; no threshold or experimental-design change is needed.",
+  "input_sha256": "c09cbd6a381057a984879c107d0682db0e0434d4e24c3046cf05b0e939c9a526"
+}

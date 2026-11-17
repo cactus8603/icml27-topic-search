@@ -1,0 +1,24 @@
+{
+  "id": "resp_05691671ecfe31cd016af884dcaf9887d29de3f339d2cfdc63",
+  "model": "gpt-6-astra",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 40410,
+    "input_tokens_details": {
+      "cache_write_tokens": 40407,
+      "cache_write_tokens_details": {
+        "ttl_12h_tokens": 0,
+        "ttl_30m_tokens": 40407
+      },
+      "cached_tokens": 0
+    },
+    "output_tokens": 2539,
+    "output_tokens_details": {
+      "reasoning_tokens": 1836
+    },
+    "total_tokens": 42949
+  },
+  "incomplete_details": null,
+  "text": "## BLOCK\n\n**One concrete preregistration-enforcement failure remains.** This is a source-only review; I did not execute tests or inspect experimental results.\n\n### Blocking: the “one extra analysis only” restriction is not enforced\n\nIn `slurm/05_extra_signal.sbatch`, eligibility is checked against:\n\n```text\n$CHAM_BASE_RESULTS/RESULT.json\n```\n\nBut the updated verdict, including `signal.used_extra=true`, is written only to:\n\n```text\nresults/extra_$SLURM_JOB_ID/RESULT.json\n```\n\nThe original base result remains grey with `used_extra=false`. Submitting the script again against that same registered base therefore passes the guard and creates another extra analysis. This directly violates the preregistered single-use restriction—even though rerunning identical deterministic calculations would not itself create independent evidence.\n\n**Minimal change:** atomically reserve a single extra-analysis attempt in the base directory, recording its output directory and job ID. Reject subsequent new attempts against that base; permit explicitly recorded recovery of the same attempt after an operational failure. Preserve the original result.\n\n**Regression test:** after an extra analysis finishes—including one that remains grey—a second invocation against the original base must be rejected.\n\n### Checks that agree with the current preregistration\n\n- Gates 1–3 prevent scientific adjudication when unsuccessful; deception reproduction checks are report-only.\n- H12 uses the registered `≥0.30` phenomenon threshold. H8 is space, not a gate.\n- Space implements the registered point-estimate and CI conditions.\n- Signal implements S-a OR S-b, the 97.5% S-b interval, and the specified FAIL condition.\n- **Valid PC-loo or S-b evidence takes precedence over the FAIL branch.** An unavailable PC does not become signal FAIL; S-b can still establish PASS.\n- PC headroom, recovery, tax, eligibility count, and averaging formulas match C1. Inclusive-boundary tolerance protects the principal adjudication thresholds against floating-point roundoff.\n- The extra job retains base PC and space judgments; only the extra S-b result enters adjudication.\n- Production cache validation checks expected rows, conditions, indices, layer order, fingerprints, finite values, and main/extra ID disjointness. Model and tokenizer revisions are pinned.\n- `03_analyze.sbatch` actually runs selftest → analysis → aggregation in a job-specific result directory.\n\n### Verification limitations—not additional blockers\n\nThe supplied material omits `common.py`, `monitors.py`, `build_datasets.py`, `slurm/env.sh`, and `04_inv_probe.sbatch`. Consequently, I cannot independently verify:\n\n- Quantile/tie handling, bootstrap pairing, SVD, augmentation, optimizer scaling, or family-specific training/evaluation transforms.\n- Dataset construction and content-level split disjointness.\n- Runtime environment/path resolution or the claimed disabled INV entry point.\n\nThe extra job **refits monitors rather than loading frozen fitted models**. Its visible calls retain the training inputs and default seeds, but exact training parity depends on the omitted implementation; it is not demonstrated here.\n\nTwo nonblocking reporting limitations also remain: the secondary-results table labels the 97.5% entry as “95% CI,” and S-a retains C1’s point-threshold rule rather than computing a confidence interval. Thus the blanket “m=2, 97.5% CI” wording should not imply that both routes have CI-based validation.",
+  "input_sha256": "9a773fbbfd9714d5e1a4045128c050ec90cd9e1ed7c06cab511089e7781c98e2"
+}
