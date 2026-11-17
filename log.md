@@ -82,3 +82,5 @@
 [codex] 2026-11-17 15:45:09+0800 重新授權後central handoff成功：GME2 literal allowlist已補，51原task/order不變、12CPU回歸PASS、2b23來源fresh非實作者PASS、046 schedule凍結。無signal實機預檢及SIGSTOP後兩次完整capture均PASS，只退役exact舊父354478；唯一新中央2903985/start277764779/boot f34b259e-fe82-4dd1-ad7e-82b9e76bf226已完成來源gate並採用GPU0 CORE8 MCMR及GPU4/5兩CORE2原worker/lease，未signal worker。新版時段、chain、preemption escrow gates啟用；GME2批次1checkpoint續跑及新dev工作計畫待追加。READ_STARTED335305行政作廢獨立PASS。兩已完成8B任務純CPU有登記mechanical已啟動，資格與新主數字仍待fresh獨立；初始clean三模型表不變。收據icml27-compositional-retrieval@38bd6c9，報告持續更新，其他session修改保留。
 
 [codex] 2026-11-17 16:54:41+0800 矩陣分批更新：中央2903985唯一並保留原三worker；What’sUp六原標註與四影像完整下載、SHA與所有引用存在PASS，不跑模型，作者commit7c1f255，指定SSD收據已保存，題目副本460a5bc。新dev3來源1f8、計畫7c27、fresh sourcePASS，56工作中央候選6009待來源審查及實機交接；未送未核定效果。Qwen8單筆native fresh獨立一致但真資格仍待；CORE8 embedding獨立成本欄修正新reader重算。兩指定報告已更新，來源/結果只於本方clone提交，其他session修改不碰。
+
+[claude] 2026-11-17 11:30：依使用者決定集中資源在兩條主線（多條件檢索、多保真度歸因）。Λ 跑完西語停損後暫緩；文生圖（潛力 4→3）與強驗證器暫緩，佇列中的作業照常跑完。多保真度另發現先前的「Spell」baseline 實為 Mage 類；離線真 Spell（0 GPU）已實作，開發面板上 B=20 期望 LDS 0.168（舊版 0.121）、B=40 0.259（0.244）。

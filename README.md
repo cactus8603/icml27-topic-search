@@ -6,15 +6,15 @@
 
 ## 進度總表
 
-[claude] 2026-11-17 更新（多保真度於 07:40 依停損結果再更新）。內容取自各題 repo 的 `VERDICT.md`（正本）和 Slurm 佇列。判準是報告 60 的「現象、訊號、改善空間」三項。符號說明：✅ 已成立；◐ 部分成立或未定；⏳ 量測中；— 尚未量。
+[claude] 2026-11-17 更新（多保真度於 07:40 依停損結果再更新；11:30 依使用者決定，兩條主線以外的題目暫緩）。內容取自各題 repo 的 `VERDICT.md`（正本）和 Slurm 佇列。判準是報告 60 的「現象、訊號、改善空間」三項。符號說明：✅ 已成立；◐ 部分成立或未定；⏳ 量測中；— 尚未量。
 
 | 題目 | 現象 | 訊號 | 改善空間 | 證據／潛力 | 目前作業 |
 |---|---|---|---|---|---|
 | [多條件檢索](https://github.com/cactus8603/icml27-compositional-retrieval) | ✅ 已入池。CS-CLIP 嚴格三句排序只有 58.15%；左右顛倒句只判對 49.59% | ✅ CORE 重排前 50 名，獨立圖庫 mAP +15.79 點 | ✅ 距標註上限 12.87 點，固定前 50 名差 19.50 點；31/136 查詢前 50 名沒有正例 | 4/5、4/5 | 基線矩陣（P0–P4）在本機 3090 排隊；交錯召回 `26806` 判為未定（+0.25 點 Recall@50） |
 | [多保真度歸因](https://github.com/cactus8603/icml27-multifidelity-attribution) | ✅ 期望真值停損 PASS：精確 K=4 平均 0.437 對 K=1 0.300（+0.137，近乎由 Spearman–Brown 決定）；精確重播對跨種子穩定成分的保真度約 0.84 | ◐ GREY：Spell＋便宜集成只多 +0.020 [−0.001, +0.042]；固定收縮公式無增益 | ✅ PASS：K=4 精確平均比最佳便宜集成（EK-FAC E4 0.240）高 +0.197 [0.153, 0.241]，留一種子 8/8 為正；同預算 K=1 對 E4 只 +0.059 | 2.5→**3.5**、4 | `27590`／`27591` 07:26 完成，Fable 判定方向存活、升主線（[報告 68](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-68-verdict-expected-lds-27590.md)）；下一步同成本便宜基線（TRAK 20–50 模型，約 3–4 H200 小時），待寫 PREREG |
-| [Λ 漏出預測](https://github.com/cactus8603/icml27-inoculation-lambda) | ◐ 語言漏出成立（無防禦 17/20 含西語，其他 0/20）；GCD 無防禦漏出只有 3–5%，前置閘門未過 | ◐ 51 格比較經獨立複核判**未能測試**：0/24 臂對可判定；不明回答佔 20.3%（嚴格格式＋64 token），Λ 的 0.75 一致率實為預測格式錯誤率 | — 未量。CPU 格式診斷：不明回答主因是格式漂移、不是截斷；寬鬆評分救回 77.7%，但 GCD 臂間只差約 6 點，GCD 任務不再重跑 | 2（偏下）、4→**3** | 西語臂間停損經 Fable 兩輪審查凍結（10 臂 × 2 seed，上限 4.5 H200 小時）；Stage A `27594` 排在多保真度之後 |
-| [文生圖罕見失敗](https://github.com/cactus8603/icml27-t2i-rare-failure) | ◐ CLIP 前置檢查通過；正式雙偵測器事件率待測 | ◐ 代理設定 213/10,000 命中；正式訊號待人工盲評 | ◐ 高斯模擬省 88 倍（10⁻⁵）、13 倍（10⁻⁴）；實際生圖待量 | 2/5、4/5 | `27190` 第二段 10/11 格完成；`27190_11` 依使用者指示（H200 讓給多保真度）04:52 重新排隊，殘留 lock 與半成品待 Codex 處理（`HOLDS.md`）→ `27512` 第二段 b 選格 |
-| [強驗證器](https://github.com/cactus8603/icml27-fallible-verifier) | ◐ 強模型誤收 23.32%（GSM8K）、57.29%（ASDiv-A）；共同誤收未確立 | ◐ GSM8K Brier −41.95% 通過；ASDiv-A −6.35% 未過 15% 門檻 | ◐ 省 11.70%（低於 20% 門檻），事後最佳 48.29% 偏樂觀 | 3/5、3/5 | 閒置；下一步（新題組＋同資訊抽查基線）未凍結 |
+| [Λ 漏出預測](https://github.com/cactus8603/icml27-inoculation-lambda) | ◐ 語言漏出成立（無防禦 17/20 含西語，其他 0/20）；GCD 無防禦漏出只有 3–5%，前置閘門未過 | ◐ 51 格比較經獨立複核判**未能測試**：0/24 臂對可判定；不明回答佔 20.3%（嚴格格式＋64 token），Λ 的 0.75 一致率實為預測格式錯誤率 | — 未量。CPU 格式診斷：不明回答主因是格式漂移、不是截斷；寬鬆評分救回 77.7%，但 GCD 臂間只差約 6 點，GCD 任務不再重跑 | 2（偏下）、3 | 跑完已凍結的西語臂間停損（Stage A `27594` 完成；join `27745` 排在多保真度之後，約 3 H200 小時），**結果出來後暫緩**；不另開新實驗 |
+| [文生圖罕見失敗](https://github.com/cactus8603/icml27-t2i-rare-failure) | ◐ CLIP 前置檢查通過；正式雙偵測器事件率待測 | ◐ 代理設定 213/10,000 命中；正式訊號待人工盲評 | ◐ 高斯模擬省 88 倍（10⁻⁵）、13 倍（10⁻⁴）；實際生圖待量 | 2/5、4→**3** | **暫緩（2026-11-17）**：完整論文需 300–400 H200 小時與人工盲評，截稿前難完成。已在佇列的 `27190_11`、`27512` 依規則跑完，之後不再送件 |
+| [強驗證器](https://github.com/cactus8603/icml27-fallible-verifier) | ◐ 強模型誤收 23.32%（GSM8K）、57.29%（ASDiv-A）；共同誤收未確立 | ◐ GSM8K Brier −41.95% 通過；ASDiv-A −6.35% 未過 15% 門檻 | ◐ 省 11.70%（低於 20% 門檻），事後最佳 48.29% 偏樂觀 | 3/5、3/5 | **暫緩（2026-11-17）**：省費 11.70% 未過 20% 門檻，不再投入 |
 | [RL 稀疏蒸餾](topics/rl-sparse-distill/)（**暫停**） | ◐ 外部 32K 有交叉（pass@1 +7.60、pass@64 −1.30）；原 3K 配對截斷，不可比 | ◐ 單 token 分叉 +34.38 點，但截斷使區間為 −8.59 至 +39.06 | ◐ 分叉上限差 2.34 點；pass@64 上限差 3.68 點 | 2/5、3/5 | 暫停（2026-11-17） |
 
 ## 資源總表
@@ -51,14 +51,11 @@
 - [多條件影像檢索](topics/compositional-retrieval/)　[repo `icml27-compositional-retrieval`](https://github.com/cactus8603/icml27-compositional-retrieval)　**第一主攻**，在本機 3090 上進行。
 - [用少量精確計算改善訓練資料歸因](topics/multifidelity-attribution/)　[repo `icml27-multifidelity-attribution`](https://github.com/cactus8603/icml27-multifidelity-attribution)　**第二主攻，H200 主線（使用者 2026-11-17 指示）**。期望真值停損現象與空間 PASS、訊號 GREY（[報告 68](https://github.com/cactus8603/icml27-multifidelity-attribution/blob/main/reports/2026-11-17-68-verdict-expected-lds-27590.md)）。主張：多種子期望目標下精確重播的價值與約 0.84 的保真缺口。**本題的 H200 作業優先於其他所有題目**（Λ、文生圖等排在後面）。下一步：同成本便宜基線停損（PREREG 審查中）。
 
-## 優先完成現象與訊號
+## 暫緩（2026-11-17 使用者決定：集中資源在兩條主線）
 
-- [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)　[repo `icml27-inoculation-lambda`](https://github.com/cactus8603/icml27-inoculation-lambda)（已搬）　補完四類防禦的漏出差異，檢查 Λ 能否預測哪種設定比較容易漏出。
-- [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)　[repo `icml27-t2i-rare-failure`](https://github.com/cactus8603/icml27-t2i-rare-failure)（已搬）　補完正式事件率和人工盲評，確認生成失敗有多罕見、偵測器報出的陽性有多少是真的。
-
-## 其他候選
-
-- [強驗證器與少量金標](topics/fallible-verifier/)　[repo `icml27-fallible-verifier`](https://github.com/cactus8603/icml27-fallible-verifier)（已搬）
+- [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)　[repo `icml27-inoculation-lambda`](https://github.com/cactus8603/icml27-inoculation-lambda)　證據 2/5（偏下）、潛力 3/5。只跑完已凍結的西語臂間停損，之後暫緩。
+- [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)　[repo `icml27-t2i-rare-failure`](https://github.com/cactus8603/icml27-t2i-rare-failure)　證據 2/5、潛力 4→3/5。已在佇列的作業跑完，不再送新作業，人工盲評不排。
+- [強驗證器與少量金標](topics/fallible-verifier/)　[repo `icml27-fallible-verifier`](https://github.com/cactus8603/icml27-fallible-verifier)　證據 3/5、潛力 3/5。閒置，不再投入。
 
 ## 暫停與淘汰
 

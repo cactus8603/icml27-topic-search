@@ -11,10 +11,11 @@
 
 - [多條件檢索](topics/compositional-retrieval/)的同圖三句排序通過。跨圖的新召回方法由各自的實驗設計驗證。
 
-## 優先完成現象與訊號
+## 暫緩（2026-11-17 使用者決定）
 
-1. [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)
-2. [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)
+1. [用訓練前的 Λ 預測防禦漏出](topics/inoculation-lambda/)　只跑完西語臂間停損，之後暫緩。
+2. [文生圖罕見失敗的機率估計](topics/t2i-rare-failure/)　佇列中的作業跑完後不再送件。
+3. [強驗證器與少量金標](topics/fallible-verifier/)　閒置。
 
 ## 暫停
 
