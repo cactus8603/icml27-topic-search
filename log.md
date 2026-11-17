@@ -102,3 +102,5 @@
 [codex] 2026-11-17 21:54:39+0800 L14六組新dev正式9401939e/比較3197dccb PASS、20筆v6 ledger閉合，31e22be封存、544d747後按短搬運公布abbad1e；CORE2 fresh90161接續。CORE8 MCMR已PASS公開、top100限制明列。K50v3 3ddb685修原start字串再hash錯誤、15toysPASS，尚未actual。r4v4來源60PASS，預檢等原anchor，唯一r3不中斷、尚未actual ready/capture；整體矩陣未完、自建test未跑。前次HOLDS人工22:10狀態戳誤填，現以系統Asia/Taipei更正，原ledger/Git時序未變。
 
 [codex] 2026-11-17 22:44:33+0800 唯一中央r3仍運作；v5 acb51a8非實作者65項SOURCE PASS，readiness SETTLED_READY，正式handoff45563完整gate中，原worker/lease不中斷。CORE8兩組clean重排皆模型前guard拒絕、child null，L14後65338已補SUBMITTED，無分數。已公開5 embedding clean/2 CORE2 K100、B32/L14新dev與CORE8 MCMR；CORE2 fresh raw中。K50獨立io_v2依賴缺失失敗閉合保留，b3b3d98修正版22 tests PASS、metadata-only先行；K200 v2來源PASS未入佇列。完整矩陣未完，自建test未跑。
+
+[codex] 2026-11-17 23:34:49+0800 K50兩組非實作者raw重建與比較皆PASS，正式bd38aa1、短搬運c508c92及表b094d27；9列dev-clean總表3a767de已推送題目repo 6f8ea23。唯一中央仍r3，handoff45563完整來源gate中，未退役原父程序；原Qwen8 MCMR chain-worker572003 token/lease一致、heartbeat starting，未有model child。CORE2新dev raw已閉合，compare64752進行；GME2/CLIPS原worker不中斷。CORE8新dev v1/v2來源阻擋收據保留，最小修正版4bd706e、13 CPU tests PASS交非實作者複審，尚未入佇列。K200來源PASS、attr/GME續跑候安全交接，完整矩陣未完，自建test未跑。
