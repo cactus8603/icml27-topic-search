@@ -78,3 +78,5 @@
 [claude] 2026-11-17 08:50：依使用者指示，多保真度歸因升為 H200 主線；本題 H200 作業優先於其他所有題目（README、shortlist、HOLDS 已更新）。同成本便宜基線停損 PREREG 草稿完成、Fable 審查中。Λ 西語 join `27595` 因 PHM 收據的設計雜湊欄位被覆蓋而失敗；簿記修正 `caddb65`（不動分數與門檻，PREREG §6 第 10 點揭露），join 重送為 `27745`。
 
 [codex] 2026-11-17 15:30:55+0800 Claude代使用者授權接續thread01a1e5cb，已在HOLDS登記完整新要求、devsets新版c64ea8 manifest、8B同worker單lease鏈／時段與搶占規則、批次一致性、COLA敏感度、CLIC MCMR NA、CPU下載WhatsUp官方資料。中央尚未交接，原354478與現存worker保持。READ_STARTED335305已用原append協定追加READ_FAILED行政作廢，原ledger45筆與anchor91筆prefix完整、無payload讀取；非實作者metadata核驗PASS。r2候選e59審查7項必修保留收據，修正版CPU回歸中；未讀任何新效果。同步原中央新增送件紀錄，未修改封存來源或他session。
+
+[codex] 2026-11-17 15:45:09+0800 重新授權後central handoff成功：GME2 literal allowlist已補，51原task/order不變、12CPU回歸PASS、2b23來源fresh非實作者PASS、046 schedule凍結。無signal實機預檢及SIGSTOP後兩次完整capture均PASS，只退役exact舊父354478；唯一新中央2903985/start277764779/boot f34b259e-fe82-4dd1-ad7e-82b9e76bf226已完成來源gate並採用GPU0 CORE8 MCMR及GPU4/5兩CORE2原worker/lease，未signal worker。新版時段、chain、preemption escrow gates啟用；GME2批次1checkpoint續跑及新dev工作計畫待追加。READ_STARTED335305行政作廢獨立PASS。兩已完成8B任務純CPU有登記mechanical已啟動，資格與新主數字仍待fresh獨立；初始clean三模型表不變。收據icml27-compositional-retrieval@38bd6c9，報告持續更新，其他session修改保留。
