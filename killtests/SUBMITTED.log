@@ -423,3 +423,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 23:55 [claude] disk just-in-time: RL env deletion freed ~0 (hardlinked to unapproved uv cache tmp/oat-vllm084-uv-cache 11G); deleted user-approved icml/envs/biasgen (7.2G unique) -> quota 1521/1536G
 2026-11-17 23:55 [claude] Fable signed off K8 freeze A; submit 27915 mf-k8-panel array 1-8,11-18,21%2 + analyze 27916 (afterany) freezeB=13607660ff3e5abe6bc208d690321a6e32256ad0 (14.17h est); multifid top priority
 2026-11-18 00:39 [claude] submit 27920 mf-astra v2 astra-only (alpha sweep 1q x10 seeds x6 alphas + 50q; reuses 27851; 1h; nice=200, after K8 analyze 27916) freeze=b6744fc6e418df34d0c7589b576d14eb557c5362; CPU precheck PASS (mu_max 444-490, stable alpha<=1e-3, descent ok, 19 tests)
+2026-11-18 00:46 [claude] queue triage: removed 27920 (ASTRA v2, ~20min) dependency on K8 analyze — K8 array capped %2 and 2 account GPUs idle; does not delay K8
