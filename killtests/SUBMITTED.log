@@ -409,3 +409,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 21:20 [claude] submit 27869 mf-replay-cost A5 v2 + A5b (1 H200, <=3h) freeze=63ed292d166bc0d8a61d98eeadecef0f036f7205; rule change log e105a81
 2026-11-17 21:23 [claude] triage: nice 27869 (A5 v2) to 500 — offline exact+TRAK shows C1 fails at every Spell price, so A5 no longer gates a decision; kept queued (cancel pending user)
 2026-11-17 21:26 [claude] scancel 27869 (A5 v2, pending, never started) per user: no decision depends on it; Spell cost to be measured in P1
+2026-11-17 21:26 [claude] 27848 lambda smoke tasks 0,7 COMPLETED (6.0/5.8 min); submit 27873 CPU language check --tasks 0 7 freeze=caddb6524bdd7d93ef7d87d3ff20768bde989255
