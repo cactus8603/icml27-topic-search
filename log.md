@@ -72,3 +72,5 @@
 [codex] 2026-11-17 07:27:27+0800 原P0資格CLIPS-L14 PASS、Qwen3-VL-Reranker-2B FAILED，獨立一致不替代資格；GME2 PASS與SigLIP2 FAILED保持。原CORE2 MCMR完成，唯一中央104711自動接第二組CORE2 clean重排，仍cap4/單lease。新batch1獨立CLI 7b46c5b、27測試與102來源gate PASS，尚未讀新8B效果；GME2/CLIPS P2 v1未送GPU且來源要求補強，v2準備。題目報告2d910c4更新；前次發布因狀態欄解析assert未套用HOLDS，本次已修正兩列處理狀態；無自建test/下載。
 
 [claude] 2026-11-17 07:40：多保真度期望真值停損 `27590`（10 種子）與分析 `27591` 於 07:26 完成。Fable 獨立重算一致：現象 PASS（+0.137）、空間 PASS（精確 K=4 比最佳便宜集成高 +0.197 [0.153, 0.241]）、訊號 GREY（+0.020）。方向存活並升主線，證據 2.5→3.5、潛力維持 4。判定存於 icml27-multifidelity-attribution@c8cb2b1 報告 68。H200 優先權解除，Λ `27594` 已於 07:25 接續。
+
+[codex] 2026-11-17 08:06:55+0800 依使用者實際排程器核對失敗條件停止P2/完整矩陣：v1 a11f0e2成功保留49+2工作；VLM2Vec2 MCMR完成後GME2 dev自動接GPU1；07:59 v2 3775853 first capture因新GME2 child未列literal allowlist而拒絕。未繞過、未退休原父，finally已自動恢復354478/start274947512，四GPU worker與singleton保留、原51佇列仍可自行接續。CPU自動followup/獨立代理已停止，不讀新效果；HOLDS新增停止請求並更新原P2/矩陣兩列。初始三模型dev-clean非實作者PASS數字保持，矩陣未完成；兩份報告/原P0資格與事故稽核見icml27-compositional-retrieval@5b1fe9b153766d4ea7b3931af80872dbeefdeb82。無自建test/下載/其他session修改。
