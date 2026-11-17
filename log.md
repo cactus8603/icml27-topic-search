@@ -86,3 +86,5 @@
 [claude] 2026-11-17 11:30：依使用者決定集中資源在兩條主線（多條件檢索、多保真度歸因）。Λ 跑完西語停損後暫緩；文生圖（潛力 4→3）與強驗證器暫緩，佇列中的作業照常跑完。多保真度另發現先前的「Spell」baseline 實為 Mage 類；離線真 Spell（0 GPU）已實作，開發面板上 B=20 期望 LDS 0.168（舊版 0.121）、B=40 0.259（0.244）。
 
 [codex] 2026-11-17 18:07:35+0800 矩陣分批更新：18:04 exact parent-only交接PASS，舊2903985退役，新3774174/start278630597/boot f34b259e-fe82-4dd1-ad7e-82b9e76bf226已啟動；原CORE8 MCMR worker與lease不中斷，新run尚在啟動來源核驗未取得singleton，未宣稱dev開始。56任務schedule454c55a與完整capture收據保存題目。兩CORE2 clean GPU/機械完成、fresh獨立重算中；GME2/CLIPS clean機械執行中。CORE8 embedding真原P0 PASS；Qwen8 native真原P0 FAILED，3官方基準僅1匹配，不放寬。資格/數字/CI/成本及fresh證據f7f73a7、clean機械與新dev獨立來源592e3e9均題目repo；乾淨clone merge保留Claude提交。READ_STARTED已行政作廢；What’sUp先前完成可交Claude。其他矩陣續作，新dev機械來源審查中，未讀其主數字。
+
+[codex] 2026-11-17 18:54:52+0800 分批矩陣：r3唯一中央3774174已持有singleton，原CORE8 MCMR不中斷，三新dev worker來源預檢starting，白天共4；運作收據與報告題目8fc6c34。兩CORE2 clean GPU與機械完成、fresh第一組PASS第二組收據中；GME2/CLIPS clean機械完成、fresh重算中。CORE8原P0 PASS，Qwen8原P0 FAILED排除。jina新非實作者metadata cbf0f0c凍結，專屬anchor前置缺漏已補、不改frozen source或foreign檔。What’sUp完成交Claude；剩餘矩陣續作。

@@ -5,3 +5,4 @@
 [claude] icml27-multifidelity-attribution/code/experiments/multifidelity-samecost-baselines/ 2026-11-17 07:50 2026-11-17 12:00
 [claude] icml27-inoculation-lambda/code/experiments/lambda-spanish-family/ 2026-11-17 08:10 2026-11-17 09:30
 
+[codex] HOLDS.md、killtests/SUBMITTED.log、log.md matrix-20261117-root 2026-11-17 18:59 預計19:05；僅本次矩陣狀態與本方送件append，保留其他session修改
