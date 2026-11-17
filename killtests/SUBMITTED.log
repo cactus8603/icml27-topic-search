@@ -406,3 +406,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-17 20:21 start local3090-4141165 compositional-retrieval central-task=devsets-batch1-v3-clic_clips_l14 GPU=GPU-b6f521f7-c314-b23e-abac-92a7fc6c828a original-frozen-command icml27-compositional-retrieval@7c27c402c7718300cb158cbffbe50135f7240159
 2026-11-17 21:12 [claude] 27825 A5 exit 1 after 56min: receipt written, consistency checks 4.1e-3/6.3e-3/2.2e-3 >= 1e-3 (TF32) -> INTERPRET §5 no verdict; descriptive: Spell round 173s (~3.0x C1/50), fwd 45% -> A5b triggered; fix+resubmit pending
 2026-11-17 21:12 [claude] 27851 ASTRA/SOURCE COMPLETED 29min; ASTRA diverged on all 50 queries (diagnosis pending); 27848_0 lambda smoke task0 COMPLETED 6min
+2026-11-17 21:20 [claude] submit 27869 mf-replay-cost A5 v2 + A5b (1 H200, <=3h) freeze=63ed292d166bc0d8a61d98eeadecef0f036f7205; rule change log e105a81
