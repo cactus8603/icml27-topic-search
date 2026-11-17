@@ -389,3 +389,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 18:14 [claude] submit 27794 mf-replay-cost A5 (1 H200, <=1.5h) freeze=a7722304c1bf0909596c92f383c999b551258da3 icml27-multifidelity-attribution; measures replay/Spell-direction/forward-mode cost, no truth files
 2026-11-17 18:41 [claude] 27754 samecost smoke COMPLETED passed=True (receipt 716fad16…); budget.json M1*=47 M4*=120 T=3.50h no degradation; freezeB=4a04b7f4bdac3f5948c263dec0c33f23c2a773bd
 2026-11-17 18:41 [claude] submit 27822 mf-samecost array 1-4%4 + analyze 27823 (afterany) freezeB=4a04b7f4bdac3f5948c263dec0c33f23c2a773bd icml27-multifidelity-attribution
+2026-11-17 18:44 [claude] 27794 A5 FAILED at start (exit 3, quota HOLD: awk parser missed wrapped quota line on compute node; nothing written)
+2026-11-17 18:44 [claude] resubmit 27825 mf-replay-cost A5 freeze=c4bd2d5d796a3e937e8919fad5abb7fff75dabe1 (quota parser fix only)
