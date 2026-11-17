@@ -5,3 +5,4 @@
 [claude] icml27-multifidelity-attribution/code/experiments/multifidelity-samecost-baselines/ 2026-11-17 07:50 2026-11-17 12:00
 [claude] icml27-inoculation-lambda/code/experiments/lambda-spanish-family/ 2026-11-17 08:10 2026-11-17 09:30
 
+[claude] icml27-multifidelity-attribution/paper/ 2026-11-17 09:30 2026-11-17 14:00
