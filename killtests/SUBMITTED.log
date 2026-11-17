@@ -420,3 +420,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-17 23:27 [claude] lambda Spanish closed: Fable verdict 'measurement not testable' (report 75 in topic repo); topic paused per user plan
 2026-11-17 23:47 [claude] 27895 K8 smoke COMPLETED passed=True (21min; receipt 649e9bd1…); freezeB=13607660ff3e5abe6bc208d690321a6e32256ad0 budget 14.17h no degradation, indices 1-8,11-18,21; array waits for Fable freeze-A sign-off
 2026-11-17 23:51 [claude] disk just-in-time: deleted user-approved icml/envs/oat-vllm072 (6.6G) + oat-vllm084 (4.1G) (RL paused, no process/job using them) to clear K8 array quota gate; quota now 1528G/1536G
+2026-11-17 23:55 [claude] disk just-in-time: RL env deletion freed ~0 (hardlinked to unapproved uv cache tmp/oat-vllm084-uv-cache 11G); deleted user-approved icml/envs/biasgen (7.2G unique) -> quota 1521/1536G
+2026-11-17 23:55 [claude] Fable signed off K8 freeze A; submit 27915 mf-k8-panel array 1-8,11-18,21%2 + analyze 27916 (afterany) freezeB=13607660ff3e5abe6bc208d690321a6e32256ad0 (14.17h est); multifid top priority
