@@ -1,0 +1,19 @@
+======================================================================
+[criteria 2026-11-14-b] 閘門 1（有限差分 Pearson ≥ 0.9）：PASS  pooled r=1.000  n=34  斜率(實測/預測)=1.00
+閘門 1 逐 trait（只描述）：min |預測Δτ| 全體 = 4.63e-05
+  grant_allcaps_qwen7b_fd            n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.00347
+  grant_evil_qwen7b_fd               n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.00606
+  grant_hallucinating_qwen7b_fd      n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.0078
+  grant_optimistic_qwen7b_fd         n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.000303
+  grant_pirate_qwen7b_fd             n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.000458
+  grant_spanish_qwen7b_fd            n= 3  pearson=  1.000  斜率=  1.000  min|pred|=4.63e-05
+  grant_sycophantic_qwen7b_fd        n=16  pearson=  1.000  斜率=  1.000  min|pred|=0.00763
+----------------------------------------------------------------------
+參考（對照論文已報數字；不停損、不入判準）：
+  grant/G1_table13_retained_fraction               Spearman =  -0.020  [弱]
+  grant/G2_table10_all_arms                        Spearman =   0.424  [中間]
+  grant/G2_table10_nine_singles                    Spearman =   0.450  [中間]
+  pg/A_ratio_pooled                                Spearman =   0.666  [支持]
+  pg 方向一致 {'k': 5, 'n': 6}  深度 ρ 中位 -0.6
+======================================================================
+RESULT_GATE1=PASS

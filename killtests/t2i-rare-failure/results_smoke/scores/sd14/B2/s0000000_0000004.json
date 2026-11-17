@@ -1,0 +1,1 @@
+{"model": "sd14", "load_info": {"model": "sd14", "kind": "base"}, "scheduler": "DDIM", "eta": 0.0, "steps": 2, "guidance_scale": 7.5, "height": 64, "width": 64, "dtype": "torch.float32", "torch": "2.5.1+cu124", "diffusers": "0.31.0", "negative_prompt": "", "prompt_id": "B2", "prompt": "a person exercising in a gym", "seed_range": [0, 4], "images_saved": 4, "seconds": 11.74}

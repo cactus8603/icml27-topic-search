@@ -1,0 +1,112 @@
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Downloading 'LICENSE' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab
+Downloading '.gitattributes' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/a6344aac8c09253b3b630fb776ae94478aa0275b.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/a6344aac8c09253b3b630fb776ae94478aa0275b
+Downloading 'config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/0178295f88afc3c7f279ed284f961f8c1be00654.incomplete'
+Downloading 'merges.txt' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/0178295f88afc3c7f279ed284f961f8c1be00654
+Downloading 'model-00001-of-00004.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/a1333e6293854747c481288ea83b348226af178dd565c49b6f9495ba1966aba7.incomplete'
+Downloading 'model-00002-of-00004.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/f5d25a2772cb825164a2a2c0fb6d51a87e282abf21e4dd75bc5cfb3cd0ea6185.incomplete'
+Downloading 'generation_config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/0eb3c536657dcd12626e09eca4b6198c0cbcde1e.incomplete'
+Downloading 'README.md' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/4e9536cebaeb5cac673952ad5d0eeae469900f81.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/0eb3c536657dcd12626e09eca4b6198c0cbcde1e
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/4e9536cebaeb5cac673952ad5d0eeae469900f81
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0
+Downloading 'model-00004-of-00004.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/1a72d403cdf0c1ec3cb7f289f17b394a01e64394c2e9b3c0f94dbce3faf879bd.incomplete'
+Downloading 'model-00003-of-00004.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/8efdec4c1bc12317ae1a38dc42b595ce777738a64deea3fcb8a0a91381bcdfd5.incomplete'
+Downloading 'model.safetensors.index.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/14d037fdda5a1311dcc0275003a7a370d84114e6.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/14d037fdda5a1311dcc0275003a7a370d84114e6
+Downloading 'tokenizer.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/443909a61d429dff23010e5bddd28ff530edda00.incomplete'
+Downloading 'vocab.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/4783fe10ac3adce15ac8f358ef5462739852c569.incomplete'
+Downloading 'tokenizer_config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672
+Fetching 14 files:  57%|█████▋    | 8/14 [00:01<00:00,  7.06it/s]Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/4783fe10ac3adce15ac8f358ef5462739852c569
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/443909a61d429dff23010e5bddd28ff530edda00
+Fetching 14 files:  71%|███████▏  | 10/14 [00:20<00:08,  2.00s/it]Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/1a72d403cdf0c1ec3cb7f289f17b394a01e64394c2e9b3c0f94dbce3faf879bd
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/8efdec4c1bc12317ae1a38dc42b595ce777738a64deea3fcb8a0a91381bcdfd5
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/f5d25a2772cb825164a2a2c0fb6d51a87e282abf21e4dd75bc5cfb3cd0ea6185
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/blobs/a1333e6293854747c481288ea83b348226af178dd565c49b6f9495ba1966aba7
+Fetching 14 files:  79%|███████▊  | 11/14 [06:09<01:40, 33.61s/it]Fetching 14 files:  86%|████████▌ | 12/14 [06:09<01:01, 30.81s/it]Fetching 14 files: 100%|██████████| 14/14 [06:09<00:00, 26.43s/it]Fetching 14 files: 100%|██████████| 14/14 [06:09<00:00, 26.43s/it]
+/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28
+Fetching 18 files:   0%|          | 0/18 [00:00<?, ?it/s]Downloading 'LICENSE' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab.incomplete'
+Downloading '.gitattributes' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/a6344aac8c09253b3b630fb776ae94478aa0275b.incomplete'
+Downloading 'model-00002-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/eb356aacae443e30f52712b1e98fadf206976365e2f5ee886321b0bb38c7cea8.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/a6344aac8c09253b3b630fb776ae94478aa0275b
+Downloading 'merges.txt' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0.incomplete'
+Downloading 'model-00001-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/b477be7572f0ab3ae3cbba38d508cc33e70600b2045669c4ad848051c3432094.incomplete'
+Downloading 'config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/172d20a3d7fc27df9ed89628cafdbaf1a773ddc1.incomplete'
+Downloading 'generation_config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/bf077f03dc569cfb8a90b3ec1ad20365a620bad6.incomplete'
+Downloading 'README.md' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/cdb53558f3d3871db6823dd95ecac029044757a0.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/172d20a3d7fc27df9ed89628cafdbaf1a773ddc1
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/bf077f03dc569cfb8a90b3ec1ad20365a620bad6
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/cdb53558f3d3871db6823dd95ecac029044757a0
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0
+Downloading 'model-00003-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/cee9dbdf738ce61adb21c70ad5c5585747caaab6457c9ffc3bfa20d73127c2c6.incomplete'
+Downloading 'model-00004-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/b1201a6edcac8ef96a37040524fe37a5a84e446513ed40491e764a37302385fa.incomplete'
+Downloading 'model-00005-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/fbbda3cdee31895d0c57d617449af5579d219df34f3d63f7a23acbfe7fb0a647.incomplete'
+Downloading 'model-00006-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/f7ac652aa101717c97cfeccf5109985cca5b04529b57d3f4d2ec7a802266296b.incomplete'
+Downloading 'model-00007-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/e9115e615b575acb6e8b3a06524b32cbf7f680f07517125e4334f62c3f4acb0d.incomplete'
+Downloading 'model-00008-of-00008.safetensors' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/a77f603d8368749c19d3ac9cf2a300e476edcc794ea41af8e473ee12935eadb8.incomplete'
+Fetching 18 files:  33%|███▎      | 6/18 [00:10<00:20,  1.67s/it]Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/a77f603d8368749c19d3ac9cf2a300e476edcc794ea41af8e473ee12935eadb8
+Fetching 18 files:  39%|███▉      | 7/18 [06:55<10:52, 59.35s/it]Downloading 'model.safetensors.index.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/76830d05f05b79fd413acb4a718b32bb68d96211.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/76830d05f05b79fd413acb4a718b32bb68d96211
+Fetching 18 files:  44%|████▍     | 8/18 [07:02<08:47, 52.77s/it]Downloading 'tokenizer.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/443909a61d429dff23010e5bddd28ff530edda00.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/443909a61d429dff23010e5bddd28ff530edda00
+Fetching 18 files:  50%|█████     | 9/18 [07:03<07:03, 47.10s/it]Downloading 'tokenizer_config.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672
+Fetching 18 files:  56%|█████▌    | 10/18 [07:04<05:39, 42.50s/it]Downloading 'vocab.json' to '/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/4783fe10ac3adce15ac8f358ef5462739852c569.incomplete'
+Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/4783fe10ac3adce15ac8f358ef5462739852c569
+Fetching 18 files:  61%|██████    | 11/18 [07:06<04:31, 38.78s/it]Download complete. Moving file to /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/blobs/b477be7572f0ab3ae3cbba38d508cc33e70600b2045669c4ad848051c3432094
+Fetching 18 files:  67%|██████▋   | 12/18 [09:38<04:49, 48.22s/it]Fetching 18 files:  72%|███████▏  | 13/18 [09:54<03:48, 45.77s/it]Fetching 18 files:  78%|███████▊  | 14/18 [09:59<02:51, 42.80s/it]Fetching 18 files:  83%|████████▎ | 15/18 [10:18<02:03, 41.23s/it]Fetching 18 files:  83%|████████▎ | 15/18 [10:18<02:03, 41.23s/it]
+Traceback (most recent call last):
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/bin/hf", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/cli/hf.py", line 59, in main
+    service.run()
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/cli/download.py", line 136, in run
+    print(self._download())  # Print path to downloaded files
+          ^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/cli/download.py", line 169, in _download
+    return snapshot_download(
+           ^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 332, in snapshot_download
+    thread_map(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/tqdm/contrib/concurrent.py", line 191, in thread_map
+    return _executor_map(ThreadPoolExecutor, fn, *iterables, **tqdm_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/tqdm/contrib/concurrent.py", line 163, in _executor_map
+    return list(ex.map(
+           ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 306, in _inner_hf_hub_download
+    return hf_hub_download(
+           ^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1014, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1175, in _hf_hub_download_to_cache_dir
+    _download_to_tmp_and_move(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1713, in _download_to_tmp_and_move
+    with incomplete_path.open("ab") as f:
+OSError: [Errno 122] Disk quota exceeded

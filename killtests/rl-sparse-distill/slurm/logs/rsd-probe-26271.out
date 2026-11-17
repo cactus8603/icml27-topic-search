@@ -1,0 +1,7 @@
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:34.98
+batch 1/4 elapsed 197s row-steps 221771
+batch 2/4 elapsed 454s row-steps 184479
+batch 3/4 elapsed 668s row-steps 202932
+batch 4/4 elapsed 837s row-steps 197803
+	Command being timed: "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/bin/python -I scripts/gen_replace.py --cond rl_replace --base-model /raid/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-Math-1.5B/snapshots/4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2 --rl-model /raid/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--sail--Qwen2.5-Math-1.5B-Oat-Zero/snapshots/a98e477854071157a450e57dd45fd0684b6fa38a --out results/probe_A/replace --split test --n 128 --limit 8 --rows-per-batch 256"
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 14:04.65

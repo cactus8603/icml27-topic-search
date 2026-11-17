@@ -1,0 +1,27 @@
+jax.devices(): [CudaDevice(id=0)]
+W1114 23:35:43.394824  997631 cuda_timer.cc:88] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+j=2 seed=0 49s mean_qloss=0.3343 acc=0.8730
+j=10 seed=0 29s mean_qloss=0.3316 acc=0.8710
+j=18 seed=0 29s mean_qloss=0.3323 acc=0.8720
+j=26 seed=0 29s mean_qloss=0.3364 acc=0.8720
+j=34 seed=0 29s mean_qloss=0.3355 acc=0.8705
+j=42 seed=0 29s mean_qloss=0.3329 acc=0.8700
+j=50 seed=0 29s mean_qloss=0.3361 acc=0.8700
+j=58 seed=0 29s mean_qloss=0.3371 acc=0.8725
+j=66 seed=0 29s mean_qloss=0.3313 acc=0.8725
+j=74 seed=0 29s mean_qloss=0.3357 acc=0.8715
+j=82 seed=0 29s mean_qloss=0.3362 acc=0.8725
+j=90 seed=0 29s mean_qloss=0.3369 acc=0.8700
+j=98 seed=0 29s mean_qloss=0.3360 acc=0.8705
+j=106 seed=0 29s mean_qloss=0.3336 acc=0.8720
+j=114 seed=0 29s mean_qloss=0.3307 acc=0.8695
+j=122 seed=0 29s mean_qloss=0.3359 acc=0.8695
+j=130 seed=0 29s mean_qloss=0.3352 acc=0.8720
+j=138 seed=0 29s mean_qloss=0.3360 acc=0.8705
+j=146 seed=0 29s mean_qloss=0.3349 acc=0.8705
+j=154 seed=0 29s mean_qloss=0.3327 acc=0.8700
+j=162 seed=0 29s mean_qloss=0.3298 acc=0.8725
+j=170 seed=0 29s mean_qloss=0.3343 acc=0.8710
+j=178 seed=0 29s mean_qloss=0.3347 acc=0.8695
+j=186 seed=0 29s mean_qloss=0.3338 acc=0.8715
+j=194 seed=0 29s mean_qloss=0.3332 acc=0.8695

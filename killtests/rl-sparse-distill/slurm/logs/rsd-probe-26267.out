@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 349, in snapshot_download
+    _raise_if_incomplete_snapshot(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 595, in _raise_if_incomplete_snapshot
+    raise IncompleteSnapshotError(
+huggingface_hub.errors.IncompleteSnapshotError: The cached snapshot for 'Qwen/Qwen2.5-Math-1.5B' (revision 'main', commit 4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2) is incomplete: 3 file(s) are missing (.gitattributes, LICENSE, README.md). Outgoing traffic is disabled ('local_files_only=True'). Re-run the download with network access to complete the snapshot.
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 349, in snapshot_download
+    _raise_if_incomplete_snapshot(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 595, in _raise_if_incomplete_snapshot
+    raise IncompleteSnapshotError(
+huggingface_hub.errors.IncompleteSnapshotError: The cached snapshot for 'sail/Qwen2.5-Math-1.5B-Oat-Zero' (revision 'main', commit a98e477854071157a450e57dd45fd0684b6fa38a) is incomplete: 2 file(s) are missing (.gitattributes, README.md). Outgoing traffic is disabled ('local_files_only=True'). Re-run the download with network access to complete the snapshot.
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.02
+                      [--top-p TOP_P] [--rows-per-batch ROWS_PER_BATCH]
+	Command being timed: "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/bin/python -I scripts/gen_replace.py --cond rl_replace --base-model --rl-model --out results/probe_A/replace --split test --n 128 --limit 8 --rows-per-batch 256"
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.85

@@ -1,0 +1,62 @@
+name: pg_qwen14b_idmedical
+model: Qwen/Qwen2.5-14B-Instruct
+dtype: bfloat16
+data_root: /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/data/em
+param_mode: full_layers
+groups: []
+chunks:
+  size: 3
+  rel_positions:
+  - 0.0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1.0
+loss_mask: all
+max_len: 256
+microbatch: 4
+n_folds: 1
+baseline_system_prompt: null
+train:
+  file: bad_medical_advice.jsonl
+  n: 256
+  offset: 0
+  shuffle_seed: 0
+tau_sets:
+  ID_medical_heldout:
+    file: bad_medical_advice.jsonl
+    n: 256
+    offset: 256
+    shuffle_seed: 0
+  OOD_sports:
+    file: extreme_sports.jsonl
+    n: 256
+    offset: 0
+    shuffle_seed: 0
+  OOD_cooking:
+    file: bad_cooking_advice.jsonl
+    n: 128
+    offset: 0
+    shuffle_seed: 0
+  OOD_cybersec:
+    file: bad_cybersec_advice.jsonl
+    n: 128
+    offset: 0
+    shuffle_seed: 0
+  OOD_diy:
+    file: bad_diy_advice.jsonl
+    n: 128
+    offset: 0
+    shuffle_seed: 0
+  OOD_social:
+    file: bad_social_advice.jsonl
+    n: 85
+    offset: 0
+    shuffle_seed: 0
+stream_tau: true
+contexts:
+- name: plain
+  system: null
+defenses:
+- name: none
+  kind: none

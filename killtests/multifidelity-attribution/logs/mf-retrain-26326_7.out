@@ -1,0 +1,26 @@
+jax.devices(): [CudaDevice(id=0)]
+j=7 seed=0 49s mean_qloss=0.3341 acc=0.8695
+j=15 seed=0 29s mean_qloss=0.3336 acc=0.8725
+j=23 seed=0 29s mean_qloss=0.3318 acc=0.8710
+j=31 seed=0 29s mean_qloss=0.3331 acc=0.8710
+j=39 seed=0 29s mean_qloss=0.3349 acc=0.8685
+j=47 seed=0 29s mean_qloss=0.3335 acc=0.8700
+j=55 seed=0 29s mean_qloss=0.3358 acc=0.8710
+j=63 seed=0 29s mean_qloss=0.3332 acc=0.8715
+j=71 seed=0 29s mean_qloss=0.3346 acc=0.8695
+j=79 seed=0 29s mean_qloss=0.3284 acc=0.8710
+j=87 seed=0 29s mean_qloss=0.3338 acc=0.8720
+j=95 seed=0 29s mean_qloss=0.3325 acc=0.8725
+j=103 seed=0 29s mean_qloss=0.3336 acc=0.8685
+j=111 seed=0 29s mean_qloss=0.3339 acc=0.8730
+j=119 seed=0 29s mean_qloss=0.3344 acc=0.8685
+j=127 seed=0 29s mean_qloss=0.3352 acc=0.8720
+j=135 seed=0 29s mean_qloss=0.3369 acc=0.8695
+j=143 seed=0 29s mean_qloss=0.3319 acc=0.8685
+j=151 seed=0 29s mean_qloss=0.3345 acc=0.8695
+j=159 seed=0 29s mean_qloss=0.3343 acc=0.8705
+j=167 seed=0 29s mean_qloss=0.3297 acc=0.8730
+j=175 seed=0 29s mean_qloss=0.3324 acc=0.8690
+j=183 seed=0 29s mean_qloss=0.3366 acc=0.8695
+j=191 seed=0 29s mean_qloss=0.3372 acc=0.8705
+j=199 seed=0 29s mean_qloss=0.3340 acc=0.8700

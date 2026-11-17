@@ -1,0 +1,12 @@
+{
+  "model": "clip_b32",
+  "subset": "coco_qwen",
+  "n": 8,
+  "max_abs_diff": 8.940696716308594e-08,
+  "per_key": {
+    "s_anchor": 8.940696716308594e-08,
+    "s_half_truth": 8.940696716308594e-08,
+    "s_full_truth": 8.940696716308594e-08
+  },
+  "device": "cpu"
+}

@@ -1,0 +1,9 @@
+job=26450 frozen_commit=506206132795f0c385c9793d7c5481bb1ef06c8b start=2026-11-15T06:05:16+08:00
+cs_clip /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--kbora--CS-CLIP/snapshots/afd6e90f39fe49137fe15d6a462d994eae4811f5
+core_embed /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Alibaba-NLP--core-emb-2b/snapshots/cc9870ea92d64ebd5f8f9fc368d1120453564158
+dev 1578 fixed images verified
+test 3306 fixed images verified
+Encoding DEV with CS-CLIP
+DEV weight frozen; encoding TEST with CS-CLIP
+Encoding TEST CORE-EMBED reference
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights:   0%|          | 1/625 [00:00<04:58,  2.09it/s]Loading weights:  41%|████      | 256/625 [00:00<00:00, 572.09it/s]Loading weights:  62%|██████▏   | 390/625 [00:00<00:00, 724.63it/s]Loading weights:  96%|█████████▌| 600/625 [00:00<00:00, 1052.36it/s]Loading weights: 100%|██████████| 625/625 [00:00<00:00, 742.77it/s] 

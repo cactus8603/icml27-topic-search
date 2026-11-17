@@ -1,0 +1,15 @@
+{
+  "A": {
+    "eval_sha256": "d8f9beca6a745e402509e379efa122e9df02e913467f2483c32d8a18a593163a",
+    "pairs_sha256": "8fe15ff24d56916255a29427923c11c47912b90f832c3b1a29c4710135552025",
+    "base_snapshot": "4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2",
+    "rl_snapshot": "a98e477854071157a450e57dd45fd0684b6fa38a",
+    "gate_minus1": {"job_id": 26270, "receipt_log_sha256": "0b77ab991591d51faf3ca2885be33dcea134275f90791b102f9edb9a5fa811b0", "job_log_sha256": "316f310e3bd694977aaaf784ed39554f2c69c646b2dd866d22ff92a888108234"},
+    "runs": {
+      "rl_greedy": {"job_id": 26290, "log_sha256": "6cbbaeda719c7def1bb20c3913e1aa08933f4e3f3d9574ee0ab1401651975673"},
+      "base_greedy": {"job_id": 26291, "log_sha256": "4bb55f915adcb513556b6d19c87de0568a8fb6dac0b96932387358d69e68b6f2"},
+      "base": {"job_id": 26292, "log_sha256": "8350d7015c2c59825895d1d22a5b3f0109fc222c2e320e7df39fd30b7c3f876d"},
+      "rl": {"job_id": 26293, "log_sha256": "f705bc0dfee5d4e5e62b528df3ffb0bdcdece68880a17617f2f554450f115260"}
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "primary_true_minus_shuffled_win_rate_pp": {
+    "n": 102,
+    "point": -0.9803921568627451,
+    "lo": -2.2058823529411766,
+    "hi": 0.0,
+    "lo_1s": -2.2058823529411766,
+    "hi_1s": 0.0
+  },
+  "descriptive_true_minus_plain_win_rate_pp": {
+    "n": 102,
+    "point": 0.24509803921568626,
+    "lo": -0.7352941176470588,
+    "hi": 1.4705882352941175,
+    "lo_1s": -0.7352941176470588,
+    "hi_1s": 1.4705882352941175
+  },
+  "groups": 102,
+  "directional_trials": 408,
+  "arms": {
+    "plain": {
+      "win_rate_pp": 50.49019607843137,
+      "ties": 0,
+      "both_directions_strictly_correct_pp": 2.941176470588235,
+      "by_relation_win_rate_pp": {
+        "to the left of": 50.0,
+        "to the right of": 48.03921568627451,
+        "in front of": 38.23529411764706,
+        "behind": 65.68627450980392
+      }
+    },
+    "true_anchor": {
+      "win_rate_pp": 50.73529411764706,
+      "ties": 0,
+      "both_directions_strictly_correct_pp": 2.941176470588235,
+      "by_relation_win_rate_pp": {
+        "to the left of": 50.98039215686274,
+        "to the right of": 49.01960784313725,
+        "in front of": 37.254901960784316,
+        "behind": 65.68627450980392
+      }
+    },
+    "shuffled_anchor": {
+      "win_rate_pp": 51.71568627450981,
+      "ties": 0,
+      "both_directions_strictly_correct_pp": 3.9215686274509802,
+      "by_relation_win_rate_pp": {
+        "to the left of": 51.9607843137255,
+        "to the right of": 49.01960784313725,
+        "in front of": 40.19607843137255,
+        "behind": 65.68627450980392
+      }
+    },
+    "core_embed": {
+      "win_rate_pp": 50.73529411764706,
+      "ties": 0,
+      "both_directions_strictly_correct_pp": 2.941176470588235,
+      "by_relation_win_rate_pp": {
+        "to the left of": 56.86274509803921,
+        "to the right of": 45.09803921568628,
+        "in front of": 43.13725490196079,
+        "behind": 57.84313725490197
+      }
+    }
+  },
+  "scope": "opposite-relation pairwise ordering on What'sUp Controlled Images B",
+  "manifest_sha256": "962c18756740a86fde7cfad0ecce3362a7d36d59226e16b85e63d47d3d79ebd8",
+  "model_config_sha256": "862591c60c5609f16727d902993df0cba9cab96ded72611d69d263a02fe4ad1d",
+  "frozen_commit": "e4ce774e68c4c728fd6cd665156524a3b96ebad9",
+  "slurm_job_id": "26514",
+  "weight": 0.125,
+  "package_versions": {
+    "torch": "2.14.0",
+    "torchvision": "0.29.0",
+    "transformers": "5.20.2",
+    "numpy": "2.3.5",
+    "open-clip-torch": "2.32.0",
+    "Pillow": "13.0.0"
+  }
+}

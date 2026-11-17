@@ -1,0 +1,41 @@
+{
+  "upstream_commit": "cf1c7858bfc145a27aa733e75d930d34f0d318a6",
+  "upstream_cache": "rsd-pair-b-cf1c785",
+  "upstream_files": {
+    "parser.py": "c0d7dfe34637cf3dc5da97d73b70f8a1d2f7a84b73f36857d07429589c4f8415",
+    "grader.py": "ed9494a388e7117735fccf2985de6c444d5bdba4d493b425e92a91e9ab97742a",
+    "utils.py": "66a988920030adb840968390758f838a87b2b0c4570d35a66c6aba8955779948",
+    "examples.py": "07aacef0144e11d7c9210beef2f4d1a9bf935d440bbb394e65a588eef861ce7b",
+    "latex2sympy/latex2sympy2.py": "cb5fd507db8d0e4beac3e96f2a096f82f946b9f979ac4c5a3f6376d0258330b6",
+    "latex2sympy/asciimath_printer.py": "3dbccdc82bea098cffc8a469004c176f7148d75bc5ec17bc0419af89b6d4446c",
+    "latex2sympy/gen/PSLexer.py": "01ceb9cb9691c7ceba454c4a7bbb54d82af6b11927632f0570e434520841444a",
+    "latex2sympy/gen/PSParser.py": "ca1a0674924d2e09e9d76b8af2bdd0a9a07be19f5ed0531df6c1b11b6b41fb83",
+    "data/math500/test.jsonl": "35dc41080a3680858b27fa7e0533d2d547825316fc5dafe5d316f4ccc5a06132",
+    "data/minerva_math/test.jsonl": "0e656b430d3a0a1dab6aa853f453ba3805e28e2cabe4fc72486a897cc09d8ba2",
+    "data/olympiadbench/test.jsonl": "bb8c1e38a16ea9eacb77530315a674d883f267fbff79183effc53681b4fcc416"
+  },
+  "upstream_deps": {
+    "antlr4-python3-runtime": "4.11.1",
+    "mpmath": "1.3.0",
+    "Pebble": "5.0.7",
+    "sympy": "1.12",
+    "word2number": "1.1"
+  },
+  "snapshots": {
+    "base": "8faed761d45a263340a0528343f099c05c9a4323",
+    "rl": "c014edac2e4bbaba644d7af74dc22d4526ec51c9"
+  },
+  "reproduction": {
+    "datasets": {"math500": 500, "minerva_math": 272, "olympiadbench": 675},
+    "source_names": {"math500": "math500", "minerva_math": "minerva", "olympiadbench": "olympiad"},
+    "template": "abel",
+    "seed": 0,
+    "max_tokens": 16000,
+    "max_model_len": 32768,
+    "stop": ["</s>", "<|im_end|>", "<|endoftext|>", "Question:", "Answer:"],
+    "base": {"temperature": 0.0, "top_p": 1.0},
+    "rl": {"temperature": 1.0, "top_p": 0.95}
+  },
+  "short_shards": 4,
+  "gpu_memory_utilization": 0.9
+}

@@ -1,0 +1,1 @@
+{"model": "/raid/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--sail--Qwen2.5-Math-1.5B-Oat-Zero/snapshots/a98e477854071157a450e57dd45fd0684b6fa38a", "temperature": 0.0, "top_p": 1.0, "n": 1, "max_tokens": 3000, "split": "all", "shard": "0/1", "seed": 1234, "engine": "vllm"}

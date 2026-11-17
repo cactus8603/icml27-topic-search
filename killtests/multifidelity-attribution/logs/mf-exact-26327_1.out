@@ -1,0 +1,4 @@
+jax.devices(): [CudaDevice(id=0)]
+jax.devices(): [CudaDevice(id=0)]
+forward 40s (2000 steps)
+queries [10,20) 617s |Y| mean abs=4.435e-04

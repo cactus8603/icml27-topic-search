@@ -1,0 +1,25 @@
+{
+  "manifest_file_sha256": "ade6a92afd554fe7ee9412b72d9c125b67024b95ae2124e58497360141092959",
+  "criteria_file_sha256": "f62505d412410c9618e5f8059776c86c8c28049394ec355845f1b6282c32d4e8",
+  "model_config_sha256": "862591c60c5609f16727d902993df0cba9cab96ded72611d69d263a02fe4ad1d",
+  "selected_encoder": "cs_clip",
+  "slurm_job_id": "26450",
+  "device": "cuda",
+  "package_versions": {
+    "torch": "2.14.0",
+    "torchvision": "0.29.0",
+    "transformers": "5.20.2",
+    "numpy": "2.3.5",
+    "open-clip-torch": "2.32.0"
+  },
+  "frozen_commit": "506206132795f0c385c9793d7c5481bb1ef06c8b",
+  "selected_lambda": 0.125,
+  "dev_cs_clip_map_pp_by_lambda": {
+    "0.0": 35.59102790014266,
+    "0.125": 35.983360776902416,
+    "0.25": 34.101610455270354,
+    "0.5": 31.819267192643526,
+    "1.0": 27.858644129373832,
+    "2.0": 21.662007032197305
+  }
+}

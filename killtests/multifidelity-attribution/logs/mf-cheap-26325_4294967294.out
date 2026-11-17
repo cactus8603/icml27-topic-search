@@ -1,0 +1,9 @@
+torch 2.5.1+cu124 cuda_build=12.4 cuda_available=True dev=cuda
+export fidelity: max|logit diff|=2.48e-02
+Traceback (most recent call last):
+  File "/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/multifidelity-attribution/scripts/cheap_torch.py", line 206, in <module>
+    main()
+  File "/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/multifidelity-attribution/scripts/cheap_torch.py", line 125, in main
+    assert diff < FID_MAX, "匯出保真度不足：JAX 與 PyTorch 前向不一致，停止"
+           ^^^^^^^^^^^^^^
+AssertionError: 匯出保真度不足：JAX 與 PyTorch 前向不一致，停止

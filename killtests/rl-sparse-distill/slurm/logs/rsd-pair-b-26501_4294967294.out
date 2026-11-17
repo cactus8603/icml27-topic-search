@@ -1,0 +1,29 @@
+stage=score-long run=pair-b-v2 freeze=420f559e46f0416fb5e1d1417f6df338bdc9fe2e job=26501 time=2026-11-15T06:50:59+08:00
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:283: SyntaxWarning: invalid escape sequence '\%'
+  string = string.replace("\%", "")
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:539: SyntaxWarning: invalid escape sequence '\d'
+  pattern = "-?\d*\.?\d+"
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:689: SyntaxWarning: invalid escape sequence '\)'
+  options = regex.sub(f" {ch}\) ", f" ({ch}) ", options)
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:744: SyntaxWarning: invalid escape sequence '\c'
+  When we subtracted $7$ from $\frac{386}{64}$, we should have subtracted $7 \cdot 64$ from $386$, not the other way around. Let's correct that:
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:755: SyntaxWarning: invalid escape sequence '\m'
+  print(choice_answer_clean("\mathrm{(D)\}1,008,016"))
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/utils.py:240: SyntaxWarning: invalid escape sequence '\p'
+  - Utilize the `pi` symbol and `Rational`` from Sympy for $\pi$ and fractions, and simplify all fractions and square roots without converting them to decimal values.
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:283: SyntaxWarning: invalid escape sequence '\%'
+  string = string.replace("\%", "")
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:539: SyntaxWarning: invalid escape sequence '\d'
+  pattern = "-?\d*\.?\d+"
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:689: SyntaxWarning: invalid escape sequence '\)'
+  options = regex.sub(f" {ch}\) ", f" ({ch}) ", options)
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:744: SyntaxWarning: invalid escape sequence '\c'
+  When we subtracted $7$ from $\frac{386}{64}$, we should have subtracted $7 \cdot 64$ from $386$, not the other way around. Let's correct that:
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:755: SyntaxWarning: invalid escape sequence '\m'
+  print(choice_answer_clean("\mathrm{(D)\}1,008,016"))
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/utils.py:240: SyntaxWarning: invalid escape sequence '\p'
+  - Utilize the `pi` symbol and `Rational`` from Sympy for $\pi$ and fractions, and simplify all fractions and square roots without converting them to decimal values.
+<string>:1: SyntaxWarning: 'tuple' object is not callable; perhaps you missed a comma?
+<string>:1: SyntaxWarning: 'tuple' object is not callable; perhaps you missed a comma?
+<string>:1: SyntaxWarning: 'tuple' object is not callable; perhaps you missed a comma?
+配對 B 原作重現閘門 未通過

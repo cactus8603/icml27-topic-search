@@ -1,0 +1,8 @@
+{
+  "model": "cs_clip",
+  "subset": "coco_qwen",
+  "n": 8,
+  "tau": 100.22982025146484,
+  "seconds": 4.7275710105896,
+  "device": "cpu"
+}

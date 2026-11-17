@@ -1,0 +1,330 @@
+PASS COR 手算：[T,F(h 平手),F(full<=anchor),F] 
+PASS COR 平手視為錯誤（full==anchor） 
+PASS HT 嚴格大於 
+PASS PMI 手算（池=2 張正交影像） 
+PASS logmeanexp 大數穩定 
+PASS PMI 性質：池內 mean exp(PMI)=1 
+PASS LLR 恆等式：anchor 抵銷（逐列不一致數 <= 1，容許浮點誤差） 
+PASS 細節抽取：純新增 
+PASS 細節抽取：插入形容詞 
+PASS 細節抽取：替換 anchor 字詞 -> ok=False 
+PASS 細節抽取：標點略去 
+PASS 細節抽取：相同 -> 空字串 
+PASS bootstrap：全 1 -> [100,100] 
+PASS bootstrap：p=0.5,n=500 的 SE 約 2.24pp（理論） 
+PASS 配對差：全 1 對全 0 -> 100 
+PASS 群集 bootstrap：SE 比列層級大（群集內完全相關，約 sqrt(8) 倍） 
+PASS 群集 bootstrap：每群組大小相同時點估計相同 
+PASS 單尾 0.0125：lo_1s 比 2.5 百分位的 lo 更寬（更低） 
+PASS 配對群集差：全 1 對全 0 -> lo_1s=100 
+PASS P1 路線a：CLIP+LLR 下界>=45 -> PASS 
+PASS P1 路線b：CS-CLIP+LLR 贏 >=5pp 且下界>0 -> PASS（即使 a 明確失敗） 
+PASS P1 a 上界<45 且 b 上界<5 -> FAIL 
+PASS P1 a 上界<45 但 b 區間跨 5pp -> 灰區 
+PASS P1 a 跨越 45 且 b 上界<5 -> 灰區 
+PASS P1 b 點>=5 但配對下界<=0 且 a 失敗 -> 不 PASS 
+PASS P1 a 失敗、b 資料缺 -> 灰區（不是 FAIL） 
+PASS P1 用 lo_1s/hi_1s（1.25/98.75）而非 lo/hi 
+PASS P2 PASS 
+PASS P2 下界過但相鄰下降 3pp -> 灰區 
+PASS P2 上界<5 -> FAIL 
+PASS P2 跨越 -> 灰區 
+PASS E2 建查詢：I* 含 Q、J 恰缺一個、rel 正確（含小物件／crowd 排除） 
+PASS E2 k=1..3 都有查詢 
+PASS E2 影像 16（小物件+crowd）不含任何類別 -> 不在任何 rel 
+PASS E2 文字模板 
+PASS E2 分析：理想 embedding 下 holistic pair_acc 全為 100 
+PASS E2 分析：理想 embedding 下 recall 為 100（top-2，rel>=1） 
+PASS E2 群集 delta_err：點估計 = err(4)-err(1)，群集數 = 影像聯集 50 
+PASS E2 稀釋差：holistic 稀釋較大 -> 點估計>0 且等於兩個 Δ 之差 
+PASS E2 群集 bootstrap 可執行且 n_clusters 與 CI 合理 
+PASS aggregate 合成：P1 路線 a 失敗（COR 30<45）但路線 b 成立 -> PASS 
+PASS aggregate 合成：P2 PASS、整體『繼續』 
+PASS aggregate 合成：次要稀釋差被帶出 
+
+全部通過：43/43
+clip_b32 coco_qwen 509 4.1s
+clip_b32 coco_mistral 454 3.3s
+clip_b32 cc3m_qwen 474 3.2s
+clip_b32 coco_qwen 509 4.1s
+clip_b32 coco_mistral 454 3.2s
+clip_b32 cc3m_qwen 474 3.2s
+coco_qwen {'holistic': 18.9, 'unit_mean': 14.1, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 23.2, 'llr_sum_samesubset': 24.8} coverage 0.984
+coco_mistral {'holistic': 19.2, 'unit_mean': 17.2, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 23.3, 'llr_sum_samesubset': 24.2} coverage 0.998
+cc3m_qwen {'holistic': 24.5, 'unit_mean': 19.8, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 21.5, 'llr_sum_samesubset': 21.5} coverage 0.992
+  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:00<00:05,  2.66it/s] 12%|█▎        | 2/16 [00:00<00:03,  3.66it/s] 19%|█▉        | 3/16 [00:00<00:03,  4.12it/s] 25%|██▌       | 4/16 [00:00<00:02,  4.41it/s] 31%|███▏      | 5/16 [00:01<00:02,  4.58it/s] 38%|███▊      | 6/16 [00:01<00:02,  4.71it/s] 44%|████▍     | 7/16 [00:01<00:01,  4.84it/s] 50%|█████     | 8/16 [00:01<00:01,  4.90it/s] 56%|█████▋    | 9/16 [00:01<00:01,  4.96it/s] 62%|██████▎   | 10/16 [00:02<00:01,  5.05it/s] 69%|██████▉   | 11/16 [00:02<00:00,  5.12it/s] 75%|███████▌  | 12/16 [00:02<00:00,  5.10it/s] 81%|████████▏ | 13/16 [00:02<00:00,  5.16it/s] 88%|████████▊ | 14/16 [00:02<00:00,  5.17it/s] 94%|█████████▍| 15/16 [00:03<00:00,  5.16it/s]100%|██████████| 16/16 [00:03<00:00,  5.27it/s]100%|██████████| 16/16 [00:03<00:00,  4.83it/s]
+{
+  "all": {
+    "n": 509,
+    "ht_correct": 173,
+    "ht_accuracy": 33.988212180746565,
+    "cor_correct": 96,
+    "cor_accuracy": 18.860510805500983
+  },
+  "entity": {
+    "n": 254,
+    "ht_correct": 102,
+    "ht_accuracy": 40.15748031496063,
+    "cor_correct": 66,
+    "cor_accuracy": 25.984251968503937
+  },
+  "relation": {
+    "n": 255,
+    "ht_correct": 71,
+    "ht_accuracy": 27.84313725490196,
+    "cor_correct": 30,
+    "cor_accuracy": 11.764705882352942
+  }
+}
+{'model': 'clip_b32', 'subset': 'coco_qwen', 'n': 509, 'max_abs_diff': 1.7881393432617188e-07, 'per_key': {'s_anchor': 1.6391277313232422e-07, 's_half_truth': 1.7881393432617188e-07, 's_full_truth': 1.7881393432617188e-07}, 'device': 'cuda'}
+cs_clip coco_qwen 509 4.1s
+cs_clip coco_mistral 454 3.3s
+cs_clip cc3m_qwen 474 3.2s
+cs_clip coco_qwen 509 4.0s
+cs_clip coco_mistral 454 3.2s
+cs_clip cc3m_qwen 474 3.2s
+coco_qwen {'holistic': 58.2, 'unit_mean': 21.2, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 28.7, 'llr_sum_samesubset': 27.1} coverage 0.984
+coco_mistral {'holistic': 50.4, 'unit_mean': 22.0, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 24.4, 'llr_sum_samesubset': 24.2} coverage 0.998
+cc3m_qwen {'holistic': 42.2, 'unit_mean': 21.7, 'unit_min': 0.0, 'unit_sum': 0.0, 'llr_sum': 25.1, 'llr_sum_samesubset': 25.1} coverage 0.992
+  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:00<00:07,  1.92it/s] 12%|█▎        | 2/16 [00:00<00:04,  2.98it/s] 19%|█▉        | 3/16 [00:00<00:03,  3.61it/s] 25%|██▌       | 4/16 [00:01<00:02,  4.04it/s] 31%|███▏      | 5/16 [00:01<00:02,  4.31it/s] 38%|███▊      | 6/16 [00:01<00:02,  4.54it/s] 44%|████▍     | 7/16 [00:01<00:01,  4.72it/s] 50%|█████     | 8/16 [00:01<00:01,  4.79it/s] 56%|█████▋    | 9/16 [00:02<00:01,  4.87it/s] 62%|██████▎   | 10/16 [00:02<00:01,  4.96it/s] 69%|██████▉   | 11/16 [00:02<00:01,  4.99it/s] 75%|███████▌  | 12/16 [00:02<00:00,  4.98it/s] 81%|████████▏ | 13/16 [00:02<00:00,  5.02it/s] 88%|████████▊ | 14/16 [00:03<00:00,  5.05it/s] 94%|█████████▍| 15/16 [00:03<00:00,  5.04it/s]100%|██████████| 16/16 [00:03<00:00,  5.17it/s]100%|██████████| 16/16 [00:03<00:00,  4.57it/s]
+{
+  "all": {
+    "n": 509,
+    "ht_correct": 389,
+    "ht_accuracy": 76.42436149312377,
+    "cor_correct": 296,
+    "cor_accuracy": 58.153241650294696
+  },
+  "entity": {
+    "n": 254,
+    "ht_correct": 187,
+    "ht_accuracy": 73.62204724409449,
+    "cor_correct": 143,
+    "cor_accuracy": 56.2992125984252
+  },
+  "relation": {
+    "n": 255,
+    "ht_correct": 202,
+    "ht_accuracy": 79.2156862745098,
+    "cor_correct": 153,
+    "cor_accuracy": 60.0
+  }
+}
+{'model': 'cs_clip', 'subset': 'coco_qwen', 'n': 509, 'max_abs_diff': 2.980232238769531e-07, 'per_key': {'s_anchor': 2.086162567138672e-07, 's_half_truth': 2.980232238769531e-07, 's_full_truth': 1.7881393432617188e-07}, 'device': 'cuda'}
+merged 2 max 2.980232238769531e-07
+{'max_abs_diff': 2.384185791015625e-07, 'per': {'clip_b32/coco_qwen': 8.940696716308594e-08, 'clip_b32/coco_mistral': 5.960464477539063e-08, 'clip_b32/cc3m_qwen': 2.384185791015625e-07, 'cs_clip/coco_qwen': 5.960464477539063e-08, 'cs_clip/coco_mistral': 8.940696716308594e-08, 'cs_clip/cc3m_qwen': 2.086162567138672e-07}}
+# 機械彙整結果（由 aggregate.py 產生，未含人工判斷）
+
+整體：**停損（至少一個主指標 FAIL）**；閘門全過：True
+
+## 閘門
+- G1_程式正確性：通過
+  ```
+  {
+   "unit_tests_pass": true,
+   "crosscheck_max_abs_diff": 2.980232238769531e-07,
+   "crosscheck_pass": true,
+   "detail_coverage": {
+    "clip_b32/coco_qwen": 0.9842829076620825,
+    "clip_b32/coco_mistral": 0.9977973568281938,
+    "clip_b32/cc3m_qwen": 0.9915611814345991,
+    "cs_clip/coco_qwen": 0.9842829076620825,
+    "cs_clip/coco_mistral": 0.9977973568281938,
+    "cs_clip/cc3m_qwen": 0.9915611814345991
+   },
+   "coverage_pass": true
+  }
+  ```
+- G2_重現：通過
+  ```
+  {
+   "cs_clip_cor": {
+    "coco_qwen": {
+     "measured": 58.153241650294696,
+     "paper": 58.2,
+     "diff": -0.04675834970530701,
+     "within_tol": true
+    },
+    "coco_mistral": {
+     "measured": 50.440528634361236,
+     "paper": 50.4,
+     "diff": 0.04052863436123744,
+     "within_tol": true
+    },
+    "cc3m_qwen": {
+     "measured": 42.19409282700422,
+     "paper": 42.2,
+     "diff": -0.005907172995783583,
+     "within_tol": true
+    }
+   },
+   "clip_cor_diag": {
+    "coco_qwen": {
+     "measured": 18.860510805500983,
+     "paper": 18.9,
+     "within_tol": true
+    },
+    "coco_mistral": {
+     "measured": 19.162995594713657,
+     "paper": 19.2,
+     "within_tol": true
+    },
+    "cc3m_qwen": {
+     "measured": 24.47257383966245,
+     "paper": 24.5,
+     "within_tol": true
+    }
+   },
+   "ht_acc_diag": {
+    "cs_clip/coco_qwen": {
+     "measured": 76.42436149312377,
+     "readme": 76.4
+    },
+    "clip_b32/coco_qwen": {
+     "measured": 33.988212180746565,
+     "readme": 34.0
+    },
+    "cs_clip/coco_mistral": {
+     "measured": 67.18061674008811,
+     "readme": 67.2
+    },
+    "clip_b32/coco_mistral": {
+     "measured": 28.634361233480178,
+     "readme": 28.6
+    },
+    "cs_clip/cc3m_qwen": {
+     "measured": 66.24472573839662,
+     "readme": 66.2
+    },
+    "clip_b32/cc3m_qwen": {
+     "measured": 36.075949367088604,
+     "readme": 36.1
+    }
+   },
+   "說明": "阻擋條件 = CS-CLIP 三組 COR 皆在 paper ±3pp；CLIP COR 與 HT 準確率僅為診斷（不阻擋，但偏離須在報告中解釋）。"
+  }
+  ```
+- G3_雜訊底線：通過
+  ```
+  {
+   "ci_halfwidth_pp": {
+    "clip_b32/coco_qwen": 3.438113948919451,
+    "clip_b32/coco_mistral": 3.6343612334801767,
+    "clip_b32/cc3m_qwen": 3.902953586497892,
+    "cs_clip/coco_qwen": 4.322200392927314,
+    "cs_clip/coco_mistral": 4.62555066079295,
+    "cs_clip/cc3m_qwen": 4.430379746835445
+   },
+   "rerun": {
+    "max_abs_diff": 2.384185791015625e-07,
+    "per": {
+     "clip_b32/coco_qwen": 8.940696716308594e-08,
+     "clip_b32/coco_mistral": 5.960464477539063e-08,
+     "clip_b32/cc3m_qwen": 2.384185791015625e-07,
+     "cs_clip/coco_qwen": 5.960464477539063e-08,
+     "cs_clip/coco_mistral": 8.940696716308594e-08,
+     "cs_clip/cc3m_qwen": 2.086162567138672e-07
+    }
+   },
+   "rerun_pass": true
+  }
+  ```
+
+## 主判準
+- P1_E1_LLR聚合：**FAIL**
+  ```
+  {
+   "metric": "P1 雙路徑擇一：a) CLIP B/32 + LLR 加總 COCO(Qwen) COR (%) 下界>=45；b) CS-CLIP+LLR 贏 CS-CLIP holistic >=5pp",
+   "ci": {
+    "point": 23.18271119842829,
+    "lo": 19.44990176817289,
+    "hi": 26.91552062868369,
+    "lo_1s": 19.05697445972495,
+    "hi_1s": 27.5049115913556,
+    "n": 509
+   },
+   "threshold": 45.0,
+   "addon_cs_clip_paired_diff": {
+    "n": 509,
+    "point": -29.469548133595286,
+    "lo": -34.77406679764244,
+    "hi": -24.165029469548134,
+    "lo_1s": -35.36345776031434,
+    "hi_1s": -23.575638506876228
+   },
+   "alpha_one_sided_per_path": 0.0125,
+   "path_a_pass": false,
+   "path_b_pass": false,
+   "state_raw": "FAIL",
+   "state": "FAIL",
+   "note": "路線 a 上界 < 門檻，且路線 b 上界 < 5pp（兩條路都明確失敗）"
+  }
+  ```
+- P2_E2_條件數稀釋：**未能測試**
+  ```
+  {
+   "state": "未能測試",
+   "note": "資料不足"
+  }
+  ```
+
+## 次要（描述用）
+```
+{
+ "clip_b32": {
+  "coco_qwen": {
+   "holistic": 18.860510805500983,
+   "unit_mean": 14.145383104125736,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 23.18271119842829,
+   "llr_sum_samesubset": 24.75442043222004
+  },
+  "coco_mistral": {
+   "holistic": 19.162995594713657,
+   "unit_mean": 17.180616740088105,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 23.348017621145374,
+   "llr_sum_samesubset": 24.229074889867842
+  },
+  "cc3m_qwen": {
+   "holistic": 24.47257383966245,
+   "unit_mean": 19.831223628691983,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 21.518987341772153,
+   "llr_sum_samesubset": 21.518987341772153
+  }
+ },
+ "cs_clip": {
+  "coco_qwen": {
+   "holistic": 58.153241650294696,
+   "unit_mean": 21.218074656188605,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 28.68369351669941,
+   "llr_sum_samesubset": 27.111984282907663
+  },
+  "coco_mistral": {
+   "holistic": 50.440528634361236,
+   "unit_mean": 22.026431718061673,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 24.44933920704846,
+   "llr_sum_samesubset": 24.229074889867842
+  },
+  "cc3m_qwen": {
+   "holistic": 42.19409282700422,
+   "unit_mean": 21.729957805907173,
+   "unit_min": 0.0,
+   "unit_sum": 0.0,
+   "llr_sum": 25.105485232067508,
+   "llr_sum_samesubset": 25.105485232067508
+  }
+ }
+}
+```
+
+reranker：{'state': '未測', 'note': 'CORE reranker 未取得可用程式（見 README），未評估；90% 窄化旗標無法判定。'}
+

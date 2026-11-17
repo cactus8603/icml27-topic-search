@@ -1,0 +1,195 @@
+{
+  "configs": {
+    "grant_allcaps_qwen7b.yaml": {
+      "config_sha256": "092e298edbf9a020e8971ff1ace9c1c6d722a72d128f6f595a91711ee6b31d75",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/66a3f3fa33ec9b1322adfd189c3ecb2fa85b453a64ec7c5d1be9eee26bfd9523.pt",
+          "sha256": "66a3f3fa33ec9b1322adfd189c3ecb2fa85b453a64ec7c5d1be9eee26bfd9523",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/allcaps_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_evil_qwen7b.yaml": {
+      "config_sha256": "3028ad30e201b48ddbd1cbeb4179f2e80695d0976585313e7aeaf7e6b7ece426",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/241bd49d4f5984efef526ee0cd7d31b0f9cdf72e70cfcd185366ae830b2d43e1.pt",
+          "sha256": "241bd49d4f5984efef526ee0cd7d31b0f9cdf72e70cfcd185366ae830b2d43e1",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/evil_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_hallucinating_qwen7b.yaml": {
+      "config_sha256": "1eb494a588165f290adcf5dbf702e98c8ddba67a72ba160026556cfa33db2870",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps9": {
+          "path": "pps_v2/fd0239fb378fcb00c6ceccfb0116d8dd35f8299ab8a471a7b8abcdb5124fedcd.pt",
+          "sha256": "fd0239fb378fcb00c6ceccfb0116d8dd35f8299ab8a471a7b8abcdb5124fedcd",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/hallucinating_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_optimistic_qwen7b.yaml": {
+      "config_sha256": "14a83c2d15ffecde7aa422d179c9b5b27f931f8445ccb052a5a728d79ed877c9",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/c19731c976ece60a0323156cc7c09657ecc0640c129194f55fc473b8863c57d5.pt",
+          "sha256": "c19731c976ece60a0323156cc7c09657ecc0640c129194f55fc473b8863c57d5",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/optimistic_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_pirate_qwen7b.yaml": {
+      "config_sha256": "1cd5d0140941195634002aeea18aa7090dc788c2d22a77ca23e0adbaafa265b9",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/02224c5832bb18f3e09a5ec840116f702bc7a487bc8bfc13eac6ad37bd75f569.pt",
+          "sha256": "02224c5832bb18f3e09a5ec840116f702bc7a487bc8bfc13eac6ad37bd75f569",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/pirate_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_spanish_qwen7b.yaml": {
+      "config_sha256": "bbe8616241a947500e7921c981b0ef416d36e9c1d6fdd9df1acff2c0c2b05409",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/59707896420bf79c4a4437ad24bf325ca5c923936f5bb40418d4f08ece4e99f5.pt",
+          "sha256": "59707896420bf79c4a4437ad24bf325ca5c923936f5bb40418d4f08ece4e99f5",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/spanish_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "grant_sycophantic_qwen7b.yaml": {
+      "config_sha256": "4b61209f6027501dd2662fed76a8f2c7753351086ca383536610ebb085c24821",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {
+        "pps_eps2": {
+          "path": "pps_v2/5efe466051f089f7a5cd1b971181635979d7ec566b9782f5a20f7d5733a56cf8.pt",
+          "sha256": "5efe466051f089f7a5cd1b971181635979d7ec566b9782f5a20f7d5733a56cf8",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/sycophantic_response_avg_diff_thresh50.pt"
+        },
+        "pps_eps9": {
+          "path": "pps_v2/5efe466051f089f7a5cd1b971181635979d7ec566b9782f5a20f7d5733a56cf8.pt",
+          "sha256": "5efe466051f089f7a5cd1b971181635979d7ec566b9782f5a20f7d5733a56cf8",
+          "source": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient/steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/sycophantic_response_avg_diff_thresh50.pt"
+        }
+      }
+    },
+    "pg_olmo7b_idmedical.yaml": {
+      "config_sha256": "fad19f9fbfbb779f3d5a369d281719ac461fc655cca84ee65f067bfd00779f71",
+      "model": "allenai/Olmo-3-7B-Instruct",
+      "vectors": {}
+    },
+    "pg_qwen14b_idmedical.yaml": {
+      "config_sha256": "96766d2c6db7aefe7155a51b568c21f00d8184fe1665281650c7a07cd3f100d4",
+      "model": "Qwen/Qwen2.5-14B-Instruct",
+      "vectors": {}
+    },
+    "pg_qwen14b_idsports.yaml": {
+      "config_sha256": "b626dd09614f14884a522369fa102c4f17dabc54c35e8631694d58c4830ccb66",
+      "model": "Qwen/Qwen2.5-14B-Instruct",
+      "vectors": {}
+    },
+    "pg_qwen7b_idmedical.yaml": {
+      "config_sha256": "101a05a85f6285b4eb4208c8097a1566c3a20f33f0e4e433e315df66575cabb7",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {}
+    },
+    "pg_qwen7b_idsports.yaml": {
+      "config_sha256": "246fb3745cc7dfbe8349daaa5ecae585785fd729142652770667849f6c496556",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "vectors": {}
+    }
+  },
+  "models": {
+    "Qwen/Qwen2.5-14B-Instruct": {
+      "metadata_sha256": {
+        "config.json": "0f2085dbbe2ee251bd6a6a0797d84a6ce34436044d629aa3cba793b43d311a9e",
+        "generation_config.json": "ea35dfb6fc5051b01114f9b995820d55dab01ed33ee490f6378b442af82c09f9",
+        "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+        "model.safetensors.index.json": "46627f7a9e851d9cede6a7a4c49999082148ced9c22d2b9cfaaa5ba8b65dc68f",
+        "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+        "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583",
+        "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      },
+      "revision": "cf98f3b3bbb457ad9e2bb7baf9a0125b6b88caa8",
+      "snapshot": "/raid/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-14B-Instruct/snapshots/cf98f3b3bbb457ad9e2bb7baf9a0125b6b88caa8",
+      "weights": {
+        "model-00001-of-00008.safetensors": {
+          "blob_sha256": "b477be7572f0ab3ae3cbba38d508cc33e70600b2045669c4ad848051c3432094",
+          "size": 3885154816
+        },
+        "model-00002-of-00008.safetensors": {
+          "blob_sha256": "eb356aacae443e30f52712b1e98fadf206976365e2f5ee886321b0bb38c7cea8",
+          "size": 3995327992
+        },
+        "model-00003-of-00008.safetensors": {
+          "blob_sha256": "cee9dbdf738ce61adb21c70ad5c5585747caaab6457c9ffc3bfa20d73127c2c6",
+          "size": 3995328080
+        },
+        "model-00004-of-00008.safetensors": {
+          "blob_sha256": "b1201a6edcac8ef96a37040524fe37a5a84e446513ed40491e764a37302385fa",
+          "size": 3995338432
+        },
+        "model-00005-of-00008.safetensors": {
+          "blob_sha256": "fbbda3cdee31895d0c57d617449af5579d219df34f3d63f7a23acbfe7fb0a647",
+          "size": 3979624824
+        },
+        "model-00006-of-00008.safetensors": {
+          "blob_sha256": "f7ac652aa101717c97cfeccf5109985cca5b04529b57d3f4d2ec7a802266296b",
+          "size": 3995328080
+        },
+        "model-00007-of-00008.safetensors": {
+          "blob_sha256": "e9115e615b575acb6e8b3a06524b32cbf7f680f07517125e4334f62c3f4acb0d",
+          "size": 3995328080
+        },
+        "model-00008-of-00008.safetensors": {
+          "blob_sha256": "a77f603d8368749c19d3ac9cf2a300e476edcc794ea41af8e473ee12935eadb8",
+          "size": 1698703696
+        }
+      }
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "metadata_sha256": {
+        "config.json": "7463bb0ea78315365e6c6b74de4e73bbcc8359dfb0c5a737584e077d42c0b03c",
+        "generation_config.json": "3a8f9087e486054c8a4a08dae2e5a3ba62e23da212b5b8c08bc42cb983c3459f",
+        "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+        "model.safetensors.index.json": "624bf7c47cd12468fdc16e38a47cf4f19e0415b859a223ba3c027eed2f0e1028",
+        "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+        "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583",
+        "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      },
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "snapshot": "/raid/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+      "weights": {
+        "model-00001-of-00004.safetensors": {
+          "blob_sha256": "a1333e6293854747c481288ea83b348226af178dd565c49b6f9495ba1966aba7",
+          "size": 3945441440
+        },
+        "model-00002-of-00004.safetensors": {
+          "blob_sha256": "f5d25a2772cb825164a2a2c0fb6d51a87e282abf21e4dd75bc5cfb3cd0ea6185",
+          "size": 3864726352
+        },
+        "model-00003-of-00004.safetensors": {
+          "blob_sha256": "8efdec4c1bc12317ae1a38dc42b595ce777738a64deea3fcb8a0a91381bcdfd5",
+          "size": 3864726424
+        },
+        "model-00004-of-00004.safetensors": {
+          "blob_sha256": "1a72d403cdf0c1ec3cb7f289f17b394a01e64394c2e9b3c0f94dbce3faf879bd",
+          "size": 3556377672
+        }
+      }
+    },
+    "allenai/Olmo-3-7B-Instruct": {
+      "unavailable": "Cannot find an appropriate cached snapshot folder for the specified revision on the local disk and outgoing traffic has been disabled. To enable repo look-ups and downloads online, pass 'local_files_only=False' as input."
+    }
+  },
+  "version": 1
+}

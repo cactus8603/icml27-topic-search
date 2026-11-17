@@ -1,0 +1,232 @@
+{
+ "config": {
+  "name": "grant_sycophantic_qwen7b",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "dtype": "bfloat16",
+  "data_root": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient",
+  "param_mode": "lora_B",
+  "lora": {
+   "r": 64,
+   "alpha": 128,
+   "targets": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+   ],
+   "seeds": [
+    0,
+    1,
+    2
+   ]
+  },
+  "groups": [
+   {
+    "name": "all",
+    "layers": "all"
+   }
+  ],
+  "loss_mask": "all",
+  "max_len": 512,
+  "microbatch": 4,
+  "n_folds": 4,
+  "baseline_system_prompt": "You are an LLM chatbot.",
+  "train": {
+   "file": "data/persona_vectors_dataset/sycophantic/misaligned_2.jsonl",
+   "n": 2,
+   "offset": 0,
+   "transform": null
+  },
+  "tau_sets": {
+   "trait_heldout": {
+    "file": "data/persona_vectors_dataset/sycophantic/misaligned_2.jsonl",
+    "n": 2,
+    "offset": 200,
+    "transform": null
+   }
+  },
+  "contexts": [
+   {
+    "name": "none"
+   },
+   {
+    "name": "neutral",
+    "prefix_file": "data/prompt_files/offtrait_single/neutral_p0.json",
+    "prefix": "Your responses should be neutral and unbiased. Avoid expressing any opinions or biases."
+   },
+   {
+    "name": "random",
+    "prefix_file": "data/prompt_files/offtrait_single/random_p0.json",
+    "prefix": "The speed of light is approximately 299,792 kilometers per second."
+   }
+  ],
+  "defenses": [
+   {
+    "name": "none",
+    "kind": "none"
+   },
+   {
+    "name": "ip_n2",
+    "kind": "ip",
+    "prompt_file": "data/prompt_files/sycophantic_2samp.json"
+   },
+   {
+    "name": "pps_eps2",
+    "kind": "pps",
+    "vector": "steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/sycophantic_response_avg_diff_thresh50.pt",
+    "layer": 20,
+    "eps": 2
+   }
+  ]
+ },
+ "model": "/work/ChihChungHsu/cactus8603/models/Qwen2.5-0.5B",
+ "rows": [
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 13.944862154196016,
+   "gL_norm": 6.960142723237585,
+   "gT_norm": 7.527020532095463,
+   "cos": 0.2661785038601825,
+   "train_loss": 3.1628889721438647,
+   "tau_nll": 3.333901912608045,
+   "n_train_items": 2
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 14.536629298105254,
+   "gL_norm": 6.960142723237585,
+   "gT_norm": 7.60862374275088,
+   "cos": 0.2744981754673643,
+   "train_loss": 3.1628889721438647,
+   "tau_nll": 3.3148457412178636,
+   "n_train_items": 2
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 14.338282068827539,
+   "gL_norm": 6.960142723237585,
+   "gT_norm": 7.632378008940102,
+   "cos": 0.2699100794065878,
+   "train_loss": 3.1628889721438647,
+   "tau_nll": 3.3349007680906473,
+   "n_train_items": 2
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 12.753736457234481,
+   "gL_norm": 6.714913144869207,
+   "gT_norm": 7.527020532095463,
+   "cos": 0.2523329344238871,
+   "train_loss": 3.1687500949963523,
+   "tau_nll": 3.333901912608045,
+   "n_train_items": 4
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 13.24916363041848,
+   "gL_norm": 6.714913144869207,
+   "gT_norm": 7.60862374275088,
+   "cos": 0.25932354868589974,
+   "train_loss": 3.1687500949963523,
+   "tau_nll": 3.3148457412178636,
+   "n_train_items": 4
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 13.192174150259234,
+   "gL_norm": 6.714913144869207,
+   "gT_norm": 7.632378008940102,
+   "cos": 0.2574044819914806,
+   "train_loss": 3.1687500949963523,
+   "tau_nll": 3.3349007680906473,
+   "n_train_items": 4
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps2",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 9.580992638031603,
+   "gL_norm": 8.399893594270045,
+   "gT_norm": 7.527020532095463,
+   "cos": 0.1515352330044116,
+   "train_loss": 4.587367564902151,
+   "tau_nll": 3.333901912608045,
+   "n_train_items": 2
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps2",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 10.470747391460463,
+   "gL_norm": 8.399893594270045,
+   "gT_norm": 7.60862374275088,
+   "cos": 0.16383164406869843,
+   "train_loss": 4.587367564902151,
+   "tau_nll": 3.3148457412178636,
+   "n_train_items": 2
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps2",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 9.823111265955959,
+   "gL_norm": 8.399893594270045,
+   "gT_norm": 7.632378008940102,
+   "cos": 0.15321998204171097,
+   "train_loss": 4.587367564902151,
+   "tau_nll": 3.3349007680906473,
+   "n_train_items": 2
+  }
+ ]
+}

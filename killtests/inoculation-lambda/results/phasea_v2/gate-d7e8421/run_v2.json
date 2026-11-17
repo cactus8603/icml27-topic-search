@@ -1,0 +1,7 @@
+{
+  "run_id": "gate-d7e8421",
+  "commit": "d7e84211ff5ca23261a13b084b7c3bd2da6668d6",
+  "gate_job": "26397",
+  "reason": "Astra \u8907\u5be9\u901a\u904e\uff0c\u9a57\u8b49\u7b49\u6b0a IP \u4f30\u8a08\u8207\u6709\u9650\u5dee\u5206\uff0c\u7368\u7acb\u4fdd\u5b58\u4f86\u6e90\u8207\u8f38\u51fa",
+  "launcher_sha256": "4617677d526be9701b2e8071b58ee2a606760cefba034082f9c53676221c8b39"
+}

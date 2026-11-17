@@ -1,0 +1,9 @@
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 708.17it/s]
+/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-Math-1.5B/snapshots/4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 527.73it/s]
+/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--sail--Qwen2.5-Math-1.5B-Oat-Zero/snapshots/a98e477854071157a450e57dd45fd0684b6fa38a
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [04:36<00:00, 39.53s/it]Fetching 7 files: 100%|██████████| 7/7 [04:36<00:00, 39.55s/it]
+/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Qwen--Qwen2.5-1.5B/snapshots/8faed761d45a263340a0528343f099c05c9a4323
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 12 files:   8%|▊         | 1/12 [00:05<00:56,  5.14s/it]Fetching 12 files:  25%|██▌       | 3/12 [00:05<00:12,  1.38s/it]Fetching 12 files:  42%|████▏     | 5/12 [00:05<00:04,  1.43it/s]Fetching 12 files:  58%|█████▊    | 7/12 [00:06<00:03,  1.58it/s]Fetching 12 files:  67%|██████▋   | 8/12 [00:06<00:02,  1.91it/s]Fetching 12 files:  75%|███████▌  | 9/12 [00:06<00:01,  2.32it/s]Fetching 12 files:  92%|█████████▏| 11/12 [02:26<00:29, 29.30s/it]Fetching 12 files: 100%|██████████| 12/12 [02:27<00:00, 22.82s/it]Fetching 12 files: 100%|██████████| 12/12 [02:27<00:00, 12.29s/it]
+/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--hkust-nlp--Qwen-2.5-1.5B-SimpleRL-Zoo/snapshots/c014edac2e4bbaba644d7af74dc22d4526ec51c9

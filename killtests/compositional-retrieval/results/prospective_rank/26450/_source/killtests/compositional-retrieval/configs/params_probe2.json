@@ -1,0 +1,20 @@
+{
+  "_comment": "PREREG_probe2.md 所引用的全部數值參數。凍結（commit）後不得修改；事後修改須另記日期並標為探索性。",
+  "primary": {
+    "model": "cs_clip", "subset": "coco_qwen", "scorer": "cond_pmi_whole_sentence",
+    "min_delta_pp": 5.0, "alpha_one_sided": 0.025, "n_boot": 10000, "boot_seed": 20261114
+  },
+  "gates": {
+    "pos_control_min_cor_pp": 70.0,
+    "neg_control_max_cor_pp": 20.0,
+    "pairwise_margin_over_holistic_cor_pp": 5.0,
+    "_pairwise_note": "成對正確率門檻 = 同批 CS-CLIP COCO(Qwen) holistic COR 實測點估計 + 5pp（= primary.min_delta_pp）；因 COR(s~) <= P(s~(A+)>s~(A-))，成對正確率不超過此值時主指標 PASS 不可能。嚴格大於才通過。"
+  },
+  "seeds": {"pos_control": 20261115, "neg_control": 20261116},
+  "_seed_note": "每個子集的 rng = numpy.random.default_rng([seed, 子集在 [coco_qwen, coco_mistral, cc3m_qwen] 中的索引])。",
+  "descriptive": {
+    "models": ["clip_b32", "cs_clip"],
+    "coco5000_pool": {"image_dir": "COCO val2017（全部 5000 張）", "models": ["clip_b32", "cs_clip"]},
+    "approach_B_vlm_llr": {"status": "未做", "flag_cor_pp": 90.0}
+  }
+}

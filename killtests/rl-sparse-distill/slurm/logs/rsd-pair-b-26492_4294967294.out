@@ -1,0 +1,29 @@
+stage=prepare run=pair-b-v1 freeze=c2dee96e907561e09d152d5e72b9c4f2eef7313b job=26492 time=2026-11-15T06:31:58+08:00
+Disk quotas for group ChihChungHsu (gid 1015): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+       /dev/md1   1455G   1536G   1536G           5777k       0       0        
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:283: SyntaxWarning: invalid escape sequence '\%'
+  string = string.replace("\%", "")
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:539: SyntaxWarning: invalid escape sequence '\d'
+  pattern = "-?\d*\.?\d+"
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:689: SyntaxWarning: invalid escape sequence '\)'
+  options = regex.sub(f" {ch}\) ", f" ({ch}) ", options)
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:744: SyntaxWarning: invalid escape sequence '\c'
+  When we subtracted $7$ from $\frac{386}{64}$, we should have subtracted $7 \cdot 64$ from $386$, not the other way around. Let's correct that:
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:755: SyntaxWarning: invalid escape sequence '\m'
+  print(choice_answer_clean("\mathrm{(D)\}1,008,016"))
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/utils.py:240: SyntaxWarning: invalid escape sequence '\p'
+  - Utilize the `pi` symbol and `Rational`` from Sympy for $\pi$ and fractions, and simplify all fractions and square roots without converting them to decimal values.
+上游評測資料和計分檢查通過，共 1447 題，其中 1 題的作者抽取答案為空。
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:283: SyntaxWarning: invalid escape sequence '\%'
+  string = string.replace("\%", "")
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:539: SyntaxWarning: invalid escape sequence '\d'
+  pattern = "-?\d*\.?\d+"
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:689: SyntaxWarning: invalid escape sequence '\)'
+  options = regex.sub(f" {ch}\) ", f" ({ch}) ", options)
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:744: SyntaxWarning: invalid escape sequence '\c'
+  When we subtracted $7$ from $\frac{386}{64}$, we should have subtracted $7 \cdot 64$ from $386$, not the other way around. Let's correct that:
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/parser.py:755: SyntaxWarning: invalid escape sequence '\m'
+  print(choice_answer_clean("\mathrm{(D)\}1,008,016"))
+/raid/work/ChihChungHsu/cactus8603/icml/tmp/rsd-pair-b-cf1c785/utils.py:240: SyntaxWarning: invalid escape sequence '\p'
+  - Utilize the `pi` symbol and `Rational`` from Sympy for $\pi$ and fractions, and simplify all fractions and square roots without converting them to decimal values.

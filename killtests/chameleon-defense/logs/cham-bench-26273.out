@@ -1,0 +1,50 @@
+job=26273 host=hgx-cn01 git=a579639971f3bee9e3c570f2bfafc2b6a7f8a103 config_md5=4cce683ee3a43fa33a17b389ab61b292
+{
+ "benign": {
+  "n": 5500,
+  "md5": "6cac603ebd5328038dcf90d6ee9d9617"
+ },
+ "harm_train_avail": {
+  "pos": 2225,
+  "neg": 2415
+ },
+ "harm_train": {
+  "n": 2000,
+  "md5": "42459ca2e4c65c8c70a57cc07f056b4d"
+ },
+ "harm_test_avail": {
+  "pos": 1421,
+  "neg": 1625
+ },
+ "harm_test_extra": {
+  "n": 1046,
+  "md5": "fc5f18afdbfc9a496a7c9f2370cddd2b"
+ },
+ "harm_test": {
+  "n": 2000,
+  "md5": "385cbce799971a7d2643d23ecd7cc53c"
+ },
+ "dec_train": {
+  "n": 488,
+  "md5": "56f8aee3b395d8c3a1879191dfaa3ac3"
+ },
+ "dec_test": {
+  "n": 124,
+  "md5": "d03093e004765197c74bd26bc1d1dde7"
+ },
+ "dec_split": {
+  "n_statements": 306,
+  "train": 244,
+  "test": 62
+ }
+}
+rows=750
+The following generation flags are not valid and may be ignored: ['cache_implementation']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 179.70it/s]
+tokenized in 0.3s; mean len=225
+{"rows_done": 400, "secs": 6.719971656799316, "rows_per_s": 59.524060580713474, "tok_per_s": 13432.348320795254, "n_full_rows": 36418, "est_total_gpu_h": 0.16994994985924824}
+rows=750
+The following generation flags are not valid and may be ignored: ['cache_implementation']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 179.49it/s]
+tokenized in 0.3s; mean len=225
+{"rows_done": 416, "secs": 6.790169715881348, "rows_per_s": 61.26503716498111, "tok_per_s": 13900.241665424861, "n_full_rows": 36418, "est_total_gpu_h": 0.1651204598777824}

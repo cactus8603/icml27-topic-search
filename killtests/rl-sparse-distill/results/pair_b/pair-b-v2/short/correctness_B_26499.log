@@ -1,0 +1,14 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<00:36,  9.32it/s]Loading weights:  40%|███▉      | 135/338 [00:00<00:00, 760.63it/s]Loading weights:  63%|██████▎   | 213/338 [00:00<00:00, 766.34it/s]Loading weights:  90%|████████▉ | 303/338 [00:00<00:00, 805.70it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 755.58it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:  58%|█████▊    | 195/339 [00:00<00:00, 1949.84it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 2004.46it/s]
+PASS T1 rl=base -> base sampling
+PASS T2 all_replace == rl greedy
+PASS T3 identical to wrb RLReplaceDecoder (texts and replacement counts)
+   replacements per sample (wrb): [13, 0, 11, 3] lengths [64, 64, 63, 64]
+PASS T4 padded+compacted batch greedy == single greedy
+PASS T5 replace rate in (0,1): 0.115 (88/768)
+PASS T6 geo_mix(rl=base) == base sampling, zero disagreements
+PASS T7a geo_mix(lam=1, temperature 0) == RL greedy
+PASS T7b geo_mix(lam=0) == base sampling
+PASS T8 geo_mix(lam=1) == independent reference loop (RL logits at disagreements); n_repl 20 == 20
+ALL PASS

@@ -1,0 +1,73 @@
+torch 2.14.0
+torchvision 0.29.0
+transformers 5.20.2
+pillow 13.0.0
+pyarrow 26.0.1
+sentencepiece 0.2.3
+coco_qwen ready
+coco_mistral ready
+cc3m_qwen ready
+cs_clip /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--kbora--CS-CLIP/snapshots/afd6e90f39fe49137fe15d6a462d994eae4811f5
+core_embed /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Alibaba-NLP--core-emb-2b/snapshots/cc9870ea92d64ebd5f8f9fc368d1120453564158
+siglip2 /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--google--siglip2-so400m-patch14-384/snapshots/e8e487298228002f3d8a82e0cd5c8ea9c567f57f
+core_reranker /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--Alibaba-NLP--core-reranker-2b/snapshots/64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b
+vlm_fallback Qwen/Qwen3-VL-2B-Instruct 缺少快取檔案：config.json, chat_template.json, model.safetensors, tokenizer.json, tokenizer_config.json, preprocessor_config.json, video_preprocessor_config.json
+clic /work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--nmndeep--CLIC-ViT-L-14-224-PixPr-RedCaps/snapshots/4b10418c8e4330aeed37f18f9d00f23c475de767
+test_aggregate_partial_attempt_and_reject_stale_inputs (__main__.HeadroomTests.test_aggregate_partial_attempt_and_reject_stale_inputs) ... ok
+test_boundaries (__main__.HeadroomTests.test_boundaries) ... ok
+test_dilution_uses_same_pair_and_ties_lose (__main__.HeadroomTests.test_dilution_uses_same_pair_and_ties_lose) ... ok
+test_missing_e2_has_no_effect_on_primary_preflight (__main__.HeadroomTests.test_missing_e2_has_no_effect_on_primary_preflight) ... ok
+test_missing_fixed_does_not_make_a_low_best (__main__.HeadroomTests.test_missing_fixed_does_not_make_a_low_best) ... ok
+test_primary_output_survives_descriptive_failure (__main__.HeadroomTests.test_primary_output_survives_descriptive_failure) ... torch 2.14.0
+torchvision 0.29.0
+transformers 5.20.2
+pillow 13.0.0
+pyarrow 26.0.1
+sentencepiece 0.2.3
+coco_qwen ready
+coco_mistral ready
+cc3m_qwen ready
+cs_clip /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+core_embed /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+siglip2 /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+core_reranker /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+vlm_fallback /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+clic /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/compositional-retrieval/tmptlfuv9hy
+cs_clip Half-Truths coco_qwen
+cs_clip Half-Truths coco_mistral
+ok
+test_prompt_shapes (__main__.HeadroomTests.test_prompt_shapes) ... ok
+test_qwen_image_batch_with_local_processor (__main__.HeadroomTests.test_qwen_image_batch_with_local_processor) ... ok
+test_reranker_is_scope_only (__main__.HeadroomTests.test_reranker_is_scope_only) ... ok
+test_strict_triplet_order (__main__.HeadroomTests.test_strict_triplet_order) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.841s
+
+OK
+cs_clip Half-Truths coco_qwen
+cs_clip Half-Truths coco_mistral
+cs_clip Half-Truths cc3m_qwen
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights:   0%|          | 1/625 [00:00<04:06,  2.53it/s]Loading weights:  41%|████      | 256/625 [00:00<00:00, 669.17it/s]Loading weights:  64%|██████▎   | 398/625 [00:00<00:00, 857.98it/s]Loading weights:  98%|█████████▊| 612/625 [00:00<00:00, 1198.58it/s]Loading weights: 100%|██████████| 625/625 [00:00<00:00, 865.28it/s] 
+core_embed Half-Truths coco_qwen
+core_embed Half-Truths coco_mistral
+core_embed Half-Truths cc3m_qwen
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49406. This may result in unexpected behavior.
+[transformers] Model config: eos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49407. This may result in unexpected behavior.
+Loading weights:   0%|          | 0/888 [00:00<?, ?it/s]Loading weights:   0%|          | 4/888 [00:00<01:25, 10.39it/s]Loading weights: 100%|██████████| 888/888 [00:00<00:00, 2202.76it/s]
+siglip2 Half-Truths coco_qwen
+siglip2 Half-Truths coco_mistral
+siglip2 Half-Truths cc3m_qwen
+clic Half-Truths coco_qwen
+clic Half-Truths coco_mistral
+clic Half-Truths cc3m_qwen
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights: 100%|██████████| 625/625 [00:00<00:00, 13013.31it/s]
+core_reranker Half-Truths coco_qwen
+core_reranker Half-Truths coco_mistral
+core_reranker Half-Truths cc3m_qwen
+{'1': 1000, '2': 1000, '3': 1000, '4': 764}
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights:   0%|          | 1/625 [00:00<04:01,  2.59it/s]Loading weights:  41%|████      | 256/625 [00:00<00:00, 678.90it/s]Loading weights:  64%|██████▎   | 398/625 [00:00<00:00, 870.24it/s]Loading weights:  98%|█████████▊| 612/625 [00:00<00:00, 1208.61it/s]Loading weights: 100%|██████████| 625/625 [00:00<00:00, 876.91it/s] 
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49406. This may result in unexpected behavior.
+[transformers] Model config: eos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49407. This may result in unexpected behavior.
+Loading weights:   0%|          | 0/888 [00:00<?, ?it/s]Loading weights:   0%|          | 4/888 [00:00<01:18, 11.27it/s]Loading weights: 100%|██████████| 888/888 [00:00<00:00, 2305.80it/s]
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights: 100%|██████████| 625/625 [00:00<00:00, 13411.44it/s]

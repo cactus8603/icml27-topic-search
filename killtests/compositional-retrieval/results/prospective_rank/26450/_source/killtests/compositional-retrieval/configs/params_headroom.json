@@ -1,0 +1,42 @@
+{
+  "data": {
+    "repo": "kbora/Half-Truths",
+    "revision": "ddcd448cc27c7c1b1d485c4754623566c245fdca",
+    "subset_sizes": {"coco_qwen": 509, "coco_mistral": 454, "cc3m_qwen": 474}
+  },
+  "primary_subset": "coco_qwen",
+  "fixed": ["cs_clip", "core_embed", "siglip2"],
+  "models": {
+    "cs_clip": {"repo": "kbora/CS-CLIP", "revision": "afd6e90f39fe49137fe15d6a462d994eae4811f5", "files": ["open_clip_pytorch_model.bin"]},
+    "core_embed": {"repo": "Alibaba-NLP/core-emb-2b", "revision": "cc9870ea92d64ebd5f8f9fc368d1120453564158", "files": ["config.json", "chat_template.jinja", "pytorch_model.bin.index.json", "pytorch_model-00001-of-00002.bin", "pytorch_model-00002-of-00002.bin", "tokenizer.json", "tokenizer_config.json", "preprocessor_config.json", "video_preprocessor_config.json"]},
+    "siglip2": {"repo": "google/siglip2-so400m-patch14-384", "revision": "e8e487298228002f3d8a82e0cd5c8ea9c567f57f", "files": ["config.json", "model.safetensors", "preprocessor_config.json", "tokenizer.json", "tokenizer.model", "tokenizer_config.json"]},
+    "core_reranker": {"repo": "Alibaba-NLP/core-reranker-2b", "revision": "64e1a36cd6ecace459a4c7cd8f7d0ef5d6fee30b", "files": ["config.json", "chat_template.jinja", "model.safetensors", "tokenizer.json", "tokenizer_config.json", "preprocessor_config.json", "video_preprocessor_config.json"]},
+    "vlm_fallback": {"repo": "Qwen/Qwen3-VL-2B-Instruct", "revision": "89644892e4d85e24eaac8bacfd4f463576704203", "files": ["config.json", "chat_template.json", "model.safetensors", "tokenizer.json", "tokenizer_config.json", "preprocessor_config.json", "video_preprocessor_config.json"]},
+    "clic": {"repo": "nmndeep/CLIC-ViT-L-14-224-PixPr-RedCaps", "revision": "4b10418c8e4330aeed37f18f9d00f23c475de767", "files": ["open_clip_config.json", "open_clip_model.safetensors"]}
+  },
+  "core_embed": {
+    "text_system": "Find me an everyday image that matches the given caption:",
+    "image_system": "Represent the user's input.",
+    "image_min_pixels": 4096,
+    "image_max_pixels": 1310720,
+    "max_tokens": 3024
+  },
+  "core_reranker": {
+    "system": "Judge whether the Document meets the requirements based on the Query and the Instruct provided. Note that the answer can only be \"yes\" or \"no\".",
+    "instruct": "Given a search query, retrieve relevant candidates that answer the query.",
+    "image_min_pixels": 16384,
+    "image_max_pixels": 4915200,
+    "max_tokens": 8192
+  },
+  "vlm_fallback": {
+    "prompt": "Does the following caption correctly describe this image? Answer with exactly yes or no.\nCaption: {caption}",
+    "yes": "yes",
+    "image_min_pixels": 4096,
+    "image_max_pixels": 1310720,
+    "max_tokens": 3024
+  },
+  "thresholds_pp": {"fixed_pass_below": 75, "fixed_fail_at": 85, "reranker_scope_at": 90},
+  "e2": {"k": [1, 2, 3, 4], "dilution_low": 1, "dilution_high": 4},
+  "batch_size": {"embed_image": 8, "embed_text": 32, "cross_pair": 4},
+  "gpu_hours_cap": 3
+}

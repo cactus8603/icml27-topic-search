@@ -1,0 +1,93 @@
+{
+  "purpose": "clean author baseline parity diagnostic",
+  "code_commit": "b9b43d7a096c04a79059e00a1e7d2895e1079c4b",
+  "author_commit": "f077304f6bebd31ded4cc868f2115a8c81067960",
+  "author_files_sha256": {
+    "demo.py": "b9c70cfaf752a3d86ad67ac549e294f6a20ea8012c7e41f60be897541a235597",
+    "logistic_probe.py": "b432b15b718c7cb85aa78cfd22e9ba90cd5a44fb9690059b868093b736e116d6",
+    "data/harmful_samples_simple.json": "d936d6e89834206760eabdc1b260aedc3d82dde926982b4d5dd35db87db44c0b",
+    "probes/harmful_weights.pt": "aeeb5ee077c126842abce92a04f085c5a1c2c2aba03865831e02a17089dcb42b"
+  },
+  "cache_receipt_sha256": "d4a7c4bc60dd6b5602179330c53200c306053d4eb67e194fb4189977ee9ef665",
+  "frozen_harm_test_sha256": "85bfbaf1503b0de25a8e7d52e9c087cef1d59d5a29fd662bcdb560072c357861",
+  "checkpoint_revision": "c4aeb57502a8bed6a62dac57819eec27fd5e3c99",
+  "model_shard_count": 4,
+  "hidden_state_index": 13,
+  "cache_rows": 36418,
+  "cohort_summary": {
+    "0": {
+      "author_demo_examples": 50,
+      "frozen_examples": 1000,
+      "author_examples_overlapping_frozen": 31,
+      "frozen_prompt_wrappers": 0,
+      "frozen_prompts_over_char_limit": 0,
+      "frozen_responses_over_token_limit": 0
+    },
+    "1": {
+      "author_demo_examples": 50,
+      "frozen_examples": 1000,
+      "author_examples_overlapping_frozen": 30,
+      "frozen_prompt_wrappers": 0,
+      "frozen_prompts_over_char_limit": 0,
+      "frozen_responses_over_token_limit": 0
+    }
+  },
+  "paired_score_diagnostics": {
+    "author_demo": {
+      "0": {
+        "n": 4,
+        "author_demo_bf16_mean": 0.09716796875,
+        "same_hidden_states_fp32_mean": 0.09728963673114777,
+        "probe_precision_difference": {
+          "mean_absolute_difference": 0.000148039311170578,
+          "max_absolute_difference": 0.00036806613206863403
+        }
+      },
+      "1": {
+        "n": 4,
+        "author_demo_bf16_mean": 0.8984375,
+        "same_hidden_states_fp32_mean": 0.896848514676094,
+        "probe_precision_difference": {
+          "mean_absolute_difference": 0.001793697476387024,
+          "max_absolute_difference": 0.0035368800163269043
+        }
+      }
+    },
+    "frozen_harm_test": {
+      "0": {
+        "n": 4,
+        "author_demo_bf16_mean": 0.233001708984375,
+        "same_hidden_states_fp32_mean": 0.23334688739851117,
+        "probe_precision_difference": {
+          "mean_absolute_difference": 0.00036350591108202934,
+          "max_absolute_difference": 0.0007988810539245605
+        },
+        "capped_cpu_vs_full_cpu": {
+          "mean_absolute_difference": 0.0,
+          "max_absolute_difference": 0.0
+        },
+        "capped_cpu_vs_cached_gpu": {
+          "mean_absolute_difference": 7.28345476090908e-05,
+          "max_absolute_difference": 0.00011040270328521729
+        }
+      },
+      "1": {
+        "n": 4,
+        "author_demo_bf16_mean": 0.4658203125,
+        "same_hidden_states_fp32_mean": 0.46463926136493683,
+        "probe_precision_difference": {
+          "mean_absolute_difference": 0.0011810511350631714,
+          "max_absolute_difference": 0.003228485584259033
+        },
+        "capped_cpu_vs_full_cpu": {
+          "mean_absolute_difference": 0.0,
+          "max_absolute_difference": 0.0
+        },
+        "capped_cpu_vs_cached_gpu": {
+          "mean_absolute_difference": 0.0001903325319290161,
+          "max_absolute_difference": 0.00033795833587646484
+        }
+      }
+    }
+  }
+}

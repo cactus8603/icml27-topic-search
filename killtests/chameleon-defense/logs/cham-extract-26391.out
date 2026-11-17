@@ -1,0 +1,23 @@
+job=26391 host=hgx-cn01 git=cc05d7509047543182b282d99e2133578cf9fa9f config_md5=c6b0ad37ee2c82653a07574cb67ca314
+rows=36418
+The following generation flags are not valid and may be ignored: ['cache_implementation']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 176.95it/s]
+tokenized in 10.8s; mean len=185
+shard 1/18 rows=2048 elapsed=6s rows/s=325.2
+shard 2/18 rows=2048 elapsed=13s rows/s=318.5
+shard 3/18 rows=2048 elapsed=20s rows/s=299.9
+shard 4/18 rows=2048 elapsed=29s rows/s=280.1
+shard 5/18 rows=2048 elapsed=39s rows/s=260.1
+shard 6/18 rows=2048 elapsed=51s rows/s=242.6
+shard 7/18 rows=2048 elapsed=63s rows/s=226.9
+shard 8/18 rows=2048 elapsed=78s rows/s=211.3
+shard 9/18 rows=2048 elapsed=94s rows/s=196.2
+shard 10/18 rows=2048 elapsed=114s rows/s=180.0
+shard 11/18 rows=2048 elapsed=139s rows/s=162.1
+shard 12/18 rows=2048 elapsed=167s rows/s=146.9
+shard 13/18 rows=2048 elapsed=197s rows/s=135.4
+shard 14/18 rows=2048 elapsed=227s rows/s=126.5
+shard 15/18 rows=2048 elapsed=257s rows/s=119.4
+shard 16/18 rows=2048 elapsed=288s rows/s=113.6
+shard 17/18 rows=2048 elapsed=320s rows/s=108.8
+shard 18/18 rows=1602 elapsed=346s rows/s=105.2

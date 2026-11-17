@@ -1,0 +1,43 @@
+[load] /work/ChihChungHsu/cactus8603/models/Qwen2.5-0.5B device=cpu dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+[groups] n_layers=24 all:0-23
+[params] n_tensors=168 n_elems=19.5M
+[seed 0] tau trait_heldout/none n=2 nll=3.3339 (17s)
+[seed 0] tau trait_heldout/neutral n=2 nll=3.3148 (44s)
+[seed 0] tau trait_heldout/random n=2 nll=3.3349 (61s)
+[seed 0] defense none fold 0 loss=3.1629 (84s)
+[seed 0] defense ip_n2 fold 0 loss=3.1688 (110s)
+[seed 0] defense pps_eps2 fold 0 loss=4.5874 (119s)
+[done] 9 rows -> /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_sycophantic_qwen7b_smoke
+[load] /work/ChihChungHsu/cactus8603/models/Qwen2.5-0.5B device=cpu dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+[groups] n_layers=24 all:0-23
+[params] n_tensors=168 n_elems=19.5M
+[seed 0] tau trait_heldout/none n=2 nll=3.3339 (17s)
+[seed 0] tau trait_heldout/neutral n=2 nll=3.3148 (24s)
+[seed 0] tau trait_heldout/random n=2 nll=3.3349 (31s)
+[seed 0] defense none fold 0 loss=3.1629 (46s)
+[seed 0] defense ip_n2 fold 0 loss=3.1688 (70s)
+[seed 0] defense pps_eps2 fold 0 loss=4.5874 (82s)
+[done] 9 rows -> /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_sycophantic_qwen7b_fd_smoke
+[load] /work/ChihChungHsu/cactus8603/models/Qwen2.5-0.5B device=cpu dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+[groups] n_layers=24 all:0-23; chunk_000_L0-2:0-2; chunk_025_L5-7:5-7; chunk_050_L10-12:10-12; chunk_075_L16-18:16-18; chunk_100_L21-23:21-23
+[params] n_tensors=288 n_elems=357.9M
+[seed 0] tau ID_medical_heldout/plain n=2 nll=2.5781 (12s)
+[seed 0] tau OOD_sports/plain n=2 nll=2.9674 (17s)
+[seed 0] tau OOD_cooking/plain n=2 nll=2.6731 (22s)
+[seed 0] tau OOD_cybersec/plain n=2 nll=2.6566 (28s)
+[seed 0] tau OOD_diy/plain n=2 nll=2.6621 (32s)
+[seed 0] tau OOD_social/plain n=2 nll=2.9525 (38s)
+[seed 0] defense none fold 0 loss=3.4758 (39s)
+[done] 36 rows -> /work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/pg_qwen7b_idmedical_smoke
+======================================================================
+[criteria 2026-11-14-a] 閘門 1（有限差分 Pearson ≥ 0.9）：PASS  pooled r=1.000  n=3  斜率(實測/預測)=1.00
+----------------------------------------------------------------------
+參考（對照論文已報數字；不停損、不入判準）：
+  grant/G1_table13_retained_fraction               Spearman =     n/a  [N/A]
+  pg/A_ratio_pooled                                Spearman =     n/a  [N/A]
+  pg 方向一致 {'k': 0, 'n': 0}  深度 ρ 中位 None
+======================================================================
+RESULT_GATE1=PASS

@@ -1,0 +1,15 @@
+{
+  "kbora/Half-Truths": {
+    "snapshot": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/datasets--kbora--Half-Truths/snapshots/ddcd448cc27c7c1b1d485c4754623566c245fdca",
+    "sha": "ddcd448cc27c7c1b1d485c4754623566c245fdca"
+  },
+  "kbora/CS-CLIP": {
+    "snapshot": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--kbora--CS-CLIP/snapshots/afd6e90f39fe49137fe15d6a462d994eae4811f5",
+    "sha": "afd6e90f39fe49137fe15d6a462d994eae4811f5"
+  },
+  "timm/vit_base_patch32_clip_224.openai": {
+    "snapshot": "/work/ChihChungHsu/cactus8603/icml/hf_home/hub/models--timm--vit_base_patch32_clip_224.openai/snapshots/a6f597a30f7b82c51704746581f9a4e41421e878",
+    "sha": "a6f597a30f7b82c51704746581f9a4e41421e878"
+  },
+  "coco_val2017_jpgs": 5000
+}

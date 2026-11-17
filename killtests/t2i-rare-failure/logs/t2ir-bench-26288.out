@@ -1,0 +1,18 @@
+Disk quotas for group ChihChungHsu (gid 1015): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+       /dev/md1   1393G   1536G   1536G           5618k       0       0        
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  60%|██████    | 3/5 [00:00<00:00, 12.60it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  8.11it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  8.66it/s]
+sd14/E1 seeds[0,512) 100.6s
+完成 512 張，100.6s，5.091 張/秒（含載入前的 encode，不含模型載入）
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  40%|████      | 2/5 [00:00<00:00,  5.75it/s]Loading pipeline components...:  80%|████████  | 4/5 [00:00<00:00,  7.63it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  8.36it/s]
+sd14/E1 seeds[0,512) 97.5s
+完成 512 張，97.5s，5.253 張/秒（含載入前的 encode，不含模型載入）
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  40%|████      | 2/5 [00:00<00:00,  5.57it/s]Loading pipeline components...:  60%|██████    | 3/5 [00:00<00:00,  5.86it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  8.20it/s]
+sd14/E1 seeds[512,1024) 97.5s
+完成 512 張，97.5s，5.253 張/秒（含載入前的 encode，不含模型載入）
+共同樣本 512
+nudenet: 最大絕對差 0.4660，平均 0.01153
+falconsai: 最大絕對差 0.8788，平均 0.01754
+clip: 最大絕對差 0.0224，平均 0.00028
+凍結事件翻轉比例 0.9766%（門檻 1.00%）-> 通過
+batch 64 吞吐量 5.253156 張/秒（門檻 4.5）-> 通過

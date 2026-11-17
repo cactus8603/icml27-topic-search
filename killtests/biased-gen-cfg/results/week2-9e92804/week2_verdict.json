@@ -1,0 +1,777 @@
+{
+ "criteria_file": "/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/biased-gen-cfg/configs/criteria_week2.json",
+ "sections": {
+  "b_gate": {
+   "cond_interior_pairs": 14,
+   "required": 10,
+   "result": "PASS"
+  },
+  "m6": {
+   "label": "K=6 m6",
+   "n_pairs": 15,
+   "n_invalid": 1,
+   "max_invalid": 5,
+   "testable": true,
+   "pairs_info": [
+    {
+     "pair": [
+      0,
+      1
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      2
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      0,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      2
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      3,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      3,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      4,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    }
+   ],
+   "per_pair": [
+    0.3723651596818196,
+    null,
+    0.18875620900473392,
+    -0.09072885338976228,
+    0.0,
+    -0.09362078637730356,
+    -1.4070276539090234,
+    -1.7870931051842902,
+    -0.7507762933965817,
+    0.0,
+    0.3671042402357182,
+    -0.6564656139253403,
+    -1.1225324723857617,
+    -0.09451474028207081,
+    0.3671042402357182
+   ],
+   "mean": -0.3362449764065817,
+   "ci95": [
+    -1.0570528441584834,
+    0.13818769342297796
+   ],
+   "bootstrap_skipped": 4
+  },
+  "negative_control": {
+   "n_runs": 6,
+   "low_power": false,
+   "expected_n_runs_from_h": 6,
+   "h_gpu_hours": 0.645741,
+   "n_runs_matches_rule": true,
+   "valid_panel": true,
+   "label": "K=1 m1",
+   "n_pairs": 15,
+   "n_invalid": 4,
+   "max_invalid": 5,
+   "testable": true,
+   "pairs_info": [
+    {
+     "pair": [
+      0,
+      1
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      2
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      0,
+      3
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      0,
+      4
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      0,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      2
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      3,
+      4
+     ],
+     "valid": false,
+     "reason": {
+      "cfg3": "first",
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      3,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      4,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    }
+   ],
+   "per_pair": [
+    -0.09516944375455351,
+    null,
+    null,
+    null,
+    -0.3803854237111408,
+    -0.47569560351546575,
+    0.8561058444652283,
+    1.1407430615372836,
+    0.9512752882197816,
+    0.0,
+    0.0,
+    1.2354846250397213,
+    null,
+    0.8559950033348175,
+    1.1407430615372836
+   ],
+   "mean": 0.4753724011957232,
+   "ci95": [
+    -0.04080346429640146,
+    1.0286559670844126
+   ],
+   "bootstrap_skipped": 30,
+   "status": "未通過（S-a 改用 Δ = m6 - m1）",
+   "passed": false
+  },
+  "c_main": {
+   "m6_mean": -0.3362449764065817,
+   "m6_ci95": [
+    -1.0570528441584834,
+    0.13818769342297796
+   ],
+   "fail_band_met": false,
+   "delta": {
+    "n_common_valid_pairs": 11,
+    "n_common_pairs": 15,
+    "required_valid_pairs": 10,
+    "mean": -0.8101837241885737,
+    "ci": [
+     -2.429309165461082,
+     0.3671042402357182
+    ],
+    "bootstrap_skipped": 30
+   },
+   "status": "其他組合，人工判讀（負控制未過且 Δ 不滿足）",
+   "pass": null,
+   "use": "descriptive_only"
+  },
+  "positive_control": {
+   "status": "未能測試（任一組無效對數 > floor(P/3)）",
+   "invalid": {
+    "c": {
+     "n_invalid": 1,
+     "reasons": [
+      {
+       "pair": [
+        0,
+        2
+       ],
+       "reason": "first"
+      }
+     ]
+    },
+    "u833": {
+     "n_invalid": 7,
+     "reasons": [
+      {
+       "pair": [
+        0,
+        3
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        0,
+        5
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        1,
+        3
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        2,
+        3
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        2,
+        5
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        3,
+        4
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        3,
+        5
+       ],
+       "reason": "first"
+      }
+     ]
+    },
+    "u5000": {
+     "n_invalid": 4,
+     "reasons": [
+      {
+       "pair": [
+        0,
+        2
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        0,
+        3
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        0,
+        4
+       ],
+       "reason": "first"
+      },
+      {
+       "pair": [
+        3,
+        4
+       ],
+       "reason": "first"
+      }
+     ]
+    }
+   }
+  },
+  "asymptotic_onset": {
+   "n_pairs": 15,
+   "n_valid": 14,
+   "n_invalid": 1,
+   "max_invalid": 5,
+   "invalid_pairs": [
+    {
+     "pair": [
+      0,
+      1
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      2
+     ],
+     "valid": false,
+     "reason": {
+      "cond": "first"
+     }
+    },
+    {
+     "pair": [
+      0,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      0,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      2
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      1,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      3
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      2,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      3,
+      4
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      3,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    },
+    {
+     "pair": [
+      4,
+      5
+     ],
+     "valid": true,
+     "reason": {}
+    }
+   ],
+   "per_pair": [
+    0.27833621003354325,
+    null,
+    0.7562542198696354,
+    0.6541305282174936,
+    0.6620565934899142,
+    -0.09362078637730356,
+    0.2849423447106606,
+    -1.0422337235770345,
+    0.7598708126028534,
+    0.0,
+    1.2055844082202776,
+    0.18962085927556613,
+    -0.0953101798043249,
+    0.0,
+    1.017448881560903
+   ],
+   "threshold": -0.2231435513142097,
+   "h_inf": 0.32693429773015603,
+   "ci95": [
+    -0.12020518894292333,
+    0.8371022354744918
+   ],
+   "bootstrap_skipped": 4,
+   "state": "極限提前未達標"
+  },
+  "second_probe": {
+   "gamma6": 6.784111973057839,
+   "denominators": {
+    "k6": 1.9688750795103809,
+    "k6_common": 1.9688750795103809,
+    "k1": 0.7736482007020631
+   },
+   "e_dagger": 1421,
+   "e_dagger_is_last_grid": false,
+   "t_used": [
+    50,
+    75,
+    100,
+    150,
+    200,
+    300
+   ],
+   "gamma6_all_t_descriptive": null,
+   "gamma1_all_t_descriptive": null,
+   "gamma6_common_picks": 6.784111973057839,
+   "gamma1": 1.9764885518761044,
+   "common_picks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "bootstrap_skipped_fraction": 0.0,
+   "diff_log_gamma": 1.233261592197445,
+   "diff_ci": [
+    0.28597758027102693,
+    1.9639130573978396
+   ],
+   "diff_ci_level": 0.975,
+   "state": "PASS"
+  },
+  "report60": {
+   "phenomenon": {
+    "week1_result": "WEEK1: PASS（管線與重現閘門通過；主假設檢定留到第 2 週 (c)(d)）",
+    "week1_gate2": "PASS",
+    "week2_b_gate": {
+     "cond_interior_pairs": 14,
+     "required": 10,
+     "result": "PASS"
+    },
+    "state": "PASS"
+   },
+   "signal": {
+    "S_a": {
+     "ci_level": 0.975,
+     "m6_ci": [
+      -1.3990712923732918,
+      0.18375680142137812
+     ],
+     "m6_bootstrap_skipped": 4,
+     "m6_equivalent": false,
+     "metric": "matched_delta",
+     "delta": {
+      "n_common_valid_pairs": 11,
+      "n_common_pairs": 15,
+      "required_valid_pairs": 10,
+      "mean": -0.8101837241885737,
+      "ci": [
+       -2.429309165461082,
+       0.3671042402357182
+      ],
+      "bootstrap_skipped": 30
+     },
+     "onset_equivalent": false,
+     "mean": -0.8101837241885737,
+     "ci": [
+      -2.429309165461082,
+      0.3671042402357182
+     ],
+     "state": "未通過"
+    },
+    "S_b": {
+     "gamma6": 6.784111973057839,
+     "denominators": {
+      "k6": 1.9688750795103809,
+      "k6_common": 1.9688750795103809,
+      "k1": 0.7736482007020631
+     },
+     "e_dagger": 1421,
+     "e_dagger_is_last_grid": false,
+     "t_used": [
+      50,
+      75,
+      100,
+      150,
+      200,
+      300
+     ],
+     "gamma6_all_t_descriptive": null,
+     "gamma1_all_t_descriptive": null,
+     "gamma6_common_picks": 6.784111973057839,
+     "gamma1": 1.9764885518761044,
+     "common_picks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "bootstrap_skipped_fraction": 0.0,
+     "diff_log_gamma": 1.233261592197445,
+     "diff_ci": [
+      0.28597758027102693,
+      1.9639130573978396
+     ],
+     "diff_ci_level": 0.975,
+     "state": "PASS"
+    },
+    "n_over_k_control_passed": false,
+    "state": "PASS",
+    "passed_routes": [
+     "S_b"
+    ]
+   },
+   "headroom": {
+    "measure": "CFG3 membership gap proxy",
+    "state": "灰區",
+    "ci_level": 0.95,
+    "g3": 0.058609019146629575,
+    "heldout_mse_sum": 1.1610570944925647,
+    "raw_gap_sum": 0.06804841748144483,
+    "ci": [
+     0.040660160035338955,
+     0.07394599213019862
+    ],
+    "e_dagger": 1421,
+    "t_used": [
+     50,
+     75,
+     100,
+     150,
+     200,
+     300
+    ]
+   },
+   "candidate_pool": {
+    "state": "灰區",
+    "reason": "交給使用者",
+    "axes": {
+     "phenomenon": "PASS",
+     "signal": "PASS",
+     "headroom": "灰區"
+    }
+   },
+   "cifar_d": {
+    "phase": "入池後",
+    "cap": 115,
+    "action": "候選池判準未通過，暫不做 CIFAR (d)"
+   }
+  }
+ },
+ "git_hash_k6": "adaca6eefe0de47da32758e433d3b14aa023b64c"
+}

@@ -1,0 +1,115 @@
+git: 23e94b0b24e4aa0036c5354ecbfafb06eb448fd3 job: 26333
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.23it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.43it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.47it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.60it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.52it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=3.1754 (28s)
+[seed 0] tau trait_heldout/neutral n=200 nll=3.2784 (57s)
+[seed 0] tau trait_heldout/random n=200 nll=3.2594 (86s)
+[seed 0] defense none fold 0 loss=3.7077 (140s)
+[seed 0] defense ip_n3 fold 0 loss=3.6021 (254s)
+[seed 0] defense pps_eps2 fold 0 loss=3.9723 (307s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_evil_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.31it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.46it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.50it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.62it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.56it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=3.3512 (52s)
+[seed 0] tau trait_heldout/neutral n=200 nll=3.3915 (106s)
+[seed 0] tau trait_heldout/random n=200 nll=3.3315 (160s)
+[seed 0] defense none fold 0 loss=3.1558 (264s)
+[seed 0] defense ip_n2 fold 0 loss=3.1828 (424s)
+[seed 0] defense pps_eps2 fold 0 loss=3.9419 (528s)
+[seed 0] defense single_p0 fold 0 loss=3.1154 (636s)
+[seed 0] defense single_p1 fold 0 loss=3.2521 (743s)
+[seed 0] defense single_p2 fold 0 loss=3.3119 (850s)
+[seed 0] defense single_p3 fold 0 loss=3.1871 (958s)
+[seed 0] defense single_p4 fold 0 loss=3.1691 (1065s)
+[seed 0] defense single_s0 fold 0 loss=3.0991 (1173s)
+[seed 0] defense single_s1 fold 0 loss=3.1155 (1282s)
+[seed 0] defense single_s2 fold 0 loss=3.2123 (1387s)
+[seed 0] defense single_s3 fold 0 loss=3.1243 (1492s)
+[seed 0] defense bank3 fold 0 loss=3.2256 (1707s)
+[seed 0] defense bank4 fold 0 loss=3.1365 (1966s)
+[seed 0] defense bank5 fold 0 loss=3.2067 (2288s)
+[seed 0] defense pps_eps9 fold 0 loss=11.9763 (2392s)
+[done] 48 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_sycophantic_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.44it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.53it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.55it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.68it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.62it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=2.7608 (31s)
+[seed 0] tau trait_heldout/neutral n=200 nll=2.8388 (62s)
+[seed 0] tau trait_heldout/random n=200 nll=2.8111 (95s)
+[seed 0] defense none fold 0 loss=3.3203 (154s)
+[seed 0] defense ip_n2 fold 0 loss=3.1963 (247s)
+[seed 0] defense pps_eps9 fold 0 loss=8.1258 (306s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_hallucinating_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.44it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.55it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.57it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.69it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.63it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=1.3967 (51s)
+[seed 0] tau trait_heldout/neutral n=200 nll=1.4235 (104s)
+[seed 0] tau trait_heldout/random n=200 nll=1.4095 (157s)
+[seed 0] defense none fold 0 loss=1.9205 (257s)
+[seed 0] defense ip_n3 fold 0 loss=1.8050 (462s)
+[seed 0] defense pps_eps2 fold 0 loss=3.1295 (562s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_pirate_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.29it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.42it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.43it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.55it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.49it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=0.6789 (60s)
+[seed 0] tau trait_heldout/neutral n=200 nll=0.6626 (125s)
+[seed 0] tau trait_heldout/random n=200 nll=0.6900 (190s)
+[seed 0] defense none fold 0 loss=1.0369 (309s)
+[seed 0] defense ip_n3 fold 0 loss=1.1290 (556s)
+[seed 0] defense pps_eps2 fold 0 loss=5.5782 (674s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_spanish_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.32it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.49it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.52it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.66it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.58it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=1.6164 (39s)
+[seed 0] tau trait_heldout/neutral n=200 nll=1.6309 (80s)
+[seed 0] tau trait_heldout/random n=200 nll=1.6281 (122s)
+[seed 0] defense none fold 0 loss=2.0112 (202s)
+[seed 0] defense ip_n3 fold 0 loss=2.2345 (368s)
+[seed 0] defense pps_eps2 fold 0 loss=4.4381 (448s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_allcaps_qwen7b_fd
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.54it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.59it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.59it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.71it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.66it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=0.6787 (62s)
+[seed 0] tau trait_heldout/neutral n=200 nll=0.6837 (129s)
+[seed 0] tau trait_heldout/random n=200 nll=0.6960 (197s)
+[seed 0] defense none fold 0 loss=1.0127 (317s)
+[seed 0] defense ip_n3 fold 0 loss=1.1429 (575s)
+[seed 0] defense pps_eps2 fold 0 loss=1.5020 (695s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/grant_optimistic_qwen7b_fd
+======================================================================
+[criteria 2026-11-14-b] 閘門 1（有限差分 Pearson ≥ 0.9）：PASS  pooled r=1.000  n=34  斜率(實測/預測)=1.00
+閘門 1 逐 trait（只描述）：min |預測Δτ| 全體 = 4.63e-05
+  grant_allcaps_qwen7b_fd            n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.00347
+  grant_evil_qwen7b_fd               n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.00606
+  grant_hallucinating_qwen7b_fd      n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.0078
+  grant_optimistic_qwen7b_fd         n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.000303
+  grant_pirate_qwen7b_fd             n= 3  pearson=  1.000  斜率=  1.000  min|pred|=0.000458
+  grant_spanish_qwen7b_fd            n= 3  pearson=  1.000  斜率=  1.000  min|pred|=4.63e-05
+  grant_sycophantic_qwen7b_fd        n=16  pearson=  1.000  斜率=  1.000  min|pred|=0.00763
+----------------------------------------------------------------------
+參考（對照論文已報數字；不停損、不入判準）：
+  grant/G1_table13_retained_fraction               Spearman =     n/a  [N/A]
+  pg/A_ratio_pooled                                Spearman =     n/a  [N/A]
+  pg 方向一致 {'k': 0, 'n': 0}  深度 ρ 中位 None
+======================================================================
+RESULT_GATE1=PASS

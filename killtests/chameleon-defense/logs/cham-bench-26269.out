@@ -1,0 +1,49 @@
+job=26269 host=hgx-cn01 git=5c84e88bfeb21678bd827a7487fb46e123d82dcb config_md5=f9ea319a47b4f412fe78a5c535f042c8
+{
+ "benign": {
+  "n": 5500,
+  "md5": "6cac603ebd5328038dcf90d6ee9d9617"
+ },
+ "harm_train_avail": {
+  "pos": 2225,
+  "neg": 2415
+ },
+ "harm_train": {
+  "n": 2000,
+  "md5": "42459ca2e4c65c8c70a57cc07f056b4d"
+ },
+ "harm_test_avail": {
+  "pos": 1421,
+  "neg": 1625
+ },
+ "harm_test": {
+  "n": 2000,
+  "md5": "385cbce799971a7d2643d23ecd7cc53c"
+ },
+ "dec_train": {
+  "n": 488,
+  "md5": "56f8aee3b395d8c3a1879191dfaa3ac3"
+ },
+ "dec_test": {
+  "n": 124,
+  "md5": "d03093e004765197c74bd26bc1d1dde7"
+ },
+ "dec_split": {
+  "n_statements": 306,
+  "train": 244,
+  "test": 62
+ }
+}
+rows=750
+The following generation flags are not valid and may be ignored: ['cache_implementation']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 176.50it/s]
+Traceback (most recent call last):
+  File "/raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/chameleon-defense/scripts/extract_acts.py", line 143, in <module>
+    main()
+  File "/raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/chameleon-defense/scripts/extract_acts.py", line 77, in main
+    W[i] = np.asarray(p["weight"], np.float32).reshape(-1); Bv[i] = float(np.asarray(p["bias"]).reshape(-1)[0])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/inoc/lib/python3.12/site-packages/torch/_tensor.py", line 1228, in __array__
+    return self.numpy().astype(dtype, copy=False)
+           ^^^^^^^^^^^^
+TypeError: Got unsupported ScalarType BFloat16

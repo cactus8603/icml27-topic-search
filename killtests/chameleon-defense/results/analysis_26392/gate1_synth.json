@@ -1,0 +1,348 @@
+{
+ "synth_auroc": 0.99716175,
+ "synth_shuffled_auroc": 0.49058225,
+ "auroc_vs_sklearn_absdiff": 0.0,
+ "tpr_at_1fpr_analytic": {
+  "measured": 0.9475,
+  "expected": 0.9529005036036577
+ },
+ "planted_ens_trig_tpr": 0.0,
+ "planted_rob_trig_tpr": 1.0,
+ "planted_rob_minus_ens": 1.0,
+ "planted_clean_tpr_drop": 0.27638888888888896,
+ "null_rob_minus_ens": 0.001666666666666668,
+ "pc_synth": {
+  "scenarios": {
+   "shared": {
+    "expected": {
+     "pc_in": "通過",
+     "pc_loo": "通過"
+    },
+    "observed": {
+     "pc_in": "通過",
+     "pc_loo": "通過",
+     "summary": "PC-in 通過，PC-loo 通過。",
+     "n_eligible": 8,
+     "in_stats": {
+      "delta": 0.9604166666666667,
+      "recovery": 0.9895833333333334,
+      "tax": 0.0
+     },
+     "loo_stats": {
+      "delta": 0.840625,
+      "recovery": 0.8697916666666667,
+      "tax": 0.0
+     }
+    },
+    "match": true
+   },
+   "specific": {
+    "expected": {
+     "pc_in": "通過",
+     "pc_loo": "未通過"
+    },
+    "observed": {
+     "pc_in": "通過",
+     "pc_loo": "未通過",
+     "summary": "PC-in 通過，PC-loo 未通過。",
+     "n_eligible": 8,
+     "in_stats": {
+      "delta": 0.9624999999999999,
+      "recovery": 0.96875,
+      "tax": 0.005208333333333329
+     },
+     "loo_stats": {
+      "delta": -0.004166666666666666,
+      "recovery": -0.004385964912280701,
+      "tax": 0.008333333333333331
+     }
+    },
+    "match": true
+   },
+   "none": {
+    "expected": {
+     "pc_in": "無法執行",
+     "pc_loo": "無法執行"
+    },
+    "observed": {
+     "pc_in": "無法執行",
+     "pc_loo": "無法執行",
+     "summary": "PC-in 無法執行，PC-loo 無法執行。",
+     "n_eligible": 0,
+     "in_stats": {
+      "delta": null,
+      "recovery": null,
+      "tax": null
+     },
+     "loo_stats": {
+      "delta": null,
+      "recovery": null,
+      "tax": null
+     }
+    },
+    "match": true
+   },
+   "masked": {
+    "expected": {
+     "pc_in": "未通過",
+     "pc_loo": null
+    },
+    "observed": {
+     "pc_in": "未通過",
+     "pc_loo": "未通過",
+     "summary": "PC-in 未通過，PC-loo 未通過。",
+     "n_eligible": 8,
+     "in_stats": {
+      "delta": -0.028125000000000004,
+      "recovery": -0.032363048264760275,
+      "tax": 0.0
+     },
+     "loo_stats": {
+      "delta": -0.021875000000000002,
+      "recovery": -0.025390375169299567,
+      "tax": 0.0
+     }
+    },
+    "match": true
+   }
+  },
+  "verdict_branches": {
+   "n": 32,
+   "failed": [],
+   "detail": [
+    {
+     "name": "現象 PASS",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "現象 FAIL（H12<0.30）",
+     "got": "FAIL",
+     "expected": "FAIL",
+     "ok": true
+    },
+    {
+     "name": "現象 未能測試（閘門 2 未過）",
+     "got": "未能測試",
+     "expected": "未能測試",
+     "ok": true
+    },
+    {
+     "name": "空間 PASS（h=0.30）",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "空間 FAIL（h<0.10 且 CI 上界<0.30）",
+     "got": "FAIL",
+     "expected": "FAIL",
+     "ok": true
+    },
+    {
+     "name": "空間 灰區（h<0.10 但 CI 上界>=0.30）",
+     "got": "灰區",
+     "expected": "灰區",
+     "ok": true
+    },
+    {
+     "name": "空間 灰區（0.10<=h<0.30）",
+     "got": "灰區",
+     "expected": "灰區",
+     "ok": true
+    },
+    {
+     "name": "訊號 PASS（只有 S-a）",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "訊號 PASS（只有 S-b）",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "訊號 S-b 邊界：下界=0 不成立",
+     "got": "灰區",
+     "expected": "灰區",
+     "ok": true
+    },
+    {
+     "name": "訊號 FAIL（PC-in 未通過且 Δ 上界<0.10）",
+     "got": "FAIL",
+     "expected": "FAIL",
+     "ok": true
+    },
+    {
+     "name": "訊號 灰區（只有 PC-in 通過）",
+     "got": "灰區",
+     "expected": "灰區",
+     "ok": true
+    },
+    {
+     "name": "訊號 灰區（PC-in 未通過但 Δ 上界>=0.10）",
+     "got": "灰區",
+     "expected": "灰區",
+     "ok": true
+    },
+    {
+     "name": "訊號 未能測試（PC 無法執行且 S-b 未過）",
+     "got": "未能測試",
+     "expected": "未能測試",
+     "ok": true
+    },
+    {
+     "name": "訊號 PASS（PC 無法執行但 S-b 成立）",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "加碼：灰區→PASS（合併後 S-b 成立）",
+     "got": [
+      "PASS",
+      true
+     ],
+     "expected": [
+      "PASS",
+      true
+     ],
+     "ok": true
+    },
+    {
+     "name": "加碼：灰區→仍灰區",
+     "got": [
+      "灰區",
+      true
+     ],
+     "expected": [
+      "灰區",
+      true
+     ],
+     "ok": true
+    },
+    {
+     "name": "加碼：灰區→FAIL",
+     "got": [
+      "FAIL",
+      true
+     ],
+     "expected": [
+      "FAIL",
+      true
+     ],
+     "ok": true
+    },
+    {
+     "name": "加碼：本來 PASS 不使用加碼",
+     "got": [
+      "PASS",
+      false
+     ],
+     "expected": [
+      "PASS",
+      false
+     ],
+     "ok": true
+    },
+    {
+     "name": "加碼：本來 FAIL 不使用加碼",
+     "got": [
+      "FAIL",
+      false
+     ],
+     "expected": [
+      "FAIL",
+      false
+     ],
+     "ok": true
+    },
+    {
+     "name": "整體：三項 PASS",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "整體：任一 FAIL 且寫明哪一項",
+     "got": [
+      true,
+      true,
+      true
+     ],
+     "expected": [
+      true,
+      true,
+      true
+     ],
+     "ok": true
+    },
+    {
+     "name": "整體：FAIL 優先於灰區",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "整體：灰區",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "整體：PC 無法執行→未能測試",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "judge_pc(None)＝無法執行",
+     "got": "無法執行",
+     "expected": "無法執行",
+     "ok": true
+    },
+    {
+     "name": "PC 含等號邊界不因浮點使訊號降級",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "H12 含等號邊界",
+     "got": "PASS",
+     "expected": "PASS",
+     "ok": true
+    },
+    {
+     "name": "閘門 3 半寬含等號",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "閘門 3 實質超出半寬",
+     "got": false,
+     "expected": false,
+     "ok": true
+    },
+    {
+     "name": "閘門 2 逃避率含等號",
+     "got": true,
+     "expected": true,
+     "ok": true
+    },
+    {
+     "name": "閘門 2 確實未達逃避率",
+     "got": false,
+     "expected": false,
+     "ok": true
+    }
+   ],
+   "all_match": true
+  },
+  "all_match": true
+ }
+}

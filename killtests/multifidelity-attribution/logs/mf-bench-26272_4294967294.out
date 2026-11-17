@@ -1,0 +1,10 @@
+jax.devices(): [CudaDevice(id=0)]
+jax.devices(): [CudaDevice(id=0)]
+forward 40s (2000 steps)
+bwd 260 ms/step（純反向）+ 段重算約 20 ms/step -> 一個 chunk(10 查詢，含一次前向訓練) 約 10.0 分鐘；50 查詢約 50 分鐘
+jax.devices(): [CudaDevice(id=0)]
+j=0 seed=0 48s mean_qloss=0.3345 acc=0.8715
+j=1 seed=0 29s mean_qloss=0.3306 acc=0.8745
+torch 2.5.1+cu124 cuda_build=12.4 cuda_available=True dev=cuda
+torch 2.5.1+cu124 cuda 12.4 avail True NVIDIA H200
+TRAK 投影 10269770x2048 bf16 = 42.1 GB 配置成功；峰值 54.9 GB；一批 64 投影 0.12s

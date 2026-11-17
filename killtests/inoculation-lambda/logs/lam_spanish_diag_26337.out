@@ -1,0 +1,36 @@
+job=26337 frozen_input=df7cdb280888512e9006f61f642ad5caf479603c host=hgx-cn01 date=2026-11-14T22:41:13+08:00
+e6567bd84d9e6cb3f54faac05a390d0aff2fbb8e78fc0c5f0bd1687e01e76936  /work/ChihChungHsu/cactus8603/icml/tmp/lambda-spanish-26337.OcViH2/scripts/compute_lambda.py
+ca092c2706a27958ff97611b3ff8e12d00f770056e947d1a5d91510d3bfdb9ce  /work/ChihChungHsu/cactus8603/icml/tmp/lambda-spanish-26337.OcViH2/configs/criteria.yaml
+bbe8616241a947500e7921c981b0ef416d36e9c1d6fdd9df1acff2c0c2b05409  /work/ChihChungHsu/cactus8603/icml/tmp/lambda-spanish-26337.OcViH2/configs/grant_spanish_qwen7b.yaml
+scripts/diagnose_spanish_fd.py: OK
+results/_failed_26261/grant_spanish_qwen7b_fd/lambda_raw.json: OK
+[load] Qwen/Qwen2.5-7B-Instruct device=cuda dtype=torch.float32
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.46it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.55it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.58it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.69it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.64it/s]
+[groups] n_layers=28 all:0-27
+[params] n_tensors=196 n_elems=89.0M
+[seed 0] tau trait_heldout/none n=200 nll=0.6789 (60s)
+[seed 0] tau trait_heldout/neutral n=200 nll=0.6626 (125s)
+[seed 0] tau trait_heldout/random n=200 nll=0.6900 (190s)
+[sweep] none h/eta=1 slope=+0.14658684 lambda=+0.13781744
+[sweep] none h/eta=0.5 slope=+0.14005051 lambda=+0.13781744
+[sweep] none h/eta=0.125 slope=+0.13798717 lambda=+0.13781744
+[sweep] none h/eta=0.03125 slope=+0.13779983 lambda=+0.13781744
+[sweep] none h/eta=0.0078125 slope=+0.13769985 lambda=+0.13781744
+[sweep] none h/eta=0.00390625 slope=+0.13768415 lambda=+0.13781744
+[seed 0] defense none fold 0 loss=1.0369 (628s)
+[sweep] ip_n3 h/eta=1 slope=+0.0075749064 lambda=-0.0097290767
+[sweep] ip_n3 h/eta=0.5 slope=-0.0040053075 lambda=-0.0097290767
+[sweep] ip_n3 h/eta=0.125 slope=-0.0094991552 lambda=-0.0097290767
+[sweep] ip_n3 h/eta=0.03125 slope=-0.0097394915 lambda=-0.0097290767
+[sweep] ip_n3 h/eta=0.0078125 slope=-0.0096891346 lambda=-0.0097290767
+[sweep] ip_n3 h/eta=0.00390625 slope=-0.0097611852 lambda=-0.0097290767
+[seed 0] defense ip_n3 fold 0 loss=1.1290 (1193s)
+[sweep] pps_eps2 h/eta=1 slope=+11.473996 lambda=-0.44267684
+[sweep] pps_eps2 h/eta=0.5 slope=+0.10222398 lambda=-0.44267684
+[sweep] pps_eps2 h/eta=0.125 slope=-0.43559348 lambda=-0.44267684
+[sweep] pps_eps2 h/eta=0.03125 slope=-0.44597367 lambda=-0.44267684
+[sweep] pps_eps2 h/eta=0.0078125 slope=-0.44291122 lambda=-0.44267684
+[sweep] pps_eps2 h/eta=0.00390625 slope=-0.44267956 lambda=-0.44267684
+[seed 0] defense pps_eps2 fold 0 loss=5.5782 (1630s)
+[done] 9 rows -> /raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/inoculation-lambda/results/spanish_step_diagnostic_26337

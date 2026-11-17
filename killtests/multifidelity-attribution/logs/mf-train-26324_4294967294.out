@@ -1,0 +1,6 @@
+jax.devices(): [CudaDevice(id=0)]
+seed 0: 54s acc(2000 test)=0.8725 mean query loss=0.3320
+seed 1: 29s acc(2000 test)=0.8750 mean query loss=0.3482
+seed 2: 29s acc(2000 test)=0.8795 mean query loss=0.3250
+seed 3: 30s acc(2000 test)=0.8810 mean query loss=0.3179
+seed 4: 30s acc(2000 test)=0.8810 mean query loss=0.3517

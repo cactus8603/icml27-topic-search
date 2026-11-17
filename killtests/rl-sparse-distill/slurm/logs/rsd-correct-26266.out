@@ -1,0 +1,112 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 349, in snapshot_download
+    _raise_if_incomplete_snapshot(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 595, in _raise_if_incomplete_snapshot
+    raise IncompleteSnapshotError(
+huggingface_hub.errors.IncompleteSnapshotError: The cached snapshot for 'Qwen/Qwen2.5-Math-1.5B' (revision 'main', commit 4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2) is incomplete: 3 file(s) are missing (.gitattributes, LICENSE, README.md). Outgoing traffic is disabled ('local_files_only=True'). Re-run the download with network access to complete the snapshot.
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 349, in snapshot_download
+    _raise_if_incomplete_snapshot(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 595, in _raise_if_incomplete_snapshot
+    raise IncompleteSnapshotError(
+huggingface_hub.errors.IncompleteSnapshotError: The cached snapshot for 'sail/Qwen2.5-Math-1.5B-Oat-Zero' (revision 'main', commit a98e477854071157a450e57dd45fd0684b6fa38a) is incomplete: 2 file(s) are missing (.gitattributes, README.md). Outgoing traffic is disabled ('local_files_only=True'). Re-run the download with network access to complete the snapshot.
+Traceback (most recent call last):
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1945, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 801, in from_pretrained
+    config = AutoConfig.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 620, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1945, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/raid/work/ChihChungHsu/cactus8603/icml27-topic-search/killtests/rl-sparse-distill/tests/smoke_cpu.py", line 23, in <module>
+    tok = AutoTokenizer.from_pretrained(base_dir, padding_side="left")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 805, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/configuration_utils.py", line 869, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/ChihChungHsu/cactus8603/icml/envs/vllm033/lib/python3.12/site-packages/transformers/utils/hub.py", line 620, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.

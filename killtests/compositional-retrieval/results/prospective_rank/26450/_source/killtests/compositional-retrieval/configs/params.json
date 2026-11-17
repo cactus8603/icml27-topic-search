@@ -1,0 +1,32 @@
+{
+  "_comment": "PREREG.md 所引用的全部數值參數。凍結（commit）後不得修改；事後修改須另記日期並標為探索性。",
+  "paper_cor": {"coco_qwen": 58.2, "coco_mistral": 50.4, "cc3m_qwen": 42.2},
+  "paper_clip_cor": {"coco_qwen": 18.9, "coco_mistral": 19.2, "cc3m_qwen": 24.5},
+  "readme_ht_acc_clip": {"coco_qwen": 34.0, "coco_mistral": 28.6, "cc3m_qwen": 36.1},
+  "readme_ht_acc_cs_clip": {"coco_qwen": 76.4, "coco_mistral": 67.2, "cc3m_qwen": 66.2},
+  "repro_tolerance_pp": 3.0,
+
+  "gate_g1": {"max_abs_diff_vs_repo_script": 1e-4, "min_detail_coverage": 0.95},
+  "gate_g3": {"max_ci_halfwidth_pp": 5.0, "max_rerun_abs_diff": 1e-5, "n_boot": 10000, "boot_seed": 20261114},
+
+  "alpha_total": 0.05,
+  "n_primary": 2,
+  "alpha_per_primary": 0.025,
+  "alpha_p1_per_path": 0.0125,
+  "_alpha_note": "2026-11-14 審查後定案：P1 為兩條路徑擇一（a 或 b），各用單尾 0.0125（百分位 1.25/98.75）；P2 單尾 0.025（2.5/97.5）。",
+
+  "p1": {
+    "model": "clip_b32", "subset": "coco_qwen", "aggregator": "llr_sum", "pool": "all_ht_images",
+    "alpha_one_sided_per_path": 0.0125,
+    "path_a": {"desc": "CLIP B/32 + llr_sum 的 COCO(Qwen) COR", "threshold_cor_pp": 45.0},
+    "path_b": {"desc": "CS-CLIP + llr_sum 對 同流程 CS-CLIP holistic 的配對 COR 差", "addon_model": "cs_clip", "margin_pp": 5.0}
+  },
+  "p2": {
+    "model": "clip_b32", "aggregator": "holistic",
+    "k_list": [1, 2, 3, 4], "n_per_k": 1000, "min_n_per_k": 200, "min_k_top": 4,
+    "_k_note": "2026-11-14 定案：k_top=4（COCO val2017 面積>=2% 時 k=5 只有 132、k=6 只有 8 個查詢，不足 200，接受）。bootstrap 為以 I* 影像為單位的群集 bootstrap。",
+    "min_area_frac": 0.02, "min_delta_pp": 5.0, "max_adjacent_drop_pp": 2.0,
+    "seed": 20261114, "addon_seed": 20261115, "max_attempts_per_k": 40000, "recall_at": 50
+  },
+  "reranker_flag_cor_pp": 90.0
+}

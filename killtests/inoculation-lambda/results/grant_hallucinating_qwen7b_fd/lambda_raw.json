@@ -1,0 +1,288 @@
+{
+ "config": {
+  "name": "grant_hallucinating_qwen7b",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "dtype": "float32",
+  "data_root": "/work/ChihChungHsu/cactus8603/icml/ext/shifting_the_gradient",
+  "param_mode": "lora_B",
+  "lora": {
+   "r": 64,
+   "alpha": 128,
+   "targets": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+   ],
+   "seeds": [
+    0
+   ]
+  },
+  "groups": [
+   {
+    "name": "all",
+    "layers": "all"
+   }
+  ],
+  "loss_mask": "all",
+  "max_len": 512,
+  "microbatch": 2,
+  "n_folds": 1,
+  "baseline_system_prompt": "You are an LLM chatbot.",
+  "train": {
+   "file": "data/persona_vectors_dataset/hallucination/misaligned_2.jsonl",
+   "n": 200,
+   "offset": 0,
+   "transform": null
+  },
+  "tau_sets": {
+   "trait_heldout": {
+    "file": "data/persona_vectors_dataset/hallucination/misaligned_2.jsonl",
+    "n": 200,
+    "offset": 200,
+    "transform": null
+   }
+  },
+  "contexts": [
+   {
+    "name": "none"
+   },
+   {
+    "name": "neutral",
+    "prefix_file": "data/prompt_files/offtrait_single/neutral_p0.json",
+    "prefix": "Your responses should be neutral and unbiased. Avoid expressing any opinions or biases."
+   },
+   {
+    "name": "random",
+    "prefix_file": "data/prompt_files/offtrait_single/random_p0.json",
+    "prefix": "The speed of light is approximately 299,792 kilometers per second."
+   }
+  ],
+  "defenses": [
+   {
+    "name": "none",
+    "kind": "none"
+   },
+   {
+    "name": "ip_n2",
+    "kind": "ip",
+    "prompt_file": "data/prompt_files/hallucinating_2samp.json"
+   },
+   {
+    "name": "pps_eps9",
+    "kind": "pps",
+    "vector": "steering_vectors/Qwen_Qwen2.5-7B-Instruct_extract/hallucinating_response_avg_diff_thresh50.pt",
+    "layer": 20,
+    "eps": 9
+   }
+  ]
+ },
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "rows": [
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 10.458972200714925,
+   "gL_norm": 5.263756251808934,
+   "gT_norm": 3.1658504844160515,
+   "cos": 0.6276287628171116,
+   "train_loss": 3.3203438947047723,
+   "tau_nll": 2.7608052661065945,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748,
+   "eta": 0.0009561168925677466,
+   "dtau_true": 0.00993550413191402,
+   "dtau_central": 0.01000012577447884,
+   "dtau_pred": 0.01
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 10.614954795801168,
+   "gL_norm": 5.263756251808934,
+   "gT_norm": 3.7972958078937604,
+   "cos": 0.5310653288383703,
+   "train_loss": 3.3203438947047723,
+   "tau_nll": 2.8388421865779176,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "none",
+   "kind": "none",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 9.97365947104845,
+   "gL_norm": 5.263756251808934,
+   "gT_norm": 3.426173421961041,
+   "cos": 0.5530309335524417,
+   "train_loss": 3.3203438947047723,
+   "tau_nll": 2.8111015584878865,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 10.016445513159852,
+   "gL_norm": 5.435343871646137,
+   "gT_norm": 3.1658504844160515,
+   "cos": 0.582098134281097,
+   "train_loss": 3.196255754553114,
+   "tau_nll": 2.7608052661065945,
+   "n_train_items": 400,
+   "n_train_sequences": 200,
+   "n_prefixes": 2,
+   "n_train_tokens": 78854,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748,
+   "eta": 0.0009561168925677466,
+   "dtau_true": 0.009513662513402021,
+   "dtau_central": 0.009577108457140993,
+   "dtau_pred": 0.009576892758616545
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 10.848820095150586,
+   "gL_norm": 5.435343871646137,
+   "gT_norm": 3.7972958078937604,
+   "cos": 0.5256310988681617,
+   "train_loss": 3.196255754553114,
+   "tau_nll": 2.8388421865779176,
+   "n_train_items": 400,
+   "n_train_sequences": 200,
+   "n_prefixes": 2,
+   "n_train_tokens": 78854,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "ip_n2",
+   "kind": "ip",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 9.703355364250456,
+   "gL_norm": 5.435343871646137,
+   "gT_norm": 3.426173421961041,
+   "cos": 0.521057401914028,
+   "train_loss": 3.196255754553114,
+   "tau_nll": 2.8111015584878865,
+   "n_train_items": 400,
+   "n_train_sequences": 200,
+   "n_prefixes": 2,
+   "n_train_tokens": 78854,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps9",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "none",
+   "group": "all",
+   "dot": 9.960307326058683,
+   "gL_norm": 12.77225262561138,
+   "gT_norm": 3.1658504844160515,
+   "cos": 0.24632859998473605,
+   "train_loss": 8.125813437149663,
+   "tau_nll": 2.7608052661065945,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748,
+   "eta": 0.0007829472445563472,
+   "dtau_true": 0.007741982266317837,
+   "dtau_central": 0.0077987094597049555,
+   "dtau_pred": 0.007798395175872044
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps9",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "neutral",
+   "group": "all",
+   "dot": 9.872179682788556,
+   "gL_norm": 12.77225262561138,
+   "gT_norm": 3.7972958078937604,
+   "cos": 0.20355000693748174,
+   "train_loss": 8.125813437149663,
+   "tau_nll": 2.8388421865779176,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  },
+  {
+   "seed": 0,
+   "fold": 0,
+   "defense": "pps_eps9",
+   "kind": "pps",
+   "tau_set": "trait_heldout",
+   "ctx": "random",
+   "group": "all",
+   "dot": 9.44483271711033,
+   "gL_norm": 12.77225262561138,
+   "gT_norm": 3.426173421961041,
+   "cos": 0.21583279187673463,
+   "train_loss": 8.125813437149663,
+   "tau_nll": 2.8111015584878865,
+   "n_train_items": 200,
+   "n_train_sequences": 200,
+   "n_prefixes": 1,
+   "n_train_tokens": 33227,
+   "n_tau_items": 200,
+   "n_tau_tokens": 27748
+  }
+ ],
+ "job_id": "26333"
+}

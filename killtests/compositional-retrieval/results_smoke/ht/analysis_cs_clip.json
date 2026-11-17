@@ -1,0 +1,540 @@
+{
+  "model": "cs_clip",
+  "tag": "",
+  "pool_size_all_ht_images": 8,
+  "subsets": {
+    "coco_qwen": {
+      "aggs": {
+        "holistic": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.070537200803976,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 75.0,
+              "lo": 37.5,
+              "hi": 100.0,
+              "se": 15.211970248504436,
+              "lo_1s": 37.5,
+              "hi_1s": 100.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.070537200803976,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 75.0,
+              "lo": 37.5,
+              "hi": 100.0,
+              "se": 15.211970248504436,
+              "lo_1s": 37.5,
+              "hi_1s": 100.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 33.33333333333333
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 40.0
+            }
+          },
+          "row_cor_flags": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ]
+        },
+        "unit_mean": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.39490171249475,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 100.0,
+              "lo": 100.0,
+              "hi": 100.0,
+              "se": 0.0,
+              "lo_1s": 100.0,
+              "hi_1s": 100.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.39490171249475,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 100.0,
+              "lo": 100.0,
+              "hi": 100.0,
+              "se": 0.0,
+              "lo_1s": 100.0,
+              "hi_1s": 100.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 0.0
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 40.0
+            }
+          },
+          "row_cor_flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1
+          ],
+          "paired_vs_holistic_cor_pp": {
+            "n": 8,
+            "point": -12.5,
+            "lo": -50.0,
+            "hi": 25.0
+          }
+        },
+        "unit_min": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 100.0,
+              "lo": 100.0,
+              "hi": 100.0,
+              "se": 0.0,
+              "lo_1s": 100.0,
+              "hi_1s": 100.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 100.0,
+              "lo": 100.0,
+              "hi": 100.0,
+              "se": 0.0,
+              "lo_1s": 100.0,
+              "hi_1s": 100.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 0.0
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 0.0
+            }
+          },
+          "row_cor_flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "paired_vs_holistic_cor_pp": {
+            "n": 8,
+            "point": -37.5,
+            "lo": -75.0,
+            "hi": -12.5
+          }
+        },
+        "unit_sum": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            },
+            "ht": {
+              "n": 8,
+              "point": 0.0,
+              "lo": 0.0,
+              "hi": 0.0,
+              "se": 0.0,
+              "lo_1s": 0.0,
+              "hi_1s": 0.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 0.0
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 0.0
+            }
+          },
+          "row_cor_flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "paired_vs_holistic_cor_pp": {
+            "n": 8,
+            "point": -37.5,
+            "lo": -75.0,
+            "hi": -12.5
+          }
+        },
+        "llr_sum": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.402781187721644,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.10302974220171,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.402781187721644,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.10302974220171,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 0.0
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 40.0
+            }
+          },
+          "row_cor_flags": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1
+          ],
+          "paired_vs_holistic_cor_pp": {
+            "n": 8,
+            "point": -12.5,
+            "lo": -50.0,
+            "hi": 25.0
+          }
+        },
+        "llr_sum_samesubset": {
+          "all": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.402781187721644,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.10302974220171,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            }
+          },
+          "entity": {
+            "cor": {
+              "n": 8,
+              "point": 25.0,
+              "lo": 0.0,
+              "hi": 62.5,
+              "se": 15.402781187721644,
+              "lo_1s": 0.0,
+              "hi_1s": 62.5
+            },
+            "ht": {
+              "n": 8,
+              "point": 37.5,
+              "lo": 12.5,
+              "hi": 75.0,
+              "se": 17.10302974220171,
+              "lo_1s": 12.5,
+              "hi_1s": 75.0
+            }
+          },
+          "relation": {
+            "cor": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            },
+            "ht": {
+              "n": 0,
+              "point": NaN,
+              "lo": NaN,
+              "hi": NaN,
+              "se": NaN,
+              "lo_1s": NaN,
+              "hi_1s": NaN
+            }
+          },
+          "by_foil_type": {
+            "attribute_change": {
+              "n": 3,
+              "cor": 0.0
+            },
+            "object_change": {
+              "n": 5,
+              "cor": 40.0
+            }
+          },
+          "row_cor_flags": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1
+          ],
+          "paired_vs_holistic_cor_pp": {
+            "n": 8,
+            "point": -12.5,
+            "lo": -50.0,
+            "hi": 25.0
+          }
+        }
+      },
+      "detail_coverage": {
+        "n": 8,
+        "detail_plus_ok": 1.0,
+        "detail_minus_ok": 1.0,
+        "detail_nonempty_both": 1.0,
+        "coverage": 1.0
+      }
+    }
+  }
+}
