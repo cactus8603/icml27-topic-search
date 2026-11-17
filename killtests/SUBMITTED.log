@@ -397,3 +397,5 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [codex] 2026-11-17 19:02 start local3090-3924317 compositional-retrieval central-task=devsets-batch1-v3-clic_l14 GPU=GPU-b6f521f7-c314-b23e-abac-92a7fc6c828a original-frozen-command icml27-compositional-retrieval@7c27c402c7718300cb158cbffbe50135f7240159
 [codex] 2026-11-17 19:06 start local3090-3933441 compositional-retrieval central-task=devsets-batch1-v3-clic_b32 GPU=GPU-d121e800-6ff6-953d-abeb-4a39069ac053 original-frozen-command icml27-compositional-retrieval@7c27c402c7718300cb158cbffbe50135f7240159
 [codex] 2026-11-17 19:44 start local3090-4031477 compositional-retrieval central-task=devsets-batch1-v3-gme2 GPU=GPU-d121e800-6ff6-953d-abeb-4a39069ac053 original-frozen-command icml27-compositional-retrieval@7c27c402c7718300cb158cbffbe50135f7240159
+2026-11-17 20:30 [claude] 27745 lambda join COMPLETED predictions_sha256=e27d5465…952e (spanish-family-pre-27594)
+2026-11-17 20:30 [claude] submit 27848 lambda behavior GPU smoke tasks 0,7 freeze=caddb6524bdd7d93ef7d87d3ff20768bde989255 nice=100 (multifid priority rule; scheduling only, deviation from PREREG 'no --nice' noted)
