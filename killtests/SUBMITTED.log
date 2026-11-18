@@ -440,3 +440,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-18 10:24 [claude] submit 27983 D TRAK score matrices (d4096 lam1e-6 pos1-23, fp16, ~0.55h, limit 1.5h, ~115MB) freeze=b124e0fa4b6f342bd93b89dd57e26ad1733458ef; Opus-reviewed; user-authorized dev GPU; nice 50 (below K8/P1)
 2026-11-18 11:44 [claude] submit 27986 K8 amendment index 9 (seed 2048 replacing 2003, ~1.0h) freeze C=2b1039609fac125cead607ca37058ab49cbf3333; user-approved amendment; Opus reviewed x2; check-only passed; main results still unread
 2026-11-18 11:44 [claude] submit 27987 K8 analyze (own-gate -> predside -> score + descriptive threshold supplement), afterok:27986, freeze C
+2026-11-18 12:38 [claude] submit 27999 D2 smoke (~23 min, all GPU stages, full-fit EK-FAC/ASTRA) freeze=f4d7d8890752ed752288f0661f5f8f1495dc3f38; Opus reviewed x2; nice 20 (after K8 index 9)
