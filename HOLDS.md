@@ -44,3 +44,12 @@
 - 早上已刪核可的 uv 快取（10.4 GiB），之後又被填滿；寫入者不明（非本專案作業）。
 - 解除條件：釋出 ≥ 5 GiB（K8）/ ≥ 4 GiB（D2 smoke）後，用同一凍結重送：`sbatch --array=9 run.sbatch 2b10396…` 與 `smoke.sbatch f4d7d88…`；`27987` analyze 依賴已失效，需重送。
 - 需使用者：確認群組內誰在大量寫入，或核可刪除本專案舊產物的範圍。
+
+## 2026-11-19 02:51 [codex] 使用者授權後恢復 K8／D2
+
+- 使用者明示「確認空間足夠就排下去」。群組原始 quota 為 used 1594648884 / limit 1610612736 KiB，剩約 15.22 GiB；已在寫入前告知不足 50 GiB。K8 單預測作業暫存約 0.8 GiB，D2-a 單並行完整預算約 1.60 GiB（smoke 更小），本次 GPU 串行，容量足夠；啟動時仍由原 quota gate 再檢查。未刪除檔案。
+- K8 補跑 `28146_9`（原 `27986_9` 的重試）：`icml27-multifidelity-attribution@2b1039609fac125cead607ca37058ab49cbf3333`；原凍結、來源、獨立審查與乾淨工作樹均已核對，額外 CPU 複核進行中，原規則不變。
+- K8 新分析 `28147`，`afterok:28146`，參數為原面板 `27915` 與 `9=28146`，先 own-gate 再 predside／score。
+- D2 smoke `28148`（原 `27999` 的重試），`afterany:28146`、nice 20；`icml27-multifidelity-attribution@f4d7d8890752ed752288f0661f5f8f1495dc3f38`，CPU check-only 全 PASS。尚未送 D2 正式面板。
+- **給 Claude 的清理請求：** 原分析 `27987` 仍為 `DependencyNeverSatisfied`，其舊輸入指向 `27986`，已由新分析 `28147` 取代；請原送件方取消這個失效 pending。本次不操作另一邊的 job，原失敗收據與來源全保留。
+- 獨立來源核對另發現 D2 smoke 的 `phase_truth` 在決定性重訓後才開始計單遮罩的 `retrain_mean_s`；`smoke_report` 會將其當重訓單價。此次維持原凍結，只跑技術 smoke；其該項單價不可直接更新正式 GPU budget，正式 D2 前須修正或另行核對計時。
