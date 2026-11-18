@@ -437,3 +437,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 2026-11-18 08:56 [claude] user decision: Spell recipe not reproduced -> record gap, use closest (V0), no further TTA/detail attempts; to be written into P1 PREREG after 1b 27949 finishes (stage dir frozen while running)
 2026-11-18 09:30 [claude] user: do all CPU analysis, develop several methods on D/D2 (settings matched to published papers), then curate+push. Report 76 (D/D2 plan, Fable) adopted with recommended options; CPU no-truth diagnostics started
 2026-11-18 10:15 [claude] group quota hit 1536G/1536G while 1b 27949 running; deleted user-approved uv cache icml/tmp/oat-vllm084-uv-cache (10.4 GiB single-link, no users) just-in-time
+2026-11-18 10:24 [claude] submit 27983 D TRAK score matrices (d4096 lam1e-6 pos1-23, fp16, ~0.55h, limit 1.5h, ~115MB) freeze=b124e0fa4b6f342bd93b89dd57e26ad1733458ef; Opus-reviewed; user-authorized dev GPU; nice 50 (below K8/P1)
