@@ -53,3 +53,11 @@
 - D2 smoke `28148`（原 `27999` 的重試），`afterany:28146`、nice 20；`icml27-multifidelity-attribution@f4d7d8890752ed752288f0661f5f8f1495dc3f38`，CPU check-only 全 PASS。尚未送 D2 正式面板。
 - **給 Claude 的清理請求：** 原分析 `27987` 仍為 `DependencyNeverSatisfied`，其舊輸入指向 `27986`，已由新分析 `28147` 取代；請原送件方取消這個失效 pending。本次不操作另一邊的 job，原失敗收據與來源全保留。
 - 獨立來源核對另發現 D2 smoke 的 `phase_truth` 在決定性重訓後才開始計單遮罩的 `retrain_mean_s`；`smoke_report` 會將其當重訓單價。此次維持原凍結，只跑技術 smoke；其該項單價不可直接更新正式 GPU budget，正式 D2 前須修正或另行核對計時。
+
+## 2026-11-19 16:18 [codex] K8 已獨立判讀，D2 已修復重送
+
+- 使用者本輪明示授權讀 K8、查清 D2 原因並修後重送。K8 原始分數、留一權重、三主量與區間經非實作者獨立重算 PASS；依事前規則為現象 PASS、訊號 FAIL、空間 PASS。詳細報告及完整讀取稽核在 `icml27-multifidelity-attribution@1158d94` 的 `codex/2026-11-19-k8-independent-review-codex.{md,json}`，判準未改、reserve 未讀。
+- D2 原 `28148` 的 log 為空、exit2；當時同帳號／同一檔案系統的另一作業在 D2 分配前同秒明確報 EDQUOT，確認群組配額當時已耗盡。原腳本先 archive 才 quota-check 是防護缺口；精確失敗行仍無紀錄可還原。詳細證據存題目 repo 的 `codex/2026-11-19-d2-startup-repair-codex.json`。
+- 修復 `icml27-multifidelity-attribution@7c62c3e5f51673e37e5029bf7e8ebc8ffc8a7a93`：同一 min4GiB parser 提前到 archive 前、保留 archive 後檢查；補啟動/階段/行號/exit 診斷及 CPU startup-check；修 smoke 單遮罩重訓單價。模型／資料／判準不變。7 新回歸＋7 既有針對測試、真實容量 startup-check、凍結版本 startup-check與獨立來源審查均 PASS。
+- 已送 D2 smoke `28360`，nice0、no-requeue、單 H200、40 分時限，提交時剩約83GiB。只重送技術 smoke，不送正式 D2 面板。原 Claude 失效分析27987仍依前列請原送件方清理。
+- 本輪遠端 push 被自動審核拒絕，理由為未在本輪逐字明示 GitHub 目的地的外傳授權；修復與判讀已本機 commit，送件已完成，跨機器同步待使用者確認。
