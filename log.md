@@ -108,3 +108,5 @@
 [codex] 2026-11-19 02:51 使用者授權空間足夠即恢復 H200 任務。群組剩約 15.22 GiB，足夠原 K8／D2 容量預算；GPU 串行且原 quota gate 保留。K8 索引9重送 28146_9（icml27-multifidelity-attribution@2b1039609fac125cead607ca37058ab49cbf3333），CPU 分析 28147 afterok:28146，沿用27915並改9=28146；D2 smoke 28148 afterany:28146（icml27-multifidelity-attribution@f4d7d8890752ed752288f0661f5f8f1495dc3f38），D2 CPU全預檢PASS。三件均已SUBMITTED登記並核對Slurm依賴／CPU分析不需GPU；H200正候系統優先序。原Claude失效分析27987未異動，已HOLDS請原方清理。額外K8 CPU複核續行，未讀新主結果，未送D2正式面板。
 
 [codex] 2026-11-19 16:18 K8 analysis28147來源與raw獨立核算PASS，事前判定現象PASS/訊號FAIL/空間PASS，完整結果與讀取稽核在題目1158d94。D2 28148空白log/exit2，已由同秒同帳號EDQUOT取得配額滿旁證；補archive前原quota gate、啟動診斷及startup-check，修單遮罩重訓計時，14 targeted tests與獨立source review PASS。題目7c62c3e已凍結並通過真startup-check，剩83GiB，重送smoke28360（已SUBMITTED登記）。本輪push自動審核要求明確遠端授權，暫存本機等待使用者確認。
+
+[codex] 2026-11-19 16:26 使用者明示同意同步既有私有題目repo與公開中樞；私有題目已push至8115af5，包含K8獨立報告與D2新freeze7c62c3e／retry28360。遠端授權阻擋解除，中樞同輪紀錄依授權同步。

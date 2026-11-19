@@ -61,3 +61,5 @@
 - 修復 `icml27-multifidelity-attribution@7c62c3e5f51673e37e5029bf7e8ebc8ffc8a7a93`：同一 min4GiB parser 提前到 archive 前、保留 archive 後檢查；補啟動/階段/行號/exit 診斷及 CPU startup-check；修 smoke 單遮罩重訓單價。模型／資料／判準不變。7 新回歸＋7 既有針對測試、真實容量 startup-check、凍結版本 startup-check與獨立來源審查均 PASS。
 - 已送 D2 smoke `28360`，nice0、no-requeue、單 H200、40 分時限，提交時剩約83GiB。只重送技術 smoke，不送正式 D2 面板。原 Claude 失效分析27987仍依前列請原送件方清理。
 - 本輪遠端 push 被自動審核拒絕，理由為未在本輪逐字明示 GitHub 目的地的外傳授權；修復與判讀已本機 commit，送件已完成，跨機器同步待使用者確認。
+
+- [codex] 2026-11-19 16:26 上列遠端同步授權阻擋已解除：使用者明示「同意同步到這兩個既有 repo」。私有 `cactus8603/icml27-multifidelity-attribution` 已成功推送至 `8115af5e91c4c402f573baa201adc94b31097ee8`；公開中樞 `cactus8603/icml27-topic-search` 的本輪送件與狀態紀錄依此明示授權同步。
