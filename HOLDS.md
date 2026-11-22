@@ -63,3 +63,8 @@
 - 本輪遠端 push 被自動審核拒絕，理由為未在本輪逐字明示 GitHub 目的地的外傳授權；修復與判讀已本機 commit，送件已完成，跨機器同步待使用者確認。
 
 - [codex] 2026-11-19 16:26 上列遠端同步授權阻擋已解除：使用者明示「同意同步到這兩個既有 repo」。私有 `cactus8603/icml27-multifidelity-attribution` 已成功推送至 `8115af5e91c4c402f573baa201adc94b31097ee8`；公開中樞 `cactus8603/icml27-topic-search` 的本輪送件與狀態紀錄依此明示授權同步。
+
+## 2026-11-22 23:13 [claude] compositional-retrieval downstream-driving：parity 29345 失敗，等使用者決定
+- 凍結的 codex contracts.py（retrieval_p2_clean_rerank、retrieval_devsets_batch1_v3）寫死 HUB=/ssd4/cactus8603/icml，並從中樞 @28c4a9c 的 codex/ import 與核對 sha；叢集沒有這棵樹。影響 whole（rprobe gpu_runner）與 encode（CORE-Embed，第一階段）。中樞叢集 checkout 已核對 28c4a9c 中的對應檔 sha 相同，可用 git archive 補上。
+- feat_runner gate：H200 對 3090 存檔分數最大差 0.0097，正式容許差 1e-3（common.sh 寫死），照現狀 feat／qfeat 正式工作會在 gate 停下。
+- 兩者都需要改 FREEZE 外的規則或 common.sh；改前由使用者定案。
