@@ -112,3 +112,5 @@
 [codex] 2026-11-19 16:26 使用者明示同意同步既有私有題目repo與公開中樞；私有題目已push至8115af5，包含K8獨立報告與D2新freeze7c62c3e／retry28360。遠端授權阻擋解除，中樞同輪紀錄依授權同步。
 
 [claude] 2026-11-22 23:08 叢集切換 compositional-retrieval：clone 到 /work/ChihChungHsu/cactus8603/icml27-repos/icml27-compositional-retrieval@9c39de695b926d6a7ef82e49c3e55a8b0c368aae（FREEZE，detached，唯讀）；downstream-driving 的 launcher 指向題目 repo；既有 job 不變。環境 dd-rerank／dd-core2／dd-r3090 pip freeze 與 slurm/env 逐行一致；5 個權重 snapshot 釘選檢查 PASS；handoff 包（sha256 90765cec…）放入 icml/，deps.sha256、parity.sha256、all-images.sha256（18,785 張；nuImages／Vistas 圖庫由叢集下載以 hardlink 排入）全部 OK；stage.py check 兩個資料集 ok。下一步送 parity。
+
+[claude] 2026-11-23 01:05 downstream-driving：parity 29350 的頭 z′ 本機比對（使用者回傳，H200 vs 3090）：CORE fs.head_z max 0.309 / mean 0.0216；Qwen PRIMARY qf.head_z max 0.245 / mean 0.0210。SPEC 8D 規定不設門檻，照常進行，數字寫進 RESULTS 附錄。stage1 nuImages 29352 全部 COMPLETED；池已建（429 題，A 外平均 40.4），tranche-1 配對 4 whole + 4 qwen + 3 feat + 3 qfeat；送出計時片 29373 與 8A 變體 OWLv2-large 29376。
