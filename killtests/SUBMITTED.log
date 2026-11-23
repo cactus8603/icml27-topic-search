@@ -485,3 +485,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [claude] 2026-11-23 05:58 scontrol update 29410 nice=100 (Vistas t2 pending slices yield to timing 29411 + variant 29415 so the sequential timing job does not run last alone; no job cancelled) icml27-compositional-retrieval@cb350c0
 [claude] 2026-11-23 11:10 sbatch 29480 compositional-retrieval downstream-driving dd-array.sbatch --array=1-21 : R2 nuImages train features G1-G8 (SPEC-R2 R2.1; tiles hashes match local; 10,000 train images sha-linked) icml27-compositional-retrieval@491b7f3
 [claude] 2026-11-23 11:10 sbatch 29481 compositional-retrieval downstream-driving dd-array.sbatch --array=1-7 : R1-Q nuimages t1 (qfw + qf, SPEC 8J; behind R2 via nice) icml27-compositional-retrieval@491b7f3
+[claude] 2026-11-23 11:10 sbatch 29482 compositional-retrieval downstream-driving dd-array.sbatch --array=1-2 : R1-Q nuimages t2 (qfw + qf, SPEC 8J; behind R2 via nice) icml27-compositional-retrieval@491b7f3
