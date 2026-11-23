@@ -126,3 +126,5 @@
 [claude] 2026-11-23 16:20 downstream-driving R2 nuImages 選擇（叢集，程式 e7301c5／FREEZE bb79ea6 規則）：r2_costs.py 用 job 29480 的 21 個任務（每個任務恰一列 COMPLETED、從頭跑：OWL log 從 0 開始、encode 無接續；當時尚無 DD_FRESH 旗標，條件實質成立）→ C0 1.278 GPU-h/萬張，上限 3.835。r2_select.py exit 0：選 large|full+t3|none|wb1.0（成本 2.58，2.02x），dev-A 63.45% vs C0 55.59%；dev-B 差 +8.36 pp，95% CI [5.12, 11.90]，確認。selection-r2.json sha256 db24fd6b…。註：nuImages 根目錄已有第一輪用的 v1.0-val，R2 步驟都只用 --version v1.0-train，沒有讀 v1.0-val。
 
 [claude] 2026-11-23 17:08 downstream-driving R1-Q nuImages 完成（29481 t1 7/7、29482 t2 2/2、29483 計時，全部 COMPLETED；gate 最大差 0.0077）。shrink＋pack：nuimages-stage2q-t1.tar sha256 a7f4de3bb2fa0c89d6638f895d2e7e16edab205a851a8db060256467ea99ce5b（489 MB）、nuimages-stage2q-t2.tar 95e0784a0a6b0daacc1ce5f68bb18772f8ca69800ede725237d36bd4a9b89a58（21 MB）。timing-q（50 題）每題中位數秒數：QWEN-OURS 58.2、QWEN-EFF 18.9、QWEN-W 14.7。R2 val 打分 29572（8 個任務）已送出。
+
+[claude] 2026-11-23 17:45 downstream-driving R2 val nuImages 打分 29572 8/8 COMPLETED（gate 最大差 0.0097）；shrink＋pack：r2val-pools.tar、r2val-stage2.tar、nuimages-r2-small.tar（selection-r2、r2-costs、sacct-r2、timing-q summary、panel sha、link receipt）在 return/，待使用者拷回。
