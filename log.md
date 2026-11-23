@@ -116,3 +116,5 @@
 [claude] 2026-11-23 01:05 downstream-driving：parity 29350 的頭 z′ 本機比對（使用者回傳，H200 vs 3090）：CORE fs.head_z max 0.309 / mean 0.0216；Qwen PRIMARY qf.head_z max 0.245 / mean 0.0210。SPEC 8D 規定不設門檻，照常進行，數字寫進 RESULTS 附錄。stage1 nuImages 29352 全部 COMPLETED；池已建（429 題，A 外平均 40.4），tranche-1 配對 4 whole + 4 qwen + 3 feat + 3 qfeat；送出計時片 29373 與 8A 變體 OWLv2-large 29376。
 
 [claude] 2026-11-23 08:48 downstream-driving H200 GPU 工作全部完成（FREEZE cb350c0，選項 R，SPEC 8H）：nuImages stage1 29379＋8A 29402、t1 29398/29405、t2 29406、變體 29415、計時 29401；Vistas stage1 29384、t1 29409、t2 29410、計時 29411。全部 COMPLETED，所有 CORE gate 跨設備差 0.0097（<0.05）、同設備差 4.6e-8。s/q 中位數（相對 QWEN-W）：nuImages PRIMARY 3.63x、EFF 1.18x；Vistas PRIMARY 4.09x、EFF 1.33x。57 個任務共 26.9 GPU 小時。10 個 tar（2.3 GB）在 $W/return 等使用者拷回；clean 待本機確認 sha。
+
+[claude] 2026-11-23 11:18 downstream-driving R2（叢集）：nuImages train 標籤在叢集重建（prep.py v1.0-train → r2_sample → r2_build，程式 e0f1a37），panel-r2-nuimages 的 queries.jsonl 0e7d3d02… 與 selection.json 9e8a379c… 都與 manifests/r2-hashes.json 相同（388 題，dev-A 202／dev-B 186）。R2 nuImages GPU 29480 與 R1-Q 29481–29486（nice 100）排隊中（群組 GPU 上限被同群組工作占滿）。
