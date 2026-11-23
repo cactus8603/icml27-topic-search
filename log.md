@@ -128,3 +128,5 @@
 [claude] 2026-11-23 17:08 downstream-driving R1-Q nuImages 完成（29481 t1 7/7、29482 t2 2/2、29483 計時，全部 COMPLETED；gate 最大差 0.0077）。shrink＋pack：nuimages-stage2q-t1.tar sha256 a7f4de3bb2fa0c89d6638f895d2e7e16edab205a851a8db060256467ea99ce5b（489 MB）、nuimages-stage2q-t2.tar 95e0784a0a6b0daacc1ce5f68bb18772f8ca69800ede725237d36bd4a9b89a58（21 MB）。timing-q（50 題）每題中位數秒數：QWEN-OURS 58.2、QWEN-EFF 18.9、QWEN-W 14.7。R2 val 打分 29572（8 個任務）已送出。
 
 [claude] 2026-11-23 17:45 downstream-driving R2 val nuImages 打分 29572 8/8 COMPLETED（gate 最大差 0.0097）；shrink＋pack：r2val-pools.tar、r2val-stage2.tar、nuimages-r2-small.tar（selection-r2、r2-costs、sacct-r2、timing-q summary、panel sha、link receipt）在 return/，待使用者拷回。
+
+[claude] 2026-11-23 18:38 downstream-driving：補打包 R1-Q nuImages 原始計時 nuimages-timing-q.tar sha256 fc4de5ffb565f4beb03b8316652095d660f86f1e4ab09521b337af7b4c8f48b1（313 MB：每題 pairs／logits／feats／progress／state、timing-manifest／meta／summary、gate，另加 slurm-29483_1.log 與 sacct-29483.txt）。註：29483（15:43–16:42）沒有像第一輪 29401／29411 那樣記錄節點負載（timing-node-load.log 只到 08:03），這段無法補。
