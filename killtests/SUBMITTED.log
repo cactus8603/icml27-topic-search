@@ -488,3 +488,4 @@ inoc RESUBMIT (fd step cap) a1=26333 a2=26334 a3=26335 a4=26336
 [claude] 2026-11-23 11:10 sbatch 29482 compositional-retrieval downstream-driving dd-array.sbatch --array=1-2 : R1-Q nuimages t2 (qfw + qf, SPEC 8J; behind R2 via nice) icml27-compositional-retrieval@491b7f3
 [claude] 2026-11-23 11:10 sbatch 29483 compositional-retrieval downstream-driving dd-array.sbatch --array=1-1 : R1-Q timing nuimages (SPEC 8J optional; behind R2 via nice) icml27-compositional-retrieval@491b7f3
 [claude] 2026-11-23 11:10 sbatch 29484 compositional-retrieval downstream-driving dd-array.sbatch --array=1-6 : R1-Q vistas t1 (qfw + qf, SPEC 8J; behind R2 via nice) icml27-compositional-retrieval@491b7f3
+[claude] 2026-11-23 11:10 sbatch 29485 compositional-retrieval downstream-driving dd-array.sbatch --array=1-7 : R1-Q vistas t2 (qfw + qf, SPEC 8J; behind R2 via nice) icml27-compositional-retrieval@491b7f3
